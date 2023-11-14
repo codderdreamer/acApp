@@ -24,4 +24,6 @@ class Application():
         asyncio.run(self.main())
 
 if __name__ == "__main__":
-    Application().run()
+    loop = asyncio.get_event_loop()
+    res = loop.run_until_complete(Application().main())
+    print(res)

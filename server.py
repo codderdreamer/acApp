@@ -6,6 +6,8 @@ from ocpp.routing import on
 from ocpp.v16 import ChargePoint as cp
 from ocpp.v16 import call_result
 from ocpp.v16.enums import Action, RegistrationStatus
+from ocpp.v16.datatypes import IdTagInfo
+from ocpp.v16.enums import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -23,6 +25,16 @@ class ChargePoint(cp):
     def on_heartbeat(self):
         return call_result.HeartbeatPayload(
             current_time=datetime.utcnow().isoformat()
+        )
+    
+    @on(Action.Authorize)
+    def on_authorize(self,id_tag:str):
+        # id_tag_info = IdTagInfo()
+        # id_tag_info.status = AuthorizationStatus.accepted
+        return call_result.AuthorizePayload(
+            id_tag_info={
+                "status":"Accepted"
+            }
         )
 
 

@@ -1,0 +1,7 @@
+{
+    "charge_point_model" : "Optimus",
+    "charge_point_vendor" : "The Mobility House",
+    "charge_point_id" : "CP_1",
+    "ocpp_server_url" : "ws://localhost:9000/"
+
+}

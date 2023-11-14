@@ -77,4 +77,6 @@ async def main():
 
 if __name__ == "__main__":
     # asyncio.run() is used when running this example with Python >= 3.7v
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    res = loop.run_until_complete(main())
+    print(res)

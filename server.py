@@ -1,18 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime
-
-try:
-    import websockets
-except ModuleNotFoundError:
-    print("This example relies on the 'websockets' package.")
-    print("Please install it by running: ")
-    print()
-    print(" $ pip install websockets")
-    import sys
-
-    sys.exit(1)
-
+import websockets
 from ocpp.routing import on
 from ocpp.v16 import ChargePoint as cp
 from ocpp.v16 import call_result
@@ -49,9 +38,6 @@ async def on_connect(websocket, path):
     if websocket.subprotocol:
         logging.info("Protocols Matched: %s", websocket.subprotocol)
     else:
-        # In the websockets lib if no subprotocols are supported by the
-        # client and the server, it proceeds without a subprotocol,
-        # so we have to manually close the connection.
         logging.warning(
             "Protocols Mismatched | Expected Subprotocols: %s,"
             " but client supports  %s | Closing connection",
@@ -76,7 +62,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    # asyncio.run() is used when running this example with Python >= 3.7v
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(main())
     print(res)

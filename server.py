@@ -11,7 +11,6 @@ from ocpp.v16.enums import *
 
 logging.basicConfig(level=logging.INFO)
 
-
 class ChargePoint(cp):
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor: str, charge_point_model: str, **kwargs):
@@ -29,8 +28,6 @@ class ChargePoint(cp):
     
     @on(Action.Authorize)
     def on_authorize(self,id_tag:str):
-        # id_tag_info = IdTagInfo()
-        # id_tag_info.status = AuthorizationStatus.accepted
         return call_result.AuthorizePayload(
             id_tag_info={
                 "status":"Accepted"

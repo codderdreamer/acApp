@@ -8,10 +8,45 @@ from ocpp.v16 import call_result
 from ocpp.v16.enums import Action, RegistrationStatus
 from ocpp.v16.datatypes import IdTagInfo
 from ocpp.v16.enums import *
+from ocpp.v16 import call
+from threading import Thread
+import time
 
 logging.basicConfig(level=logging.INFO)
 
 class ChargePoint(cp):
+    def __init__(self, id, connection, response_timeout=30):
+        super().__init__(id, connection, response_timeout)
+        Thread(target=self.test,daemon=True).start()
+
+    def test(self):
+        asyncio.set_event_loop(loop)
+        while True:
+            time.sleep(1)
+            print("hi")
+            x = input()
+            if x=="1":
+                future = self.send_cancel_reservation()
+                future.add_done_callback(self.send_cancel_reservation_callback)
+
+    def send_cancel_reservation(self):
+        return asyncio.ensure_future(self.send_cancel_reservation_func())
+    
+    def send_cancel_reservation_callback(self,future):
+        result = future.result()
+        print("result",result)
+
+    async def send_cancel_reservation_func(self):
+        try:
+            request = call.CancelReservationPayload(1)
+            response = await self.call(request)
+            return response
+        except Exception as e:
+            print(e)
+
+
+
+
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor: str, charge_point_model: str, **kwargs):
         return call_result.BootNotificationPayload(
@@ -61,6 +96,8 @@ async def on_connect(websocket, path):
     await cp.start()
 
 
+
+
 async def main():
     server = await websockets.serve(
         on_connect, "0.0.0.0", 9000, subprotocols=["ocpp1.6"]
@@ -71,6 +108,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    global loop
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(main())
     print(res)

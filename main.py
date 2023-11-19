@@ -30,11 +30,10 @@ class Application():
                     pass
                 elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                     pass
+                while True:
+                    time.sleep(5)
         except Exception as e:
             print(e)
-
-    def run(self):
-        asyncio.run(self.main())
 
     
 if __name__ == "__main__":

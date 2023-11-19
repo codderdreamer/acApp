@@ -12,7 +12,19 @@ from ocpp.v16.enums import *
 from ocpp.routing import *
 from datetime import datetime
 
-logging.basicConfig(level=logging.INFO)
+LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+LOGGER_CHARGE_POINT.addHandler(handler)
+LOGGER_CHARGE_POINT.setLevel(logging.INFO)
+
+LOGGER_CENTRAL_SYSTEM = logging.getLogger('central_system')
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+LOGGER_CENTRAL_SYSTEM.addHandler(handler)
+LOGGER_CENTRAL_SYSTEM.setLevel(logging.INFO)
 
 
 class ChargePoint16(cp):
@@ -34,7 +46,10 @@ class ChargePoint16(cp):
             request = call.AuthorizePayload(
                 id_tag = id_tag,
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
@@ -74,7 +89,13 @@ class ChargePoint16(cp):
                 meter_serial_number,
                 meter_type
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            if response.status == RegistrationStatus.accepted:
+                print("Connected to central system.")
+                await self.send_heartbeat(response.interval)
+            return response
         except Exception as e:
             print(e)
 
@@ -96,7 +117,10 @@ class ChargePoint16(cp):
                 message_id,
                 data
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
@@ -112,7 +136,10 @@ class ChargePoint16(cp):
             request = call.DiagnosticsStatusNotificationPayload(
                 status
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
@@ -128,7 +155,10 @@ class ChargePoint16(cp):
             request = call.FirmwareStatusNotificationPayload(
                 status
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
@@ -140,7 +170,9 @@ class ChargePoint16(cp):
         try :
             request = call.HeartbeatPayload()
             while True:
-                await self.call(request)
+                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                response = await self.call(request)
+                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 await asyncio.sleep(interval)
         except Exception as e:
             print(e)
@@ -228,7 +260,10 @@ class ChargePoint16(cp):
                     }
                 ]
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
@@ -256,7 +291,10 @@ class ChargePoint16(cp):
                 timestamp,
                 reservation_id
             )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
@@ -270,7 +308,6 @@ class ChargePoint16(cp):
                                         info: str = None,
                                         vendor_id: str = None,
                                         vendor_error_code: str = None
-
                                         ):
         """
         connector_id: int,
@@ -283,35 +320,196 @@ class ChargePoint16(cp):
         """
         try :
             request = call.StatusNotificationPayload(
-
+                connector_id,
+                error_code,
+                status,
+                timestamp,
+                info,
+                vendor_id,
+                vendor_error_code
             )
-
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
         except Exception as e:
             print(e)
 
     # 10. STOP TTANSACTION
-
-
-
-
+    async def send_stop_transaction(
+                                    self,
+                                    meter_stop: int,
+                                    timestamp: str,
+                                    transaction_id: int,
+                                    reason: Reason = None,
+                                    id_tag: str = None,
+                                    transaction_data: list = None
+                                    ):
+        """
+        meter_stop: int,
+        timestamp: str,
+        transaction_id: int,
+        reason: Reason | None = None,
+        id_tag: str | None = None,
+        transaction_data: List | None = None
+        """
+        try :
+            request = call.StopTransactionPayload(
+                meter_stop,
+                timestamp,
+                transaction_id,
+                reason,
+                id_tag,
+                transaction_data
+                )
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # --------------------------------------------- OPERATIONS INITIATED BY CENTRAL SYSTEM ---------------------------------------------
 
     # 1. CANCEL RESERVATION
+    @on(Action.CancelReservation)
+    def on_cancel_reservation(self,reservation_id: int):
+        try :
+            request = call.CancelReservationPayload(
+                reservation_id
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.CancelReservationPayload(
+                status = CancelReservationStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 2. CHANGE AVAILABILITY
+    @on(Action.ChangeAvailability)
+    def on_change_availability(self,connector_id: int, type: AvailabilityType):
+        try :
+            request = call.ChangeAvailabilityPayload(
+                connector_id,
+                type
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.ChangeAvailabilityPayload(
+                status = AvailabilityStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 3. CHANGE CONFIGRATION
+    @on(Action.ChangeConfiguration)
+    def on_change_configration(self,key:str,value):
+        try :
+            request = call.ChangeConfigurationPayload(
+                key,
+                value
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.ChangeAvailabilityPayload(
+                status= AvailabilityStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 4. CLEAR CACHE
+    @on(Action.ClearCache)
+    def on_clear_cache(self):
+        try :
+            request = call.ClearCachePayload()
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.ClearCachePayload(
+                status= ClearCacheStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 5. CLEAR CHARGING PROFILE
+    @on(Action.ClearChargingProfile)
+    def on_clear_charging_profile(self,id:int,connector_id:int,charging_profile_purpose:ChargingProfilePurposeType=None,stack_level:int=None):
+        try :
+            request = call.ClearChargingProfilePayload(
+                id,
+                connector_id,
+                charging_profile_purpose,
+                stack_level
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.ClearChargingProfilePayload(
+                status=ClearChargingProfileStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 6. DATA TRANSFER
+    @on(Action.DataTransfer)
+    def on_data_transfer(self,vendor_id:str, message_id:str = None, data:str = None):
+        try :
+            request = call.DataTransferPayload(
+                vendor_id,
+                message_id,
+                data
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.DataTransferPayload(
+                status= DataTransferStatus.unknown_message_id,
+                data = data
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 7. GET COMPOSITE SCHEDULE
+    @on(Action.GetCompositeSchedule)
+    def on_get_composite_schedule(self,connector_id: int, duration: int, charging_rate_unit: ChargingRateUnitType = None):
+        try :
+            request = call.GetCompositeSchedulePayload(
+                connector_id,
+                duration,
+                charging_rate_unit
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.GetCompositeSchedulePayload(
+                status= GetCompositeScheduleStatus.rejected,
+                connector_id = connector_id,
+                schedule_start = None,
+                charging_schedule = None
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 8. GET CONFIGRATION
+    @on(Action.GetConfiguration)
+    def on_get_configration(self,key):
+        try :
+            request = call.GetConfigurationPayload(
+                key
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.GetConfigurationPayload(
+                configuration_key = None,
+                unknown_key = None
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 9. GET DIAGNOSTICS
 

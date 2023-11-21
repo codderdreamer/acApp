@@ -1,0 +1,4 @@
+PyBluez
+websocket-server
+websockets
+ocpp

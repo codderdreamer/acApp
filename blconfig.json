@@ -1,0 +1,52 @@
+{
+    "Command" : "NetworkPriority",
+    "Data" : {
+                "1" : "ETH",
+                "2" : "4G",
+                "3" : "WLAN"
+	        }
+}
+
+{
+    "Command" : "4GSettings",
+    "Data" : {
+                "APN" : "",
+                "user" : "",
+                "password" : "",
+                "activate" : true,
+                "pin" : "B",
+                "encryptionType" : "wpa"
+            }
+}
+
+{
+    "Command" : "EthernetSettings",
+    "Data" : {
+                "DHCPActivate" : true,
+                "ip" : "89.32.117.63",
+                "netmask" : "255.255.255.0",
+                "gateway" : "89.32.117.1"
+            }
+}
+
+{
+    "Command" : "DNSSettings",
+    "Data" : {
+                "DNS1" : "8.8.8.8",
+                "DNS2" : "8.8.4.4"
+            }
+}
+
+{
+    "Command" : "WifiSettings",
+    "Data" : {
+                "wifiActivate" : true,
+                "mod" : "AP",
+                "ssid" : "HeraNet",
+                "password" : "Hera2023*",
+                "encryptionType" : "wpa",
+                "netmask" : "255.255.255.0",
+                "gateway" : "192.168.1.1"
+            }
+}
+    

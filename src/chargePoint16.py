@@ -369,6 +369,7 @@ class ChargePoint16(cp):
         except Exception as e:
             print(e)
 
+
     # --------------------------------------------- OPERATIONS INITIATED BY CENTRAL SYSTEM ---------------------------------------------
 
     # 1. CANCEL RESERVATION
@@ -496,7 +497,7 @@ class ChargePoint16(cp):
 
     # 8. GET CONFIGRATION
     @on(Action.GetConfiguration)
-    def on_get_configration(self,key):
+    def on_get_configration(self,key:list=None):
         try :
             request = call.GetConfigurationPayload(
                 key
@@ -512,26 +513,201 @@ class ChargePoint16(cp):
             print(e)
 
     # 9. GET DIAGNOSTICS
+    @on(Action.GetDiagnostics)
+    def on_get_diagnostics(self,location:str, retries:int = None, retry_interval:int = None, start_time:str = None, stop_time:str = None):
+        try :
+            request = call.GetDiagnosticsPayload(
+                location,
+                retries,
+                retry_interval,
+                start_time,
+                stop_time
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.GetDiagnosticsPayload(
+                file_name = None
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 10. GET LOCAL LIST VERSION
+    @on(Action.GetLocalListVersion)
+    def on_get_local_list_version(self):
+        try :
+            request = call.GetLocalListVersionPayload()
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.GetLocalListVersionPayload(
+                list_version=-1
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 11. REMOTE START TRANSACTION
+    @on(Action.RemoteStartTransaction)
+    def on_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
+        try :
+            request = call.RemoteStartTransactionPayload(
+                id_tag,
+                connector_id,
+                charging_profile
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.RemoteStartTransactionPayload(
+                status= RemoteStartStopStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 12. REMOTE STOP TRANSACTION
+    @on(Action.RemoteStopTransaction)
+    def on_remote_stop_transaction(self,transaction_id:int):
+        try :
+            request = call.RemoteStopTransactionPayload(
+                transaction_id = transaction_id
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.RemoteStopTransactionPayload(
+                status= RemoteStartStopStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 13. RESERVE NOW
+    @on(Action.ReserveNow)
+    def on_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
+        try :
+            request = call.ReserveNowPayload(
+                connector_id,
+                expiry_date,
+                id_tag,
+                reservation_id,
+                parent_id_tag
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.ReserveNowPayload(
+                status = ReservationStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 14. RESET
+    @on(Action.Reset)
+    def on_reset(self,type: ResetType):
+        try :
+            request = call.ResetPayload(
+                type
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.ResetPayload(
+                status = ResetStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 15. SEND LOCAL LIST
+    @on(Action.SendLocalList)
+    def on_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
+        try :
+            request = call.SendLocalListPayload(
+                list_version,
+                update_type,
+                local_authorization_list
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.SendLocalListPayload(
+                status = UpdateStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 16. SET CHARGING PROFILE
+    @on(Action.SetChargingProfile)
+    def on_set_charging_profile(self,connector_id:int, cs_charging_profiles:dict):
+        try :
+            request = call.SetChargingProfilePayload(
+                connector_id,
+                cs_charging_profiles
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.SetChargingProfilePayload(
+                status= ChargingProfileStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 17. TRIGGER MESSAGE
+    @on(Action.TriggerMessage)
+    def on_trigger_message(self,requested_message: MessageTrigger,connector_id: int = None):
+        try :
+            request = call.TriggerMessagePayload(
+                requested_message,
+                connector_id
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.TriggerMessagePayload(
+                status= TriggerMessageStatus.accepted
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
+        
+    @after(Action.TriggerMessage)
+    def after_trigger_message(self,requested_message,connector_id = None):
+        try :
+            if requested_message == MessageTrigger.bootNotification:
+                pass
+        except Exception as e:
+            print(e)
 
     # 18. UNLOCK CONNECTOR 
+    @on(Action.UnlockConnector)
+    def on_unlock_connector(self, connector_id: int):
+        try :
+            request = call.UnlockConnectorPayload(
+                connector_id = connector_id
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.UnlockConnectorPayload(
+                status = UnlockStatus.not_supported
+            )
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
     # 19. UPDATE FIRMWARE
+    @on(Action.UpdateFirmware)
+    def on_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
+        try :
+            request = call.UpdateFirmwarePayload(
+                location,
+                retrieve_date,
+                retries,
+                retry_interval
+            )
+            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            response = call_result.UpdateFirmwarePayload()
+            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(e)
 
 
 

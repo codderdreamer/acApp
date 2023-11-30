@@ -34,15 +34,17 @@ class Application():
                     pass
                 elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                     pass
-                while True:
-                    time.sleep(5)
         except Exception as e:
             print("main",e)
 
     
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    res = loop.run_until_complete(Application(loop).main())
-    print(res)
+    try:
+        loop = asyncio.get_event_loop()
+        res = loop.run_until_complete(Application(loop).main())
+    except Exception as e:
+        print("__main__",e)
+    while True:
+        time.sleep(5)
 
 # ttyS5 rfid kart için 

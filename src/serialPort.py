@@ -24,7 +24,7 @@ class SerialPort():
         self.set_response = 's'
 
         self.control_pilot = "C"
-        self.pid_relay_control = "S"
+        self.pid_relay_control = "R"
 
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -113,8 +113,7 @@ class SerialPort():
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
                     
-                    elif incoming[0] == self.set_response:
-                        pass
+
 
             except Exception as e:
                 print(e)

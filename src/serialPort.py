@@ -82,10 +82,10 @@ class SerialPort():
             try:
                 incoming = self.serial.readline()
                 print("incoming data",incoming)
-                incoming = incoming.decode('utf-8')
-                print("incoming",incoming)
-                if len(incoming) > 0:
-                    incoming_array = incoming.split()
+                incoming_decoded = incoming.decode('utf-8')
+                print("incoming_decoded",incoming_decoded)
+                if len(incoming_decoded) > 0:
+                    incoming_array = incoming_decoded.split()
                     print("incoming_array",incoming_array)
                     # if incoming[0] == self.get_response:
                     #     print("incoming[0]",incoming[0])

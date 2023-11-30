@@ -62,6 +62,8 @@ class SerialPort():
             for i in  range(0,3-lenght):
                 checksum = "0" + checksum
         return checksum
+    
+    #   ************************ SEND *****************************************************
 
     def get_command_PID_control_pilot(self):
         while True:
@@ -84,12 +86,18 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
-    
+
+    #   ************************ RESPONSE  *****************************************************
 
     def get_response_control_pilot(self,data):
         if data[2] == self.control_pilot:
             self.application.ev.control_pilot = data[7]
             print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
+
+    def set_response_ralay_control(self,data):
+        if data[2] == self.pid_relay_control:
+            print("pid response---------------->",data)
+
 
 
     def read(self):
@@ -102,6 +110,8 @@ class SerialPort():
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)
+                    elif incoming[1] == self.set_response:
+                        self.set_response_ralay_control(incoming)
                     
                     elif incoming[0] == self.set_response:
                         pass

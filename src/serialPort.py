@@ -84,16 +84,16 @@ class SerialPort():
                 print("incoming data",incoming)
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    incoming = incoming.split()
-                    print("incoming",incoming)
-                    if incoming[0] == self.get_response:
-                        print("incoming[0]",incoming[0])
-                        if incoming[1] == self.control_pilot:
-                            print("incoming[1]",incoming[1])
-                            self.get_response_control_pilot(incoming)
+                    incoming_array = incoming.split()
+                    print("incoming_array",incoming_array)
+                    # if incoming[0] == self.get_response:
+                    #     print("incoming[0]",incoming[0])
+                    #     if incoming[1] == self.control_pilot:
+                    #         print("incoming[1]",incoming[1])
+                    #         self.get_response_control_pilot(incoming)
                     
-                    elif incoming[0] == self.set_response:
-                        pass
+                    # elif incoming[0] == self.set_response:
+                    #     pass
 
             except Exception as e:
                 print(e)

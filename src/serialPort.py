@@ -34,11 +34,10 @@ class SerialPort():
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
         #  ************* Relay Test ***************
-        print(Relay.On.value)
-        self.set_command_pid_relay_control(Relay.On.value)
+
+        self.set_command_pid_relay_control(Relay.On)
         time.sleep(3)
-        print(Relay.Off.value)
-        self.set_command_pid_relay_control(Relay.Off.value)
+        self.set_command_pid_relay_control(Relay.Off)
 
     def write(self):
         while True:
@@ -80,9 +79,9 @@ class SerialPort():
             self.send_data_list.append(send_data)
             time.sleep(5)
 
-    def set_command_pid_relay_control(self,relay:str):
+    def set_command_pid_relay_control(self,relay:Relay):
         self.parameter_data = "002"
-        data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay
+        data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("send data",send_data)
@@ -98,7 +97,7 @@ class SerialPort():
 
     def set_response_ralay_control(self,data):
         if data[2] == self.pid_relay_control:
-            print("pid response---------------->",data)
+            print("pid response",data)
 
 
 

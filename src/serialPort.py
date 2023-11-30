@@ -35,10 +35,10 @@ class SerialPort():
         while True:
             try:
                 if len(self.send_data_list)>0:
-                    start_time = time.time()
+                    # start_time = time.time()
                     self.serial.write(self.send_data_list[0])
-                    finish_time = time.time()
-                    print(finish_time-start_time)
+                    # finish_time = time.time()
+                    # print(finish_time-start_time)
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("serial port write exception:",e)
@@ -72,7 +72,8 @@ class SerialPort():
     
 
     def get_response_control_pilot(self,data):
-        pass
+        self.application.ev.control_pilot = data[6]
+        print("self.application.ev.control_pilot",self.application.ev.control_pilot)
 
 
     def read(self):
@@ -82,11 +83,11 @@ class SerialPort():
                 print("incoming data",incoming)
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    print("incoming",incoming)
+                    # print("incoming",incoming)
                     incoming = incoming.split()
                     if incoming[0] == self.get_response:
                         if incoming[1] == self.control_pilot:
-                            pass
+                            self.get_response_control_pilot(incoming)
                     
                     elif incoming[0] == self.set_response:
                         pass

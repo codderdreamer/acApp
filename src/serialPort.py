@@ -35,11 +35,11 @@ class SerialPort():
 
         #  ************* Relay Test ***************
         self.set_command_pid_relay_control(Relay.On)
-        time.sleep(0.5)
+        time.sleep(5)
         self.get_command_pid_relay()
-        time.sleep(3)
+        time.sleep(5)
         self.set_command_pid_relay_control(Relay.Off)
-        time.sleep(0.5)
+        time.sleep(5)
         self.get_command_pid_relay()
 
     def write(self):

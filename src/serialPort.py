@@ -79,7 +79,7 @@ class SerialPort():
             time.sleep(5)
 
     def set_command_pid_relay_control(self,relay:str):
-        self.parameter_data = "001"
+        self.parameter_data = "002"
         data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf

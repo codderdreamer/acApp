@@ -37,7 +37,7 @@ class Application():
                 while True:
                     time.sleep(5)
         except Exception as e:
-            print(e)
+            print("main",e)
 
     
 if __name__ == "__main__":

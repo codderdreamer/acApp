@@ -72,6 +72,7 @@ class SerialPort():
     
 
     def get_response_control_pilot(self,data):
+        print("get_response_control_pilot")
         self.application.ev.control_pilot = data[6]
         print("self.application.ev.control_pilot",self.application.ev.control_pilot)
 
@@ -83,7 +84,7 @@ class SerialPort():
                 print("incoming data",incoming)
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    # print("incoming",incoming)
+                    print("incoming",incoming)
                     incoming = incoming.split()
                     if incoming[0] == self.get_response:
                         if incoming[1] == self.control_pilot:

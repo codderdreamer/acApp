@@ -84,6 +84,9 @@ class SerialPort():
                 print("incoming data",incoming)
                 incoming_decoded = incoming.decode('utf-8')
                 print("incoming_decoded",incoming_decoded)
+
+                print(type(incoming_decoded))
+                
                 if len(incoming_decoded) > 0:
                     incoming_array = incoming_decoded.split()
                     print("incoming_array",incoming_array)

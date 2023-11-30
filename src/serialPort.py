@@ -34,8 +34,10 @@ class SerialPort():
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
         #  ************* Relay Test ***************
+        print(Relay.On.value)
         self.set_command_pid_relay_control(Relay.On.value)
         time.sleep(3)
+        print(Relay.Off.value)
         self.set_command_pid_relay_control(Relay.Off.value)
 
     def write(self):

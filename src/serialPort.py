@@ -25,6 +25,7 @@ class SerialPort():
 
         self.control_pilot = "C"
         self.pid_relay_control = "R"
+        self.pid_led_control = "L"
 
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -34,13 +35,15 @@ class SerialPort():
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
         #  ************* Relay Test ***************
-        self.set_command_pid_relay_control(Relay.On)
-        time.sleep(5)
-        self.get_command_pid_relay()
-        time.sleep(5)
-        self.set_command_pid_relay_control(Relay.Off)
-        time.sleep(5)
-        self.get_command_pid_relay()
+        # self.set_command_pid_relay_control(Relay.On)
+        # time.sleep(5)
+        # self.get_command_pid_relay()
+        # time.sleep(5)
+        # self.set_command_pid_relay_control(Relay.Off)
+        # time.sleep(5)
+        # self.get_command_pid_relay()
+
+        self.set_command_pid_led_control(LedState.Charging)
 
     def write(self):
         while True:
@@ -97,6 +100,15 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("send data",send_data)
         self.send_data_list.append(send_data)
+
+    def set_command_pid_led_control(self,led_state):
+        self.parameter_data = "002"
+        data = self.get_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
 
 
 

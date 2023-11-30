@@ -17,3 +17,14 @@ class ControlPlot(Enum):
 class Relay(Enum):
     On = "1"
     Off = "0"
+
+class LedState(Enum):
+    StandBy = "1"
+    Connecting = "2"
+    RfidVerified = "3"
+    Charging = "4"
+    RfidFailed = "5"
+    NeedReplugging = "6"
+    Fault = "7"
+    ChargingStopped = "8"
+

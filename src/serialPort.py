@@ -82,24 +82,19 @@ class SerialPort():
             try:
                 incoming = self.serial.readline()
                 print("incoming data",incoming)
-                incoming_decoded = incoming.decode('utf-8')
-                print("incoming_decoded",incoming_decoded)
-
-                incoming_array = incoming_decoded.split()
-
-                print(incoming_array)
+                incoming = incoming.decode('utf-8')
                 
-                if len(incoming_decoded) > 0:
-                    incoming_array = incoming_decoded.split()
-                    print("incoming_array",incoming_array)
-                    # if incoming[0] == self.get_response:
-                    #     print("incoming[0]",incoming[0])
-                    #     if incoming[1] == self.control_pilot:
-                    #         print("incoming[1]",incoming[1])
-                    #         self.get_response_control_pilot(incoming)
+                if len(incoming) > 0:
+                    incoming = list(incoming)
+                    print("incoming",incoming)
+                    if incoming[0] == self.get_response:
+                        print("incoming[0]",incoming[0])
+                        if incoming[1] == self.control_pilot:
+                            print("incoming[1]",incoming[1])
+                            self.get_response_control_pilot(incoming)
                     
-                    # elif incoming[0] == self.set_response:
-                    #     pass
+                    elif incoming[0] == self.set_response:
+                        pass
 
             except Exception as e:
                 print(e)

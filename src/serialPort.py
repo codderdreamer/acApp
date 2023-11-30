@@ -80,9 +80,9 @@ class SerialPort():
         while True:
             try:
                 incoming = self.serial.readline()
-                print("incoming data",incoming)
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
+                    print("incoming data",incoming, "\n\n")
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         if incoming[2] == self.control_pilot:

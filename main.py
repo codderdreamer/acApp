@@ -7,15 +7,19 @@ from src.ensureFutures import EnsureFutures
 from src.callbacks import OcppCallbacks
 from src.enums import *
 import time
+from src.ev import EV
+from src.serialPort import SerialPort
 
 class Application():
     def __init__(self,loop) -> None:
         self.loop = loop
         self.chargePoint = None
+        self.ev = EV()
         self.config = Config()
         self.ensureFutures = EnsureFutures(self)
         self.ocppCallbacks =  OcppCallbacks(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
+        self.serialPort = SerialPort(self)
         while self.config.config_writed == False:
             time.sleep(0.01)
         
@@ -40,3 +44,5 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     res = loop.run_until_complete(Application(loop).main())
     print(res)
+
+# ttyS5 rfid kart için 

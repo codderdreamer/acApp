@@ -1,6 +1,7 @@
 import serial
 import time
 from threading import Thread
+from src.enums import *
 
 # GET_COMMAND 	    :   "G" 	Bilgisayar tarafından bir verinin okunması için gönderilecektir.
 # GET_RESPONSE	    :   "g"	    MCU  tarafından, ilgili veri cevap olarak gönderilecektir.
@@ -23,13 +24,19 @@ class SerialPort():
         self.set_response = 's'
 
         self.control_pilot = "C"
+        self.pid_relay_control = "S"
 
-        self.parameter_data = ""
+        self.parameter_data = "001"
         self.connector_id = "1"
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+
+        #  ************* Relay Test ***************
+        self.set_command_pid_relay_control(Relay.On.value)
+        time.sleep(3)
+        self.set_command_pid_relay_control(Relay.Off.value)
 
     def write(self):
         while True:
@@ -45,7 +52,7 @@ class SerialPort():
             time.sleep(0.3)
 
     def calculate_checksum(self,data):
-        checksum = 2
+        checksum =  int.from_bytes(self.stx, "big")
         for i in data:
             checksum += ord(i)
         checksum = checksum%256
@@ -58,7 +65,6 @@ class SerialPort():
 
     def get_command_PID_control_pilot(self):
         while True:
-            self.control_pilot = "C"
             self.parameter_data = "001"
             self.connector_id = "1"
             data = self.get_command + self.control_pilot + self.parameter_data + self.connector_id
@@ -69,11 +75,21 @@ class SerialPort():
             print("send data",send_data)
             self.send_data_list.append(send_data)
             time.sleep(5)
+
+    def set_command_pid_relay_control(self,relay:str):
+        self.parameter_data = "001"
+        data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
     
 
     def get_response_control_pilot(self,data):
-        self.application.ev.control_pilot = data[7]
-        print("self.application.ev.control_pilot",self.application.ev.control_pilot)
+        if data[2] == self.control_pilot:
+            self.application.ev.control_pilot = data[7]
+            print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
 
 
     def read(self):
@@ -82,11 +98,10 @@ class SerialPort():
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    print("incoming data",incoming, "\n\n")
+                    print("incoming data",incoming)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
-                        if incoming[2] == self.control_pilot:
-                            self.get_response_control_pilot(incoming)
+                        self.get_response_control_pilot(incoming)
                     
                     elif incoming[0] == self.set_response:
                         pass

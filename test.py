@@ -1,4 +1,8 @@
 stx = b'\x02'
+
+stx = int.from_bytes(stx, "big")
+
+
 data = "GC0011"
 # result = stx + data
 checksum = 2

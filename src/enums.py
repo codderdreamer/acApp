@@ -13,3 +13,7 @@ class ControlPlot(Enum):
     stateD = "D"
     stateE = "E"
     stateF = "F"
+
+class Relay(Enum):
+    On = "1"
+    Off = "0"

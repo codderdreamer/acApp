@@ -31,7 +31,7 @@ class SerialPort():
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
-        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
         #  ************* Relay Test ***************
         self.set_command_pid_relay_control(Relay.On.value)

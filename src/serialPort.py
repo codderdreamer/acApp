@@ -43,7 +43,9 @@ class SerialPort():
         # time.sleep(5)
         # self.get_command_pid_relay()
 
-        self.set_command_pid_led_control(LedState.NeedReplugging)
+        # self.set_command_pid_led_control(LedState.NeedReplugging)
+
+        self.get_command_pid_led_control()
 
     def write(self):
         while True:
@@ -109,6 +111,14 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
+    def get_command_pid_led_control(self):
+        self.parameter_data = "001"
+        data = self.get_command + self.pid_led_control + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
 
 
 
@@ -121,36 +131,57 @@ class SerialPort():
 
     def set_response_ralay_control(self,data):
         if data[2] == self.pid_relay_control:
-            result_relay = data[7]
-            print("pid response result_relay",result_relay)
+            result = data[7]
+            print("pid response result",result)
 
     def get_response_pid_relay(self,data):
         if data[2] == self.pid_relay_control:
-            result_relay = data[7]
-            if result_relay == Relay.On.value:
+            result = data[7]
+            if result == Relay.On.value:
                 print("Röle Açık")
             else:
                 print("Röle kapalı")
 
     def set_response_pid_led_control(self,data):
         if data[2] == self.pid_led_control:
-            result_relay = data[7]
-            if result_relay == LedState.StandBy.value:
+            result = data[7]
+            if result == LedState.StandBy.value:
                 print(LedState.StandBy.name)
-            elif result_relay == LedState.Connecting.value:
+            elif result == LedState.Connecting.value:
                 print(LedState.Connecting.name)
-            elif result_relay == LedState.RfidVerified.value:
+            elif result == LedState.RfidVerified.value:
                 print(LedState.RfidVerified.name)
-            elif result_relay == LedState.Charging.value:
+            elif result == LedState.Charging.value:
                 print(LedState.Charging.name)
-            elif result_relay == LedState.RfidFailed.value:
+            elif result == LedState.RfidFailed.value:
                 print(LedState.RfidFailed.name)
-            elif result_relay == LedState.NeedReplugging.value:
+            elif result == LedState.NeedReplugging.value:
                 print(LedState.NeedReplugging.name)
-            elif result_relay == LedState.Fault.value:
+            elif result == LedState.Fault.value:
                 print(LedState.Fault.name)
-            elif result_relay == LedState.ChargingStopped.value:
+            elif result == LedState.ChargingStopped.value:
                 print(LedState.ChargingStopped.name)
+
+    def get_response_pid_led_control(self,data):
+        if data[2] == self.pid_led_control:
+            result = data[7]
+            if result == LedState.StandBy.value:
+                print(LedState.StandBy.name)
+            elif result == LedState.Connecting.value:
+                print(LedState.Connecting.name)
+            elif result == LedState.RfidVerified.value:
+                print(LedState.RfidVerified.name)
+            elif result == LedState.Charging.value:
+                print(LedState.Charging.name)
+            elif result == LedState.RfidFailed.value:
+                print(LedState.RfidFailed.name)
+            elif result == LedState.NeedReplugging.value:
+                print(LedState.NeedReplugging.name)
+            elif result == LedState.Fault.value:
+                print(LedState.Fault.name)
+            elif result == LedState.ChargingStopped.value:
+                print(LedState.ChargingStopped.name)
+
 
 
 
@@ -165,6 +196,7 @@ class SerialPort():
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)
                         self.get_response_pid_relay(incoming)
+                        self.get_response_pid_led_control(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
                         self.set_response_pid_led_control(incoming)

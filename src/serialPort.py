@@ -27,6 +27,7 @@ class SerialPort():
         self.pid_relay_control = "R"
         self.pid_led_control = "L"
         self.pid_locker_control = "K"
+        self.pid_current = "I"
 
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -39,9 +40,11 @@ class SerialPort():
         
 
     def seri_port_test(self):
-        self.set_command_pid_locker_control(LockerState.Lock)
-        time.sleep(1)
-        self.get_command_pid_locker_control()
+        self.get_command_pid_current()
+
+        # self.set_command_pid_locker_control(LockerState.Lock)
+        # time.sleep(1)
+        # self.get_command_pid_locker_control()
 
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
@@ -141,9 +144,18 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
-    def get_command_pid_locker_control(self):
+    def get_command_pid_locker_control(self): 
+         # bunun cevabı dönmüyor bakılacak, pid locker control L yazıyor get için
         self.parameter_data = "001"
-        data = self.get_command + "L" + self.parameter_data + self.connector_id
+        data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
+    def get_command_pid_current(self):
+        self.parameter_data = "001"
+        data = self.get_command + self.pid_current + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("send data",send_data)
@@ -228,6 +240,15 @@ class SerialPort():
             elif result == LockerState.Unlock.value:
                 print(LockerState.Unlock.name)
 
+    def get_response_pid_current(self,data):
+        current_L1 = data[8] + data[9] + data[10] + data[11] + data[12] + data[13]
+        print("current_L1",current_L1)
+        current_L2 = data[15] + data[16] + data[17] + data[18] + data[19] + data[20]
+        print("current_L2",current_L2)
+        current_L3 = data[22] + data[23] + data[24] + data[25] + data[26] + data[27]
+        print("current_L3",current_L3)
+
+
 
     def read(self):
         while True:
@@ -241,6 +262,7 @@ class SerialPort():
                         self.get_response_control_pilot(incoming)
                         self.get_response_pid_relay(incoming)
                         self.get_response_pid_led_control(incoming)
+                        self.get_response_pid_current(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
                         self.set_response_pid_led_control(incoming)

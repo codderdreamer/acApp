@@ -43,7 +43,7 @@ class SerialPort():
         # time.sleep(5)
         # self.get_command_pid_relay()
 
-        self.set_command_pid_led_control(LedState.Charging)
+        self.set_command_pid_led_control(LedState.NeedReplugging)
 
     def write(self):
         while True:
@@ -132,6 +132,25 @@ class SerialPort():
             else:
                 print("Röle kapalı")
 
+    def set_response_pid_led_control(self,data):
+        if data[2] == self.pid_led_control:
+            result_relay = data[7]
+            if result_relay == LedState.StandBy.value:
+                print(LedState.StandBy.name)
+            elif result_relay == LedState.Connecting.value:
+                print(LedState.Connecting.name)
+            elif result_relay == LedState.RfidVerified.value:
+                print(LedState.RfidVerified.name)
+            elif result_relay == LedState.Charging.value:
+                print(LedState.Charging.name)
+            elif result_relay == LedState.RfidFailed.value:
+                print(LedState.RfidFailed.name)
+            elif result_relay == LedState.NeedReplugging.value:
+                print(LedState.NeedReplugging.name)
+            elif result_relay == LedState.Fault.value:
+                print(LedState.Fault.name)
+            elif result_relay == LedState.ChargingStopped.value:
+                print(LedState.ChargingStopped.name)
 
 
 
@@ -148,6 +167,7 @@ class SerialPort():
                         self.get_response_pid_relay(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
+                        self.set_response_pid_led_control(incoming)
                     
 
 

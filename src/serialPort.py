@@ -284,6 +284,7 @@ class SerialPort():
                         self.get_response_pid_relay(incoming)
                         self.get_response_pid_led_control(incoming)
                         self.get_response_pid_current(incoming)
+                        self.get_response_pid_power(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
                         self.set_response_pid_led_control(incoming)

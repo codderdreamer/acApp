@@ -28,6 +28,7 @@ class SerialPort():
         self.pid_led_control = "L"
         self.pid_locker_control = "K"
         self.pid_current = "I"
+        self.pid_power = "P"
 
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -40,7 +41,8 @@ class SerialPort():
         
 
     def seri_port_test(self):
-        self.get_command_pid_current()
+        self.get_command_pid_power(PowerType.kw)
+        # self.get_command_pid_current()
 
         # self.set_command_pid_locker_control(LockerState.Lock)
         # time.sleep(1)
@@ -161,6 +163,14 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
+    def get_command_pid_power(self,power_type):
+        self.parameter_data = "002"
+        data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
 
 
 
@@ -251,6 +261,13 @@ class SerialPort():
             current_L3 = data[22] + data[23] + data[24] + data[25] + data[26] + data[27]
             self.application.ev.current_L3 = int(current_L3)/1000
             print("current_L3",self.application.ev.current_L3)
+
+    def get_response_pid_power(self,data):
+        if data[2] == self.pid_power:
+            power = data[8] + data[9] + data[10] + data[11] + data[12] + data[13]
+            self.application.ev.power = int(power)/1000
+            print("power",self.application.ev.power)
+
 
 
 

@@ -32,3 +32,10 @@ class LockerState(Enum):
     Lock = "1"
     Unlock = "0"
 
+class PowerType(Enum):
+    kw = "P"        # kw        Şuan sadece bu var
+    kVAR = "R"      # kVAR
+    kVA = "S"       # kVA
+
+
+

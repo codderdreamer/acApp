@@ -28,3 +28,7 @@ class LedState(Enum):
     Fault = "7"
     ChargingStopped = "8"
 
+class LockerState(Enum):
+    Lock = "1"
+    Unlock = "0"
+

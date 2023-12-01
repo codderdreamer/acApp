@@ -26,12 +26,23 @@ class SerialPort():
         self.control_pilot = "C"
         self.pid_relay_control = "R"
         self.pid_led_control = "L"
+        self.pid_locker_control = "K"
 
         self.parameter_data = "001"
         self.connector_id = "1"
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
+
+        self.seri_port_test()
+        
+        
+
+    def seri_port_test(self):
+        self.set_command_pid_locker_control(LockerState.Lock)
+        time.sleep(1)
+        self.get_command_pid_locker_control()
+
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
         #  ************* Relay Test ***************
@@ -45,7 +56,10 @@ class SerialPort():
 
         # self.set_command_pid_led_control(LedState.NeedReplugging)
 
-        self.get_command_pid_led_control()
+        # self.get_command_pid_led_control()
+
+        pass
+
 
     def write(self):
         while True:
@@ -119,6 +133,22 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
+    def set_command_pid_locker_control(self,locker_state):
+        self.parameter_data = "002"
+        data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
+    def get_command_pid_locker_control(self):
+        self.parameter_data = "001"
+        data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
 
 
 
@@ -182,7 +212,21 @@ class SerialPort():
             elif result == LedState.ChargingStopped.value:
                 print(LedState.ChargingStopped.name)
 
+    def set_response_pid_locker_control(self,data):
+        if data[2] == self.pid_locker_control:
+            result = data[7]
+            if result == LockerState.Lock.value:
+                print(LockerState.Lock.name)
+            elif result == LockerState.Unlock.value:
+                print(LockerState.Unlock.name)
 
+    def get_response_pid_locker_control(self,data):
+        if data[2] == self.pid_locker_control:
+            result = data[7]
+            if result == LockerState.Lock.value:
+                print(LockerState.Lock.name)
+            elif result == LockerState.Unlock.value:
+                print(LockerState.Unlock.name)
 
 
     def read(self):
@@ -200,6 +244,7 @@ class SerialPort():
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
                         self.set_response_pid_led_control(incoming)
+                        self.set_response_pid_locker_control(incoming)
                     
 
 

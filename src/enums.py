@@ -37,5 +37,11 @@ class PowerType(Enum):
     kVAR = "R"      # kVAR
     kVA = "S"       # kVA
 
+class EnergyType(Enum):
+    kwh = "P"        # kw        Şuan sadece bu var
+    kVARh = "R"      # kVAR
+    kVAh = "S"       # kVA
+
+
 
 

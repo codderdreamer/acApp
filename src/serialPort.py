@@ -29,6 +29,7 @@ class SerialPort():
         self.pid_locker_control = "K"
         self.pid_current = "I"
         self.pid_power = "P"
+        self.pid_energy = "E"
 
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -41,7 +42,8 @@ class SerialPort():
         
 
     def seri_port_test(self):
-        self.get_command_pid_power(PowerType.kw)
+        self.get_command_pid_energy(EnergyType.kwh)
+        # self.get_command_pid_power(PowerType.kw)
         # self.get_command_pid_current()
 
         # self.set_command_pid_locker_control(LockerState.Lock)
@@ -171,6 +173,14 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
+    def get_command_pid_energy(self,energy_type):
+        self.parameter_data = "002"
+        data = self.get_command + self.pid_energy + self.parameter_data + self.connector_id + energy_type.value
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
 
 
 
@@ -268,6 +278,11 @@ class SerialPort():
             self.application.ev.power = int(power)/1000
             print("power",self.application.ev.power)
 
+    def get_response_pid_energy(self,data):
+        if data[2] == self.pid_energy:
+            energy = data[8] + data[9] + data[10] + data[11] + data[12] + data[13] + data[14] + data[15] + data[16] + data[17]
+            self.application.ev.energy = int(energy)/1000
+            print("energy",self.application.ev.energy)
 
 
 
@@ -285,6 +300,7 @@ class SerialPort():
                         self.get_response_pid_led_control(incoming)
                         self.get_response_pid_current(incoming)
                         self.get_response_pid_power(incoming)
+                        self.get_response_pid_energy(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_ralay_control(incoming)
                         self.set_response_pid_led_control(incoming)

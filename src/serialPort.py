@@ -143,7 +143,7 @@ class SerialPort():
 
     def get_command_pid_locker_control(self):
         self.parameter_data = "001"
-        data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
+        data = self.get_command + "L" + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("send data",send_data)

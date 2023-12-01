@@ -241,15 +241,16 @@ class SerialPort():
                 print(LockerState.Unlock.name)
 
     def get_response_pid_current(self,data):
-        current_L1 = data[8] + data[9] + data[10] + data[11] + data[12] + data[13]
-        self.application.ev.current_L1 = int(current_L1)/1000
-        print("current_L1",self.application.ev.current_L1)
-        current_L2 = data[15] + data[16] + data[17] + data[18] + data[19] + data[20]
-        self.application.ev.current_L2 = int(current_L2)/1000
-        print("current_L2",self.application.ev.current_L2)
-        current_L3 = data[22] + data[23] + data[24] + data[25] + data[26] + data[27]
-        self.application.ev.current_L3 = int(current_L3)/1000
-        print("current_L3",self.application.ev.current_L3)
+        if data[2] == self.pid_current:
+            current_L1 = data[8] + data[9] + data[10] + data[11] + data[12] + data[13]
+            self.application.ev.current_L1 = int(current_L1)/1000
+            print("current_L1",self.application.ev.current_L1)
+            current_L2 = data[15] + data[16] + data[17] + data[18] + data[19] + data[20]
+            self.application.ev.current_L2 = int(current_L2)/1000
+            print("current_L2",self.application.ev.current_L2)
+            current_L3 = data[22] + data[23] + data[24] + data[25] + data[26] + data[27]
+            self.application.ev.current_L3 = int(current_L3)/1000
+            print("current_L3",self.application.ev.current_L3)
 
 
 

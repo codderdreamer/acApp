@@ -9,11 +9,15 @@ from src.enums import *
 import time
 from src.ev import EV
 from src.serialPort import SerialPort
+from src.settings import Settings
+from src.databaseModule import DatabaseModule
 
 class Application():
     def __init__(self,loop) -> None:
         self.loop = loop
         self.chargePoint = None
+        self.settings = Settings()
+        self.databaseModule = DatabaseModule()
         self.ev = EV()
         self.config = Config()
         self.ensureFutures = EnsureFutures(self)

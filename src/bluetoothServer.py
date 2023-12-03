@@ -3,14 +3,13 @@ import time
 from bluetooth import *
 import threading
 import json
-from src.settings import Settings
+
 
 class BluetoothServer:
     def __init__(self,application) -> None:
         self.application = application
         self.connection = False
         self.client_sock = None
-        self.settings = Settings()
         threading.Thread(target=self.send_message,daemon=True).start()
 
     def device_connect(self):
@@ -102,9 +101,11 @@ class BluetoothServer:
             Command = json_object["Command"]
             Data = json_object["Data"]
             if Command == "NetworkPriority":
-                self.settings.networkPriority.first = Data["1"]
-                self.settings.networkPriority.second = Data["2"]
-                self.settings.networkPriority.third = Data["3"]
+                self.application.settings.networkPriority.first = Data["1"]
+                self.application.settings.networkPriority.second = Data["2"]
+                self.application.settings.networkPriority.third = Data["3"]
+        
+        
         except Exception as e:
             print(e)
             

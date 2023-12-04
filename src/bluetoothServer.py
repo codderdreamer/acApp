@@ -110,15 +110,15 @@ class BluetoothServer:
             print(e)
             
 
-bt = BluetoothServer(None)
-bt.btt()
-time.sleep(20)
-print("------------------------------------listenning-----------------------------")
-bt.start_server_sock_listenning()
-bt.waiting_connection()
+# bt = BluetoothServer(None)
+# bt.btt()
+# time.sleep(20)
+# print("------------------------------------listenning-----------------------------")
+# bt.start_server_sock_listenning()
+# bt.waiting_connection()
 
-while True:
-    time.sleep(1)
+# while True:
+#     time.sleep(1)
 
 
 #######################################################

@@ -17,7 +17,7 @@ class Application():
         self.loop = loop
         self.chargePoint = None
         self.settings = Settings()
-        self.databaseModule = DatabaseModule()
+        self.databaseModule = DatabaseModule(self)
         self.ev = EV()
         self.config = Config()
         self.ensureFutures = EnsureFutures(self)

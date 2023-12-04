@@ -13,6 +13,8 @@ class DatabaseModule():
         self.get_wifi_settings()
         
         self.set_dns_settings("2.2.2.2","333")
+        
+        self.get_dns_settings()
 
     def settings_db_connect(self):
         try:

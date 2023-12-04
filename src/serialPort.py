@@ -42,7 +42,7 @@ class SerialPort():
         
 
     def seri_port_test(self):
-        self.get_command_pid_energy(EnergyType.kwh)
+        # self.get_command_pid_energy(EnergyType.kwh)
         # self.get_command_pid_power(PowerType.kw)
         # self.get_command_pid_current()
 
@@ -63,7 +63,7 @@ class SerialPort():
 
         # self.set_command_pid_led_control(LedState.NeedReplugging)
 
-        # self.get_command_pid_led_control()
+        self.get_command_pid_led_control()
 
         pass
 
@@ -311,6 +311,8 @@ class SerialPort():
             except Exception as e:
                 print(e)
             time.sleep(1)
+            
+SerialPort(None)
 
 
 		

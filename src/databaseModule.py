@@ -17,6 +17,14 @@ class DatabaseModule():
         
         self.set_ethernet_settings("true","10.30.5.22","22","33")
         self.get_ethernet_settings()
+        
+        self.set_network_priority("ETH","4G","WLAN")
+        self.get_network_priority()
+        
+        self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
+        self.get_wifi_settings()
+        
+        
 
     def settings_db_connect(self):
         try:
@@ -146,14 +154,87 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-    def set_network_priority(self):
-        pass
+    def set_network_priority(self,first,second,third):
+        try:
+            query = "UPDATE network_priority SET key = ? WHERE value = ?"
+            
+            value = (first,"first")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (second,"second")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (third,"third")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+        except Exception as e:
+            print(e)
     
-    def set_settings_4g(self):
-        pass
+    def set_settings_4g(self,apn,user,password,activate,pin,encryptionType):
+        try:
+            query = "UPDATE settings_4g SET key = ? WHERE value = ?"
+            
+            value = (apn,"apn")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (user,"user")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (password,"password")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (activate,"activate")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (pin,"pin")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (encryptionType,"encryptionType")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+        except Exception as e:
+            print(e)
     
-    def set_wifi_settings(self):
-        pass
+    def set_wifi_settings(self,wifiActivate,mod,ssid,password,encryptionType,netmask,gateway):
+        try:
+            query = "UPDATE wifi_settings SET key = ? WHERE value = ?"
+            
+            value = (wifiActivate,"wifiActivate")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (mod,"mod")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (ssid,"ssid")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (password,"password")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (encryptionType,"encryptionType")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (netmask,"netmask")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (gateway,"gateway")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+        except Exception as e:
+            print(e)
     
 # settings_database = sqlite3.connect('Settings.sqlite')
 # cursor = settings_database.cursor()

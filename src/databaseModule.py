@@ -13,8 +13,10 @@ class DatabaseModule():
         self.get_wifi_settings()
         
         self.set_dns_settings("2.2.2.2","333")
-        
         self.get_dns_settings()
+        
+        self.set_ethernet_settings("true","10.30.5.22","22","33")
+        self.get_ethernet_settings()
 
     def settings_db_connect(self):
         try:
@@ -122,8 +124,27 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-    def set_ethernet_settings(self):
-        pass
+    def set_ethernet_settings(self,dhcpActivate,ip,netmask,gateway):
+        try:
+            query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
+            
+            value = (dhcpActivate,"dhcpActivate")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (ip,"ip")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (netmask,"netmask")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (gateway,"gateway")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+        except Exception as e:
+            print(e)
     
     def set_network_priority(self):
         pass

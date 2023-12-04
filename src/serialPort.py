@@ -1,7 +1,7 @@
 import serial
 import time
 from threading import Thread
-from enums import *
+from src.enums import *
 
 # GET_COMMAND 	    :   "G" 	Bilgisayar tarafından bir verinin okunması için gönderilecektir.
 # GET_RESPONSE	    :   "g"	    MCU  tarafından, ilgili veri cevap olarak gönderilecektir.
@@ -313,10 +313,6 @@ class SerialPort():
                 print(e)
             time.sleep(1)
             
-SerialPort(None)
-
-while True:
-    time.sleep(1)
 
 
 		

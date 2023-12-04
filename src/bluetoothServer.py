@@ -101,11 +101,15 @@ class BluetoothServer:
             Command = json_object["Command"]
             Data = json_object["Data"]
             if Command == "NetworkPriority":
-                self.application.settings.networkPriority.first = Data["1"]
-                self.application.settings.networkPriority.second = Data["2"]
-                self.application.settings.networkPriority.third = Data["3"]
-        
-        
+                self.application.databaseModule.set_network_priority(Data["1"],Data["2"],Data["3"])
+            elif Command == "4GSettings":
+                self.application.databaseModule.set_settings_4g(Data["APN"],Data["user"],Data["password"],Data["activate"],Data["pin"],Data["encryptionType"])
+            elif Command == "EthernetSettings":
+                self.application.databaseModule.set_ethernet_settings(Data["DHCPActivate"],Data["ip"],Data["netmask"],Data["gateway"])
+            elif Command == "DNSSettings":
+                self.application.databaseModule.set_dns_settings(Data["DNS1"],Data["DNS2"])
+            elif Command == "WifiSettings":
+                self.application.databaseModule.set_wifi_settings(Data["wifiActivate"],Data["mod"],Data["ssid"],Data["password"],Data["encryptionType"],Data["netmask"],Data["gateway"])
         except Exception as e:
             print(e)
             

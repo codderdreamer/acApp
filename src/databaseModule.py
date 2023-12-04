@@ -12,20 +12,20 @@ class DatabaseModule():
         self.get_settings_4g()
         self.get_wifi_settings()
         
-        self.set_dns_settings("2.2.2.2","333")
-        self.get_dns_settings()
+        # self.set_dns_settings("2.2.2.2","333")
+        # self.get_dns_settings()
         
-        self.set_ethernet_settings("true","10.30.5.22","22","33")
-        self.get_ethernet_settings()
+        # self.set_ethernet_settings("true","10.30.5.22","22","33")
+        # self.get_ethernet_settings()
         
-        self.set_network_priority("ETH","4G","WLAN")
-        self.get_network_priority()
+        # self.set_network_priority("ETH","4G","WLAN")
+        # self.get_network_priority()
         
-        self.set_settings_4g("apn","usr","pass","true","pinn","enc")
-        self.get_settings_4g()
+        # self.set_settings_4g("apn","usr","pass","true","pinn","enc")
+        # self.get_settings_4g()
         
-        self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
-        self.get_wifi_settings()
+        # self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
+        # self.get_wifi_settings()
         
         
 
@@ -126,12 +126,17 @@ class DatabaseModule():
     def set_dns_settings(self,dns1:str,dns2:str):
         try:
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
+            
             value = (dns1,"dns1")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
             value = (dns2,"dns2")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
+            self.application.settings.dnsSettings.DNS1 = dns1
+            self.application.settings.dnsSettings.DNS2 = dns2
         except Exception as e:
             print(e)
     
@@ -154,6 +159,11 @@ class DatabaseModule():
             value = (gateway,"gateway")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
+            self.application.settings.ethernetSettings.DHCPActivate = dhcpActivate
+            self.application.settings.ethernetSettings.ip = ip
+            self.application.settings.ethernetSettings.netmask = netmask
+            self.application.settings.ethernetSettings.gateway = gateway
         except Exception as e:
             print(e)
     
@@ -172,6 +182,10 @@ class DatabaseModule():
             value = (third,"third")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
+            self.application.settings.networkPriority.first = first
+            self.application.settings.networkPriority.second = second
+            self.application.settings.networkPriority.third = third
         except Exception as e:
             print(e)
     
@@ -202,6 +216,13 @@ class DatabaseModule():
             value = (encryptionType,"encryptionType")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
+            self.application.settings.settings4G.APN = apn
+            self.application.settings.settings4G.user = user
+            self.application.settings.settings4G.password = password
+            self.application.settings.settings4G.activate = activate
+            self.application.settings.settings4G.pin = pin
+            self.application.settings.settings4G.encryptionType = encryptionType
         except Exception as e:
             print(e)
     
@@ -236,6 +257,14 @@ class DatabaseModule():
             value = (gateway,"gateway")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
+            self.application.settings.settings4G.wifiActivate = wifiActivate
+            self.application.settings.settings4G.mod = mod
+            self.application.settings.settings4G.ssid = ssid
+            self.application.settings.settings4G.password = password
+            self.application.settings.settings4G.encryptionType = encryptionType
+            self.application.settings.settings4G.netmask = netmask
+            self.application.settings.settings4G.gateway = gateway
         except Exception as e:
             print(e)
     

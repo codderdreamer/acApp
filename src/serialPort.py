@@ -1,7 +1,7 @@
 import serial
 import time
 from threading import Thread
-# from src.enums import *
+from enums import *
 
 # GET_COMMAND 	    :   "G" 	Bilgisayar tarafından bir verinin okunması için gönderilecektir.
 # GET_RESPONSE	    :   "g"	    MCU  tarafından, ilgili veri cevap olarak gönderilecektir.

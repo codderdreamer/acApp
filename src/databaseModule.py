@@ -21,6 +21,9 @@ class DatabaseModule():
         self.set_network_priority("ETH","4G","WLAN")
         self.get_network_priority()
         
+        self.set_settings_4g("apn","usr","pass","true","pinn","enc")
+        self.get_settings_4g()
+        
         self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
         self.get_wifi_settings()
         

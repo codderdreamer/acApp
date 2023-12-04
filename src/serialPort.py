@@ -40,6 +40,7 @@ class SerialPort():
         self.seri_port_test()
         
         
+        
 
     def seri_port_test(self):
         # self.get_command_pid_energy(EnergyType.kwh)
@@ -313,6 +314,9 @@ class SerialPort():
             time.sleep(1)
             
 SerialPort(None)
+
+while True:
+    time.sleep(1)
 
 
 		

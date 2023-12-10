@@ -14,20 +14,17 @@ class NetworkSettings():
         os.system("gpio-test.64 w d 20 1")
         time.sleep(5)
         print("gpio ayarlandı")
-        add_connection_string = "nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \ ".format(connection_name)
+        add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \ && 
+        type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
         print(add_connection_string)
         os.system(add_connection_string)
-        print("connection ekleniyor.")
-        type_gsm_set = "type gsm apn {0} user {1} password {2}".format(apn,user,password)
-        print(type_gsm_set)
-        os.system(type_gsm_set)
+        
         
         # os.system(f"nmcli connection up id {connection_name}")
         
 NetworkSettings(None).set_4G()
-
-
-
+while True:
+    time.sleep(1)
 
 
 

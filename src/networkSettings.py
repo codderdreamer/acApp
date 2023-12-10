@@ -21,4 +21,4 @@ class NetworkSettings():
         
         # os.system(f"nmcli connection up id {connection_name}")
         
-NetworkSettings().set_4G("","","","")
+NetworkSettings(None).set_4G("","","","")

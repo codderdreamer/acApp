@@ -27,8 +27,6 @@ class DatabaseModule():
         # self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
         # self.get_wifi_settings()
         
-        
-
     def settings_db_connect(self):
         try:
             self.settings_database = sqlite3.connect('Settings.sqlite')
@@ -268,11 +266,5 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-# settings_database = sqlite3.connect('Settings.sqlite')
-# cursor = settings_database.cursor()
-# query = "UPDATE dns_settings SET key = ? WHERE value = ?"
-# task = ("deneme","dns1")
-# cursor.execute(query,task)
-# settings_database.commit()
     
     

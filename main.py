@@ -11,11 +11,13 @@ from src.ev import EV
 from src.serialPort import SerialPort
 from src.settings import Settings
 from src.databaseModule import DatabaseModule
+from src.networkSettings import NetworkSettings
 
 class Application():
     def __init__(self,loop) -> None:
         self.loop = loop
         self.chargePoint = None
+        self.networkSettings = NetworkSettings(self)
         self.settings = Settings()
         self.databaseModule = DatabaseModule(self)
         self.ev = EV()

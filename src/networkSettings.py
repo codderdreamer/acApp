@@ -36,7 +36,7 @@ nameserver 127.0.0.53
 options edns0     
 nameserver {dns1}
 nameserver {dns2}  
-"""
+""".format(dns1,dns2)
         print(set_dns)
         
         

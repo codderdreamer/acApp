@@ -5,6 +5,14 @@ class NetworkSettings():
     def __init__(self,application) -> None:
         self.application = application
         
+    def set_eth(self):
+        ip = "192.168.1.170"
+        gateway = "192.168.1.1"
+        os.system("stty erase ^h")
+        set_eth = 'nmcli con add con-name "static-eth0" ifname eth0 type ethernet ip4 \\{0} gw4 {1}'.format(ip,gateway)
+        os.system('nmcli con up "static-eth0" ifname eth0')
+        os.system(set_eth)
+        
     def set_4G(self):
         connection_name = "ppp0"
         apn = "3gnet"
@@ -27,16 +35,32 @@ class NetworkSettings():
         
         
 # NetworkSettings(None).set_4G()
-NetworkSettings(None).set_wifi()
+# NetworkSettings(None).set_wifi()
+NetworkSettings(None).set_eth()
 while True:
     time.sleep(1)
 
 
 
 
+# ####################### ETH SET ############################################
+# #!/bin/sh
+# stty erase ^h
+# read -p "Enter your static ip: " eth0_ip
+# read -p "Enter your static route: " eth0_route
+# nmcli con add con-name "static-eth0" ifname eth0 type ethernet ip4 \
+# $eth0_ip gw4 $eth0_route
+# nmcli con up "static-eth0" ifname eth0
 
-
-
+# ####################### ETH MOD ############################################
+# #!/bin/sh
+# stty erase ^h
+# read -p "Enter your static ip: " eth0_ip
+# nmcli con mod "static-eth0" ipv4.address "$eth0_ip,8.8.8.8"
+# nmcli con up "static-eth0" ifname eth0
+# ####################### ETH DEL ############################################
+# #!/bin/sh
+# nmcli con delete static-eth0
 
 # ####################### 4GSET ##############################################
 # #!/bin/sh

@@ -63,7 +63,8 @@ nameserver {dns2}
         
 # NetworkSettings(None).set_4G()
 # NetworkSettings(None).set_wifi()
-NetworkSettings(None).set_eth()
+# NetworkSettings(None).set_eth()
+NetworkSettings(None).set_dns()
 while True:
     time.sleep(1)
 

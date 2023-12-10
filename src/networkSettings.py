@@ -54,6 +54,11 @@ nameserver {1}
         add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
         print(add_connection_string)
         os.system(add_connection_string)
+        
+        # modify_encryptionType = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
+        # modify_netmask = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
+        # modify_gateway = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
+        
         # os.system(f"nmcli connection up id {connection_name}")
         
     def set_wifi(self):
@@ -63,10 +68,10 @@ nameserver {1}
         os.system(set_wifi)
         
         
-# NetworkSettings(None).set_4G()
+NetworkSettings(None).set_4G()
 # NetworkSettings(None).set_wifi()
 # NetworkSettings(None).set_eth()
-NetworkSettings(None).set_dns()
+# NetworkSettings(None).set_dns()
 while True:
     time.sleep(1)
 

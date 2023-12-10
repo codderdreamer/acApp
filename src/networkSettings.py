@@ -7,9 +7,9 @@ class NetworkSettings():
         
     def set_4G(self,apn,user,password,pin):
         connection_name = "ppp0"
-        apn = "3gnet"
-        user = "uninet"
-        password = "uninet"
+        # apn = "3gnet"
+        # user = "uninet"
+        # password = "uninet"
         print("gpio ayarlanıyor")
         os.system("gpio-test.64 w d 20 1")
         time.sleep(5)
@@ -21,4 +21,4 @@ class NetworkSettings():
         
         # os.system(f"nmcli connection up id {connection_name}")
         
-NetworkSettings(None).set_4G("","","","")
+NetworkSettings(None).set_4G("3gnet","uninet","uninet","")

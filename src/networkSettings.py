@@ -10,8 +10,9 @@ class NetworkSettings():
         gateway = "192.168.1.1"
         os.system("stty erase ^h")
         set_eth = 'nmcli con add con-name "static-eth0" ifname eth0 type ethernet ip4 \\{0} gw4 {1}'.format(ip,gateway)
-        os.system('nmcli con up "static-eth0" ifname eth0')
         os.system(set_eth)
+        os.system('nmcli con up "static-eth0" ifname eth0')
+        
         
     def set_4G(self):
         connection_name = "ppp0"

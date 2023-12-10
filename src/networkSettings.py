@@ -54,6 +54,9 @@ nameserver {1}
         add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
         print(add_connection_string)
         os.system(add_connection_string)
+        while True:
+            os.system("ping www.google.com")
+            time.sleep(3)
         
         # modify_encryptionType = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
         # modify_netmask = 'nmcli connection modify wifi wifi-sec.psk "{0}"'

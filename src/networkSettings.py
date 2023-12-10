@@ -34,8 +34,8 @@ class NetworkSettings():
 
 nameserver 127.0.0.53
 options edns0     
-nameserver {dns1}
-nameserver {dns2}  
+nameserver {0}
+nameserver {1}  
 """.format(dns1,dns2)
         print(set_dns)
         

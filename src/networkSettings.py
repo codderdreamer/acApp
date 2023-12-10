@@ -38,6 +38,8 @@ nameserver {0}
 nameserver {1}  
 """.format(dns1,dns2)
         print(set_dns)
+        os.system('nmcli con up "static-eth1" ifname eth1')
+        
         
         
     def set_4G(self):

@@ -1,7 +1,7 @@
 {
-    "charge_point_model" : "Sevda",
-    "charge_point_vendor" : "EV House",
-    "charge_point_id" : "CP_1",
-    "ocpp_server_url" : "ws://localhost:9000/"
+    "charge_point_model" : "CP98765",
+    "charge_point_vendor" : "CP98765",
+    "charge_point_id" : "CP98765",
+    "ocpp_server_url" : "34.77.149.60:9000/"
 
 }

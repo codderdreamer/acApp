@@ -4,7 +4,8 @@ import threading
 import time
 
 class WebSocketServer():
-    def __init__(self) -> None:
+    def __init__(self,application) -> None:
+        self.application = application
         self.websocketServer = websocket_server.WebsocketServer('0.0.0.0',8000)
         self.websocketServer.set_fn_new_client(self.NewClientws)
         self.websocketServer.set_fn_client_left(self.ClientLeftws)

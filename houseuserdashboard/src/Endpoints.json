@@ -1,0 +1,14 @@
+{
+  "LOGIN": "house/user/login",
+  "REGISTER": "house/user/register",
+  "FORGOT_PASSWORD": "house/user/forgot",
+  "PROFILE": "house/user/profile",
+  "CHANGEPASSWORD": "house/user/password",
+  "ACTIVATEPRODUCT": "house/product/activate",
+  "ACTIVATERFID": "house/rfid/activate",
+  "INVITEUSER": "house/user/invite",
+  "UNITS": "house/unit",
+  "DELUNIT": "house/unit/remove",
+  "STARTCHARGE": "house/unit/start-charge",
+  "STOPCHARGE": "house/unit/stop-charge"
+}

@@ -1,0 +1,128 @@
+/* .loader-6 {
+  height: 350px;
+  width: 350px;
+}
+.loader-6 span {
+  display: block;
+  height: 350px;
+  width: 350px;
+}
+.loader-6 span::before {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 350px;
+  width: 350px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  opacity: 0;
+  -webkit-animation: loader-6-1 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) 2s
+    infinite;
+  animation: loader-6-1 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) 2s infinite;
+}
+@-webkit-keyframes loader-6-1 {
+  0% {
+    -webkit-transform: translate3d(0, 0, 0) scale(0.85);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translate3d(0, 0, 0) scale(1.1);
+    opacity: 0;
+  }
+}
+@keyframes loader-6-1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.85);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1200px) {
+  .loader-6 {
+    height: 250px;
+    width: 250px;
+  }
+  .loader-6 span {
+    display: block;
+    height: 250px;
+    width: 250px;
+  }
+  .loader-6 span::before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 250px;
+    width: 250px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    opacity: 0;
+    -webkit-animation: loader-6-1 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) 2s
+      infinite;
+    animation: loader-6-1 1.5s cubic-bezier(0.075, 0.82, 0.165, 1) 2s infinite;
+  }
+} */
+
+.chargeCard {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background-color: #1e1e2d;
+  border-radius: 50%;
+}
+
+.chargeRating {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.chargeBlock {
+  position: absolute;
+  width: 2px;
+  height: 15px;
+  background: transparent;
+  left: 50%;
+  transform-origin: 50% 100px;
+  opacity: 0;
+  animation: animate 0.1s linear forwards;
+}
+
+@keyframes animate {
+  to {
+    opacity: 1;
+  }
+}
+
+.chargeBlock .active {
+  background: #0f0;
+  box-shadow: 0 0 15px #0f0, 0 0 30px #0f0;
+}
+
+.chargeRating h2 {
+  color: #ec671d;
+  position: absolute;
+  top: 62%;
+  left: 53%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5em;
+}
+
+.chargeRating h2 span {
+  font-size: 2.5em;
+  font-weight: 700;
+}
+
+.chargeRating h2 sup {
+  font-size: 1.5em;
+  font-weight: 300;
+}

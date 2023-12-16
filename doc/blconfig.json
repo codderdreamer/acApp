@@ -1,6 +1,7 @@
 {
     "Command" : "NetworkPriority",
     "Data" : {
+                "enableWorkmode" : true,
                 "1" : "ETH",
                 "2" : "4G",
                 "3" : "WLAN"

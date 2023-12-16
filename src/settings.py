@@ -9,6 +9,7 @@ class Settings():
 
 class NetworkPriority():
     def __init__(self) -> None:
+        self.enableWorkmode = None
         self.first = None
         self.second = None
         self.third = None

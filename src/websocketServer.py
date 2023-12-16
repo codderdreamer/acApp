@@ -13,10 +13,24 @@ class WebSocketServer():
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         print("Web Socket started... 0.0.0.0  8000")
         
+    def send_network_priority(self,client):
+        command = {
+                    "Command" : "NetworkPriority",
+                    "Data" : {
+                                "enableWorkmode" : bool(self.application.settings.networkPriority.enableWorkmode),
+                                "1" : self.application.settings.networkPriority.first,
+                                "2" : self.application.settings.networkPriority.second,
+                                "3" : self.application.settings.networkPriority.third
+                            }
+                }
+        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        
+    
     def NewClientws(self, client, server):
         if client:
             try:
                 print("New client connected and was given id %d" % client['id'], client['address'] )
+                self.send_network_priority(client)
             except Exception as e:
                 print("could not get New Client id",e)
                 

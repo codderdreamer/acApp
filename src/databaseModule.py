@@ -6,20 +6,21 @@ class DatabaseModule():
         self.settings_database = sqlite3.connect('Settings.sqlite')
         self.cursor = self.settings_database.cursor()
         
+        self.get_network_priority()
+        
         self.get_dns_settings()
         self.get_ethernet_settings()
-        self.get_network_priority()
         self.get_settings_4g()
         self.get_wifi_settings()
+    
+        
+        # self.set_network_priority("ETH","4G","WLAN")
         
         # self.set_dns_settings("2.2.2.2","333")
         # self.get_dns_settings()
         
         # self.set_ethernet_settings("true","10.30.5.22","22","33")
         # self.get_ethernet_settings()
-        
-        # self.set_network_priority("ETH","4G","WLAN")
-        # self.get_network_priority()
         
         # self.set_settings_4g("apn","usr","pass","true","pinn","enc")
         # self.get_settings_4g()
@@ -75,6 +76,7 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_network_priority",data_dict,"\n")
+            self.application.settings.networkPriority.enableWorkmode = data_dict["enableWorkmode"]
             self.application.settings.networkPriority.first = data_dict["first"]
             self.application.settings.networkPriority.second = data_dict["second"]
             self.application.settings.networkPriority.third = data_dict["third"]
@@ -165,9 +167,13 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-    def set_network_priority(self,first,second,third):
+    def set_network_priority(self,enableWorkmode,first,second,third):
         try:
             query = "UPDATE network_priority SET key = ? WHERE value = ?"
+            
+            value = (enableWorkmode,"enableWorkmode")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
             
             value = (first,"first")
             self.cursor.execute(query,value)
@@ -181,6 +187,7 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
+            self.application.settings.networkPriority.enableWorkmode = enableWorkmode
             self.application.settings.networkPriority.first = first
             self.application.settings.networkPriority.second = second
             self.application.settings.networkPriority.third = third

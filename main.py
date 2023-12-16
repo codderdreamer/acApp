@@ -12,11 +12,13 @@ from src.serialPort import SerialPort
 from src.settings import Settings
 from src.databaseModule import DatabaseModule
 from src.networkSettings import NetworkSettings
+from src.websocketServer import WebSocketServer
 
 class Application():
     def __init__(self,loop) -> None:
         self.loop = loop
         self.chargePoint = None
+        self.webSocketServer = WebSocketServer(self)
         self.networkSettings = NetworkSettings(self)
         self.settings = Settings()
         self.databaseModule = DatabaseModule(self)

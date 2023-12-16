@@ -9,6 +9,7 @@ class DatabaseModule():
         self.get_network_priority()
         self.get_settings_4g()
         self.get_ethernet_settings()
+        self.get_dns_settings()
         
         # self.get_dns_settings()
         # self.get_ethernet_settings()
@@ -45,6 +46,7 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_dns_settings:",data_dict,"\n")
+            self.application.settings.dnsSettings.dnsEnable = data_dict["dnsEnable"]
             self.application.settings.dnsSettings.DNS1 = data_dict["dns1"]
             self.application.settings.dnsSettings.DNS2 = data_dict["dns2"]
         except Exception as e:

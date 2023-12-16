@@ -31,6 +31,7 @@ class EthernetSettings():
 
 class DNSSettings():
     def __init__(self) -> None:
+        self.dnsEnable = None
         self.DNS1 = None
         self.DNS2 = None
 

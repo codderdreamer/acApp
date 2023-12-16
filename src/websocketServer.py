@@ -53,6 +53,18 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message(client=client,msg = json.dumps(command))
         
+    def send_dns_settings(self,client):
+        command = {
+                    "Command" : "DNSSettings",
+                    "Data" : {
+                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable),
+                                "DNS1" : self.application.settings.dnsSettings.DNS1,
+                                "DNS2" : self.application.settings.dnsSettings.DNS2
+                            }
+                }
+        print("Gönderilen:",command)
+        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        
     
     def NewClientws(self, client, server):
         if client:
@@ -61,6 +73,7 @@ class WebSocketServer():
                 self.send_network_priority(client)
                 self.send_4g_settings(client)
                 self.send_ethernet_settings(client)
+                self.send_dns_settings(client)
             except Exception as e:
                 print("could not get New Client id",e)
                 

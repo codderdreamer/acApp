@@ -8,6 +8,7 @@ class DatabaseModule():
         
         self.get_network_priority()
         self.get_settings_4g()
+        self.get_ethernet_settings()
         
         # self.get_dns_settings()
         # self.get_ethernet_settings()
@@ -59,7 +60,7 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_ethernet_settings",data_dict,"\n")
-            self.application.settings.ethernetSettings.DHCPActivate = data_dict["dhcpActivate"]
+            self.application.settings.ethernetSettings.ethernetEnable = data_dict["ethernetEnable"]
             self.application.settings.ethernetSettings.ip = data_dict["ip"]
             self.application.settings.ethernetSettings.netmask = data_dict["netmask"]
             self.application.settings.ethernetSettings.gateway = data_dict["gateway"]

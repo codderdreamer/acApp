@@ -22,7 +22,7 @@
 {
     "Command" : "EthernetSettings",
     "Data" : {
-                "DHCPActivate" : true,
+                "ethernetEnable" : true,
                 "ip" : "89.32.117.63",
                 "netmask" : "255.255.255.0",
                 "gateway" : "89.32.117.1"

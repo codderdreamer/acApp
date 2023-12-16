@@ -24,7 +24,7 @@ class Settings4G():
         
 class EthernetSettings():
     def __init__(self) -> None:
-        self.DHCPActivate = None
+        self.ethernetEnable = None
         self.ip = None
         self.netmask = None
         self.gateway = None

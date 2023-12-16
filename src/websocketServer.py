@@ -40,6 +40,19 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message(client=client,msg = json.dumps(command))
         
+    def send_ethernet_settings(self,client):
+        command = {
+                    "Command" : "EthernetSettings",
+                    "Data" : {
+                                "ethernetEnable" : bool(self.application.settings.ethernetSettings.ethernetEnable),
+                                "ip" : self.application.settings.ethernetSettings.ip,
+                                "netmask" : self.application.settings.ethernetSettings.netmask,
+                                "gateway" : self.application.settings.ethernetSettings.gateway
+                            }
+                }
+        print("Gönderilen:",command)
+        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        
     
     def NewClientws(self, client, server):
         if client:
@@ -47,6 +60,7 @@ class WebSocketServer():
                 print("New client connected and was given id %d" % client['id'], client['address'] )
                 self.send_network_priority(client)
                 self.send_4g_settings(client)
+                self.send_ethernet_settings(client)
             except Exception as e:
                 print("could not get New Client id",e)
                 

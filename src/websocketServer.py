@@ -10,7 +10,7 @@ class WebSocketServer():
         self.websocketServer.set_fn_new_client(self.NewClientws)
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
-        threading.Thread(target=self.websocketServer.run_forever(), daemon=True).start()
+        threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         print("Web Socket started... 0.0.0.0  8000")
         
     def NewClientws(self, client, server):

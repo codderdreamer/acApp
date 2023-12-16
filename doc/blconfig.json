@@ -11,12 +11,11 @@
 {
     "Command" : "4GSettings",
     "Data" : {
-                "APN" : "",
-                "user" : "",
-                "password" : "",
-                "activate" : true,
-                "pin" : "B",
-                "encryptionType" : "wpa"
+                "enableModification" : true,
+                "apn" : "3gnet",
+                "user" : "uninet",
+                "password" : "uninet",
+                "pin" : "0000"
             }
 }
 

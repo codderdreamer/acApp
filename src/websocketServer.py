@@ -24,6 +24,19 @@ class WebSocketServer():
                             }
                 }
         self.websocketServer.send_message(client=client,msg = json.dumps(command))
+
+    def send_4g_settings(self,client):
+        command = {
+                    "Command" : "4GSettings",
+                    "Data" : {
+                                "enableModification" : bool(self.application.settings.settings4G.enableModification),
+                                "apn" : self.application.settings.settings4G.apn,
+                                "user" : self.application.settings.settings4G.user,
+                                "password" : self.application.settings.settings4G.password,
+                                "pin" : self.application.settings.settings4G.pin,
+                            }
+                }
+        self.websocketServer.send_message(client=client,msg = json.dumps(command))
         
     
     def NewClientws(self, client, server):
@@ -31,6 +44,7 @@ class WebSocketServer():
             try:
                 print("New client connected and was given id %d" % client['id'], client['address'] )
                 self.send_network_priority(client)
+                self.send_4g_settings(client)
             except Exception as e:
                 print("could not get New Client id",e)
                 

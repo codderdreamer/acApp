@@ -7,10 +7,10 @@ class DatabaseModule():
         self.cursor = self.settings_database.cursor()
         
         self.get_network_priority()
+        self.get_settings_4g()
         
         self.get_dns_settings()
         self.get_ethernet_settings()
-        self.get_settings_4g()
         self.get_wifi_settings()
     
         
@@ -93,12 +93,11 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_settings_4g",data_dict,"\n")
-            self.application.settings.settings4G.APN = data_dict["apn"]
+            self.application.settings.settings4G.apn = data_dict["apn"]
             self.application.settings.settings4G.user = data_dict["user"]
             self.application.settings.settings4G.password = data_dict["password"]
-            self.application.settings.settings4G.activate = data_dict["activate"]
             self.application.settings.settings4G.pin = data_dict["pin"]
-            self.application.settings.settings4G.encryptionType = data_dict["encryptionType"]
+            self.application.settings.settings4G.enableModification = data_dict["enableModification"]
         except Exception as e:
             print(e)
         return data_dict

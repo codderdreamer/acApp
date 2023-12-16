@@ -16,12 +16,11 @@ class NetworkPriority():
 
 class Settings4G():
     def __init__(self) -> None:
-        self.APN = None
+        self.apn = None
         self.user = None
         self.password = None
-        self.activate = None
         self.pin = None
-        self.encryptionType = None
+        self.enableModification = None
         
 class EthernetSettings():
     def __init__(self) -> None:

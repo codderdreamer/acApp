@@ -18,7 +18,7 @@ class Application():
     def __init__(self,loop) -> None:
         self.loop = loop
         self.chargePoint = None
-        self.webSocketServer = WebSocketServer(self)
+        # self.webSocketServer = WebSocketServer(self)
         self.networkSettings = NetworkSettings(self)
         self.settings = Settings()
         self.databaseModule = DatabaseModule(self)

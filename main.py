@@ -15,7 +15,7 @@ from src.networkSettings import NetworkSettings
 from src.websocketServer import WebSocketServer
 
 class Application():
-    def __init__(self,loop) -> None:
+    def __init__(self,loop):
         self.loop = loop
         self.chargePoint = None
         

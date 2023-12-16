@@ -23,6 +23,7 @@ class WebSocketServer():
                                 "3" : self.application.settings.networkPriority.third
                             }
                 }
+        print("Gönderilen:",command)
         self.websocketServer.send_message(client=client,msg = json.dumps(command))
 
     def send_4g_settings(self,client):
@@ -36,6 +37,7 @@ class WebSocketServer():
                                 "pin" : self.application.settings.settings4G.pin,
                             }
                 }
+        print("Gönderilen:",command)
         self.websocketServer.send_message(client=client,msg = json.dumps(command))
         
     

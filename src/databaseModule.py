@@ -9,9 +9,9 @@ class DatabaseModule():
         self.get_network_priority()
         self.get_settings_4g()
         
-        self.get_dns_settings()
-        self.get_ethernet_settings()
-        self.get_wifi_settings()
+        # self.get_dns_settings()
+        # self.get_ethernet_settings()
+        # self.get_wifi_settings()
     
         
         # self.set_network_priority("ETH","4G","WLAN")

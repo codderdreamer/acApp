@@ -48,8 +48,11 @@ class Application():
     
 if __name__ == "__main__":
     try:
+        ocppActive = False
         loop = asyncio.get_event_loop()
-        res = loop.run_until_complete(Application(loop).main())
+        app = Application(loop)
+        if ocppActive:
+            res = loop.run_until_complete(app.main())
     except Exception as e:
         print("__main__",e)
     while True:

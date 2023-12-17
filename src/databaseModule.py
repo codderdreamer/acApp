@@ -10,13 +10,7 @@ class DatabaseModule():
         self.get_settings_4g()
         self.get_ethernet_settings()
         self.get_dns_settings()
-        
-        # self.get_dns_settings()
-        # self.get_ethernet_settings()
         # self.get_wifi_settings()
-    
-        
-        # self.set_network_priority("ETH","4G","WLAN")
         
         # self.set_dns_settings("2.2.2.2","333")
         # self.get_dns_settings()
@@ -125,9 +119,13 @@ class DatabaseModule():
             print(e)
         return data_dict
     
-    def set_dns_settings(self,dns1:str,dns2:str):
+    def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
+            
+            value = (dnsEnable,"dnsEnable")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
             
             value = (dns1,"dns1")
             self.cursor.execute(query,value)
@@ -137,16 +135,17 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
+            self.application.settings.dnsSettings.dnsEnable = dnsEnable
             self.application.settings.dnsSettings.DNS1 = dns1
             self.application.settings.dnsSettings.DNS2 = dns2
         except Exception as e:
             print(e)
-    
-    def set_ethernet_settings(self,dhcpActivate,ip,netmask,gateway):
+
+    def set_ethernet_settings(self,ethernetEnable,ip,netmask,gateway):
         try:
             query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
             
-            value = (dhcpActivate,"dhcpActivate")
+            value = (ethernetEnable,"ethernetEnable")
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
@@ -162,13 +161,13 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
-            self.application.settings.ethernetSettings.DHCPActivate = dhcpActivate
+            self.application.settings.ethernetSettings.ethernetEnable = ethernetEnable
             self.application.settings.ethernetSettings.ip = ip
             self.application.settings.ethernetSettings.netmask = netmask
             self.application.settings.ethernetSettings.gateway = gateway
         except Exception as e:
             print(e)
-    
+
     def set_network_priority(self,enableWorkmode,first,second,third):
         try:
             query = "UPDATE network_priority SET key = ? WHERE value = ?"
@@ -196,7 +195,7 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-    def set_settings_4g(self,apn,user,password,activate,pin,encryptionType):
+    def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
@@ -212,7 +211,7 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
-            value = (activate,"activate")
+            value = (enableModification,"enableModification")
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
@@ -220,16 +219,11 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
-            value = (encryptionType,"encryptionType")
-            self.cursor.execute(query,value)
-            self.settings_database.commit()
-            
-            self.application.settings.settings4G.APN = apn
+            self.application.settings.settings4G.apn = apn
             self.application.settings.settings4G.user = user
             self.application.settings.settings4G.password = password
-            self.application.settings.settings4G.activate = activate
+            self.application.settings.settings4G.enableModification = enableModification
             self.application.settings.settings4G.pin = pin
-            self.application.settings.settings4G.encryptionType = encryptionType
         except Exception as e:
             print(e)
     
@@ -277,3 +271,4 @@ class DatabaseModule():
     
     
     
+DatabaseModule(None)

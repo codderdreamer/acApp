@@ -87,6 +87,33 @@ class WebSocketServer():
         try:
             sjon = json.loads(message)
             print(sjon)
+            if(sjon["Command"] == "NetworkPriority"):
+                enableWorkmode = str(sjon["Data"]["enableWorkmode"])
+                first = sjon["Data"]["1"]
+                second = sjon["Data"]["2"]
+                third = sjon["Data"]["3"]
+                self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
+            elif(sjon["Command"] == "4GSettings"):
+                enableModification = str(sjon["Data"]["enableWorkmode"])
+                apn = sjon["Data"]["apn"]
+                user = sjon["Data"]["user"]
+                password = sjon["Data"]["password"]
+                pin = sjon["Data"]["pin"]
+                self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
+            elif(sjon["Command"] == "EthernetSettings"):
+                ethernetEnable = str(sjon["Data"]["ethernetEnable"])
+                ip = sjon["Data"]["ip"]
+                netmask = sjon["Data"]["netmask"]
+                gateway = sjon["Data"]["gateway"]
+                self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
+            elif(sjon["Command"] == "DNSSettings"):
+                dnsEnable = str(sjon["Data"]["dnsEnable"])
+                dns1 = sjon["Data"]["dns1"]
+                dns2 = sjon["Data"]["dns2"]
+                self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
+            elif(sjon["Command"] == "WifiSettings"):
+                pass
+            
         except Exception as e:
             print("MessageReceivedws",e)
         

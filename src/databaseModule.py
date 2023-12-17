@@ -3,8 +3,7 @@ import time
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
-        self.settings_database = sqlite3.connect('Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
+        
         
         self.get_network_priority()
         self.get_settings_4g()
@@ -24,19 +23,16 @@ class DatabaseModule():
         # self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
         # self.get_wifi_settings()
         
-    def settings_db_connect(self):
-        try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
-            self.cursor = self.settings_database.cursor()
-        except Exception as e:
-            print(e)
         
     def get_dns_settings(self):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM dns_settings"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
+            self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_dns_settings:",data_dict,"\n")
@@ -49,10 +45,13 @@ class DatabaseModule():
     
     def get_ethernet_settings(self):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM ethernet_settings"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
+            self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_ethernet_settings",data_dict,"\n")
@@ -66,10 +65,13 @@ class DatabaseModule():
     
     def get_network_priority(self):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM network_priority"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
+            self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_network_priority",data_dict,"\n")
@@ -83,10 +85,13 @@ class DatabaseModule():
     
     def get_settings_4g(self):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM settings_4g"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
+            self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_settings_4g",data_dict,"\n")
@@ -101,10 +106,13 @@ class DatabaseModule():
     
     def get_wifi_settings(self):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM wifi_settings"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
+            self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_wifi_settings",data_dict,"\n")
@@ -121,6 +129,8 @@ class DatabaseModule():
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
             
             value = (dnsEnable,"dnsEnable")
@@ -134,7 +144,7 @@ class DatabaseModule():
             value = (dns2,"dns2")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            
+            self.settings_database.close()
             self.application.settings.dnsSettings.dnsEnable = dnsEnable
             self.application.settings.dnsSettings.DNS1 = dns1
             self.application.settings.dnsSettings.DNS2 = dns2
@@ -143,6 +153,8 @@ class DatabaseModule():
 
     def set_ethernet_settings(self,ethernetEnable,ip,netmask,gateway):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
             
             value = (ethernetEnable,"ethernetEnable")
@@ -160,7 +172,7 @@ class DatabaseModule():
             value = (gateway,"gateway")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            
+            self.settings_database.close()
             self.application.settings.ethernetSettings.ethernetEnable = ethernetEnable
             self.application.settings.ethernetSettings.ip = ip
             self.application.settings.ethernetSettings.netmask = netmask
@@ -170,6 +182,8 @@ class DatabaseModule():
 
     def set_network_priority(self,enableWorkmode,first,second,third):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             query = "UPDATE network_priority SET key = ? WHERE value = ?"
             
             value = (enableWorkmode,"enableWorkmode")
@@ -187,7 +201,7 @@ class DatabaseModule():
             value = (third,"third")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            
+            self.settings_database.close()
             self.application.settings.networkPriority.enableWorkmode = enableWorkmode
             self.application.settings.networkPriority.first = first
             self.application.settings.networkPriority.second = second
@@ -197,6 +211,8 @@ class DatabaseModule():
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
             value = (apn,"apn")
@@ -218,7 +234,7 @@ class DatabaseModule():
             value = (pin,"pin")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            
+            self.settings_database.close()
             self.application.settings.settings4G.apn = apn
             self.application.settings.settings4G.user = user
             self.application.settings.settings4G.password = password
@@ -229,6 +245,8 @@ class DatabaseModule():
     
     def set_wifi_settings(self,wifiActivate,mod,ssid,password,encryptionType,netmask,gateway):
         try:
+            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
             query = "UPDATE wifi_settings SET key = ? WHERE value = ?"
             
             value = (wifiActivate,"wifiActivate")
@@ -258,7 +276,7 @@ class DatabaseModule():
             value = (gateway,"gateway")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            
+            self.settings_database.close()
             self.application.settings.settings4G.wifiActivate = wifiActivate
             self.application.settings.settings4G.mod = mod
             self.application.settings.settings4G.ssid = ssid

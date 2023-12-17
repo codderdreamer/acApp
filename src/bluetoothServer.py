@@ -159,12 +159,16 @@ class BluetoothServer:
             Data = json_object["Data"]
             if Command == "NetworkPriority":
                 self.application.databaseModule.set_network_priority(Data["enableWorkmode"],Data["1"],Data["2"],Data["3"])
+                self.application.webSocketServer.send_network_priority()
             elif Command == "4GSettings":
                 self.application.databaseModule.set_settings_4g(Data["enableModification"],Data["apn"],Data["user"],Data["password"],Data["pin"])
+                self.application.webSocketServer.send_4g_settings()
             elif Command == "EthernetSettings":
                 self.application.databaseModule.set_ethernet_settings(Data["ethernetEnable"],Data["ip"],Data["netmask"],Data["gateway"])
+                self.application.webSocketServer.send_ethernet_settings()
             elif Command == "DNSSettings":
                 self.application.databaseModule.set_dns_settings(Data["dnsEnable"],Data["DNS1"],Data["DNS2"])
+                self.application.webSocketServer.send_dns_settings()
             
         except Exception as e:
             print(e)

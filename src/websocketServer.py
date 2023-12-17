@@ -26,7 +26,7 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message_to_all(msg = json.dumps(command))
 
-    def send_4g_settings(self,client):
+    def send_4g_settings(self):
         command = {
                     "Command" : "4GSettings",
                     "Data" : {
@@ -40,7 +40,7 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
-    def send_ethernet_settings(self,client):
+    def send_ethernet_settings(self):
         command = {
                     "Command" : "EthernetSettings",
                     "Data" : {
@@ -53,7 +53,7 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
-    def send_dns_settings(self,client):
+    def send_dns_settings(self):
         command = {
                     "Command" : "DNSSettings",
                     "Data" : {

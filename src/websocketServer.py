@@ -70,10 +70,10 @@ class WebSocketServer():
         if client:
             try:
                 print("New client connected and was given id %d" % client['id'], client['address'] )
-                self.send_network_priority(client)
-                self.send_4g_settings(client)
-                self.send_ethernet_settings(client)
-                self.send_dns_settings(client)
+                self.send_network_priority()
+                self.send_4g_settings()
+                self.send_ethernet_settings()
+                self.send_dns_settings()
             except Exception as e:
                 print("could not get New Client id",e)
                 

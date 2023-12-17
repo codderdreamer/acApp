@@ -1,12 +1,12 @@
-
+# from flask import Flask, render_template, request, Blueprint, send_from_directory
 import os
 import time
 from flask import Flask, render_template, request
 
 
 app = Flask(__name__, static_url_path='',
-                  static_folder='client/build',
-                  template_folder='client/build')
+                  static_folder='build',
+                  template_folder='build')
 
 @app.route("/")
 def hello():

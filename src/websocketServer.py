@@ -17,7 +17,7 @@ class WebSocketServer():
         command = {
                     "Command" : "NetworkPriority",
                     "Data" : {
-                                "enableWorkmode" : bool(self.application.settings.networkPriority.enableWorkmode),
+                                "enableWorkmode" : bool(self.application.settings.networkPriority.enableWorkmode=="True"),
                                 "1" : self.application.settings.networkPriority.first,
                                 "2" : self.application.settings.networkPriority.second,
                                 "3" : self.application.settings.networkPriority.third
@@ -30,7 +30,7 @@ class WebSocketServer():
         command = {
                     "Command" : "4GSettings",
                     "Data" : {
-                                "enableModification" : bool(self.application.settings.settings4G.enableModification),
+                                "enableModification" : bool(self.application.settings.settings4G.enableModification=="True"),
                                 "apn" : self.application.settings.settings4G.apn,
                                 "user" : self.application.settings.settings4G.user,
                                 "password" : self.application.settings.settings4G.password,
@@ -44,7 +44,7 @@ class WebSocketServer():
         command = {
                     "Command" : "EthernetSettings",
                     "Data" : {
-                                "ethernetEnable" : bool(self.application.settings.ethernetSettings.ethernetEnable),
+                                "ethernetEnable" : bool(self.application.settings.ethernetSettings.ethernetEnable=="True"),
                                 "ip" : self.application.settings.ethernetSettings.ip,
                                 "netmask" : self.application.settings.ethernetSettings.netmask,
                                 "gateway" : self.application.settings.ethernetSettings.gateway
@@ -57,7 +57,7 @@ class WebSocketServer():
         command = {
                     "Command" : "DNSSettings",
                     "Data" : {
-                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable),
+                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable=="True"),
                                 "DNS1" : self.application.settings.dnsSettings.DNS1,
                                 "DNS2" : self.application.settings.dnsSettings.DNS2
                             }

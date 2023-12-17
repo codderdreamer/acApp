@@ -13,7 +13,7 @@ class WebSocketServer():
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         print("Web Socket started... 0.0.0.0  8000")
         
-    def send_network_priority(self,client):
+    def send_network_priority(self):
         command = {
                     "Command" : "NetworkPriority",
                     "Data" : {
@@ -24,7 +24,7 @@ class WebSocketServer():
                             }
                 }
         print("Gönderilen:",command)
-        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        self.websocketServer.send_message_to_all(msg = json.dumps(command))
 
     def send_4g_settings(self,client):
         command = {
@@ -38,7 +38,7 @@ class WebSocketServer():
                             }
                 }
         print("Gönderilen:",command)
-        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
     def send_ethernet_settings(self,client):
         command = {
@@ -51,7 +51,7 @@ class WebSocketServer():
                             }
                 }
         print("Gönderilen:",command)
-        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
     def send_dns_settings(self,client):
         command = {
@@ -63,7 +63,7 @@ class WebSocketServer():
                             }
                 }
         print("Gönderilen:",command)
-        self.websocketServer.send_message(client=client,msg = json.dumps(command))
+        self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
     
     def NewClientws(self, client, server):

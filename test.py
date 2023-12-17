@@ -9,7 +9,7 @@ app = Flask(__name__, static_url_path='',
                   template_folder='client/build')
 
 @app.route("/")
-def hello():
+def hera():
     return render_template("index.html")
 
 

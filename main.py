@@ -19,9 +19,8 @@ class Application():
     def __init__(self,loop):
         self.loop = loop
         self.chargePoint = None
-        
-        self.networkSettings = NetworkSettings(self)
         self.settings = Settings()
+        self.networkSettings = NetworkSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)
         self.bluetoothServer = BluetoothServer(self)

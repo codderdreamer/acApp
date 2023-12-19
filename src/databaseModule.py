@@ -9,20 +9,7 @@ class DatabaseModule():
         self.get_settings_4g()
         self.get_ethernet_settings()
         self.get_dns_settings()
-        # self.get_wifi_settings()
-        
-        # self.set_dns_settings("2.2.2.2","333")
-        # self.get_dns_settings()
-        
-        # self.set_ethernet_settings("true","10.30.5.22","22","33")
-        # self.get_ethernet_settings()
-        
-        # self.set_settings_4g("apn","usr","pass","true","pinn","enc")
-        # self.get_settings_4g()
-        
-        # self.set_wifi_settings("true","dene","ssid","pass","A","net","255")
-        # self.get_wifi_settings()
-        
+
         
     def get_dns_settings(self):
         try:

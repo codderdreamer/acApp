@@ -14,7 +14,7 @@ class Config():
     def read_config_file(self):
         data = None
         try:
-            with open("config.json", "r") as jsonfile:
+            with open("/root/acApp/config.json", "r") as jsonfile:
                 data = json.load(jsonfile)
                 print("Config file readed successful")  
         except Exception as e:

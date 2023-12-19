@@ -20,7 +20,6 @@ class Application():
         self.loop = loop
         self.chargePoint = None
         self.settings = Settings()
-        print("self.settings",self.settings)
         self.networkSettings = NetworkSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)
@@ -31,6 +30,10 @@ class Application():
         self.ocppCallbacks =  OcppCallbacks(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
+        self.databaseModule.get_network_priority()
+        self.databaseModule.get_settings_4g()
+        self.databaseModule.get_ethernet_settings()
+        self.databaseModule.get_dns_settings()
         while self.config.config_writed == False:
             time.sleep(0.01)
         

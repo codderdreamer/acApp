@@ -4,13 +4,6 @@ class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
         
-        
-        self.get_network_priority()
-        self.get_settings_4g()
-        self.get_ethernet_settings()
-        self.get_dns_settings()
-
-        
     def get_dns_settings(self):
         try:
             self.settings_database = sqlite3.connect('Settings.sqlite')
@@ -62,7 +55,6 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_network_priority",data_dict,"\n")
-            print("self.application",self.application)
             self.application.settings.networkPriority.enableWorkmode = data_dict["enableWorkmode"]
             self.application.settings.networkPriority.first = data_dict["first"]
             self.application.settings.networkPriority.second = data_dict["second"]

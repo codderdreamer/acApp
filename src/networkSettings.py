@@ -6,7 +6,7 @@ class NetworkSettings():
         self.application = application
         
     def set_eth(self):
-        ip = "192.168.1.170"
+        ip = "192.168.1.12"
         gateway = "192.168.1.1"
         os.system("nmcli con delete static-eth0")
         os.system("stty erase ^h")

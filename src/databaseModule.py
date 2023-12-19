@@ -62,6 +62,7 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_network_priority",data_dict,"\n")
+            print("self.application",self.application)
             self.application.settings.networkPriority.enableWorkmode = data_dict["enableWorkmode"]
             self.application.settings.networkPriority.first = data_dict["first"]
             self.application.settings.networkPriority.second = data_dict["second"]

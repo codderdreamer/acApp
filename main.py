@@ -20,6 +20,7 @@ class Application():
         self.loop = loop
         self.chargePoint = None
         self.settings = Settings()
+        print("self.settings",self.settings)
         self.networkSettings = NetworkSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)

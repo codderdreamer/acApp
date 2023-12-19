@@ -8,7 +8,7 @@ class NetworkSettings():
     def set_eth(self):
         ip = "192.168.1.12"
         gateway = "192.168.1.1"
-        os.system("nmcli con delete static-eth0")
+        os.system("nmcli con delete static-eth1")
         os.system("stty erase ^h")
         set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0} gw4 {1}'.format(ip,gateway)
         os.system(set_eth)

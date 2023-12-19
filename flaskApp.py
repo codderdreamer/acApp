@@ -9,11 +9,11 @@ app = Flask(__name__, static_url_path='',
                   template_folder='client/build')
 
 @app.route("/admin/dashboard")
-def hera():
+def dashboard():
     return render_template("index.html")
 
 @app.route("/admin/software")
-def hera():
+def software():
     return render_template("index.html")
 
 @app.route("/")

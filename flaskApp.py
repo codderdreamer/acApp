@@ -8,6 +8,14 @@ app = Flask(__name__, static_url_path='',
                   static_folder='client/build',
                   template_folder='client/build')
 
+@app.route("/admin/dashboard")
+def hera():
+    return render_template("index.html")
+
+@app.route("/admin/software")
+def hera():
+    return render_template("index.html")
+
 @app.route("/")
 def hera():
     return render_template("index.html")

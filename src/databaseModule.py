@@ -6,7 +6,7 @@ class DatabaseModule():
         
     def get_dns_settings(self):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM dns_settings"
@@ -25,7 +25,7 @@ class DatabaseModule():
     
     def get_ethernet_settings(self):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM ethernet_settings"
@@ -45,7 +45,7 @@ class DatabaseModule():
     
     def get_network_priority(self):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM network_priority"
@@ -65,7 +65,7 @@ class DatabaseModule():
     
     def get_settings_4g(self):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM settings_4g"
@@ -86,7 +86,7 @@ class DatabaseModule():
     
     def get_wifi_settings(self):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM wifi_settings"
@@ -109,7 +109,7 @@ class DatabaseModule():
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
             
@@ -133,7 +133,7 @@ class DatabaseModule():
 
     def set_ethernet_settings(self,ethernetEnable,ip,netmask,gateway):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
             
@@ -162,7 +162,7 @@ class DatabaseModule():
 
     def set_network_priority(self,enableWorkmode,first,second,third):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE network_priority SET key = ? WHERE value = ?"
             
@@ -191,7 +191,7 @@ class DatabaseModule():
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
@@ -225,7 +225,7 @@ class DatabaseModule():
     
     def set_wifi_settings(self,wifiActivate,mod,ssid,password,encryptionType,netmask,gateway):
         try:
-            self.settings_database = sqlite3.connect('Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE wifi_settings SET key = ? WHERE value = ?"
             

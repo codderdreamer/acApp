@@ -30,11 +30,12 @@ class Application():
         self.ocppCallbacks =  OcppCallbacks(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
-        self.networkSettings.set_eth()
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()
         self.databaseModule.get_dns_settings()
+        # self.networkSettings.set_eth()
+        
         while self.config.config_writed == False:
             time.sleep(0.01)
         

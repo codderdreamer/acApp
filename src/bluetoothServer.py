@@ -26,6 +26,7 @@ class BluetoothServer:
         os.system("sudo hciconfig hci0 up")
 
     def discoverable_on(self): 
+        os.system("bluetoothctl pairable on")
         os.system("bluetoothctl discoverable on")
 
     def pi_scan(self):
@@ -42,8 +43,8 @@ class BluetoothServer:
         print("--------------------------------------------- discoverable_on")
         threading.Thread(target=self.discoverable_on,daemon=True).start()
         time.sleep(3)
-        # print("--------------------------------------------- pi_scan")
-        # threading.Thread(target=self.pi_scan,daemon=True).start()
+        print("--------------------------------------------- pi_scan")
+        threading.Thread(target=self.pi_scan,daemon=True).start()
         print("finish")
 
     def start_server_sock_listenning(self):

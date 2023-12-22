@@ -42,8 +42,8 @@ class BluetoothServer:
         print("--------------------------------------------- discoverable_on")
         threading.Thread(target=self.discoverable_on,daemon=True).start()
         time.sleep(3)
-        print("--------------------------------------------- pi_scan")
-        threading.Thread(target=self.pi_scan,daemon=True).start()
+        # print("--------------------------------------------- pi_scan")
+        # threading.Thread(target=self.pi_scan,daemon=True).start()
         print("finish")
 
     def start_server_sock_listenning(self):

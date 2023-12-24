@@ -12,7 +12,11 @@ class NetworkSettings():
         os.system("stty erase ^h")
         set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0} gw4 {1}'.format(ip,gateway)
         os.system(set_eth)
+        os.system('sudo nmcli con modify "static-eth1" ipv4.dns "8.8.8.8 8.8.4.4"')
         os.system('nmcli con up "static-eth1" ifname eth1')
+        
+        
+
         
     def set_dns(self):
         dns1 = "114.114.114.114"

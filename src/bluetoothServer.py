@@ -123,6 +123,7 @@ class BluetoothServer:
                 print("--------------------------------------------- waiting_connection")
                 threading.Thread(target=self.discoverable_on,daemon=True).start()
                 time.sleep(3)
+                os.system("sudo hciconfig hci0 leadv")
                 if(self.connection == False):
                     print("Waiting for connection on RFCOMM channel %d" % self.port)
                     self.client_sock, client_info = self.server_sock.accept()

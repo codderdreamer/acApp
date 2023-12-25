@@ -28,6 +28,8 @@ class BluetoothServer:
     def discoverable_on(self): 
         os.system("bluetoothctl pairable on")
         os.system("bluetoothctl discoverable on")
+        os.system("sudo hciconfig hci0 leadv")
+
 
     def pi_scan(self):
         os.system("sudo hciconfig hci piscan")

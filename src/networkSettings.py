@@ -17,7 +17,6 @@ class NetworkSettings():
             os.system('sudo nmcli con modify "static-eth1" ipv4.dns "8.8.8.8,8.8.4.4"')
             os.system('nmcli con up "static-eth1" ifname eth1')
         
-        
     def set_dns(self,dnsEnable,dns1,dns2):
         if dnsEnable:
             setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(dns1,dns2)
@@ -36,21 +35,15 @@ class NetworkSettings():
         add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
         print(add_connection_string)
         os.system(add_connection_string)
-        while True:
-            os.system("ping www.google.com")
-            time.sleep(3)
-        
-        # modify_encryptionType = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
-        # modify_netmask = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
-        # modify_gateway = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
-        
-        # os.system(f"nmcli connection up id {connection_name}")
         
     def set_wifi(self):
         ssid = "FiberHGW_TP06BA_5GHz_EXT"
         password = "xNUEjvX9"
         set_wifi = 'nmcli device wifi connect "{0}" password "{1}" name wifi'.format(ssid,password)
         os.system(set_wifi)
+        
+        
+        
         
         
 # NetworkSettings(None).set_4G()
@@ -61,7 +54,10 @@ class NetworkSettings():
 #     time.sleep(1)
 
 
-
+        # modify_encryptionType = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
+        # modify_netmask = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
+        # modify_gateway = 'nmcli connection modify wifi wifi-sec.psk "{0}"'
+        # os.system(f"nmcli connection up id {connection_name}")
 
 # ####################### ETH SET ############################################
 # #!/bin/sh

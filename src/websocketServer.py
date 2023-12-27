@@ -120,6 +120,13 @@ class WebSocketServer():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
+                self.application.networkSettings.set_eth(ethernetEnable,ip,netmask,gateway)
+                data = {
+                    "ip" : ip
+                }
+                with open("client/build/websocket.json", "w") as file:
+                    json.dump(data, file)
+                    print("ip yazıldı")
             elif(sjon["Command"] == "DNSSettings"):
                 dnsEnable = str(sjon["Data"]["dnsEnable"])
                 dns1 = sjon["Data"]["dns1"]

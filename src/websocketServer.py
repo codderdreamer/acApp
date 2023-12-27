@@ -129,8 +129,8 @@ class WebSocketServer():
                     print("ip yazıldı")
             elif(sjon["Command"] == "DNSSettings"):
                 dnsEnable = str(sjon["Data"]["dnsEnable"])
-                dns1 = sjon["Data"]["dns1"]
-                dns2 = sjon["Data"]["dns2"]
+                dns1 = sjon["Data"]["DNS1"]
+                dns2 = sjon["Data"]["DNS2"]
                 self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
             elif(sjon["Command"] == "WifiSettings"):
                 wifiEnable = str(sjon["Data"]["wifiEnable"])

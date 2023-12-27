@@ -132,6 +132,7 @@ class WebSocketServer():
                 dns1 = sjon["Data"]["DNS1"]
                 dns2 = sjon["Data"]["DNS2"]
                 self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
+                self.application.networkSettings.set_dns(dnsEnable,dns1,dns2)
             elif(sjon["Command"] == "WifiSettings"):
                 wifiEnable = str(sjon["Data"]["wifiEnable"])
                 mod = sjon["Data"]["mod"]

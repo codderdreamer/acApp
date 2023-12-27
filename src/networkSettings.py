@@ -8,8 +8,6 @@ class NetworkSettings():
         
     def set_eth(self,ethernetEnable,ip,netmask,gateway):
         if ethernetEnable:
-            # ip = "192.168.1.70/24"
-            # gateway = "192.168.1.1"
             netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
             netmask_prefix_length = netmask_obj.prefixlen
             os.system("nmcli con delete static-eth1")
@@ -20,12 +18,11 @@ class NetworkSettings():
             os.system('nmcli con up "static-eth1" ifname eth1')
         
         
-    def set_dns(self,dns1,dns2):
-        setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(dns1,dns2)
-        os.system(setDns)
-        os.system('nmcli con up "static-eth1" ifname eth1')
-        
-        
+    def set_dns(self,dnsEnable,dns1,dns2):
+        if dnsEnable:
+            setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(dns1,dns2)
+            os.system(setDns)
+            os.system('nmcli con up "static-eth1" ifname eth1')
         
     def set_4G(self):
         connection_name = "ppp0"

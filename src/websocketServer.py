@@ -124,7 +124,7 @@ class WebSocketServer():
                 data = {
                     "ip" : ip
                 }
-                with open("client/build/websocket.json", "w") as file:
+                with open("/root/acApp/client/build/websocket.json", "w") as file:
                     json.dump(data, file)
                     print("ip yazıldı")
             elif(sjon["Command"] == "DNSSettings"):

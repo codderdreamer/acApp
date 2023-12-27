@@ -41,13 +41,11 @@
 {
     "Command" : "WifiSettings",
     "Data" : {
-                "wifiActivate" : true,
+                "wifiEnable" : true,
                 "mod" : "AP",
                 "ssid" : "HeraNet",
                 "password" : "Hera2023*",
-                "encryptionType" : "wpa",
-                "netmask" : "255.255.255.0",
-                "gateway" : "192.168.1.1"
+                "encryptionType" : "wpa"
             }
 }
     

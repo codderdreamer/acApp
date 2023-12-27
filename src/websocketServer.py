@@ -65,7 +65,20 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
-    
+    def send_wifi_settings(self):
+        command = {
+                    "Command" : "WifiSettings",
+                    "Data" : {
+                                "wifiEnable" : bool(self.application.settings.wifiSettings.wifiEnable=="True"),
+                                "mod" : self.application.settings.wifiSettings.mod,
+                                "ssid" : self.application.settings.wifiSettings.ssid,
+                                "password" : self.application.settings.wifiSettings.password,
+                                "encryptionType" : self.application.settings.wifiSettings.encryptionType
+                            }
+                }
+        print("Gönderilen:",command)
+        self.websocketServer.send_message_to_all(msg = json.dumps(command))
+        
     def NewClientws(self, client, server):
         if client:
             try:
@@ -74,6 +87,7 @@ class WebSocketServer():
                 self.send_4g_settings()
                 self.send_ethernet_settings()
                 self.send_dns_settings()
+                self.send_wifi_settings()
             except Exception as e:
                 print("could not get New Client id",e)
                 
@@ -112,7 +126,12 @@ class WebSocketServer():
                 dns2 = sjon["Data"]["dns2"]
                 self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
             elif(sjon["Command"] == "WifiSettings"):
-                pass
+                wifiEnable = str(sjon["Data"]["wifiEnable"])
+                mod = sjon["Data"]["mod"]
+                ssid = sjon["Data"]["ssid"]
+                password = sjon["Data"]["password"]
+                encryptionType = sjon["Data"]["encryptionType"]
+                self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType)
             
         except Exception as e:
             print("MessageReceivedws",e)

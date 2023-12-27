@@ -96,13 +96,11 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("get_wifi_settings",data_dict,"\n")
-            self.application.settings.settings4G.wifiActivate = data_dict["wifiActivate"]
-            self.application.settings.settings4G.mod = data_dict["mod"]
-            self.application.settings.settings4G.ssid = data_dict["ssid"]
-            self.application.settings.settings4G.password = data_dict["password"]
-            self.application.settings.settings4G.encryptionType = data_dict["encryptionType"]
-            self.application.settings.settings4G.netmask = data_dict["netmask"]
-            self.application.settings.settings4G.gateway = data_dict["gateway"]
+            self.application.settings.wifiSettings.wifiEnable = data_dict["wifiEnable"]
+            self.application.settings.wifiSettings.mod = data_dict["mod"]
+            self.application.settings.wifiSettings.ssid = data_dict["ssid"]
+            self.application.settings.wifiSettings.password = data_dict["password"]
+            self.application.settings.wifiSettings.encryptionType = data_dict["encryptionType"]
         except Exception as e:
             print(e)
         return data_dict
@@ -124,7 +122,9 @@ class DatabaseModule():
             value = (dns2,"dns2")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
             self.settings_database.close()
+            
             self.application.settings.dnsSettings.dnsEnable = dnsEnable
             self.application.settings.dnsSettings.DNS1 = dns1
             self.application.settings.dnsSettings.DNS2 = dns2
@@ -152,7 +152,9 @@ class DatabaseModule():
             value = (gateway,"gateway")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
             self.settings_database.close()
+            
             self.application.settings.ethernetSettings.ethernetEnable = ethernetEnable
             self.application.settings.ethernetSettings.ip = ip
             self.application.settings.ethernetSettings.netmask = netmask
@@ -181,7 +183,9 @@ class DatabaseModule():
             value = (third,"third")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
             self.settings_database.close()
+            
             self.application.settings.networkPriority.enableWorkmode = enableWorkmode
             self.application.settings.networkPriority.first = first
             self.application.settings.networkPriority.second = second
@@ -214,7 +218,9 @@ class DatabaseModule():
             value = (pin,"pin")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+            
             self.settings_database.close()
+            
             self.application.settings.settings4G.apn = apn
             self.application.settings.settings4G.user = user
             self.application.settings.settings4G.password = password
@@ -223,13 +229,13 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-    def set_wifi_settings(self,wifiActivate,mod,ssid,password,encryptionType,netmask,gateway):
+    def set_wifi_settings(self,wifiEnable,mod,ssid,password,encryptionType):
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE wifi_settings SET key = ? WHERE value = ?"
             
-            value = (wifiActivate,"wifiActivate")
+            value = (wifiEnable,"wifiEnable")
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
@@ -249,21 +255,13 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
-            value = (netmask,"netmask")
-            self.cursor.execute(query,value)
-            self.settings_database.commit()
-            
-            value = (gateway,"gateway")
-            self.cursor.execute(query,value)
-            self.settings_database.commit()
             self.settings_database.close()
-            self.application.settings.settings4G.wifiActivate = wifiActivate
-            self.application.settings.settings4G.mod = mod
-            self.application.settings.settings4G.ssid = ssid
-            self.application.settings.settings4G.password = password
-            self.application.settings.settings4G.encryptionType = encryptionType
-            self.application.settings.settings4G.netmask = netmask
-            self.application.settings.settings4G.gateway = gateway
+            
+            self.application.settings.wifiSettings.wifiEnable = wifiEnable
+            self.application.settings.wifiSettings.mod = mod
+            self.application.settings.wifiSettings.ssid = ssid
+            self.application.settings.wifiSettings.password = password
+            self.application.settings.wifiSettings.encryptionType = encryptionType
         except Exception as e:
             print(e)
     

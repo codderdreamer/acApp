@@ -37,10 +37,9 @@ class DNSSettings():
 
 class WifiSettings():
     def __init__(self) -> None:
-        self.wifiActivate = None
+        self.wifiEnable = None
         self.mod = None
         self.ssid = None
         self.password = None
         self.encryptionType = None
-        self.netmask = None
-        self.gateway = None
+        

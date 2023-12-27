@@ -34,7 +34,13 @@ class Application():
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()
         self.databaseModule.get_dns_settings()
-        self.networkSettings.set_eth()
+        self.databaseModule.get_wifi_settings()
+        
+        ethernetEnable = True
+        ip = "192.168.1.70"
+        netmask = "255.255.255.0"
+        gateway = "192.168.1.1"
+        self.networkSettings.set_eth(ethernetEnable,ip,netmask,gateway)
         
         while self.config.config_writed == False:
             time.sleep(0.01)

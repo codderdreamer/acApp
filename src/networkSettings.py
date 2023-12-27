@@ -1,5 +1,6 @@
 import os
 import time
+import ipaddress
 
 class NetworkSettings():
     def __init__(self,application) -> None:
@@ -9,9 +10,11 @@ class NetworkSettings():
         if ethernetEnable:
             # ip = "192.168.1.70/24"
             # gateway = "192.168.1.1"
+            netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+            netmask_prefix_length = netmask_obj.prefixlen
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")
-            set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask,gateway)
+            set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
             os.system(set_eth)
             os.system('sudo nmcli con modify "static-eth1" ipv4.dns "8.8.8.8,8.8.4.4"')
             os.system('nmcli con up "static-eth1" ifname eth1')

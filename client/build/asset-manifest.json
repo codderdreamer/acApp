@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.0851fa02.css",
-    "main.js": "/static/js/main.22a5a73e.js",
+    "main.js": "/static/js/main.ab9173a3.js",
     "static/js/27.432ad563.chunk.js": "/static/js/27.432ad563.chunk.js",
     "static/media/nucleo-icons.svg": "/static/media/nucleo-icons.01ebecaf50461162d4bc.svg",
     "static/media/nucleo-icons.eot": "/static/media/nucleo-icons.19abb5402a664606b14c.eot",
@@ -12,6 +12,6 @@
   },
   "entrypoints": [
     "static/css/main.0851fa02.css",
-    "static/js/main.22a5a73e.js"
+    "static/js/main.ab9173a3.js"
   ]
 }

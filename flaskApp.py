@@ -1,7 +1,7 @@
 
 import os
 import time
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 
 app = Flask(__name__, static_url_path='',
@@ -19,6 +19,11 @@ def software():
 @app.route("/")
 def hera():
     return render_template("index.html")
+
+@app.route('/get_flask_ip', methods=['GET'])
+def get_flask_ip():
+    ip_address = request.environ.get('REMOTE_ADDR')
+    return jsonify({'ip': ip_address})
 
 
 app.run(use_reloader=True, host='0.0.0.0', port=80, threaded=True)

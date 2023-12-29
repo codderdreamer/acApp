@@ -208,9 +208,9 @@ class BluetoothServer:
         time.sleep(3)
         threading.Thread(target=self.discoverable,daemon=True).start()
         time.sleep(3)
-        print("**************************************** sudo hciconfig hci0 leadv")
-        os.system("sudo hciconfig hci0 leadv")
-        time.sleep(5)
+        # print("**************************************** sudo hciconfig hci0 leadv")
+        # os.system("sudo hciconfig hci0 leadv")
+        # time.sleep(5)
         try:
             print("**************************************** Bluetooth Socket Açılıyor")
             self.server_sock=BluetoothSocket( RFCOMM )

@@ -198,14 +198,7 @@ class BluetoothServer:
         subprocess.Popen(["killall", "hciattach"]).wait()
         time.sleep(2)
         print("3")
-        process = subprocess.Popen(
-            ["hciattach", "-n", "-s", "1500000", "/dev/ttyS1", "sprd","&"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        stdout, stderr = process.communicate(timeout=30)
-        print("STDOUT:", stdout)
-        print("STDERR:", stderr)
+        os.system("hciattach -n -s 1500000 /dev/ttyS1 sprd &")
         # subprocess.Popen(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd"]).wait()
         time.sleep(2)
         print("4")

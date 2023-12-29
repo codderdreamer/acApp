@@ -4,7 +4,7 @@ from bluetooth import *
 import threading
 import json
 from bluetooth.ble import BeaconService, GATTRequester
-
+print(bluetooth.__file__)
 
 class BluetoothServer:
     def __init__(self,application) -> None:

@@ -249,7 +249,7 @@ class BluetoothServer:
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
         
-    def make_device_discoverable():
+    def make_device_discoverable(self):
         try:
             # Cihazı keşfedilebilir yap
             subprocess.run(["sudo", "hciconfig", "hci0", "piscan"], check=True)

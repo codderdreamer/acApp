@@ -199,7 +199,7 @@ class BluetoothServer:
         time.sleep(2)
         print("3")
         process = subprocess.Popen(
-            ["hciattach", "-n", "-s", "1500000", "/dev/ttyS1", "sprd"],
+            ["hciattach", "-n", "-s", "1500000", "/dev/ttyS1", "sprd","&"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )

@@ -283,6 +283,7 @@ class Agent:
         self.pin_code = pin_code
 
     def RequestPinCode(self, device):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print("PIN kodu istendi, cihaz:", device)
         return self.pin_code
             

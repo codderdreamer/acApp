@@ -105,6 +105,11 @@ class BluetoothServer:
         time.sleep(3)
         try:
             port = serial.Serial('/dev/rfcomm0', baudrate=9600)
+            try:
+                line = port.readline().decode().strip()
+                print(line)
+            except Exception as e:
+                print(f"Error reading /dev/rfcomm0: {e}")
             # monitor = BluetoothMonitor()
             # monitor_thread = threading.Thread(target=monitor.start)
             # monitor_thread.start()   

@@ -300,6 +300,10 @@ class BluetoothMonitor:
         agent = Agent(self.bus, path, pin_code)
         print("Agent")
         self.bus.register_object("/test/agent", agent, AGENT_INTERFACE)
+        manager = self.bus.get('org.bluez', '/')
+        manager.RegisterAgent("/test/agent", "KeyboardDisplay")
+        manager.RequestDefaultAgent("/test/agent")
+
 
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')

@@ -3,22 +3,7 @@ import time
 from bluetooth import *
 import threading
 import json
-from bluetooth.ble import BeaconService, GATTRequester
-from pydbus import SystemBus
-from gi.repository import GLib
-import threading
-import subprocess
 
-AGENT_INTERFACE = """
-<node>
-  <interface name='org.bluez.Agent1'>
-    <method name='RequestPinCode'>
-      <arg type='o' name='device' direction='in'/>
-      <arg type='s' name='pincode' direction='out'/>
-    </method>
-  </interface>
-</node>
-"""
 
 class BluetoothServer:
     def __init__(self,application) -> None:
@@ -26,82 +11,46 @@ class BluetoothServer:
         self.connection = False
         self.client_sock = None
         threading.Thread(target=self.run_thread,daemon=True).start()
-        
-    def rfkill(self):
-        print("rfkill")
+        threading.Thread(target=self.send_message,daemon=True).start()
+
+    def device_connect(self):
         os.system("rfkill unblock all")
-    
-    def killall(self):
-        print("killall")
+        print("--------------------------------- 1")
+        time.sleep(3)
         os.system("killall hciattach")
-        
-    def hciattach(self):
-        print("hciattach")
+        print("--------------------------------- 2")
+        time.sleep(3)
         os.system("hciattach -n -s 1500000 /dev/ttyS1 sprd &")
-        
-    def hciconfig(self):
-        print("hciconfig")
-        os.system("hciconfig hci0 up")
-        
-    def power(self):
-        print("power")
-        os.system("bluetoothctl power on")
-        
-    def discoverable(self):
-        print("discoverable")
-        os.system("bluetoothctl discoverable on")
-        
-    def pairable(self):
-        print("pairable")
+
+    def hci_up(self):
+        os.system("sudo hciconfig hci0 up")
+
+    def discoverable_on(self): 
         os.system("bluetoothctl pairable on")
-        
-    def agent(self):
-        print("agent")
-        os.system("bluetoothctl agent on")
-        
-    def defaultagent(self):
-        print("defaultagent")
-        os.system("bluetoothctl default-agent")
-        
-    def piscan(self):
-        print("piscan")
-        os.system("hciconfig hci piscan")
-        
-    def leadv(self):
-        print("leadv")
+        os.system("bluetoothctl discoverable on")
         os.system("sudo hciconfig hci0 leadv")
-        
-             
-    def run_thread(self):
-        threading.Thread(target=self.rfkill,daemon=True).start()
+
+
+    def pi_scan(self):
+        os.system("sudo hciconfig hci piscan")
+
+
+    def btt(self):
+        print("--------------------------------------------- device_connect")
+        threading.Thread(target=self.device_connect,daemon=True).start()
+        time.sleep(10)
+        print("--------------------------------------------- hci_up")
+        threading.Thread(target=self.hci_up,daemon=True).start()
         time.sleep(3)
-        threading.Thread(target=self.killall,daemon=True).start()
+        print("--------------------------------------------- discoverable_on")
+        threading.Thread(target=self.discoverable_on,daemon=True).start()
         time.sleep(3)
-        threading.Thread(target=self.hciattach,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.hciconfig,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.leadv,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.power,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.discoverable,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.pairable,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.agent,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.defaultagent,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.piscan,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.hciconfig,daemon=True).start()
-        time.sleep(3)
+        print("--------------------------------------------- pi_scan")
+        threading.Thread(target=self.pi_scan,daemon=True).start()
+        print("finish")
+
+    def start_server_sock_listenning(self):
         try:
-            # monitor = BluetoothMonitor()
-            # monitor_thread = threading.Thread(target=monitor.start)
-            # monitor_thread.start()   
-            # monitor.adapter.onPropertiesChanged = self.on_properties_changed
             self.server_sock=BluetoothSocket( RFCOMM )
             self.server_sock.bind(("",PORT_ANY))
             self.server_sock.listen(1)
@@ -113,86 +62,129 @@ class BluetoothServer:
                             profiles = [ SERIAL_PORT_PROFILE ] 
             #                   protocols = [ OBEX_UUID ] 
                                 )
-            print("advertise_service***********************")
-        
-        
-        
-        
         except Exception as e:
-            print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
+            print(e)
+            
+    def send_network_priority(self):
+        command = {
+                    "Command" : "NetworkPriority",
+                    "Data" : {
+                                "enableWorkmode" : bool(self.application.settings.networkPriority.enableWorkmode=="True"),
+                                "1" : self.application.settings.networkPriority.first,
+                                "2" : self.application.settings.networkPriority.second,
+                                "3" : self.application.settings.networkPriority.third
+                            }
+                }
+        print("Gönderilen:",command)
+        self.client_sock.send(json.dumps(command).encode()) 
+        
+    def send_4g_settings(self):
+        command = {
+                    "Command" : "4GSettings",
+                    "Data" : {
+                                "enableModification" : bool(self.application.settings.settings4G.enableModification=="True"),
+                                "apn" : self.application.settings.settings4G.apn,
+                                "user" : self.application.settings.settings4G.user,
+                                "password" : self.application.settings.settings4G.password,
+                                "pin" : self.application.settings.settings4G.pin,
+                            }
+                }
+        print("Gönderilen:",command)
+        self.client_sock.send(json.dumps(command).encode()) 
+        
+    def send_ethernet_settings(self):
+        command = {
+                    "Command" : "EthernetSettings",
+                    "Data" : {
+                                "ethernetEnable" : bool(self.application.settings.ethernetSettings.ethernetEnable=="True"),
+                                "ip" : self.application.settings.ethernetSettings.ip,
+                                "netmask" : self.application.settings.ethernetSettings.netmask,
+                                "gateway" : self.application.settings.ethernetSettings.gateway
+                            }
+                }
+        print("Gönderilen:",command)
+        self.client_sock.send(json.dumps(command).encode()) 
+        
+    def send_dns_settings(self):
+        command = {
+                    "Command" : "DNSSettings",
+                    "Data" : {
+                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable=="True"),
+                                "DNS1" : self.application.settings.dnsSettings.DNS1,
+                                "DNS2" : self.application.settings.dnsSettings.DNS2
+                            }
+                }
+        print("Gönderilen:",command)
+        self.client_sock.send(json.dumps(command).encode()) 
+        
+    def waiting_connection(self):
         while True:
+            try:
+                print("--------------------------------------------- waiting_connection")
+                threading.Thread(target=self.discoverable_on,daemon=True).start()
+                time.sleep(3)
+                os.system("sudo hciconfig hci0 leadv")
+                if(self.connection == False):
+                    print("Waiting for connection on RFCOMM channel %d" % self.port)
+                    self.client_sock, client_info = self.server_sock.accept()
+                    self.connection = True
+                    print("Accepted connection from ", client_info)
+                    self.send_network_priority()
+                    self.send_dns_settings()
+                    self.send_ethernet_settings()
+                    self.send_network_priority()
+                while self.connection:
+                    print("Waiting for data receive...")
+                    try:
+                        data = self.client_sock.recv(1024)
+                        data = data.decode('utf-8')
+                        print("incoming data:", data)
+                        self.message_parsing(data)
+                    except Exception as e:
+                        print(e)
+                        self.connection = False
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+
+    def send_message(self):
+        while True:
+            try:
+                if self.connection:
+                    pass
+            except Exception as e:
+                print(e)
             time.sleep(1)
+
+    def message_parsing(self,data):
+        try:
+            json_object = json.loads(data)
+            Command = json_object["Command"]
+            Data = json_object["Data"]
+            if Command == "NetworkPriority":
+                self.application.databaseModule.set_network_priority(Data["enableWorkmode"],Data["1"],Data["2"],Data["3"])
+                self.application.webSocketServer.send_network_priority()
+            elif Command == "4GSettings":
+                self.application.databaseModule.set_settings_4g(Data["enableModification"],Data["apn"],Data["user"],Data["password"],Data["pin"])
+                self.application.webSocketServer.send_4g_settings()
+            elif Command == "EthernetSettings":
+                self.application.databaseModule.set_ethernet_settings(Data["ethernetEnable"],Data["ip"],Data["netmask"],Data["gateway"])
+                self.application.webSocketServer.send_ethernet_settings()
+            elif Command == "DNSSettings":
+                self.application.databaseModule.set_dns_settings(Data["dnsEnable"],Data["DNS1"],Data["DNS2"])
+                self.application.webSocketServer.send_dns_settings()
             
-    def on_properties_changed(self, interface, changed, invalidated):
-        print("***************************************************************************************************************",interface,changed,invalidated)
-        if 'Devices' in changed:
-            for device_path in changed['Devices']:
-                device = self.bus.get('org.bluez', device_path)
-                if device.Connected:
-                    print(f"Cihaz bağlandı: {device.Alias}")
-        
-        
-
-class Agent:
-    def __init__(self, bus, path, pin_code):
-        self.bus = bus
-        self.path = path
-        self.pin_code = pin_code
-
-    def RequestPinCode(self, device):
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print("PIN kodu istendi, cihaz:", device)
-        return self.pin_code
+        except Exception as e:
+            print(e)
             
-class BluetoothMonitor:
-    def __init__(self):
-        print("BluetoothMonitor")
-        self.bus = SystemBus()
-        path = "/root/testagent"
-        pin_code = "000000"  # İstediğiniz PIN kodunu buraya yazın
-        agent = Agent(self.bus, path, pin_code)
-        print("Agent")
-        self.bus.register_object(path, agent, AGENT_INTERFACE)
-        
-        # AgentManager1 arayüzünü kullanarak agent'ı kaydet
-        agent_manager = self.bus.get('org.bluez', '/org/bluez')
-        agent_manager.RegisterAgent(path, "DisplayOnly")
-        agent_manager.RequestDefaultAgent(path)
-    
-        print("SystemBus")
-        self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
-        self.adapter.Pairable = True
+    def run_thread(self):
+        self.btt()
+        time.sleep(20)
+        print("------------------------------------listenning-----------------------------")
+        self.start_server_sock_listenning()
+        self.waiting_connection()
+            
 
-        
-        print(self.adapter)
-        self.adapter.onPropertiesChanged = self.on_properties_changed
-        print("self.adapter.onPropertiesChanged")
-
-    def on_properties_changed(self, interface, changed, invalidated):
-        print("***************************************************************************************************************",interface,changed,invalidated)
-        if 'Devices' in changed:
-            for device_path in changed['Devices']:
-                device = self.bus.get('org.bluez', device_path)
-                if device.Connected:
-                    print(f"Cihaz bağlandı: {device.Alias}")
-
-    def start(self):
-        loop = GLib.MainLoop()
-        loop.run()
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 # bt = BluetoothServer(None)
 # bt.btt()
 # time.sleep(20)
@@ -225,18 +217,6 @@ class BluetoothMonitor:
 # #bluetooth up
 # hciconfig hci0 up && hciconfig hci0 piscan
 # bluetoothctl
-
-#######################################################
-# Filename     : bluetooth_rfcomm.sh
-#######################################################
-# #!/bin/sh
-# #add serial port service
-# sdptool add SP
-# #add serial port
-# sleep 1
-# rfcomm watch hci0 &
-# #read: cat /dev/rfcomm0
-# #write: echo "test" > /dev/rfcomm0
 
 
 #######################################################

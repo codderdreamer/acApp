@@ -283,6 +283,7 @@ class Agent:
 class BluetoothMonitor:
     def __init__(self):
         print("BluetoothMonitor")
+        self.bus = None
         self.bus = SystemBus()
         path = "/test/agent"
         pin_code = "0000"  # İstediğiniz PIN kodunu buraya yazın

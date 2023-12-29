@@ -230,7 +230,7 @@ class BluetoothServer:
         print("**************************************** sudo hciconfig hci0 leadv")
         os.system("sudo hciconfig hci0 leadv")
         time.sleep(5)
-        self.make_device_discoverable()
+        # self.make_device_discoverable()
         try:
             # print("Starting BLE BeaconService")
             # service = BeaconService()

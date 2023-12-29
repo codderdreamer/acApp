@@ -4,6 +4,9 @@ from bluetooth import *
 import threading
 import json
 from bluetooth.ble import BeaconService, GATTRequester
+from pydbus import SystemBus
+from gi.repository import GLib
+import threading
 
 class BluetoothServer:
     def __init__(self,application) -> None:
@@ -227,14 +230,18 @@ class BluetoothServer:
         os.system("sudo hciconfig hci0 leadv")
         time.sleep(5)
         try:
-            print("Starting BLE BeaconService")
-            service = BeaconService()
-            service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
-            # service.set_scan_response_raw(b"\x08\x09MyDevice")
-            while True:
-                devices = service.scan(2)
-                print(devices)
-                time.sleep(1)
+            # print("Starting BLE BeaconService")
+            # service = BeaconService()
+            # service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
+            # # service.set_scan_response_raw(b"\x08\x09MyDevice")
+            # while True:
+            #     devices = service.scan(2)
+            #     print(devices)
+            #     time.sleep(1)
+            
+            monitor = BluetoothMonitor()
+            monitor_thread = threading.Thread(target=monitor.start)
+            monitor_thread.start()
             
             
         except Exception as e:
@@ -255,7 +262,27 @@ class BluetoothServer:
         # self.start_server_sock_listenning()
         # self.waiting_connection()
             
+class BluetoothMonitor:
+    def __init__(self):
+        print("BluetoothMonitor")
+        self.bus = SystemBus()
+        print("SystemBus")
+        self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
+        print(self.adapter)
+        self.adapter.onPropertiesChanged = self.on_properties_changed
+        print("self.adapter.onPropertiesChanged")
 
+    def on_properties_changed(self, interface, changed, invalidated):
+        print("on_properties_changed",interface,changed,invalidated)
+        if 'Devices' in changed:
+            for device_path in changed['Devices']:
+                device = self.bus.get('org.bluez', device_path)
+                if device.Connected:
+                    print(f"Cihaz bağlandı: {device.Alias}")
+
+    def start(self):
+        loop = GLib.MainLoop()
+        loop.run()
 # bt = BluetoothServer(None)
 # bt.btt()
 # time.sleep(20)

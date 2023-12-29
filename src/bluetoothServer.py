@@ -209,11 +209,11 @@ class BluetoothServer:
         time.sleep(3)
         threading.Thread(target=self.discoverable,daemon=True).start()
         time.sleep(3)
-        # print("**************************************** sudo hciconfig hci0 leadv")
-        # os.system("sudo hciconfig hci0 leadv")
-        # time.sleep(5)
+        print("**************************************** sudo hciconfig hci0 leadv")
+        os.system("sudo hciconfig hci0 leadv")
+        time.sleep(5)
         try:
-            print("Starting BLE Beacon")
+            print("Starting BLE BeaconService")
             service = BeaconService()
             service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
             while True:

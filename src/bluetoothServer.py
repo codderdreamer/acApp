@@ -23,6 +23,7 @@ class BluetoothServer:
 
     def hci_up(self):
         os.system("sudo hciconfig hci0 up")
+        os.system("bluetoothctl select 24:B7:2A:CD:5C:39")
 
     def discoverable_on(self): 
         os.system("bluetoothctl discoverable on")

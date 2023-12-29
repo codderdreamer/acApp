@@ -218,6 +218,7 @@ class BluetoothServer:
             service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
             while True:
                 print("here")
+                time.sleep(5)
             
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)

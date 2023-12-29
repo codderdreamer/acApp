@@ -123,7 +123,7 @@ class BluetoothMonitor:
     def __init__(self):
         print("BluetoothMonitor")
         self.bus = SystemBus()
-        path = "/agent"
+        path = "/test/agent"
         pin_code = "0000"  # İstediğiniz PIN kodunu buraya yazın
         agent = Agent(self.bus, path, pin_code)
         print("Agent")

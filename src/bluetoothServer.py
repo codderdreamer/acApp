@@ -98,9 +98,24 @@ class BluetoothServer:
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
         try:
-            monitor = BluetoothMonitor()
-            monitor_thread = threading.Thread(target=monitor.start)
-            monitor_thread.start()   
+            self.server_sock=BluetoothSocket( RFCOMM )
+            self.server_sock.bind(("",PORT_ANY))
+            self.server_sock.listen(1)
+            self.port = self.server_sock.getsockname()[1]
+            uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
+            advertise_service( self.server_sock, "PiServer",
+                            service_id = uuid,
+                            service_classes = [ uuid, SERIAL_PORT_CLASS ],
+                            profiles = [ SERIAL_PORT_PROFILE ] 
+            #                   protocols = [ OBEX_UUID ] 
+                                )
+            print("Waiting************************")
+            self.client_sock, client_info = self.server_sock.accept()
+            
+      
+            # monitor = BluetoothMonitor()
+            # monitor_thread = threading.Thread(target=monitor.start)
+            # monitor_thread.start()   
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
         while True:

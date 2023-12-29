@@ -221,8 +221,8 @@ class BluetoothServer:
             print("**************************************** self.server_sock.listen(1)")
             self.port = self.server_sock.getsockname()[1]
             print("**************************************** self.server_sock.getsockname()")
-            uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
-            advertise_service( self.server_sock, "PiServer",
+            uuid = "0000110c-0000-1000-8000-00805f9b34fb"
+            advertise_service( self.server_sock, "HelperBox.",
                             service_id = uuid,
                             service_classes = [ uuid, SERIAL_PORT_CLASS ],
                             profiles = [ SERIAL_PORT_PROFILE ] 

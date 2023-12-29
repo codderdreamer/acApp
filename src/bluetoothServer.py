@@ -8,6 +8,7 @@ from pydbus import SystemBus
 from gi.repository import GLib
 import threading
 import subprocess
+import serial
 
 AGENT_INTERFACE = """
 <node>
@@ -103,10 +104,11 @@ class BluetoothServer:
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
         try:
-            monitor = BluetoothMonitor()
-            monitor_thread = threading.Thread(target=monitor.start)
-            monitor_thread.start()   
-            monitor.adapter.onPropertiesChanged = self.on_properties_changed
+            port = serial.Serial('/dev/rfcomm0', baudrate=9600)
+            # monitor = BluetoothMonitor()
+            # monitor_thread = threading.Thread(target=monitor.start)
+            # monitor_thread.start()   
+            # monitor.adapter.onPropertiesChanged = self.on_properties_changed
 
         
         

@@ -203,7 +203,7 @@ class BluetoothServer:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        stdout, stderr = process.communicate()
+        stdout, stderr = process.communicate(timeout=30)
         print("STDOUT:", stdout)
         print("STDERR:", stderr)
         # subprocess.Popen(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd"]).wait()

@@ -113,11 +113,7 @@ class Agent:
         self.bus = bus
         self.path = path
         self.pin_code = pin_code
-        
-    import dbus
-    import dbus.service
-    @dbus.service.method("org.bluez.Agent1",
-                         in_signature="o", out_signature="s")
+
     def RequestPinCode(self, device):
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print("PIN kodu istendi, cihaz:", device)
@@ -128,14 +124,14 @@ class BluetoothMonitor:
         print("BluetoothMonitor")
         self.bus = SystemBus()
         path = "/test/agent"
-        pin_code = "0000"  # İstediğiniz PIN kodunu buraya yazın
+        pin_code = "000000"  # İstediğiniz PIN kodunu buraya yazın
         agent = Agent(self.bus, path, pin_code)
         print("Agent")
         self.bus.register_object(path, agent, AGENT_INTERFACE)
         
         # AgentManager1 arayüzünü kullanarak agent'ı kaydet
         agent_manager = self.bus.get('org.bluez', '/org/bluez')
-        agent_manager.RegisterAgent(path, "KeyboardDisplay")
+        agent_manager.RegisterAgent(path, "DisplayOnly")
         agent_manager.RequestDefaultAgent(path)
     
         print("SystemBus")

@@ -110,7 +110,7 @@ class BluetoothServer:
             uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
             print(SERIAL_PORT_CLASS)
             print(SERIAL_PORT_PROFILE)
-            advertise_service( self.server_sock, "PiServer",
+            advertise_service( self.server_sock, self.server_sock.getsockname()[0],
                             service_id = uuid,
                             service_classes = [ uuid, SERIAL_PORT_CLASS ],
                             profiles = [ SERIAL_PORT_PROFILE ] 

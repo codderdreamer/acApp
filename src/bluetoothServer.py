@@ -103,7 +103,8 @@ class BluetoothServer:
             monitor_thread.start()   
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
-        print("soonnnnn!!!!!!!!!!!!!!!!!!!!!!!!!")
+        while True:
+            time.sleep(1)
         
         
 

@@ -43,6 +43,9 @@ class BluetoothServer:
         print("hciconfig")
         os.system("hciconfig hci0 up")
         
+    def select(self):
+        os.system("bluetoothctl select 24:B7:2A:CD:5C:39")
+        
     def power(self):
         print("power")
         os.system("bluetoothctl power on")
@@ -81,7 +84,9 @@ class BluetoothServer:
         time.sleep(3)
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
-        threading.Thread(target=self.leadv,daemon=True).start()
+        threading.Thread(target=self.select,daemon=True).start()
+        time.sleep(3)
+        # threading.Thread(target=self.leadv,daemon=True).start()
         time.sleep(3)
         threading.Thread(target=self.power,daemon=True).start()
         time.sleep(3)
@@ -98,22 +103,11 @@ class BluetoothServer:
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
         try:
-            # monitor = BluetoothMonitor()
-            # monitor_thread = threading.Thread(target=monitor.start)
-            # monitor_thread.start()   
-            # monitor.adapter.onPropertiesChanged = self.on_properties_changed
-            self.server_sock=BluetoothSocket( RFCOMM )
-            self.server_sock.bind(("",PORT_ANY))
-            self.server_sock.listen(1)
-            self.port = self.server_sock.getsockname()[1]
-            uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
-            advertise_service( self.server_sock, "PiServer",
-                            service_id = uuid,
-                            service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                            profiles = [ SERIAL_PORT_PROFILE ] 
-            #                   protocols = [ OBEX_UUID ] 
-                                )
-            print("advertise_service***********************")
+            monitor = BluetoothMonitor()
+            monitor_thread = threading.Thread(target=monitor.start)
+            monitor_thread.start()   
+            monitor.adapter.onPropertiesChanged = self.on_properties_changed
+
         
         
         

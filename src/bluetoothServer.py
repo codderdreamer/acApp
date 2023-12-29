@@ -144,7 +144,7 @@ class BluetoothMonitor:
         print("self.adapter.onPropertiesChanged")
 
     def on_properties_changed(self, interface, changed, invalidated):
-        print("on_properties_changed",interface,changed,invalidated)
+        print("***************************************************************************************************************",interface,changed,invalidated)
         if 'Devices' in changed:
             for device_path in changed['Devices']:
                 device = self.bus.get('org.bluez', device_path)

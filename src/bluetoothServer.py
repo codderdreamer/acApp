@@ -191,13 +191,16 @@ class BluetoothServer:
         os.system(f"echo -e '{komutlar}' | bluetoothctl")
         
     def bluetooth_config(self):
-        print("**************************")
+        print('subprocess.run(["rfkill", "unblock", "all"])')
         subprocess.run(["rfkill", "unblock", "all"])
         time.sleep(2)
+        print('subprocess.run(["killall", "hciattach"])')
         subprocess.run(["killall", "hciattach"])
         time.sleep(2)
+        print('subprocess.run(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd","&"])')
         subprocess.run(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd","&"])
         time.sleep(2)
+        print('subprocess.run(["hciconfig", "hci0", "up"])')
         subprocess.run(["hciconfig", "hci0", "up"])
         time.sleep(2)
         subprocess.run(["bluetoothctl", "power", "on"])

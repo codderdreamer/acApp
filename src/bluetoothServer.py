@@ -269,7 +269,17 @@ class BluetoothServer:
         # print("------------------------------------listenning-----------------------------")
         # self.start_server_sock_listenning()
         # self.waiting_connection()
-        
+AGENT_INTERFACE = """
+<node>
+  <interface name='org.bluez.Agent1'>
+    <method name='RequestPinCode'>
+      <arg type='o' name='device' direction='in'/>
+      <arg type='s' name='pincode' direction='out'/>
+    </method>
+  </interface>
+</node>
+"""
+
 class Agent:
     def __init__(self, bus, path, pin_code):
         self.bus = bus
@@ -289,7 +299,7 @@ class BluetoothMonitor:
         pin_code = "0000"  # İstediğiniz PIN kodunu buraya yazın
         agent = Agent(self.bus, path, pin_code)
         print("Agent")
-        self.bus.register_object("/test/agent", agent, None)
+        self.bus.register_object("/test/agent", agent, AGENT_INTERFACE)
 
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')

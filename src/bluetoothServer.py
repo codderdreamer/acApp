@@ -183,6 +183,14 @@ class BluetoothServer:
         except Exception as e:
             print(e)
             
+    def pairable_on(self):
+        print("**************************************** bluetoothctl pairable on")
+        os.system("bluetoothctl pairable on")
+        
+    def discoverable(self):
+        print("**************************************** bluetoothctl discoverable on")
+        os.system("bluetoothctl discoverable on")
+            
     def run_thread(self):
         print("**************************************** rfkill unblock all")
         os.system("rfkill unblock all")
@@ -196,11 +204,9 @@ class BluetoothServer:
         print("**************************************** sudo hciconfig hci0 up")
         os.system("sudo hciconfig hci0 up")
         time.sleep(3)
-        print("**************************************** bluetoothctl pairable on")
-        os.system("bluetoothctl pairable on")
+        threading.Thread(target=self.pairable_on,daemon=True).start()
         time.sleep(3)
-        print("**************************************** bluetoothctl discoverable on")
-        os.system("bluetoothctl discoverable on")
+        threading.Thread(target=self.discoverable,daemon=True).start()
         time.sleep(3)
         print("**************************************** sudo hciconfig hci0 leadv")
         os.system("sudo hciconfig hci0 leadv")

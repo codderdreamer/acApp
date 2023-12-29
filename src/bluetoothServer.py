@@ -100,8 +100,12 @@ class BluetoothServer:
         try:
             print("server_sock")
             self.server_sock=BluetoothSocket( RFCOMM )
+            print("BluetoothSocket( RFCOMM )")
             self.server_sock.bind(("",PORT_ANY))
+            print("server_sock.bind(("",PORT_ANY))")
             self.server_sock.listen(1)
+            print("server_sock.listen(1)")
+            print(self.server_sock.getsockname())
             self.port = self.server_sock.getsockname()[1]
             uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
             advertise_service( self.server_sock, "PiServer",

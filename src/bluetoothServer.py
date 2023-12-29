@@ -1,11 +1,9 @@
 import os
 import time
 from bluetooth import *
-print(gattlib.__file__)
 import threading
 import json
 from bluetooth.ble import BeaconService, GATTRequester
-print(bluetooth.__file__)
 
 class BluetoothServer:
     def __init__(self,application) -> None:
@@ -232,7 +230,7 @@ class BluetoothServer:
             print("Starting BLE BeaconService")
             service = BeaconService()
             service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
-            service.set_scan_response_raw(b"\x08\x09MyDevice")
+            # service.set_scan_response_raw(b"\x08\x09MyDevice")
             while True:
                 service.scan(2, on_ble_scan)
             

@@ -98,6 +98,7 @@ class BluetoothServer:
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
         try:
+            print("server_sock")
             self.server_sock=BluetoothSocket( RFCOMM )
             self.server_sock.bind(("",PORT_ANY))
             self.server_sock.listen(1)

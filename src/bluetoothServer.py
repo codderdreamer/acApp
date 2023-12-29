@@ -189,18 +189,10 @@ class BluetoothServer:
             
     def pairable_on(self):
         print("**************************************** bluetoothctl pairable on")
-        os.system("echo -e 'pairable on\nquit' | bluetoothctl")
-        
-    def discoverable(self):
-        print("**************************************** bluetoothctl discoverable on")
-        os.system("echo -e 'discoverable on\nquit' | bluetoothctl")
-        
-    def DisplayYesNo(self):
-        print("**************************************** DisplayYesNo")
-        os.system("echo -e 'agent DisplayYesNo\nquit' | bluetoothctl")
-        os.system("echo -e 'default-agent\nquit' | bluetoothctl")
-    
+        komutlar = "pairable on\ndiscoverable on\nagent DisplayYesNo\ndefault-agent\n"
+        os.system(f"echo -e '{komutlar}' | bluetoothctl")
             
+             
     def run_thread(self):
         def on_ble_scan(addr, data, rssi):
             print(f"Received data from {addr}: {data}")
@@ -228,10 +220,6 @@ class BluetoothServer:
         os.system("sudo hciconfig hci0 up")
         time.sleep(3)
         threading.Thread(target=self.pairable_on,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.discoverable,daemon=True).start()
-        time.sleep(3)
-        threading.Thread(target=self.DisplayYesNo,daemon=True).start()
         time.sleep(3)
         print("**************************************** pi_scan")
         threading.Thread(target=self.pi_scan,daemon=True).start()

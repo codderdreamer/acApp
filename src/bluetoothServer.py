@@ -115,6 +115,7 @@ class Agent:
         self.pin_code = pin_code
         
     import dbus
+    import dbus.service
     @dbus.service.method("org.bluez.Agent1",
                          in_signature="o", out_signature="s")
     def RequestPinCode(self, device):

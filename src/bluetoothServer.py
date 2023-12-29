@@ -304,7 +304,7 @@ class BluetoothMonitor:
     
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
-        self.adapter.Pairable = True
+        # self.adapter.Pairable = True
 
         
         print(self.adapter)

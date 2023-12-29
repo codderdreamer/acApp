@@ -3,7 +3,7 @@ import time
 from bluetooth import *
 import threading
 import json
-from bluetooth.ble import BeaconService
+from bluetooth.ble import BeaconService, GATTRequester
 
 
 class BluetoothServer:
@@ -191,8 +191,23 @@ class BluetoothServer:
     def discoverable(self):
         print("**************************************** bluetoothctl discoverable on")
         os.system("bluetoothctl discoverable on")
+        
+    
             
     def run_thread(self):
+        def on_ble_scan(addr, data, rssi):
+            print(f"Received data from {addr}: {data}")
+            
+            # GATTRequester ile cihaza bağlanma
+            requester = GATTRequester(addr, False)
+            requester.connect(True)
+
+            # Bağlantı başarılı olursa burada işlemler yapabilirsiniz.
+            # Örneğin, cihaza bir komut göndermek, veri okumak, yazmak, vb.
+
+            # Bağlantıyı kapatma
+            # requester.disconnect()
+
         print("**************************************** rfkill unblock all")
         os.system("rfkill unblock all")
         time.sleep(3)
@@ -216,9 +231,10 @@ class BluetoothServer:
             print("Starting BLE BeaconService")
             service = BeaconService()
             service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
+            service.set_scan_response_raw(b"\x08\x09MyDevice")
             while True:
-                print("here")
-                time.sleep(5)
+                service.scan(2, on_ble_scan)
+            
             
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)

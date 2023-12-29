@@ -276,6 +276,7 @@ class BluetoothMonitor:
         self.bus = SystemBus()
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
+        self.adapter.Pairable = True
         print(self.adapter)
         self.adapter.onPropertiesChanged = self.on_properties_changed
         print("self.adapter.onPropertiesChanged")

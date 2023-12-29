@@ -301,7 +301,7 @@ class BluetoothMonitor:
         self.adapter.Pairable = True
 
         # AgentManager1 arayüzünü kullanarak agent'ı kaydet
-        agent_manager = self.bus.get('org.bluez', '/org/bluez')
+        agent_manager = self.bus.get('org.bluez', '/org/bluez/hci0')
         agent_manager.RegisterAgent(path, "KeyboardDisplay")
         agent_manager.RequestDefaultAgent(path)
         print(self.adapter)

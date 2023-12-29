@@ -106,6 +106,14 @@ class BluetoothServer:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
         while True:
             time.sleep(1)
+            
+    def on_properties_changed(self, interface, changed, invalidated):
+        print("***************************************************************************************************************",interface,changed,invalidated)
+        if 'Devices' in changed:
+            for device_path in changed['Devices']:
+                device = self.bus.get('org.bluez', device_path)
+                if device.Connected:
+                    print(f"Cihaz bağlandı: {device.Alias}")
         
         
 

@@ -189,11 +189,12 @@ class BluetoothServer:
             
     def pairable_on(self):
         print("**************************************** bluetoothctl pairable on")
-        os.system("bluetoothctl pairable on")
+        os.system("echo -e 'pairable on\nquit' | bluetoothctl")
         
     def discoverable(self):
         print("**************************************** bluetoothctl discoverable on")
         os.system("bluetoothctl discoverable on")
+        os.system("echo -e 'discoverable on\nquit' | bluetoothctl")
         
     
             

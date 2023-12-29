@@ -151,7 +151,12 @@ class BluetoothServer:
         while True:
             try:
                 if self.connection:
-                    pass
+                    print("mesaj gönderiliyor")
+                    command = {
+                        "test" :"test"
+                    }
+                    self.client_sock.send(json.dumps(command).encode()) 
+                    print("mesaj gönderildi")
             except Exception as e:
                 print(e)
             time.sleep(1)
@@ -217,6 +222,18 @@ class BluetoothServer:
 # #bluetooth up
 # hciconfig hci0 up && hciconfig hci0 piscan
 # bluetoothctl
+
+#######################################################
+# Filename     : bluetooth_rfcomm.sh
+#######################################################
+# #!/bin/sh
+# #add serial port service
+# sdptool add SP
+# #add serial port
+# sleep 1
+# rfcomm watch hci0 &
+# #read: cat /dev/rfcomm0
+# #write: echo "test" > /dev/rfcomm0
 
 
 #######################################################

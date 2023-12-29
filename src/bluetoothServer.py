@@ -113,7 +113,10 @@ class Agent:
         self.bus = bus
         self.path = path
         self.pin_code = pin_code
-
+        
+    import dbus
+    @dbus.service.method("org.bluez.Agent1",
+                         in_signature="o", out_signature="s")
     def RequestPinCode(self, device):
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print("PIN kodu istendi, cihaz:", device)

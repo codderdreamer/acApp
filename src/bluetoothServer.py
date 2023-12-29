@@ -232,7 +232,9 @@ class BluetoothServer:
             service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
             # service.set_scan_response_raw(b"\x08\x09MyDevice")
             while True:
-                service.scan(2, on_ble_scan)
+                devices = service.scan(2)
+                print(devices)
+                time.sleep(1)
             
             
         except Exception as e:

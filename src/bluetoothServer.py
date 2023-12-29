@@ -7,6 +7,7 @@ from bluetooth.ble import BeaconService, GATTRequester
 from pydbus import SystemBus
 from gi.repository import GLib
 import threading
+import subprocess
 
 class BluetoothServer:
     def __init__(self,application) -> None:
@@ -229,6 +230,7 @@ class BluetoothServer:
         print("**************************************** sudo hciconfig hci0 leadv")
         os.system("sudo hciconfig hci0 leadv")
         time.sleep(5)
+        self.make_device_discoverable()
         try:
             # print("Starting BLE BeaconService")
             # service = BeaconService()
@@ -247,7 +249,13 @@ class BluetoothServer:
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
         
-        
+    def make_device_discoverable():
+        try:
+            # Cihazı keşfedilebilir yap
+            subprocess.run(["sudo", "hciconfig", "hci0", "piscan"], check=True)
+            print("Cihaz keşfedilebilir yapıldı.")
+        except subprocess.CalledProcessError as e:
+            print(f"Hata: {e}") 
         
             
     def run_thread_xx(self):

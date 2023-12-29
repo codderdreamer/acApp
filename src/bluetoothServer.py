@@ -10,7 +10,6 @@ class BluetoothServer:
         self.application = application
         self.connection = False
         self.client_sock = None
-        threading.Thread(target=self.run_thread,daemon=True).start()
         threading.Thread(target=self.send_message,daemon=True).start()
 
     def device_connect(self):
@@ -26,10 +25,7 @@ class BluetoothServer:
         os.system("sudo hciconfig hci0 up")
 
     def discoverable_on(self): 
-        os.system("bluetoothctl pairable on")
         os.system("bluetoothctl discoverable on")
-        os.system("sudo hciconfig hci0 leadv")
-
 
     def pi_scan(self):
         os.system("sudo hciconfig hci piscan")
@@ -64,58 +60,6 @@ class BluetoothServer:
                                 )
         except Exception as e:
             print(e)
-            
-    def send_network_priority(self):
-        command = {
-                    "Command" : "NetworkPriority",
-                    "Data" : {
-                                "enableWorkmode" : bool(self.application.settings.networkPriority.enableWorkmode=="True"),
-                                "1" : self.application.settings.networkPriority.first,
-                                "2" : self.application.settings.networkPriority.second,
-                                "3" : self.application.settings.networkPriority.third
-                            }
-                }
-        print("Gönderilen:",command)
-        self.client_sock.send(json.dumps(command).encode()) 
-        
-    def send_4g_settings(self):
-        command = {
-                    "Command" : "4GSettings",
-                    "Data" : {
-                                "enableModification" : bool(self.application.settings.settings4G.enableModification=="True"),
-                                "apn" : self.application.settings.settings4G.apn,
-                                "user" : self.application.settings.settings4G.user,
-                                "password" : self.application.settings.settings4G.password,
-                                "pin" : self.application.settings.settings4G.pin,
-                            }
-                }
-        print("Gönderilen:",command)
-        self.client_sock.send(json.dumps(command).encode()) 
-        
-    def send_ethernet_settings(self):
-        command = {
-                    "Command" : "EthernetSettings",
-                    "Data" : {
-                                "ethernetEnable" : bool(self.application.settings.ethernetSettings.ethernetEnable=="True"),
-                                "ip" : self.application.settings.ethernetSettings.ip,
-                                "netmask" : self.application.settings.ethernetSettings.netmask,
-                                "gateway" : self.application.settings.ethernetSettings.gateway
-                            }
-                }
-        print("Gönderilen:",command)
-        self.client_sock.send(json.dumps(command).encode()) 
-        
-    def send_dns_settings(self):
-        command = {
-                    "Command" : "DNSSettings",
-                    "Data" : {
-                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable=="True"),
-                                "DNS1" : self.application.settings.dnsSettings.DNS1,
-                                "DNS2" : self.application.settings.dnsSettings.DNS2
-                            }
-                }
-        print("Gönderilen:",command)
-        self.client_sock.send(json.dumps(command).encode()) 
         
     def waiting_connection(self):
         while True:
@@ -123,16 +67,11 @@ class BluetoothServer:
                 print("--------------------------------------------- waiting_connection")
                 threading.Thread(target=self.discoverable_on,daemon=True).start()
                 time.sleep(3)
-                # os.system("sudo hciconfig hci0 leadv")
                 if(self.connection == False):
                     print("Waiting for connection on RFCOMM channel %d" % self.port)
                     self.client_sock, client_info = self.server_sock.accept()
                     self.connection = True
                     print("Accepted connection from ", client_info)
-                    self.send_network_priority()
-                    self.send_dns_settings()
-                    self.send_ethernet_settings()
-                    self.send_network_priority()
                 while self.connection:
                     print("Waiting for data receive...")
                     try:
@@ -162,38 +101,24 @@ class BluetoothServer:
             Command = json_object["Command"]
             Data = json_object["Data"]
             if Command == "NetworkPriority":
-                self.application.databaseModule.set_network_priority(Data["enableWorkmode"],Data["1"],Data["2"],Data["3"])
-                self.application.webSocketServer.send_network_priority()
-            elif Command == "4GSettings":
-                self.application.databaseModule.set_settings_4g(Data["enableModification"],Data["apn"],Data["user"],Data["password"],Data["pin"])
-                self.application.webSocketServer.send_4g_settings()
-            elif Command == "EthernetSettings":
-                self.application.databaseModule.set_ethernet_settings(Data["ethernetEnable"],Data["ip"],Data["netmask"],Data["gateway"])
-                self.application.webSocketServer.send_ethernet_settings()
-            elif Command == "DNSSettings":
-                self.application.databaseModule.set_dns_settings(Data["dnsEnable"],Data["DNS1"],Data["DNS2"])
-                self.application.webSocketServer.send_dns_settings()
-            
+                self.application.settings.networkPriority.first = Data["1"]
+                self.application.settings.networkPriority.second = Data["2"]
+                self.application.settings.networkPriority.third = Data["3"]
+        
+        
         except Exception as e:
             print(e)
             
-    def run_thread(self):
-        self.btt()
-        time.sleep(20)
-        print("------------------------------------listenning-----------------------------")
-        self.start_server_sock_listenning()
-        self.waiting_connection()
-            
 
-# bt = BluetoothServer(None)
-# bt.btt()
-# time.sleep(20)
-# print("------------------------------------listenning-----------------------------")
-# bt.start_server_sock_listenning()
-# bt.waiting_connection()
+bt = BluetoothServer(None)
+bt.btt()
+time.sleep(20)
+print("------------------------------------listenning-----------------------------")
+bt.start_server_sock_listenning()
+bt.waiting_connection()
 
-# while True:
-#     time.sleep(1)
+while True:
+    time.sleep(1)
 
 
 #######################################################

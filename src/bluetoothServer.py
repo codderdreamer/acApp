@@ -293,22 +293,21 @@ class Agent:
 class BluetoothMonitor:
     def __init__(self):
         print("BluetoothMonitor")
-        self.bus = None
         self.bus = SystemBus()
         path = "/test/agent"
         pin_code = "0000"  # İstediğiniz PIN kodunu buraya yazın
         agent = Agent(self.bus, path, pin_code)
         print("Agent")
-        self.bus.register_object("/test/agent", agent, AGENT_INTERFACE)
+        self.bus.register_object(path, agent, AGENT_INTERFACE)
     
-
-
-
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
         self.adapter.Pairable = True
-        self.adapter.RegisterAgent("/test/agent", "KeyboardDisplay")
-        self.adapter.RequestDefaultAgent("/test/agent")
+
+        # AgentManager1 arayüzünü kullanarak agent'ı kaydet
+        agent_manager = self.bus.get('org.bluez', '/org/bluez')
+        agent_manager.RegisterAgent(path, "KeyboardDisplay")
+        agent_manager.RequestDefaultAgent(path)
         print(self.adapter)
         self.adapter.onPropertiesChanged = self.on_properties_changed
         print("self.adapter.onPropertiesChanged")

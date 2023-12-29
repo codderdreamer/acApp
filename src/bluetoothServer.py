@@ -295,15 +295,17 @@ class BluetoothMonitor:
         agent = Agent(self.bus, path, pin_code)
         print("Agent")
         self.bus.register_object(path, agent, AGENT_INTERFACE)
+        
+        # AgentManager1 arayüzünü kullanarak agent'ı kaydet
+        agent_manager = self.bus.get('org.bluez', '/org/bluez')
+        agent_manager.RegisterAgent(path, "KeyboardDisplay")
+        agent_manager.RequestDefaultAgent(path)
     
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
         self.adapter.Pairable = True
 
-        # AgentManager1 arayüzünü kullanarak agent'ı kaydet
-        agent_manager = self.bus.get('org.bluez', '/org/bluez/hci0')
-        agent_manager.RegisterAgent(path, "KeyboardDisplay")
-        agent_manager.RequestDefaultAgent(path)
+        
         print(self.adapter)
         self.adapter.onPropertiesChanged = self.on_properties_changed
         print("self.adapter.onPropertiesChanged")

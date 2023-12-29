@@ -193,9 +193,12 @@ class BluetoothServer:
         
     def discoverable(self):
         print("**************************************** bluetoothctl discoverable on")
-        os.system("bluetoothctl discoverable on")
         os.system("echo -e 'discoverable on\nquit' | bluetoothctl")
         
+    def DisplayYesNo(self):
+        print("**************************************** DisplayYesNo")
+        os.system("echo -e 'agent DisplayYesNo\nquit' | bluetoothctl")
+        os.system("echo -e 'default-agent\nquit' | bluetoothctl")
     
             
     def run_thread(self):
@@ -227,6 +230,8 @@ class BluetoothServer:
         threading.Thread(target=self.pairable_on,daemon=True).start()
         time.sleep(3)
         threading.Thread(target=self.discoverable,daemon=True).start()
+        time.sleep(3)
+        threading.Thread(target=self.DisplayYesNo,daemon=True).start()
         time.sleep(3)
         print("**************************************** pi_scan")
         threading.Thread(target=self.pi_scan,daemon=True).start()
@@ -309,7 +314,7 @@ class BluetoothMonitor:
 
         # AgentManager1 arayüzünü kullanarak agent'ı kaydet
         agent_manager = self.bus.get('org.bluez', '/org/bluez')
-        agent_manager.RegisterAgent(path, "KeyboardDisplay")
+        agent_manager.RegisterAgent(path, "DisplayYesNo")
         agent_manager.RequestDefaultAgent(path)
         print(self.adapter)
         self.adapter.onPropertiesChanged = self.on_properties_changed

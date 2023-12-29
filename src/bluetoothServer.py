@@ -220,6 +220,7 @@ class BluetoothServer:
             self.server_sock.listen(1)
             print("**************************************** self.server_sock.listen(1)")
             self.port = self.server_sock.getsockname()[1]
+            print("**************************************** self.server_sock.getsockname()")
             uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
             advertise_service( self.server_sock, "PiServer",
                             service_id = uuid,

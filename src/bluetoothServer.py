@@ -271,17 +271,23 @@ class BluetoothServer:
         # self.waiting_connection()
         
 class Agent:
-    def __init__(self, pin_code):
+    def __init__(self, bus, path, pin_code):
+        self.bus = bus
+        self.path = path
         self.pin_code = pin_code
 
     def RequestPinCode(self, device):
+        print("PIN kodu istendi, cihaz:", device)
         return self.pin_code
             
 class BluetoothMonitor:
     def __init__(self):
         print("BluetoothMonitor")
-        self.bus = SystemBus()
-        agent = Agent("0000")  # Burada istediğiniz PIN kodunu girin
+        bus = SystemBus()
+        path = "/test/agent"
+        pin_code = "0000"  # İstediğiniz PIN kodunu buraya yazın
+        agent = Agent(bus, path, pin_code)
+        print("Agent")
         self.bus.register_object("/test/agent", agent, None)
 
         print("SystemBus")

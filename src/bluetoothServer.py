@@ -1,7 +1,7 @@
 import os
 import time
 from bluetooth import *
-print(bluetooth.__file__)
+print(gattlib.__file__)
 import threading
 import json
 from bluetooth.ble import BeaconService, GATTRequester

@@ -11,7 +11,7 @@ class BluetoothServer:
         self.connection = False
         self.client_sock = None
         threading.Thread(target=self.run_thread,daemon=True).start()
-        threading.Thread(target=self.send_message,daemon=True).start()
+        # threading.Thread(target=self.send_message,daemon=True).start()
 
     def device_connect(self):
         os.system("rfkill unblock all")
@@ -44,8 +44,8 @@ class BluetoothServer:
         time.sleep(3)
         print("--------------------------------------------- discoverable_on")
         threading.Thread(target=self.discoverable_on,daemon=True).start()
-        time.sleep(3)
-        print("--------------------------------------------- pi_scan")
+        # time.sleep(3)
+        # print("--------------------------------------------- pi_scan")
         # threading.Thread(target=self.pi_scan,daemon=True).start()
         # print("finish")
 
@@ -184,6 +184,50 @@ class BluetoothServer:
             print(e)
             
     def run_thread(self):
+        print("**************************************** rfkill unblock all")
+        os.system("rfkill unblock all")
+        time.sleep(3)
+        print("**************************************** killall hciattach")
+        os.system("killall hciattach")
+        time.sleep(3)
+        print("**************************************** hciattach -n -s 1500000 /dev/ttyS1 sprd &")
+        os.system("hciattach -n -s 1500000 /dev/ttyS1 sprd &")
+        time.sleep(5)
+        print("**************************************** sudo hciconfig hci0 up")
+        os.system("sudo hciconfig hci0 up")
+        time.sleep(3)
+        print("**************************************** bluetoothctl pairable on")
+        os.system("bluetoothctl pairable on")
+        time.sleep(3)
+        print("**************************************** bluetoothctl discoverable on")
+        os.system("bluetoothctl discoverable on")
+        time.sleep(3)
+        print("**************************************** sudo hciconfig hci0 leadv")
+        os.system("sudo hciconfig hci0 leadv")
+        time.sleep(5)
+        try:
+            print("**************************************** Bluetooth Socket Açılıyor")
+            self.server_sock=BluetoothSocket( RFCOMM )
+            self.server_sock.bind(("",PORT_ANY))
+            self.server_sock.listen(1)
+            self.port = self.server_sock.getsockname()[1]
+            uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
+            advertise_service( self.server_sock, "PiServer",
+                            service_id = uuid,
+                            service_classes = [ uuid, SERIAL_PORT_CLASS ],
+                            profiles = [ SERIAL_PORT_PROFILE ] 
+            #                   protocols = [ OBEX_UUID ] 
+                                )
+            print("Waiting for connection on RFCOMM channel %d" % self.port)
+            self.client_sock, client_info = self.server_sock.accept()
+            print("******************************","bağlandı",self.client_sock,client_info)
+        except Exception as e:
+            print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
+        
+        
+        
+            
+    def run_thread_xx(self):
         self.btt()
         print("time---------------------------------------")
         time.sleep(20)

@@ -189,7 +189,7 @@ class BluetoothServer:
             
     def pairable_on(self):
         print("**************************************** bluetoothctl pairable on")
-        komutlar = "pairable on\ndiscoverable on\nagent KeyboardDisplay\ndefault-agent\n"
+        komutlar = "power on\ndiscoverable on\npairable on\nagent on\ndefault-agent"
         os.system(f"echo -e '{komutlar}' | bluetoothctl")
             
              

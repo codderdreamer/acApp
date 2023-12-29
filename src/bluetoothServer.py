@@ -195,7 +195,7 @@ class BluetoothServer:
         time.sleep(2)
         subprocess.Popen(["killall", "hciattach"]).wait()
         time.sleep(2)
-        subprocess.Popen(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd","&"]).wait()
+        subprocess.Popen(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd"]).wait()
         time.sleep(2)
         subprocess.Popen(["hciconfig", "hci0", "up"]).wait()
         time.sleep(2)

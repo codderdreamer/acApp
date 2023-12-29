@@ -17,7 +17,7 @@ class BluetoothServer:
         threading.Thread(target=self.run_thread,daemon=True).start()
         # threading.Thread(target=self.send_message,daemon=True).start()
 
-    def device_connect(self):
+    def device_connectxx(self):
         os.system("rfkill unblock all")
         print("--------------------------------- 1")
         time.sleep(3)
@@ -26,18 +26,16 @@ class BluetoothServer:
         time.sleep(3)
         os.system("hciattach -n -s 1500000 /dev/ttyS1 sprd &")
 
-    def hci_up(self):
+    def hci_upxx(self):
         os.system("sudo hciconfig hci0 up")
 
-    def discoverable_on(self): 
+    def discoverable_onxx(self): 
         os.system("bluetoothctl pairable on")
         os.system("bluetoothctl discoverable on")
         os.system("sudo hciconfig hci0 leadv")
 
-
     def pi_scan(self):
         os.system("sudo hciconfig hci piscan")
-
 
     def btt(self):
         print("--------------------------------------------- device_connect")
@@ -191,42 +189,55 @@ class BluetoothServer:
         print("**************************************** bluetoothctl pairable on")
         komutlar = "power on\ndiscoverable on\npairable on\nagent on\ndefault-agent"
         os.system(f"echo -e '{komutlar}' | bluetoothctl")
-            
+        
+    def bluetooth_config(self):
+        print("**************************")
+        subprocess.run(["rfkill", "unblock", "all"])
+        time.sleep(2)
+        subprocess.run(["killall", "hciattach"])
+        time.sleep(2)
+        subprocess.run(["hciattach", "-n","-s","1500000", "/dev/ttyS1", "sprd","&"])
+        time.sleep(2)
+        subprocess.run(["hciconfig", "hci0", "up"])
+        time.sleep(2)
+        subprocess.run(["bluetoothctl", "power", "on"])
+        time.sleep(2)
+        subprocess.run(["bluetoothctl", "discoverable", "on"])
+        time.sleep(2)
+        subprocess.run(["bluetoothctl", "pairable", "on"])
+        time.sleep(2)
+        subprocess.run(["bluetoothctl", "agent", "on"])
+        time.sleep(2)
+        subprocess.run(["bluetoothctl", "agent", "KeyboardDisplay"])
+        time.sleep(2)
+        subprocess.run(["bluetoothctl", "default-agent"])
+        time.sleep(2)
+        subprocess.run(["hciconfig", "hci","piscan"])
+        time.sleep(2)
+        print("*************************")
              
     def run_thread(self):
-        def on_ble_scan(addr, data, rssi):
-            print(f"Received data from {addr}: {data}")
-            
-            # GATTRequester ile cihaza bağlanma
-            requester = GATTRequester(addr, False)
-            requester.connect(True)
-
-            # Bağlantı başarılı olursa burada işlemler yapabilirsiniz.
-            # Örneğin, cihaza bir komut göndermek, veri okumak, yazmak, vb.
-
-            # Bağlantıyı kapatma
-            # requester.disconnect()
-
-        print("**************************************** rfkill unblock all")
-        os.system("rfkill unblock all")
-        time.sleep(3)
-        print("**************************************** killall hciattach")
-        os.system("killall hciattach")
-        time.sleep(3)
-        print("**************************************** hciattach -n -s 1500000 /dev/ttyS1 sprd &")
-        os.system("hciattach -n -s 1500000 /dev/ttyS1 sprd &")
-        time.sleep(5)
-        print("**************************************** sudo hciconfig hci0 up")
-        os.system("sudo hciconfig hci0 up")
-        time.sleep(3)
-        threading.Thread(target=self.pairable_on,daemon=True).start()
-        time.sleep(3)
-        print("**************************************** pi_scan")
-        threading.Thread(target=self.pi_scan,daemon=True).start()
-        print("**************************************** sudo hciconfig hci0 leadv")
-        os.system("sudo hciconfig hci0 leadv")
-        time.sleep(5)
+        # print("**************************************** rfkill unblock all")
+        # os.system("rfkill unblock all")
+        # time.sleep(3)
+        # print("**************************************** killall hciattach")
+        # os.system("killall hciattach")
+        # time.sleep(3)
+        # print("**************************************** hciattach -n -s 1500000 /dev/ttyS1 sprd &")
+        # os.system("hciattach -n -s 1500000 /dev/ttyS1 sprd &")
+        # time.sleep(5)
+        # print("**************************************** sudo hciconfig hci0 up")
+        # os.system("sudo hciconfig hci0 up")
+        # time.sleep(3)
+        # threading.Thread(target=self.bluetooth_config,daemon=True).start()
+        
+        # print("**************************************** sudo hciconfig hci0 leadv")
+        # os.system("sudo hciconfig hci0 leadv")
+        # time.sleep(5)
         # self.make_device_discoverable()
+        threading.Thread(target=self.bluetooth_config,daemon=True).start()
+        time.sleep(30)
+        print("30 sn bitti")
         try:
             # print("Starting BLE BeaconService")
             # service = BeaconService()
@@ -304,7 +315,7 @@ class BluetoothMonitor:
     
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
-        # self.adapter.Pairable = True
+        self.adapter.Pairable = True
 
         
         print(self.adapter)

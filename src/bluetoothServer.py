@@ -150,6 +150,7 @@ class BluetoothServer:
     def send_message(self):
         while True:
             try:
+                print("self.connection",self.connection)
                 if self.connection:
                     print("mesaj gönderiliyor")
                     command = {

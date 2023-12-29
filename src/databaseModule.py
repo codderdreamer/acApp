@@ -107,7 +107,6 @@ class DatabaseModule():
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
-            print("dns db")
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
@@ -129,7 +128,6 @@ class DatabaseModule():
             self.application.settings.dnsSettings.dnsEnable = dnsEnable
             self.application.settings.dnsSettings.DNS1 = dns1
             self.application.settings.dnsSettings.DNS2 = dns2
-            print("dns db f")
         except Exception as e:
             print(e)
 

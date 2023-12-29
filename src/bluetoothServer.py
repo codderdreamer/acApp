@@ -269,11 +269,21 @@ class BluetoothServer:
         # print("------------------------------------listenning-----------------------------")
         # self.start_server_sock_listenning()
         # self.waiting_connection()
+        
+class Agent:
+    def __init__(self, pin_code):
+        self.pin_code = pin_code
+
+    def RequestPinCode(self, device):
+        return self.pin_code
             
 class BluetoothMonitor:
     def __init__(self):
         print("BluetoothMonitor")
         self.bus = SystemBus()
+        agent = Agent("0000")  # Burada istediğiniz PIN kodunu girin
+        self.bus.register_object("/test/agent", agent, None)
+
         print("SystemBus")
         self.adapter = self.bus.get('org.bluez', '/org/bluez/hci0')
         self.adapter.Pairable = True

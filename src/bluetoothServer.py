@@ -189,7 +189,7 @@ class BluetoothServer:
             
     def pairable_on(self):
         print("**************************************** bluetoothctl pairable on")
-        komutlar = "pairable on\ndiscoverable on\nagent DisplayYesNo\ndefault-agent\n"
+        komutlar = "pairable on\ndiscoverable on\nagent KeyboardDisplay\ndefault-agent\n"
         os.system(f"echo -e '{komutlar}' | bluetoothctl")
             
              
@@ -302,7 +302,7 @@ class BluetoothMonitor:
 
         # AgentManager1 arayüzünü kullanarak agent'ı kaydet
         agent_manager = self.bus.get('org.bluez', '/org/bluez')
-        agent_manager.RegisterAgent(path, "DisplayYesNo")
+        agent_manager.RegisterAgent(path, "KeyboardDisplay")
         agent_manager.RequestDefaultAgent(path)
         print(self.adapter)
         self.adapter.onPropertiesChanged = self.on_properties_changed

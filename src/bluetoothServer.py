@@ -3,6 +3,7 @@ import time
 from bluetooth import *
 import threading
 import json
+from bluetooth.ble import BeaconService
 
 
 class BluetoothServer:
@@ -212,25 +213,12 @@ class BluetoothServer:
         # os.system("sudo hciconfig hci0 leadv")
         # time.sleep(5)
         try:
-            print("**************************************** Bluetooth Socket Açılıyor")
-            self.server_sock=BluetoothSocket( RFCOMM )
-            print("**************************************** BluetoothSocket( RFCOMM )")
-            self.server_sock.bind(("",PORT_ANY))
-            print("**************************************** self.server_sock.bind(("",PORT_ANY))")
-            self.server_sock.listen(1)
-            print("**************************************** self.server_sock.listen(1)")
-            self.port = self.server_sock.getsockname()[1]
-            print("**************************************** self.server_sock.getsockname()")
-            uuid = "0000110c-0000-1000-8000-00805f9b34fb"
-            advertise_service( self.server_sock, "HelperBox.",
-                            service_id = uuid,
-                            service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                            profiles = [ SERIAL_PORT_PROFILE ] 
-            #                   protocols = [ OBEX_UUID ] 
-                                )
-            print("Waiting for connection on RFCOMM channel %d" % self.port)
-            self.client_sock, client_info = self.server_sock.accept()
-            print("******************************","bağlandı",self.client_sock,client_info)
+            print("Starting BLE Beacon")
+            service = BeaconService()
+            service.start_advertising("11111111-2222-3333-4444-555555555555",1, 1, 1, 200)
+            while True:
+                print("here")
+            
         except Exception as e:
             print("!!!!!!!!!!!!!!!!!!!!!!! Bluetooth Socket Hata",e)
         

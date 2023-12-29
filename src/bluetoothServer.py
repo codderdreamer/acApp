@@ -227,6 +227,8 @@ class BluetoothServer:
         time.sleep(3)
         threading.Thread(target=self.discoverable,daemon=True).start()
         time.sleep(3)
+        print("**************************************** pi_scan")
+        threading.Thread(target=self.pi_scan,daemon=True).start()
         print("**************************************** sudo hciconfig hci0 leadv")
         os.system("sudo hciconfig hci0 leadv")
         time.sleep(5)

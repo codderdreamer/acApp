@@ -119,6 +119,7 @@ class BluetoothServer:
         time.sleep(3)
         threading.Thread(target=self.piscan,daemon=True).start()
         time.sleep(3)
+        os.system("sdptool add SP")
         try:
             self.start_server_sock_listenning()
             

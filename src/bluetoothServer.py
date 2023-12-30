@@ -119,8 +119,6 @@ class BluetoothServer:
         time.sleep(3)
         threading.Thread(target=self.piscan,daemon=True).start()
         time.sleep(3)
-        threading.Thread(target=self.hciconfig,daemon=True).start()
-        time.sleep(3)
         try:
             self.start_server_sock_listenning()
             

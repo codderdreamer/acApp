@@ -75,6 +75,24 @@ class BluetoothServer:
         print("leadv")
         os.system("sudo hciconfig hci0 leadv")
         
+    def start_server_sock_listenning(self):
+        try:
+            print("start_server_sock_listenning")
+            self.server_sock=BluetoothSocket( RFCOMM )
+            self.server_sock.bind(("",PORT_ANY))
+            self.server_sock.listen(1)
+            self.port = self.server_sock.getsockname()[1]
+            uuid = "7c7dfdc9-556c-4551-bb46-391b1dd27cc0"
+            advertise_service( self.server_sock, "PiServer",
+                            service_id = uuid,
+                            service_classes = [ uuid, SERIAL_PORT_CLASS ],
+                            profiles = [ SERIAL_PORT_PROFILE ] 
+            #                   protocols = [ OBEX_UUID ] 
+                                )
+            print("advertise_service")
+        except Exception as e:
+            print("start_server_sock_listenning",e)
+        
              
     def run_thread(self):
         threading.Thread(target=self.rfkill,daemon=True).start()
@@ -82,7 +100,7 @@ class BluetoothServer:
         threading.Thread(target=self.killall,daemon=True).start()
         time.sleep(3)
         threading.Thread(target=self.hciattach,daemon=True).start()
-        time.sleep(3)
+        time.sleep(10)
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
         threading.Thread(target=self.select,daemon=True).start()
@@ -104,12 +122,8 @@ class BluetoothServer:
         threading.Thread(target=self.hciconfig,daemon=True).start()
         time.sleep(3)
         try:
-            port = serial.Serial('/dev/rfcomm0', baudrate=9600)
-            try:
-                line = port.readline().decode().strip()
-                print(line)
-            except Exception as e:
-                print(f"Error reading /dev/rfcomm0: {e}")
+            self.start_server_sock_listenning()
+            
             # monitor = BluetoothMonitor()
             # monitor_thread = threading.Thread(target=monitor.start)
             # monitor_thread.start()   

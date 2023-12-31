@@ -420,9 +420,7 @@ class SoftwareSettingsService(Service):
         Service.__init__(self, bus, index, self.SoftwareSettings_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
         self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
-        print("self.add_characteristic(EthernetSettingsCharacteristic")
         self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
-        print("eklendi EthernetSettingsCharacteristic")
         # self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
@@ -496,15 +494,13 @@ class EthernetSettingsCharacteristic(Characteristic):
     Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab03'
     
     def __init__(self, bus, index, service, application):
-        print("Ethernet_Settings_UUID __init__")
         self.application = application
         Characteristic.__init__(
                 self, bus, index,
                 self.Ethernet_Settings_UUID,
                 ['read', 'write', 'writable-auxiliaries'],
                 service)
-        self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
-        print("Ethernet_Settings_UUID finish")
+        self.value = []
         
     def ReadValue(self, options):
         self.value = self.application.settings.get_ethernet_settings().encode('utf-8')

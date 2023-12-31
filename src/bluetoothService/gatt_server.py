@@ -3,20 +3,15 @@ import dbus
 import dbus.exceptions
 import dbus.mainloop.glib
 import dbus.service
-
 import array
-
 import functools
-
 try:
   from gi.repository import GObject
 except ImportError:
   import gobject as GObject
-
 from random import randint
-
-import exceptions
-import adapters
+from src.bluetoothService import exceptions
+from src.bluetoothService import adapters
 
 BLUEZ_SERVICE_NAME = 'org.bluez'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'

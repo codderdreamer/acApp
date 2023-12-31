@@ -37,7 +37,7 @@ class ApplicationBluetooth(dbus.service.Object):
         self.add_service(HeartRateService(bus, 0))
         self.add_service(TestService(bus, 1))
         self.add_service(SoftwareSettingsService(bus, 2, self.application))
-        self.add_service(BatteryService(bus, 3, self.application))
+        # self.add_service(BatteryService(bus, 3, self.application))
         # self.add_service(TestServiceStatus(bus, 3, self.application))
         # self.add_service(SettingsFourGService(bus, 3, self.application))
         # self.add_service(EthernetSettingsService(bus, 3, self.application))

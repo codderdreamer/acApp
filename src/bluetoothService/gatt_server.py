@@ -463,6 +463,12 @@ class TestCharacteristic(Characteristic):
         self.value = value
         value_str = bytes(value).decode('utf-8')
         print(f'Value received in UTF-8 format: {value_str}')
+        
+    def PropertiesChanged(self, interface, changed, invalidated):
+        print("PropertiesChanged")
+        print(interface)
+        print(changed)
+        print(invalidated)
 
 
 class TestDescriptor(Descriptor):

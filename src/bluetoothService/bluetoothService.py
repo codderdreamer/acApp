@@ -16,7 +16,8 @@ import gatt_server
 import time
 
 class BluetoothService():
-    def __init__(self) -> None:
+    def __init__(self,application) -> None:
+        self.application = application
         self.parser = None
         self.args = None
         self.adapter_name = None
@@ -34,11 +35,11 @@ class BluetoothService():
         self.mainloop = GObject.MainLoop()
         
         advertising.advertising_main(self.mainloop, self.bus, self.adapter_name)
-        gatt_server.gatt_server_main(self.mainloop, self.bus, self.adapter_name)
+        gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
         self.mainloop.run()
         
-bleService = BluetoothService()
-while True:
-    time.sleep(1)
+# bleService = BluetoothService()
+# while True:
+#     time.sleep(1)
     
             

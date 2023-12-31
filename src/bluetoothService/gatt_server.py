@@ -33,18 +33,19 @@ GATT_DESC_IFACE =    'org.bluez.GattDescriptor1'
 
 
 
-class Application(dbus.service.Object):
+class ApplicationBluetooth(dbus.service.Object):
     """
     org.bluez.GattApplication1 interface implementation
     """
-    def __init__(self, bus):
+    def __init__(self,bus,application):
+        self.application = application
         self.path = '/'
         self.services = []
         dbus.service.Object.__init__(self, bus, self.path)
         self.add_service(HeartRateService(bus, 0))
         # self.add_service(BatteryService(bus, 1))
         self.add_service(TestService(bus, 1))
-        self.add_service(SoftwareSettingService(bus, 2))
+        self.add_service(SoftwareSettingService(bus, 2, self.application))
 
     
     
@@ -427,15 +428,16 @@ class SoftwareSettingService(Service):
     
     SOFTWARE_SETTİNG_UUID = '12345678-1234-5678-1234-56789abcabc0'
     
-    def __init__(self, bus, index):
+    def __init__(self, bus, index, application):
         Service.__init__(self, bus, index, self.SOFTWARE_SETTİNG_UUID, True)
-        self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self))
+        self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
     
     NETWORK_PRIORITY_UUID = '12345678-1234-5678-1234-56789abcabc0'
     
-    def __init__(self, bus, index, service):
+    def __init__(self, bus, index, service, application):
+        self.application = application
         Characteristic.__init__(
                 self, bus, index,
                 self.NETWORK_PRIORITY_UUID,
@@ -646,7 +648,7 @@ def register_app_error_cb(mainloop, error):
     mainloop.quit()
 
 
-def gatt_server_main(mainloop, bus, adapter_name):
+def gatt_server_main(application, mainloop, bus, adapter_name):
     adapter = adapters.find_adapter(bus, GATT_MANAGER_IFACE, adapter_name)
     if not adapter:
         raise Exception('GattManager1 interface not found')
@@ -655,7 +657,7 @@ def gatt_server_main(mainloop, bus, adapter_name):
             bus.get_object(BLUEZ_SERVICE_NAME, adapter),
             GATT_MANAGER_IFACE)
 
-    app = Application(bus)
+    app = ApplicationBluetooth(bus,application)
 
     print('Registering GATT application...')
 

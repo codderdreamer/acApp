@@ -13,7 +13,7 @@ from src.settings import Settings
 from src.databaseModule import DatabaseModule
 from src.networkSettings import NetworkSettings
 from src.websocketServer import WebSocketServer
-from src.bluetoothServer import BluetoothServer
+from src.bluetoothService.bluetoothService import BluetoothService
 
 class Application():
     def __init__(self,loop):
@@ -23,7 +23,7 @@ class Application():
         self.networkSettings = NetworkSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)
-        self.bluetoothServer = BluetoothServer(self)
+        self.bluetoothService = BluetoothService(self)
         self.ev = EV()
         self.config = Config()
         self.ensureFutures = EnsureFutures(self)

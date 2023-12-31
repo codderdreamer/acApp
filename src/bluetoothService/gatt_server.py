@@ -416,7 +416,7 @@ class SoftwareSettingService(Service):
     def __init__(self, bus, index, application):
         Service.__init__(self, bus, index, self.SOFTWARE_SETTİNG_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
-        self.add_characteristic(Settings4GCharacteristic(bus, 0, self, application))
+        self.add_characteristic(SettingsFourGCharacteristic(bus, 0, self, application))
         self.add_characteristic(EthernetSettingsCharacteristic(bus, 0, self, application))
         self.add_characteristic(DNSSettingsCharacteristic(bus, 0, self, application))
         
@@ -452,7 +452,7 @@ class NetworkPriorityCharacteristic(Characteristic):
         except Exception as e:
             print("NetworkPriorityCharacteristic Write Exception:",e)
         
-class Settings4GCharacteristic(Service):
+class SettingsFourGCharacteristic(Service):
     
     Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
     

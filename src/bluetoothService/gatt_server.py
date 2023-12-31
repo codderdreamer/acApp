@@ -420,8 +420,8 @@ class SoftwareSettingsService(Service):
         Service.__init__(self, bus, index, self.SoftwareSettings_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
         self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
-        # self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
-        # self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
+        self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
+        self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
     
@@ -456,14 +456,6 @@ class NetworkPriorityCharacteristic(Characteristic):
             print("NetworkPriorityCharacteristic Write Exception:",e)
             
 
-class SettingsFourGService(Service):
-    
-    SettingsFourGService_UUID = '10045678-3333-5678-1234-56789abcab00'
-    
-    def __init__(self, bus, index, application):
-        Service.__init__(self, bus, index, self.SettingsFourGService_UUID, True)
-        self.add_characteristic(SettingsFourGCharacteristic(bus, 0, self, application))
-  
 class SettingsFourGCharacteristic(Characteristic):
     
     Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
@@ -497,17 +489,9 @@ class SettingsFourGCharacteristic(Characteristic):
         except Exception as e:
             print("Settings4GCharacteristic Write Exception:",e)
 
-class EthernetSettingsService(Service):
-    
-    EthernetSettingsService_UUID = '12345678-1234-5678-1234-56789abcab04'
-    
-    def __init__(self, bus, index, application):
-        Service.__init__(self, bus, index, self.EthernetSettingsService_UUID, True)
-        self.add_characteristic(EthernetSettingsCharacteristic(bus, 0, self, application))
-
 class EthernetSettingsCharacteristic(Characteristic):
     
-    Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab05'
+    Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab03'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -537,17 +521,10 @@ class EthernetSettingsCharacteristic(Characteristic):
         except Exception as e:
             print("EthernetSettingsCharacteristic Write Exception:",e)
 
-class DNSSettingsService(Service):
-    
-    DNSSettingsService_UUID = '12345678-1234-5678-1234-56789abcab06'
-    
-    def __init__(self, bus, index, application):
-        Service.__init__(self, bus, index, self.DNSSettingsService_UUID, True)
-        self.add_characteristic(DNSSettingsCharacteristic(bus, 0, self, application))
-    
+
 class DNSSettingsCharacteristic(Characteristic):
     
-    DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab07'
+    DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab04'
     
     def __init__(self, bus, index, service, application):
         self.application = application

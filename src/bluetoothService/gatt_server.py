@@ -36,8 +36,9 @@ class ApplicationBluetooth(dbus.service.Object):
         dbus.service.Object.__init__(self, bus, self.path)
         self.add_service(HeartRateService(bus, 0))
         self.add_service(TestService(bus, 1))
-        self.add_service(NetworkPriorityService(bus, 2, self.application))
-        self.add_service(SettingsFourGService(bus, 3, self.application))
+        self.add_service(SoftwareSettingsService(bus, 2, self.application))
+        # self.add_service(TestServiceStatus(bus, 3, self.application))
+        # self.add_service(SettingsFourGService(bus, 3, self.application))
         # self.add_service(EthernetSettingsService(bus, 3, self.application))
         # self.add_service(DNSSettingsService(bus, 4, self.application))
 
@@ -411,16 +412,16 @@ class BatteryLevelCharacteristic(Characteristic):
 
         self.notifying = False
         
-class NetworkPriorityService(Service):
+class SoftwareSettingsService(Service):
     
-    NetworkPriorityService_UUID = '12345678-1234-5678-1234-56789abcab00'
+    SoftwareSettings_UUID = '12345678-1234-5678-1234-56789abcab00'
     
     def __init__(self, bus, index, application):
-        Service.__init__(self, bus, index, self.NetworkPriorityService_UUID, True)
+        Service.__init__(self, bus, index, self.SoftwareSettings_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
-        # self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
-        # self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
-        # self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
+        self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
+        self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
+        self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
     
@@ -453,7 +454,8 @@ class NetworkPriorityCharacteristic(Characteristic):
                 self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
         except Exception as e:
             print("NetworkPriorityCharacteristic Write Exception:",e)
-  
+            
+
 class SettingsFourGService(Service):
     
     SettingsFourGService_UUID = '10045678-3333-5678-1234-56789abcab00'
@@ -462,7 +464,7 @@ class SettingsFourGService(Service):
         Service.__init__(self, bus, index, self.SettingsFourGService_UUID, True)
         self.add_characteristic(SettingsFourGCharacteristic(bus, 0, self, application))
   
-class SettingsFourGCharacteristic(Service):
+class SettingsFourGCharacteristic(Characteristic):
     
     Settings4G_UUID = '10045678-3333-5678-1234-56789abcab01'
     
@@ -503,7 +505,7 @@ class EthernetSettingsService(Service):
         Service.__init__(self, bus, index, self.EthernetSettingsService_UUID, True)
         self.add_characteristic(EthernetSettingsCharacteristic(bus, 0, self, application))
 
-class EthernetSettingsCharacteristic(Service):
+class EthernetSettingsCharacteristic(Characteristic):
     
     Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab05'
     
@@ -543,7 +545,7 @@ class DNSSettingsService(Service):
         Service.__init__(self, bus, index, self.DNSSettingsService_UUID, True)
         self.add_characteristic(DNSSettingsCharacteristic(bus, 0, self, application))
     
-class DNSSettingsCharacteristic(Service):
+class DNSSettingsCharacteristic(Characteristic):
     
     DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab07'
     

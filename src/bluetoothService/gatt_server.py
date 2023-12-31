@@ -420,8 +420,8 @@ class SoftwareSettingsService(Service):
         Service.__init__(self, bus, index, self.SoftwareSettings_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
         self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
-        self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
-        self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
+        # self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
+        # self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
     

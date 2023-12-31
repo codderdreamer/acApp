@@ -37,7 +37,7 @@ class ApplicationBluetooth(dbus.service.Object):
         self.add_service(HeartRateService(bus, 0))
         # self.add_service(BatteryService(bus, 1))
         self.add_service(TestService(bus, 1))
-        self.add_service(SoftwareSettingService(bus, 2, self.application))
+        self.add_service(NetworkPriorityService(bus, 2, self.application))
 
     
     
@@ -409,14 +409,14 @@ class BatteryLevelCharacteristic(Characteristic):
 
         self.notifying = False
         
-class SoftwareSettingService(Service):
+class NetworkPriorityService(Service):
     
-    SOFTWARE_SETTİNG_UUID = '12345678-1234-5678-1234-56789abcab00'
+    NetworkPriorityService_UUID = '12345678-1234-5678-1234-56789abcab00'
     
     def __init__(self, bus, index, application):
-        Service.__init__(self, bus, index, self.SOFTWARE_SETTİNG_UUID, True)
+        Service.__init__(self, bus, index, self.NetworkPriorityService_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
-        self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
+        # self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
         # self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
         # self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
         
@@ -451,10 +451,18 @@ class NetworkPriorityCharacteristic(Characteristic):
                 self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
         except Exception as e:
             print("NetworkPriorityCharacteristic Write Exception:",e)
-        
+  
+class SettingsFourGService(Service):
+    
+    SettingsFourGService_UUID = '12345678-1234-5678-1234-56789abcab02'
+    
+    def __init__(self, bus, index, application):
+        Service.__init__(self, bus, index, self.SettingsFourGService_UUID, True)
+        self.add_characteristic(SettingsFourGCharacteristic(bus, 0, self, application))
+  
 class SettingsFourGCharacteristic(Service):
     
-    Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
+    Settings4G_UUID = '12345678-1234-5678-1234-56789abcab03'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -485,9 +493,17 @@ class SettingsFourGCharacteristic(Service):
         except Exception as e:
             print("Settings4GCharacteristic Write Exception:",e)
 
+class EthernetSettingsService(Service):
+    
+    EthernetSettingsService_UUID = '12345678-1234-5678-1234-56789abcab04'
+    
+    def __init__(self, bus, index, application):
+        Service.__init__(self, bus, index, self.EthernetSettingsService_UUID, True)
+        self.add_characteristic(EthernetSettingsCharacteristic(bus, 0, self, application))
+
 class EthernetSettingsCharacteristic(Service):
     
-    Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab03'
+    Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab05'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -516,10 +532,18 @@ class EthernetSettingsCharacteristic(Service):
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
         except Exception as e:
             print("EthernetSettingsCharacteristic Write Exception:",e)
+
+class DNSSettingsService(Service):
+    
+    DNSSettingsService_UUID = '12345678-1234-5678-1234-56789abcab06'
+    
+    def __init__(self, bus, index, application):
+        Service.__init__(self, bus, index, self.DNSSettingsService_UUID, True)
+        self.add_characteristic(DNSSettingsCharacteristic(bus, 0, self, application))
     
 class DNSSettingsCharacteristic(Service):
     
-    DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab04'
+    DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab07'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -559,8 +583,8 @@ class TestService(Service):
     def __init__(self, bus, index):
         Service.__init__(self, bus, index, self.TEST_SVC_UUID, True)
         self.add_characteristic(TestCharacteristic(bus, 0, self))
-        # self.add_characteristic(TestEncryptCharacteristic(bus, 1, self))
-        # self.add_characteristic(TestSecureCharacteristic(bus, 2, self))
+        self.add_characteristic(TestEncryptCharacteristic(bus, 1, self))
+        self.add_characteristic(TestSecureCharacteristic(bus, 2, self))
 
 class TestCharacteristic(Characteristic):
     """

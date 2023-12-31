@@ -25,6 +25,7 @@ class DatabaseModule():
     
     def get_ethernet_settings(self):
         try:
+            print("get_ethernet_settings func ******")
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}

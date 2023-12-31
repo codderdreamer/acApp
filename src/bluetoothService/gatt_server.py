@@ -12,20 +12,17 @@ except ImportError:
 from random import randint
 from src.bluetoothService import exceptions
 from src.bluetoothService import adapters
+import json
 
 BLUEZ_SERVICE_NAME = 'org.bluez'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
 DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
 DBUS_PROP_IFACE = 'org.freedesktop.DBus.Properties'
-
 LE_ADVERTISEMENT_IFACE = 'org.bluez.LEAdvertisement1'
-
 GATT_MANAGER_IFACE = 'org.bluez.GattManager1'
-
 GATT_SERVICE_IFACE = 'org.bluez.GattService1'
 GATT_CHRC_IFACE =    'org.bluez.GattCharacteristic1'
 GATT_DESC_IFACE =    'org.bluez.GattDescriptor1'
-
 
 
 class ApplicationBluetooth(dbus.service.Object):
@@ -116,7 +113,6 @@ class Service(dbus.service.Object):
 
         return self.get_properties()[GATT_SERVICE_IFACE]
 
-
 class Characteristic(dbus.service.Object):
     """
     org.bluez.GattCharacteristic1 interface implementation
@@ -193,7 +189,6 @@ class Characteristic(dbus.service.Object):
     def PropertiesChanged(self, interface, changed, invalidated):
         pass
 
-
 class Descriptor(dbus.service.Object):
     """
     org.bluez.GattDescriptor1 interface implementation
@@ -239,7 +234,6 @@ class Descriptor(dbus.service.Object):
         print('Default WriteValue called, returning error')
         raise exceptions.NotSupportedException()
 
-
 class HeartRateService(Service):
     """
     Fake Heart Rate Service that simulates a fake heart beat and control point
@@ -254,7 +248,6 @@ class HeartRateService(Service):
         self.add_characteristic(BodySensorLocationChrc(bus, 1, self))
         self.add_characteristic(HeartRateControlPointChrc(bus, 2, self))
         self.energy_expended = 0
-
 
 class HeartRateMeasurementChrc(Characteristic):
     HR_MSRMT_UUID = '00002a37-0000-1000-8000-00805f9b34fb'
@@ -313,7 +306,6 @@ class HeartRateMeasurementChrc(Characteristic):
         self.notifying = False
         self._update_hr_msrmt_simulation()
 
-
 class BodySensorLocationChrc(Characteristic):
     BODY_SNSR_LOC_UUID = '00002a38-0000-1000-8000-00805f9b34fb'
 
@@ -353,7 +345,6 @@ class HeartRateControlPointChrc(Characteristic):
         print('Energy Expended field reset!')
         self.service.energy_expended = 0
 
-
 class BatteryService(Service):
     """
     Fake Battery service that emulates a draining battery.
@@ -364,7 +355,6 @@ class BatteryService(Service):
     def __init__(self, bus, index):
         Service.__init__(self, bus, index, self.BATTERY_UUID, True)
         self.add_characteristic(BatteryLevelCharacteristic(bus, 0, self))
-
 
 class BatteryLevelCharacteristic(Characteristic):
     """
@@ -421,15 +411,18 @@ class BatteryLevelCharacteristic(Characteristic):
         
 class SoftwareSettingService(Service):
     
-    SOFTWARE_SETTİNG_UUID = '12345678-1234-5678-1234-56789abcabc0'
+    SOFTWARE_SETTİNG_UUID = '12345678-1234-5678-1234-56789abcab00'
     
     def __init__(self, bus, index, application):
         Service.__init__(self, bus, index, self.SOFTWARE_SETTİNG_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
+        self.add_characteristic(Settings4GCharacteristic(bus, 0, self, application))
+        self.add_characteristic(EthernetSettingsCharacteristic(bus, 0, self, application))
+        self.add_characteristic(DNSSettingsCharacteristic(bus, 0, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
     
-    NETWORK_PRIORITY_UUID = '12345678-1234-5678-1234-56789abcabc0'
+    NETWORK_PRIORITY_UUID = '12345678-1234-5678-1234-56789abcab01'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -441,17 +434,120 @@ class NetworkPriorityCharacteristic(Characteristic):
         self.value = self.application.settings.get_network_priority().encode('utf-8')
         
     def ReadValue(self, options):
+        self.value = self.application.settings.get_network_priority().encode('utf-8')
         print('NetworkPriorityCharacteristic Read: ' + repr(self.value))
         return self.value
 
     def WriteValue(self, value, options):
-        print('NetworkPriorityCharacteristic Write: ' + repr(value))
-        self.value = value
-        value_str = bytes(value).decode('utf-8')
-        print(f'Value received in UTF-8 format: {value_str}')
+        print("NetworkPriorityCharacteristic Write: ",repr(value) )
+        try:
+            json_string = value.decode('utf-8')
+            json_object = json.loads(json_string)
+            if(json_object["Command"]=="NetworkPriority"):
+                enableWorkmode = str(json_object["Data"]["enableWorkmode"])
+                first = json_object["Data"]["1"]
+                second = json_object["Data"]["2"]
+                third = json_object["Data"]["3"]
+                self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
+        except Exception as e:
+            print("NetworkPriorityCharacteristic Write Exception:",e)
         
+class Settings4GCharacteristic(Service):
+    
+    Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.Settings4G_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_Settings4G().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_Settings4G().encode('utf-8')
+        print('Settings4GCharacteristic Read: ' + repr(self.value))
+        return self.value
 
+    def WriteValue(self, value, options):
+        print("Settings4GCharacteristic Write: ",repr(value) )
+        try:
+            json_string = value.decode('utf-8')
+            json_object = json.loads(json_string)
+            if(json_object["Command"]=="4GSettings"):
+                enableModification = str(json_object["Data"]["enableModification"])
+                apn = json_object["Data"]["apn"]
+                user = json_object["Data"]["user"]
+                password = json_object["Data"]["password"]
+                pin = json_object["Data"]["pin"]
+                self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
+        except Exception as e:
+            print("Settings4GCharacteristic Write Exception:",e)
 
+class EthernetSettingsCharacteristic(Service):
+    
+    Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab03'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.Ethernet_Settings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
+        print('EthernetSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("EthernetSettingsCharacteristic Write: ",repr(value) )
+        try:
+            json_string = value.decode('utf-8')
+            json_object = json.loads(json_string)
+            if(json_object["Command"]=="EthernetSettings"):
+                ethernetEnable = str(json_object["Data"]["ethernetEnable"])
+                ip = json_object["Data"]["ip"]
+                netmask = json_object["Data"]["netmask"]
+                gateway = json_object["Data"]["gateway"]
+                self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
+        except Exception as e:
+            print("EthernetSettingsCharacteristic Write Exception:",e)
+    
+class DNSSettingsCharacteristic(Service):
+    
+    DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab04'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.DNSSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_dns_settings().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_dns_settings().encode('utf-8')
+        print('DNSSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("DNSSettingsCharacteristic Write: ",repr(value) )
+        try:
+            json_string = value.decode('utf-8')
+            json_object = json.loads(json_string)
+            if(json_object["Command"]=="DNSSettings"):
+                dnsEnable = str(json_object["Data"]["dnsEnable"])
+                dns1 = json_object["Data"]["DNS1"]
+                dns2 = json_object["Data"]["DNS2"]
+                self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
+        except Exception as e:
+            print("DNSSettingsCharacteristic Write Exception:",e)
+        
 class TestService(Service):
     """
     Dummy test service that provides characteristics and descriptors that

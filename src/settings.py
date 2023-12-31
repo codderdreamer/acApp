@@ -20,7 +20,48 @@ class Settings():
                 }
         json_string = json.dumps(command)
         return json_string
+    
+    def get_Settings4G(self):
+        command = {
+                    "Command" : "4GSettings",
+                    "Data" : {
+                                "enableModification" : bool(self.settings4G.enableModification=="True"),
+                                "apn" : self.settings4G.apn,
+                                "user" : self.settings4G.user,
+                                "password" : self.settings4G.password,
+                                "pin" : self.settings4G.pin,
+                            }
+                }
+        json_string = json.dumps(command)
+        return json_string
+    
+    def get_ethernet_settings(self):
+        command = {
+                    "Command" : "EthernetSettings",
+                    "Data" : {
+                                "ethernetEnable" : bool(self.ethernetSettings.ethernetEnable=="True"),
+                                "ip" : self.ethernetSettings.ip,
+                                "netmask" : self.ethernetSettings.netmask,
+                                "gateway" : self.ethernetSettings.gateway
+                            }
+                }
+        json_string = json.dumps(command)
+        return json_string
+    
+    def get_dns_settings(self):
+        command = {
+                    "Command" : "DNSSettings",
+                    "Data" : {
+                                "dnsEnable" : bool(self.dnsSettings.dnsEnable=="True"),
+                                "DNS1" : self.dnsSettings.DNS1,
+                                "DNS2" : self.dnsSettings.DNS2
+                            }
+                }
+        json_string = json.dumps(command)
+        return json_string
 
+        
+    
 class NetworkPriority():
     def __init__(self) -> None:
         self.enableWorkmode = None

@@ -462,9 +462,9 @@ class TestCharacteristic(Characteristic):
         print('TestCharacteristic Write: ' + repr(value))
         self.value = value
         # Convert the byte array to a UTF-8 string
-        value_str = bytes(value).decode('utf-8')
-        print(f'Value received in UTF-8 format: {value_str}')
-        # Your existing logic here (if any)
+        # value_str = bytes(value).decode('utf-8')
+        # print(f'Value received in UTF-8 format: {value_str}')
+        # # Your existing logic here (if any)
 
 
 class TestDescriptor(Descriptor):

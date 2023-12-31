@@ -12,7 +12,7 @@ except ImportError:
 import argparse
 from threading import Thread
 from src.bluetoothService import advertising
-import gatt_server
+from src.bluetoothService import gatt_server
 import time
 
 class BluetoothService():

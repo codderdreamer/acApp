@@ -11,7 +11,7 @@ except ImportError:
     import gobject as GObject
 import argparse
 from threading import Thread
-import advertising
+from src.bluetoothService import advertising
 import gatt_server
 import time
 

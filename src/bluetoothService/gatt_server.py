@@ -500,7 +500,7 @@ class EthernetSettingsCharacteristic(Characteristic):
                 self.Ethernet_Settings_UUID,
                 ['read', 'write', 'writable-auxiliaries'],
                 service)
-        self.value = []
+        self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
         
     def ReadValue(self, options):
         self.value = self.application.settings.get_ethernet_settings().encode('utf-8')

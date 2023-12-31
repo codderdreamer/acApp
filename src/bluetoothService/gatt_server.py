@@ -37,6 +37,7 @@ class ApplicationBluetooth(dbus.service.Object):
         self.add_service(HeartRateService(bus, 0))
         self.add_service(TestService(bus, 1))
         self.add_service(SoftwareSettingsService(bus, 2, self.application))
+        self.add_service(BatteryService(bus, 3, self.application))
         # self.add_service(TestServiceStatus(bus, 3, self.application))
         # self.add_service(SettingsFourGService(bus, 3, self.application))
         # self.add_service(EthernetSettingsService(bus, 3, self.application))
@@ -455,7 +456,6 @@ class NetworkPriorityCharacteristic(Characteristic):
         except Exception as e:
             print("NetworkPriorityCharacteristic Write Exception:",e)
             
-
 class SettingsFourGCharacteristic(Characteristic):
     
     Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
@@ -521,7 +521,6 @@ class EthernetSettingsCharacteristic(Characteristic):
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
         except Exception as e:
             print("EthernetSettingsCharacteristic Write Exception:",e)
-
 
 class DNSSettingsCharacteristic(Characteristic):
     

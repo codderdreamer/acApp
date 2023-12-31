@@ -1,3 +1,4 @@
+import json
 
 class Settings():
     def __init__(self) -> None:
@@ -6,6 +7,19 @@ class Settings():
         self.ethernetSettings = EthernetSettings()
         self.dnsSettings = DNSSettings()
         self.wifiSettings = WifiSettings()
+        
+    def get_network_priority(self):
+        command = {
+                    "Command" : "NetworkPriority",
+                    "Data" : {
+                                "enableWorkmode" : bool(self.networkPriority.enableWorkmode=="True"),
+                                "1" : self.networkPriority.first,
+                                "2" : self.networkPriority.second,
+                                "3" : self.networkPriority.third
+                            }
+                }
+        json_string = json.dumps(command)
+        return json_string
 
 class NetworkPriority():
     def __init__(self) -> None:

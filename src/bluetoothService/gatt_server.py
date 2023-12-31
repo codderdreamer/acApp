@@ -438,7 +438,7 @@ class NetworkPriorityCharacteristic(Characteristic):
                 self.NETWORK_PRIORITY_UUID,
                 ['read', 'write', 'writable-auxiliaries'],
                 service)
-        self.value = []
+        self.value = self.application.settings.get_network_priority().encode('utf-8')
         
     def ReadValue(self, options):
         print('NetworkPriorityCharacteristic Read: ' + repr(self.value))

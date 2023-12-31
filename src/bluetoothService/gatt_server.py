@@ -456,7 +456,7 @@ class NetworkPriorityCharacteristic(Characteristic):
   
 class SettingsFourGService(Service):
     
-    SettingsFourGService_UUID = '12345678-1234-5678-1234-56789abcab02'
+    SettingsFourGService_UUID = '10045678-1234-5678-1234-56789abcab00'
     
     def __init__(self, bus, index, application):
         Service.__init__(self, bus, index, self.SettingsFourGService_UUID, True)
@@ -464,7 +464,7 @@ class SettingsFourGService(Service):
   
 class SettingsFourGCharacteristic(Service):
     
-    Settings4G_UUID = '12345678-1234-5678-1234-56789abcab03'
+    Settings4G_UUID = '10045678-1234-5678-1234-56789abcab01'
     
     def __init__(self, bus, index, service, application):
         self.application = application

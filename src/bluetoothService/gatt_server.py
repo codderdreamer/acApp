@@ -419,7 +419,7 @@ class SoftwareSettingsService(Service):
     def __init__(self, bus, index, application):
         Service.__init__(self, bus, index, self.SoftwareSettings_UUID, True)
         self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self, application))
-        # self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
+        self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
         # self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
         # self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
         
@@ -466,7 +466,7 @@ class SettingsFourGService(Service):
   
 class SettingsFourGCharacteristic(Characteristic):
     
-    Settings4G_UUID = '10045678-3333-5678-1234-56789abcab01'
+    Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
     
     def __init__(self, bus, index, service, application):
         self.application = application

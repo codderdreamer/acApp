@@ -44,7 +44,10 @@ class Application(dbus.service.Object):
         self.add_service(HeartRateService(bus, 0))
         # self.add_service(BatteryService(bus, 1))
         self.add_service(TestService(bus, 1))
+        self.add_service(SoftwareSettingService(bus, 2))
 
+    
+    
     def get_path(self):
         return dbus.ObjectPath(self.path)
 
@@ -419,6 +422,37 @@ class BatteryLevelCharacteristic(Characteristic):
             return
 
         self.notifying = False
+        
+class SoftwareSettingService(Service):
+    
+    SOFTWARE_SETTİNG_UUID = '12345678-1234-5678-1234-56789abcabc0'
+    
+    def __init__(self, bus, index):
+        Service.__init__(self, bus, index, self.SOFTWARE_SETTİNG_UUID, True)
+        self.add_characteristic(NetworkPriorityCharacteristic(bus, 0, self))
+        
+class NetworkPriorityCharacteristic(Characteristic):
+    
+    NETWORK_PRIORITY_UUID = '12345678-1234-5678-1234-56789abcabc0'
+    
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.NETWORK_PRIORITY_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = []
+        
+    def ReadValue(self, options):
+        print('NetworkPriorityCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print('NetworkPriorityCharacteristic Write: ' + repr(value))
+        self.value = value
+        value_str = bytes(value).decode('utf-8')
+        print(f'Value received in UTF-8 format: {value_str}')
+        
 
 
 class TestService(Service):
@@ -463,12 +497,7 @@ class TestCharacteristic(Characteristic):
         self.value = value
         value_str = bytes(value).decode('utf-8')
         print(f'Value received in UTF-8 format: {value_str}')
-        
-    def PropertiesChanged(self, interface, changed, invalidated):
-        print("PropertiesChanged")
-        print(interface)
-        print(changed)
-        print(invalidated)
+
 
 
 class TestDescriptor(Descriptor):

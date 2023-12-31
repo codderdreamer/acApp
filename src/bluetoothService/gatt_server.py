@@ -503,6 +503,7 @@ class EthernetSettingsCharacteristic(Characteristic):
         self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
         
     def ReadValue(self, options):
+        print("EthernetSettingsCharacteristic ReadValue")
         self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
         print('EthernetSettingsCharacteristic Read: ' + repr(self.value))
         return self.value

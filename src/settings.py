@@ -36,6 +36,7 @@ class Settings():
         return json_string
     
     def get_ethernet_settings(self):
+        print("get_ethernet_settings func")
         command = {
                     "Command" : "EthernetSettings",
                     "Data" : {

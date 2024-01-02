@@ -97,14 +97,19 @@ class SerialPort():
         #     time.sleep(2)
         
         # PID LOCKER CONTROL
-        while True:
-            self.set_command_pid_locker_control(LockerState.Lock)
-            time.sleep(5)
-            self.get_command_pid_locker_control()
-            time.sleep(5)
-            self.set_command_pid_locker_control(LockerState.Unlock)
-            time.sleep(5)
-            self.get_command_pid_locker_control()
+        # while True:
+        #     self.set_command_pid_locker_control(LockerState.Lock)
+        #     time.sleep(5)
+        #     self.get_command_pid_locker_control()
+        #     time.sleep(5)
+        #     self.set_command_pid_locker_control(LockerState.Unlock)
+        #     time.sleep(5)
+        #     self.get_command_pid_locker_control()
+        
+        # PID CURRENT
+        self.get_command_pid_current()
+        
+        
         pass
 
     def write(self):

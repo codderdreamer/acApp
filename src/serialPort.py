@@ -40,13 +40,15 @@ class SerialPort():
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
-        
-        self.get_command_PID_control_pilot()
-        self.get_command_pid_proximity_pilot()
+        self.seri_port_test()
 
-        
+
 
     def seri_port_test(self):
+        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        self.get_command_pid_proximity_pilot()
+        
+        
         # self.get_command_pid_energy(EnergyType.kwh)
         # self.get_command_pid_power(PowerType.kw)
         # self.get_command_pid_current()

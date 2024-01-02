@@ -18,28 +18,32 @@ class SerialPort():
         self.stx = b'\x02'
         self.lf = b'\n'
 
-        self.get_command = 'G'
-        self.get_response = 'g'
-        self.set_command = 'S'
-        self.set_response = 's'
+        self.get_command    = 'G'           # Bilgisayar tarafından bir verinin okunması için gönderilecektir.
+        self.get_response   = 'g'           # Bilgisayar tarafından bir verinin okunması için gönderilecektir.
+        self.set_command    = 'S'           # Bilgisayar tarafından bir verinin değiştirilmesi için gönderilecektir.
+        self.set_response   = 's'           # MCU tarafından ilgili veri set edildikten sonra cevap olarak dönecektir.
 
-        self.control_pilot = "C"
-        self.pid_relay_control = "R"
-        self.pid_led_control = "L"
-        self.pid_locker_control = "K"
-        self.pid_current = "I"
-        self.pid_power = "P"
-        self.pid_energy = "E"
-
+        self.pid_control_pilot      = "C"   # PID_CONTROL_PILOT	    ('C')
+        self.pid_proximity_pilot    = "X"   # PID_PROXIMITY_PILOT   ('X')
+        self.pid_relay_control      = "R"   # PID_RELAY_CONTROL	    ('R')
+        self.pid_cp_pwm_control     = "G"   # PID_CP_PWM_CONTROL	('G')
+        self.pid_locker_control     = "K"   # PID_LOCKER_CONTROL	('K')
+        self.pid_led_control        = "L"   # PID_LED_CONTROL	    ('L')
+        self.pid_current            = "I"   # PID_CURRENT		    ('I')
+        self.pid_voltage            = "V"   # PID_VOLTAGE		    ('V')
+        self.pid_power              = "P"   # PID_POWER		        ('P')
+        self.pid_energy             = "E"   # PID_ENERGY		    ('E')
+        self.pid_evse_temp          = "T"   # PID_EVSE_TEMP		    ('T')
+        
         self.parameter_data = "001"
         self.connector_id = "1"
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
+        
+        self.get_command_PID_control_pilot()
 
         self.seri_port_test()
-        
-        
         
 
     def seri_port_test(self):
@@ -64,19 +68,15 @@ class SerialPort():
 
         # self.set_command_pid_led_control(LedState.NeedReplugging)
 
-        self.get_command_pid_led_control()
+        # self.get_command_pid_led_control()
 
         pass
-
 
     def write(self):
         while True:
             try:
                 if len(self.send_data_list)>0:
-                    # start_time = time.time()
                     self.serial.write(self.send_data_list[0])
-                    # finish_time = time.time()
-                    # print(finish_time-start_time)
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("serial port write exception:",e)
@@ -97,10 +97,14 @@ class SerialPort():
     #   ************************ SEND *****************************************************
 
     def get_command_PID_control_pilot(self):
+        '''
+        Şarj kablosu ile araç arasında kablo bağlantısı yapıldıktan sonra kablo üzerindeki CP(Control Pilot) 
+        iletkeni vasıtasıyla bir haberleşme gerçekleşmektedir
+        '''
         while True:
             self.parameter_data = "001"
             self.connector_id = "1"
-            data = self.get_command + self.control_pilot + self.parameter_data + self.connector_id
+            data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
             
             checksum = self.calculate_checksum(data)
 
@@ -182,13 +186,10 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
-
-
-
     #   ************************ RESPONSE  *****************************************************
 
     def get_response_control_pilot(self,data):
-        if data[2] == self.control_pilot:
+        if data[2] == self.pid_control_pilot:
             self.application.ev.control_pilot = data[7]
             print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
 
@@ -284,8 +285,6 @@ class SerialPort():
             energy = data[8] + data[9] + data[10] + data[11] + data[12] + data[13] + data[14] + data[15] + data[16] + data[17]
             self.application.ev.energy = int(energy)/1000
             print("energy",self.application.ev.energy)
-
-
 
     def read(self):
         while True:

@@ -42,8 +42,8 @@ class SerialPort():
         Thread(target=self.write,daemon=True).start()
         
         self.get_command_PID_control_pilot()
+        self.get_command_pid_proximity_pilot()
 
-        self.seri_port_test()
         
 
     def seri_port_test(self):
@@ -105,13 +105,31 @@ class SerialPort():
             self.parameter_data = "001"
             self.connector_id = "1"
             data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
-            
             checksum = self.calculate_checksum(data)
-
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             print("send data",send_data)
             self.send_data_list.append(send_data)
             time.sleep(5)
+
+    def get_command_pid_proximity_pilot(self):
+        '''
+        Kendi üzerinde şarj kablosu olmayan Soketli Tip (Type 2) AC Şarj cihazlarında kullanıcı, 
+        şarj işlemi için kendi kablosunu kullanmaktadır. 
+        Şarj işlemi başlatılırken, tüm hata durumları kontrol edilir ve Control Pilot sinyalinden “State C” 
+        alındıktan sonra kablonun takılı olup olmadığı Proximity Pilot sinyali okunarak kontrol edilir ve 
+        takılı olan kablonun maximum akım taşıma kapasitesi algılandıktan sonra şarj işlemine devam edilir. 
+        Örneğin, AC Şarj cihazı 32 Amper akım verme kapasitesine sahip olduğu halde, takılan kablo 13 Amperlik 
+        bir kablo ise bu durumda araçtan, kablonun maximum kapasitesi kadar(13A) akım çekilmesi talep edilir. 
+        (Bu işlem Control Pilot ucundaki PWM duty genişliği ile ayarlanır. (Bknz:PID_CP_PWM)
+        '''
+        self.parameter_data = "001"
+        self.connector_id = "1"
+        data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        self.send_data_list.append(send_data)
+
+
 
     def set_command_pid_relay_control(self,relay:Relay):
         self.parameter_data = "002"
@@ -192,6 +210,13 @@ class SerialPort():
         if data[2] == self.pid_control_pilot:
             self.application.ev.control_pilot = data[7]
             print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
+            
+    def get_response_pid_proximity_pilot(self,data):
+        if data[2] == self.pid_proximity_pilot:
+            self.application.ev.proximity_pilot = data[7]
+            print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
+            
+            
 
     def set_response_ralay_control(self,data):
         if data[2] == self.pid_relay_control:

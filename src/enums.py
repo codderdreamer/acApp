@@ -13,6 +13,14 @@ class ControlPlot(Enum):
     stateD = "D"
     stateE = "E"
     stateF = "F"
+    
+class ProximityPilot(Enum):
+    CableNotPlugged = "N"
+    Error = "E"
+    CablePluggedIntoCharger13Amper = "1"
+    CablePluggedIntoCharger20Amper = "2"
+    CablePluggedIntoCharger32Amper = "3"
+    CablePluggedIntoCharger63Amper = "6"
 
 class Relay(Enum):
     On = "1"

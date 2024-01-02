@@ -54,44 +54,20 @@ class SerialPort():
         # çalışmadı yeni hex ile test edilecek
         
         # PID RELAY CONTROL
-        while True:
-            self.set_command_pid_relay_control(Relay.On)
-            time.sleep(5)
-            self.get_command_pid_relay()
-            time.sleep(5)
-            self.set_command_pid_relay_control(Relay.Off)
-            time.sleep(5)
-            self.get_command_pid_relay()
-            time.sleep(5)
+        # while True:
+        #     self.set_command_pid_relay_control(Relay.On)
+        #     time.sleep(5)
+        #     self.get_command_pid_relay()
+        #     time.sleep(5)
+        #     self.set_command_pid_relay_control(Relay.Off)
+        #     time.sleep(5)
+        #     self.get_command_pid_relay()
+        #     time.sleep(5)
         # On olsada off yapılsada röle 0 geliyor. Ancak Rölenin açılıp kapandığına dair ses var
         
         # PID LED CONTROL
         
-        
-        
-        
-        # self.get_command_pid_energy(EnergyType.kwh)
-        # self.get_command_pid_power(PowerType.kw)
-        # self.get_command_pid_current()
-
-        # self.set_command_pid_locker_control(LockerState.Lock)
-        # time.sleep(1)
-        # self.get_command_pid_locker_control()
-
-        # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
-
-        #  ************* Relay Test ***************
-        # self.set_command_pid_relay_control(Relay.On)
-        # time.sleep(5)
-        # self.get_command_pid_relay()
-        # time.sleep(5)
-        # self.set_command_pid_relay_control(Relay.Off)
-        # time.sleep(5)
-        # self.get_command_pid_relay()
-
-        # self.set_command_pid_led_control(LedState.NeedReplugging)
-
-        # self.get_command_pid_led_control()
+    
 
         pass
 

@@ -107,7 +107,7 @@ class SerialPort():
             data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("send data",send_data)
+            print("Send get_command_PID_control_pilot -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(5)
 
@@ -127,6 +127,7 @@ class SerialPort():
         data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("Send get_command_pid_proximity_pilot -->", send_data)
         self.send_data_list.append(send_data)
 
 

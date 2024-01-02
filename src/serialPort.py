@@ -45,15 +45,29 @@ class SerialPort():
 
 
     def seri_port_test(self):
+        # PID CONTROL PILOT
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        # başarılı
+        
+        # PID PROXIMITY PILOT
         # Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
-        self.set_command_pid_relay_control(Relay.On)
-        time.sleep(5)
-        self.get_command_pid_relay()
-        time.sleep(5)
-        self.set_command_pid_relay_control(Relay.Off)
-        time.sleep(5)
-        self.get_command_pid_relay()
+        # çalışmadı yeni hex ile test edilecek
+        
+        # PID RELAY CONTROL
+        while True:
+            self.set_command_pid_relay_control(Relay.On)
+            time.sleep(5)
+            self.get_command_pid_relay()
+            time.sleep(5)
+            self.set_command_pid_relay_control(Relay.Off)
+            time.sleep(5)
+            self.get_command_pid_relay()
+            time.sleep(5)
+        # On olsada off yapılsada röle 0 geliyor. Ancak Rölenin açılıp kapandığına dair ses var
+        
+        # PID LED CONTROL
+        
+        
         
         
         # self.get_command_pid_energy(EnergyType.kwh)
@@ -163,7 +177,7 @@ class SerialPort():
         print("Send get_command_pid_relay",send_data)
         self.send_data_list.append(send_data)
 
-    def set_command_pid_led_control(self,led_state):
+    def set_command_pid_led_control(self,led_state:LedState):
         self.parameter_data = "002"
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)

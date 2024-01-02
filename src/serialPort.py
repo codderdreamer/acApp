@@ -45,8 +45,8 @@ class SerialPort():
 
 
     def seri_port_test(self):
-        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
-        self.get_command_pid_proximity_pilot()
+        # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
         
         
         # self.get_command_pid_energy(EnergyType.kwh)
@@ -124,13 +124,14 @@ class SerialPort():
         bir kablo ise bu durumda araçtan, kablonun maximum kapasitesi kadar(13A) akım çekilmesi talep edilir. 
         (Bu işlem Control Pilot ucundaki PWM duty genişliği ile ayarlanır. (Bknz:PID_CP_PWM)
         '''
-        self.parameter_data = "001"
-        self.connector_id = "1"
-        data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send get_command_pid_proximity_pilot -->", send_data)
-        self.send_data_list.append(send_data)
+        while True:
+            self.parameter_data = "001"
+            self.connector_id = "1"
+            data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            print("Send get_command_pid_proximity_pilot -->", send_data)
+            self.send_data_list.append(send_data)
 
 
 

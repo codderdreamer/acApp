@@ -215,6 +215,7 @@ class SerialPort():
             print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
             
     def get_response_pid_proximity_pilot(self,data):
+        print("*****************************************",data)
         if data[2] == self.pid_proximity_pilot:
             self.application.ev.proximity_pilot = data[7]
             print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)

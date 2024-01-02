@@ -324,6 +324,7 @@ class SerialPort():
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)
+                        self.get_response_pid_proximity_pilot(incoming)
                         self.get_response_pid_relay(incoming)
                         self.get_response_pid_led_control(incoming)
                         self.get_response_pid_current(incoming)

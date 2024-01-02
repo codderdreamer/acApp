@@ -45,8 +45,15 @@ class SerialPort():
 
 
     def seri_port_test(self):
-        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
-        Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
+        # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        # Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
+        self.set_command_pid_relay_control(Relay.On)
+        time.sleep(5)
+        self.get_command_pid_relay()
+        time.sleep(5)
+        self.set_command_pid_relay_control(Relay.Off)
+        time.sleep(5)
+        self.get_command_pid_relay()
         
         
         # self.get_command_pid_energy(EnergyType.kwh)
@@ -134,22 +141,26 @@ class SerialPort():
             self.send_data_list.append(send_data)
             time.sleep(5)
 
-
-
     def set_command_pid_relay_control(self,relay:Relay):
+        '''
+        Röleyi kontrol etmek için (‘1’ veya ‘0’) paket gönderilir.
+        '''
         self.parameter_data = "002"
         data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send set_command_pid_relay_control",send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_relay(self):
+        '''
+        Rölenin 1 yada 0 olduğunu döner.
+        '''
         self.parameter_data = "001"
         data = self.get_command + self.pid_relay_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_relay",send_data)
         self.send_data_list.append(send_data)
 
     def set_command_pid_led_control(self,led_state):
@@ -222,20 +233,16 @@ class SerialPort():
             self.application.ev.proximity_pilot = data[7]
             print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
             
-            
-
     def set_response_ralay_control(self,data):
         if data[2] == self.pid_relay_control:
             result = data[7]
-            print("pid response result",result)
+            print("set_response_ralay_control------>",result)
 
     def get_response_pid_relay(self,data):
         if data[2] == self.pid_relay_control:
-            result = data[7]
-            if result == Relay.On.value:
-                print("Röle Açık")
-            else:
-                print("Röle kapalı")
+            self.application.ev.pid_relay_control = data[7]
+            print("self.application.ev.pid_relay_control------>",self.application.ev.pid_relay_control)
+
 
     def set_response_pid_led_control(self,data):
         if data[2] == self.pid_led_control:

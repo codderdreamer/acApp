@@ -40,11 +40,12 @@ class SerialPort():
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
-        self.seri_port_test()
+        Thread(target=self.seri_port_test,daemon=True).start()
 
 
 
     def seri_port_test(self):
+        time.sleep(5)
         # PID CONTROL PILOT
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         # başarılı

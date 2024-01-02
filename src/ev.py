@@ -6,6 +6,7 @@ class EV():
         self.proximity_pilot = None
         self.pid_relay_control = None
         self.pid_led_control = None
+        self.pid_locker_control = None
         self.current_L1 = None
         self.current_L2 = None
         self.current_L3 = None

@@ -3,11 +3,6 @@ import time
 from threading import Thread
 from src.enums import *
 
-# GET_COMMAND 	    :   "G" 	Bilgisayar tarafından bir verinin okunması için gönderilecektir.
-# GET_RESPONSE	    :   "g"	    MCU  tarafından, ilgili veri cevap olarak gönderilecektir.
-# SET_COMMAND	    :   "S"	    Bilgisayar tarafından bir verinin değiştirilmesi için gönderilecektir.
-# SET_RESPONSE		:   "s"	    (decimal 115)
-
 class SerialPort():
     def __init__(self,application) -> None:
         self.application = application
@@ -64,42 +59,52 @@ class SerialPort():
         #     time.sleep(5)
         #     self.get_command_pid_relay()
         #     time.sleep(5)
-        # On olsada off yapılsada röle 0 geliyor. Ancak Rölenin açılıp kapandığına dair ses var
+        # B yada C durumunda set edilebilir
         
         # PID LED CONTROL
+        # while True:
+        #     self.set_command_pid_led_control(LedState.StandBy)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.Connecting)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.RfidVerified)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.Charging)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.RfidFailed)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.NeedReplugging)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.Fault)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        #     self.set_command_pid_led_control(LedState.ChargingStopped)
+        #     time.sleep(2)
+        #     self.get_command_pid_led_control()
+        #     time.sleep(2)
+        
+        # PID LOCKER CONTROL
         while True:
-            self.set_command_pid_led_control(LedState.StandBy)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.Connecting)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.RfidVerified)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.Charging)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.RfidFailed)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.NeedReplugging)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.Fault)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
-            self.set_command_pid_led_control(LedState.ChargingStopped)
-            time.sleep(2)
-            self.get_command_pid_led_control()
-            time.sleep(2)
+            self.set_command_pid_locker_control(LockerState.Lock)
+            time.sleep(5)
+            self.get_command_pid_locker_control()
+            time.sleep(5)
+            self.set_command_pid_locker_control(LockerState.Unlock)
+            time.sleep(5)
+            self.get_command_pid_locker_control()
         pass
 
     def write(self):
@@ -201,7 +206,10 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
-    def set_command_pid_locker_control(self,locker_state):
+    def set_command_pid_locker_control(self,locker_state:LockerState):
+        '''
+        Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
+        '''
         self.parameter_data = "002"
         data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
         checksum = self.calculate_checksum(data)
@@ -210,7 +218,9 @@ class SerialPort():
         self.send_data_list.append(send_data)
 
     def get_command_pid_locker_control(self): 
-         # bunun cevabı dönmüyor bakılacak, pid locker control L yazıyor get için
+        '''
+        Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
+        '''
         self.parameter_data = "001"
         data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
@@ -310,17 +320,18 @@ class SerialPort():
         if data[2] == self.pid_locker_control:
             result = data[7]
             if result == LockerState.Lock.value:
-                print(LockerState.Lock.name)
+                print("set_response_pid_locker_control",LockerState.Lock.name)
             elif result == LockerState.Unlock.value:
-                print(LockerState.Unlock.name)
+                print("set_response_pid_locker_control",LockerState.Unlock.name)
 
     def get_response_pid_locker_control(self,data):
         if data[2] == self.pid_locker_control:
+            self.application.ev.pid_locker_control = data[7]
             result = data[7]
             if result == LockerState.Lock.value:
-                print(LockerState.Lock.name)
+                print("self.application.ev.pid_locker_control-->",LockerState.Lock.name)
             elif result == LockerState.Unlock.value:
-                print(LockerState.Unlock.name)
+                print("self.application.ev.pid_locker_control-->",LockerState.Unlock.name)
 
     def get_response_pid_current(self,data):
         if data[2] == self.pid_current:
@@ -359,6 +370,7 @@ class SerialPort():
                         self.get_response_pid_proximity_pilot(incoming)
                         self.get_response_pid_relay(incoming)
                         self.get_response_pid_led_control(incoming)
+                        self.get_response_pid_locker_control(incoming)
                         self.get_response_pid_current(incoming)
                         self.get_response_pid_power(incoming)
                         self.get_response_pid_energy(incoming)

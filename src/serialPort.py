@@ -45,7 +45,7 @@ class SerialPort():
 
 
     def seri_port_test(self):
-        # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
         
         

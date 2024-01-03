@@ -445,7 +445,8 @@ class NetworkPriorityCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         print("NetworkPriorityCharacteristic Write: ",repr(value) )
         try:
-            json_string = value.decode('utf-8')
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             if(json_object["Command"]=="NetworkPriority"):
                 enableWorkmode = str(json_object["Data"]["enableWorkmode"])
@@ -477,7 +478,8 @@ class SettingsFourGCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         print("Settings4GCharacteristic Write: ",repr(value) )
         try:
-            json_string = value.decode('utf-8')
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             if(json_object["Command"]=="4GSettings"):
                 enableModification = str(json_object["Data"]["enableModification"])
@@ -511,7 +513,8 @@ class EthernetSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         print("EthernetSettingsCharacteristic Write: ",repr(value) )
         try:
-            json_string = value.decode('utf-8')
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             if(json_object["Command"]=="EthernetSettings"):
                 ethernetEnable = str(json_object["Data"]["ethernetEnable"])
@@ -543,7 +546,8 @@ class DNSSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         print("DNSSettingsCharacteristic Write: ",repr(value) )
         try:
-            json_string = value.decode('utf-8')
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             if(json_object["Command"]=="DNSSettings"):
                 dnsEnable = str(json_object["Data"]["dnsEnable"])

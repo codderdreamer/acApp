@@ -448,6 +448,7 @@ class NetworkPriorityCharacteristic(Characteristic):
             byte_array = bytes([byte for byte in value])
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
+            print("NetworkPriorityCharacteristic WriteValue -->", json_object)
             if(json_object["Command"]=="NetworkPriority"):
                 enableWorkmode = str(json_object["Data"]["enableWorkmode"])
                 first = json_object["Data"]["1"]
@@ -481,6 +482,7 @@ class SettingsFourGCharacteristic(Characteristic):
             byte_array = bytes([byte for byte in value])
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
+            print("SettingsFourGCharacteristic WriteValue -->", json_object)
             if(json_object["Command"]=="4GSettings"):
                 enableModification = str(json_object["Data"]["enableModification"])
                 apn = json_object["Data"]["apn"]
@@ -516,6 +518,7 @@ class EthernetSettingsCharacteristic(Characteristic):
             byte_array = bytes([byte for byte in value])
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
+            print("EthernetSettingsCharacteristic WriteValue -->", json_object)
             if(json_object["Command"]=="EthernetSettings"):
                 ethernetEnable = str(json_object["Data"]["ethernetEnable"])
                 ip = json_object["Data"]["ip"]
@@ -549,6 +552,7 @@ class DNSSettingsCharacteristic(Characteristic):
             byte_array = bytes([byte for byte in value])
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
+            print("DNSSettingsCharacteristic WriteValue -->", json_object)
             if(json_object["Command"]=="DNSSettings"):
                 dnsEnable = str(json_object["Data"]["dnsEnable"])
                 dns1 = json_object["Data"]["DNS1"]

@@ -107,7 +107,10 @@ class SerialPort():
         #     self.get_command_pid_locker_control()
         
         # PID CURRENT
-        self.get_command_pid_current()
+        # self.get_command_pid_current()
+        
+        # PID VOLTAGE
+        self.get_command_pid_voltage()
         
         
         pass
@@ -240,6 +243,15 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("send data",send_data)
         self.send_data_list.append(send_data)
+        
+    def get_command_pid_voltage(self):
+        self.parameter_data = "001"
+        data = self.get_command + self.pid_voltage + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("send data",send_data)
+        self.send_data_list.append(send_data)
+
 
     def get_command_pid_power(self,power_type):
         self.parameter_data = "002"

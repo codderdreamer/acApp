@@ -80,6 +80,16 @@ class Process():
             self.application.deviceState = DeviceState.CONNECTED
             return
         
+        while True:
+            self.application.serialPort.get_command_pid_current()
+            self.application.serialPort.get_command_pid_voltage()
+            self.application.serialPort.get_command_pid_power(PowerType.kw)
+            self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+            time.sleep(3)
+            if self.application.deviceState != DeviceState.CHARGING:
+                break
+            
+        
         
         
         

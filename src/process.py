@@ -6,7 +6,7 @@ class Process():
         self.application = application
         
     def connected(self):
-        print("******************************************************************connected")
+        print("****************************************************************** connected")
         time.sleep(1)
         if self.application.deviceState != DeviceState.CONNECTED:
             return
@@ -44,7 +44,10 @@ class Process():
         elif self.application.cardType == CardType.StartStopCard:
             self.application.deviceState = DeviceState.WAITING_AUTH
             
-            
-    
-    def run(self):
+    def waiting_auth(self):
+        print("****************************************************************** waiting_auth")
         pass
+    
+    def waiting_state_c(self):
+        print("****************************************************************** waiting_state_c")
+            

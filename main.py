@@ -57,10 +57,15 @@ class Application():
 
     @deviceState.setter
     def deviceState(self, value):
+        print("?????????????????????????????????????", value)
         if self.__deviceState != value:
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
                 Thread(target=Process(self).connected,daemon=True).start()
+            elif self.__deviceState == DeviceState.WAITING_AUTH:
+                Thread(target=Process(self).waiting_auth,daemon=True).start()
+            elif self.__deviceState == DeviceState.WAITING_STATE_C:
+                Thread(target=Process(self).waiting_state_c,daemon=True).start()
                 
         
     async def main(self):

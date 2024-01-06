@@ -31,7 +31,7 @@ class Agent(dbus.service.Object):
         return input("Enter PIN Code: ")  # Prompt for a PIN code
     
 def setup_agent(bus):
-    agent_path = "/test/agent"
+    agent_path = "/testtt/agent"
     agent = Agent(bus, agent_path)
     agent_manager = dbus.Interface(bus.get_object('org.bluez', '/org/bluez'), 'org.bluez.AgentManager1')
     agent_manager.RegisterAgent(agent_path, 'KeyboardDisplay')

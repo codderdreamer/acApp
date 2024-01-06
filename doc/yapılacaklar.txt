@@ -7,4 +7,8 @@
 - plug and charge yöntemi ile şarj etme kısmını yaz
 - ocpp ile şarj etme kısmını yaz
 - bluetooth ile şarj etme kısmını yaz.
-- 
+- bluetooth pin code ayarlama
+
+Öncelik Sıralaması:
+------------------------
+- Şarj etme

@@ -8,11 +8,28 @@ class OcppVersion(Enum):
 
 class ControlPlot(Enum):
     stateA = "A"
+    '''State A : Not Connected'''
     stateB = "B"
+    '''State B : EV connected, ready to charge'''
     stateC = "C"
+    '''State C : EV charging'''
     stateD = "D"
+    '''State D : EV charging, ventilation required'''
     stateE = "E"
+    '''State E : Error'''
     stateF = "F"
+    '''State F : Unknown error'''
+    
+class DeviceState(Enum):
+    IDLE = "IDLE"
+    CONNECTED = "CONNECTED"
+    WAITING_AUTH = "WAITING_AUTH"
+    WAITING_STATE_C = "WAITING_STATE_C"
+    CHARGING = "CHARGING"
+    STOPPED_BY_EVSE = "STOPPED_BY_EVSE"
+    STOPPED_BY_USER = "STOPPED_BY_USER"
+    FAULT = "FAULT"
+    
     
 class ProximityPilot(Enum):
     CableNotPlugged = "N"
@@ -49,6 +66,22 @@ class EnergyType(Enum):
     kwh = "P"        # kw        Şuan sadece bu var
     kVARh = "R"      # kVAR
     kVAh = "S"       # kVA
+    
+class CardType(Enum):
+    StartStopCard = "StartStopCard"
+    '''
+    This is the local start and stop card allows that allows charging station to be used without 
+    being connected to the platform
+    '''
+    LocalPnC = "LocalPnC"
+    '''
+    Plug and Charge
+    '''
+    BillingCard = "BillingCard"
+    '''
+    This is the authentication card that charging station needs to be connected to the platform,
+    and the UID of RFID card needs to be entered into the platform before swipping card for use.
+    '''
 
 
 

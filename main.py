@@ -24,7 +24,7 @@ class Application():
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)
         self.bluetoothService = BluetoothService(self)
-        self.ev = EV()
+        self.ev = EV(self)
         self.config = Config()
         self.ensureFutures = EnsureFutures(self)
         self.ocppCallbacks =  OcppCallbacks(self)
@@ -44,6 +44,9 @@ class Application():
         
         while self.config.config_writed == False:
             time.sleep(0.01)
+            
+        self.cardType = CardType.LocalPnC
+        self.deviceState = DeviceState.IDLE
         
     async def main(self):
         try:

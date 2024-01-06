@@ -35,7 +35,7 @@ class SerialPort():
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
-        Thread(target=self.seri_port_test,daemon=True).start()
+        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
 
 
 
@@ -157,7 +157,7 @@ class SerialPort():
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             print("Send get_command_PID_control_pilot -->", send_data)
             self.send_data_list.append(send_data)
-            time.sleep(5)
+            time.sleep(1)
 
     def get_command_pid_proximity_pilot(self):
         '''
@@ -473,11 +473,9 @@ class SerialPort():
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
                     
-
-
             except Exception as e:
                 print(e)
-            time.sleep(1)
+            time.sleep(0.1)
             
 
 

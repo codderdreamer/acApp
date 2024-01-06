@@ -117,10 +117,12 @@ class SerialPort():
         pass
 
     def write(self):
+        counter = 0
         while True:
             try:
                 if len(self.send_data_list)>0:
-                    print("write...............",self.send_data_list[0])
+                    print("#################################################################", counter)
+                    counter +=1
                     self.serial.write(self.send_data_list[0])
                     self.send_data_list.pop(0)
             except Exception as e:
@@ -453,12 +455,14 @@ class SerialPort():
             print("energy",self.application.ev.energy)
 
     def read(self):
+        counter = 0
         while True:
             try:
                 incoming = self.serial.readline()
-                print(" self.serial.readline()",incoming)
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
+                    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", counter)
+                    counter +=1
                     print("incoming data",incoming)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:

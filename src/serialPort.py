@@ -456,6 +456,7 @@ class SerialPort():
         while True:
             try:
                 incoming = self.serial.readline()
+                print(" self.serial.readline()",incoming)
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
                     print("incoming data",incoming)

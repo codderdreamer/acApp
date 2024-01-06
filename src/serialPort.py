@@ -236,7 +236,7 @@ class SerialPort():
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send set_command_pid_led_control -->", send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_led_control(self):
@@ -244,7 +244,7 @@ class SerialPort():
         data = self.get_command + self.pid_led_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_led_control -->", send_data)
         self.send_data_list.append(send_data)
 
     def set_command_pid_locker_control(self,locker_state:LockerState):
@@ -255,7 +255,7 @@ class SerialPort():
         data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send set_command_pid_locker_control -->", send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_locker_control(self): 
@@ -266,7 +266,7 @@ class SerialPort():
         data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_locker_control -->", send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_current(self):
@@ -274,7 +274,7 @@ class SerialPort():
         data = self.get_command + self.pid_current + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_current -->", send_data)
         self.send_data_list.append(send_data)
         
     def get_command_pid_voltage(self):
@@ -282,7 +282,7 @@ class SerialPort():
         data = self.get_command + self.pid_voltage + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_voltage -->", send_data)
         self.send_data_list.append(send_data)
 
 
@@ -291,7 +291,7 @@ class SerialPort():
         data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_power -->", send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_energy(self,energy_type:EnergyType):
@@ -299,7 +299,7 @@ class SerialPort():
         data = self.get_command + self.pid_energy + self.parameter_data + self.connector_id + energy_type.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("send data",send_data)
+        print("Send get_command_pid_energy -->", send_data)
         self.send_data_list.append(send_data)
 
     #   ************************ RESPONSE  *****************************************************

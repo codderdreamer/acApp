@@ -46,7 +46,7 @@ class SerialPort():
         # başarılı
         
         # PID PROXIMITY PILOT
-        Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
+        # Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
         
         # PID RELAY CONTROL
         # while True:

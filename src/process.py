@@ -22,6 +22,7 @@ class Process():
                 self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
                 time.sleep(1)
                 self.application.serialPort.get_command_pid_locker_control()
+                time.sleep(1)
                 if self.application.ev.pid_locker_control == LockerState.Lock.value:
                     self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
                     self.application.deviceState = DeviceState.WAITING_STATE_C

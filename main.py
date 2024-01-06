@@ -31,6 +31,7 @@ class Application():
         self.ocppCallbacks =  OcppCallbacks(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
+        self.process = Process(self)
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()
@@ -50,6 +51,8 @@ class Application():
         self.__deviceState = DeviceState.IDLE
         self.socketType = SocketType.Type2
         self.max_current = 63
+        self.control_A_B_C = False
+        self.control_C_B = False
         
     @property
     def deviceState(self):
@@ -61,11 +64,33 @@ class Application():
         if self.__deviceState != value:
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
-                Thread(target=Process(self).connected,daemon=True).start()
+                self.control_A_B_C = True
+                self.control_C_B = False
+                Thread(target=self.process.connected,daemon=True).start()
             elif self.__deviceState == DeviceState.WAITING_AUTH:
-                Thread(target=Process(self).waiting_auth,daemon=True).start()
+                Thread(target=self.process.waiting_auth,daemon=True).start()
             elif self.__deviceState == DeviceState.WAITING_STATE_C:
-                Thread(target=Process(self).waiting_state_c,daemon=True).start()
+                Thread(target=self.process.waiting_state_c,daemon=True).start()
+            elif self.__deviceState == DeviceState.CHARGING:
+                self.control_C_B = True
+                Thread(target=self.process.charging,daemon=True).start()
+            elif self.__deviceState == DeviceState.FAULT:
+                self.control_A_B_C = False
+                self.control_C_B = False
+                Thread(target=self.process.fault,daemon=True).start()
+            elif self.__deviceState == DeviceState.IDLE:
+                self.control_A_B_C = False
+                self.control_C_B = False
+                Thread(target=self.process.idle,daemon=True).start()
+            elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
+                self.control_A_B_C = False
+                self.control_C_B = False
+                Thread(target=self.process.stopped_by_evse,daemon=True).start()
+            elif self.__deviceState == DeviceState.STOPPED_BY_USER:
+                self.control_A_B_C = False
+                self.control_C_B = False
+                Thread(target=self.process.stopped_by_user,daemon=True).start()
+            
                 
         
     async def main(self):

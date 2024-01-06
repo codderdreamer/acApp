@@ -50,4 +50,70 @@ class Process():
     
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
+        time.sleep(1)
+        if self.application.deviceState != DeviceState.WAITING_STATE_C:
+            return
+        if self.application.control_C_B:
+            self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+            return
+        self.application.serialPort.set_command_pid_relay_control(Relay.On)
+        time_start = time.time()
+        while True:
+            if self.application.ev.control_pilot == ControlPlot.stateB.value:
+                if time.time() - time_start > 60*5:
+                    self.application.deviceState = DeviceState.STOPPED_BY_EVSE
+                    break
+            elif self.application.ev.control_pilot == ControlPlot.stateC.value:  # Adan Cye geçen için
+                self.application.deviceState = DeviceState.CHARGING
+                break
+            else:
+                break
+            time.sleep(0.3)
+        
             
+            
+    def charging(self):
+        print("****************************************************************** charging")
+        if self.application.control_A_B_C != True:                               # Adan Cye geçen için
+            self.application.deviceState = DeviceState.CONNECTED
+            return
+        
+        
+        
+        
+        
+    def fault(self):
+        print("****************************************************************** fault")
+        self.application.serialPort.set_command_pid_cp_pwm(0)
+        time.sleep(0.3)
+        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        time.sleep(4)
+        if self.application.socketType == SocketType.Type2:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        
+    def stopped_by_evse(self):
+        print("****************************************************************** stopped_by_evse")
+        self.application.serialPort.set_command_pid_cp_pwm(0)
+        time.sleep(0.3)
+        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+            
+    def idle(self):
+        print("****************************************************************** idle")
+        self.application.serialPort.set_command_pid_cp_pwm(0)
+        time.sleep(0.3)
+        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        time.sleep(4)
+        if self.application.socketType == SocketType.Type2:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+            
+    def stopped_by_user(self):
+        print("****************************************************************** stopped_by_user")
+        self.application.serialPort.set_command_pid_cp_pwm(0)
+        time.sleep(0.3)
+        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        time.sleep(4)
+        if self.application.socketType == SocketType.Type2:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        
+        
+        

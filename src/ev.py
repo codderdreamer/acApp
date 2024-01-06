@@ -57,8 +57,10 @@ class EV():
             self.__control_pilot = value
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
-            elif (self.__control_pilot == ControlPlot.stateB.value) or (self.__control_pilot == ControlPlot.stateC.value):
+            elif self.__control_pilot == ControlPlot.stateB.value:
                 self.application.deviceState = DeviceState.CONNECTED
+            elif self.__control_pilot == ControlPlot.stateC.value:
+                self.application.deviceState = DeviceState.CHARGING
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
                 self.application.deviceState = DeviceState.FAULT
             else:

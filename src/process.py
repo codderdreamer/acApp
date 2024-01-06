@@ -20,7 +20,7 @@ class Process():
         if self.application.cardType == CardType.LocalPnC:
             if self.application.socketType == SocketType.Type2:
                 self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-                time.sleep(4)
+                # time.sleep(4)
                 time_start = time.time()
                 while time.time() - time_start < 10:
                     self.application.serialPort.get_command_pid_locker_control()

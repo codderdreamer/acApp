@@ -36,6 +36,7 @@ class SerialPort():
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
         # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        Thread(target=self.seri_port_test,daemon=True).start()
 
 
 

@@ -57,10 +57,11 @@ class BluetoothService():
         self.bus = dbus.SystemBus()
         self.mainloop = GObject.MainLoop()
         
-        self.setup_agent()
-        
         advertising.advertising_main(self.mainloop, self.bus, self.adapter_name)
         gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
+        
+        self.setup_agent()
+        
         self.mainloop.run()
         
 # bleService = BluetoothService()

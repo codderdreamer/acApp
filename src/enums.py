@@ -32,11 +32,11 @@ class DeviceState(Enum):
     
 class SocketType(Enum):
     Type2 = "Type2"
-    '''Proximity Pilot aktif, Kendi üzerinde şarj kablosu olmayan Soketli Tip (Type 2) AC Şarj cihazlarında 
+    '''Soketli Tip; Proximity Pilot aktif, Kendi üzerinde şarj kablosu olmayan Soketli Tip (Type 2) AC Şarj cihazlarında 
     kullanıcı, şarj işlemi için kendi kablosunu kullanmaktadır. Kullanılan kablolardaki iletkenin kalınlığına 
     göre bu kablonun akım taşıma kapasitesi 13A, 20A, 32A ve 63A olarak değişiklik göstermektedir.'''
     TetheredType = "TetheredType"
-    '''Kablolu tip (Tethered Type) şarj cihazlarında Proximity Pilot ucu aktif değildir ve kullanılmamaktadır.
+    '''Kablolu tip; şarj cihazlarında Proximity Pilot ucu aktif değildir ve kullanılmamaktadır.
     Max akım set edilir.'''
     
     

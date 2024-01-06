@@ -51,10 +51,10 @@ class Process():
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
         time.sleep(1)
-        if self.application.deviceState != DeviceState.WAITING_STATE_C:
-            return
         if self.application.control_C_B:
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+            return
+        if self.application.deviceState != DeviceState.WAITING_STATE_C:
             return
         self.application.serialPort.set_command_pid_relay_control(Relay.On)
         time_start = time.time()

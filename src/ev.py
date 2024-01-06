@@ -43,5 +43,6 @@ class EV():
             self.proximity_pilot_current = 32
         elif self.__proximity_pilot == ProximityPilot.CablePluggedIntoCharger63Amper.value:
             self.proximity_pilot_current = 63
+        print(self.proximity_pilot_current)
 
         

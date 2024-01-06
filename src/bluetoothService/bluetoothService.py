@@ -27,7 +27,7 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method(AGENT_INTERFACE, in_signature="os", out_signature="")
     def RequestPinCode(self, device, attempt):
-        print("RequestPinCode (%s, %d)" % (device, attempt))
+        print("*********************************RequestPinCode (%s, %d)" % (device, attempt))
         return input("Enter PIN Code: ")  # Prompt for a PIN code
 
 class BluetoothService():

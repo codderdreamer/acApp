@@ -120,6 +120,7 @@ class SerialPort():
         while True:
             try:
                 if len(self.send_data_list)>0:
+                    print("write...............",self.send_data_list[0])
                     self.serial.write(self.send_data_list[0])
                     self.send_data_list.pop(0)
             except Exception as e:

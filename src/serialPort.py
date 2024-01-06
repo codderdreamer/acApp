@@ -171,15 +171,13 @@ class SerialPort():
         13 Amperlik bir kablo ise bu durumda araçtan, kablonun maximum kapasitesi kadar(13A) akım çekilmesi 
         talep edilir. (Bu işlem Control Pilot ucundaki PWM duty genişliği ile ayarlanır. (Bknz:PID_CP_PWM)
         '''
-        while True:
-            self.parameter_data = "001"
-            self.connector_id = "1"
-            data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("Send get_command_pid_proximity_pilot -->", send_data)
-            self.send_data_list.append(send_data)
-            time.sleep(5)
+        self.parameter_data = "001"
+        self.connector_id = "1"
+        data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("Send get_command_pid_proximity_pilot -->", send_data)
+        self.send_data_list.append(send_data)
             
     def set_command_pid_cp_pwm(self,max_current):
         '''

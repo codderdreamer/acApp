@@ -14,6 +14,7 @@ from src.databaseModule import DatabaseModule
 from src.networkSettings import NetworkSettings
 from src.websocketServer import WebSocketServer
 from src.bluetoothService.bluetoothService import BluetoothService
+from src.process import Process
 
 class Application():
     def __init__(self,loop):
@@ -46,7 +47,21 @@ class Application():
             time.sleep(0.01)
             
         self.cardType = CardType.LocalPnC
-        self.deviceState = DeviceState.IDLE
+        self.__deviceState = DeviceState.IDLE
+        self.socketType = SocketType.Type2
+        self.max_current = 63
+        
+    @property
+    def deviceState(self):
+        return self.__deviceState
+
+    @deviceState.setter
+    def deviceState(self, value):
+        if self.__deviceState != value:
+            self.__deviceState = value
+            if self.__deviceState == DeviceState.CONNECTED:
+                Thread(target=Process(self).connected,daemon=True).start()
+                
         
     async def main(self):
         try:

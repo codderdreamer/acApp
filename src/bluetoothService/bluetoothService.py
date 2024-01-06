@@ -60,9 +60,11 @@ class BluetoothService():
         advertising.advertising_main(self.mainloop, self.bus, self.adapter_name)
         gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
         
-        self.setup_agent()
+        
         
         self.mainloop.run()
+        
+        self.setup_agent()
         
 # bleService = BluetoothService()
 # while True:

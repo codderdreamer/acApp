@@ -65,7 +65,6 @@ class Application():
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
                 self.control_A_B_C = True
-                self.control_C_B = False
                 Thread(target=self.process.connected,daemon=True).start()
             elif self.__deviceState == DeviceState.WAITING_AUTH:
                 Thread(target=self.process.waiting_auth,daemon=True).start()

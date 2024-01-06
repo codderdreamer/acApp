@@ -46,18 +46,17 @@ class SerialPort():
         # başarılı
         
         # PID PROXIMITY PILOT
-        Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
-        # çalışmadı yeni hex ile test edilecek
+        # Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
         
         # PID RELAY CONTROL
         # while True:
         #     self.set_command_pid_relay_control(Relay.On)
         #     time.sleep(5)
-        #     self.get_command_pid_relay()
+        #     self.get_command_pid_relay_control()
         #     time.sleep(5)
         #     self.set_command_pid_relay_control(Relay.Off)
         #     time.sleep(5)
-        #     self.get_command_pid_relay()
+        #     self.get_command_pid_relay_control()
         #     time.sleep(5)
         # B yada C durumunda set edilebilir
         
@@ -181,7 +180,35 @@ class SerialPort():
             print("Send get_command_pid_proximity_pilot -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(5)
-
+            
+    def set_command_pid_cp_pwm(self,max_current):
+        '''
+        Control Pilot PWM sinyalini set edebilmek(kontrol etmek) için aşağıdaki paket gönderilir
+        '''
+        max_current = float(max_current)
+        digit_100 = int(max_current // 100) % 10
+        digit_10 = int(max_current // 10) % 10
+        digit_1 = int(max_current) % 10
+        digit_01 = int(max_current * 10) % 10 
+        max_current = f"{digit_100}{digit_10}{digit_1}{digit_01}"
+        
+        self.parameter_data = "005"
+        self.connector_id = "1"
+        data = self.get_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("Send set_command_pid_cp_pwm -->", send_data)
+        self.send_data_list.append(send_data)
+        
+    def get_command_pid_cp_pwm(self):
+        self.parameter_data = "001"
+        self.connector_id = "1"
+        data = self.get_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("Send get_command_pid_cp_pwm -->", send_data)
+        self.send_data_list.append(send_data)
+        
     def set_command_pid_relay_control(self,relay:Relay):
         '''
         Röleyi kontrol etmek için (‘1’ veya ‘0’) paket gönderilir.
@@ -194,7 +221,7 @@ class SerialPort():
         print("Send set_command_pid_relay_control",send_data)
         self.send_data_list.append(send_data)
 
-    def get_command_pid_relay(self):
+    def get_command_pid_relay_control(self):
         '''
         Rölenin 1 yada 0 olduğunu döner.
         '''
@@ -295,13 +322,35 @@ class SerialPort():
         if data[2] == self.pid_proximity_pilot:
             self.application.ev.proximity_pilot = data[7]
             print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
+      
+    def set_response_pid_cp_pwm(self,data):
+        if data[2] == self.pid_cp_pwm_control:
+            digit_100 = int(data[7]) * 100
+            digit_10 = int(data[8]) * 10
+            digit_1 = int(data[9])
+            digit_01 = int(data[10]) / 10
             
-    def set_response_ralay_control(self,data):
+            original_number = digit_100 + digit_10 + digit_1 + digit_01
+            pid_cp_pwm = int(original_number) if original_number.is_integer() else original_number
+            print("pid_cp_pwm------>",pid_cp_pwm)
+    
+    def get_response_pid_cp_pwm(self,data):
+        if data[2] == self.pid_cp_pwm_control:
+            digit_100 = int(data[7]) * 100
+            digit_10 = int(data[8]) * 10
+            digit_1 = int(data[9])
+            digit_01 = int(data[10]) / 10
+            
+            original_number = digit_100 + digit_10 + digit_1 + digit_01
+            self.application.ev.pid_cp_pwm = int(original_number) if original_number.is_integer() else original_number
+            print("self.application.ev.pid_cp_pwm------>",self.application.ev.pid_cp_pwm)
+            
+    def set_response_pid_relay_control(self,data):
         if data[2] == self.pid_relay_control:
             result = data[7]
-            print("set_response_ralay_control------>",result)
+            print("set_response_pid_relay_control------>",result)
 
-    def get_response_pid_relay(self,data):
+    def get_response_pid_relay_control(self,data):
         if data[2] == self.pid_relay_control:
             self.application.ev.pid_relay_control = data[7]
             print("self.application.ev.pid_relay_control------>",self.application.ev.pid_relay_control)
@@ -412,14 +461,15 @@ class SerialPort():
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)
                         self.get_response_pid_proximity_pilot(incoming)
-                        self.get_response_pid_relay(incoming)
+                        self.get_response_pid_relay_control(incoming)
                         self.get_response_pid_led_control(incoming)
                         self.get_response_pid_locker_control(incoming)
                         self.get_response_pid_current(incoming)
                         self.get_response_pid_power(incoming)
                         self.get_response_pid_energy(incoming)
                     elif incoming[1] == self.set_response:
-                        self.set_response_ralay_control(incoming)
+                        self.set_response_pid_cp_pwm(incoming)
+                        self.set_response_pid_relay_control(incoming)
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
                     

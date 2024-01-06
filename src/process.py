@@ -8,6 +8,7 @@ class Process():
     def connected(self):
         print("****************************************************************** connected")
         time.sleep(1)
+        print("&&&&&&&&&&&&&&&&&&&&",self.application.control_C_B)
         if self.application.control_C_B:
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             return

@@ -15,35 +15,11 @@ GATT_SERVICE_IFACE = 'org.bluez.GattService1'
 GATT_CHRC_IFACE =    'org.bluez.GattCharacteristic1'
 GATT_DESC_IFACE =    'org.bluez.GattDescriptor1'
 
-class Agent(dbus.service.Object):
-    AGENT_INTERFACE = 'org.bluez.Agent1'
-
-    def __init__(self, bus, path):
-        super().__init__(bus, path)
-
-    @dbus.service.method(AGENT_INTERFACE, in_signature="", out_signature="")
-    def Release(self):
-        print("Agent Released")
-
-    @dbus.service.method(AGENT_INTERFACE, in_signature="os", out_signature="")
-    def RequestPinCode(self, device, attempt):
-        print("*********************************RequestPinCode (%s, %d)" % (device, attempt))
-        return input("Enter PIN Code: ")  # Prompt for a PIN code
-    
-def setup_agent(bus):
-    agent_path = "/bleagent/agentt"
-    agent = Agent(bus, agent_path)
-    agent_manager = dbus.Interface(bus.get_object('org.bluez', '/org/bluez'), 'org.bluez.AgentManager1')
-    agent_manager.RegisterAgent(agent_path, 'KeyboardDisplay')
-    agent_manager.RequestDefaultAgent(agent_path)
-    print("Agent registered")
-
 
 def find_adapter(bus, adapter_interface_name, adapter_name):
     remote_om = dbus.Interface(bus.get_object(BLUEZ_SERVICE_NAME, '/'), DBUS_OM_IFACE)
     objects = remote_om.GetManagedObjects()
     
-    setup_agent(bus)
 
     for o, props in objects.items():
         print('checking adapter %s, keys: %s' % (o, props.keys()))

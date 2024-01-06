@@ -20,14 +20,15 @@ class Process():
         if self.application.cardType == CardType.LocalPnC:
             if self.application.socketType == SocketType.Type2:
                 self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-                # self.application.serialPort.get_command_pid_locker_control()
-                # print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
-                # if self.application.ev.pid_locker_control == LockerState.Lock.value:
-                #     self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
-                #     self.application.deviceState = DeviceState.WAITING_STATE_C
-                #     print("************************* DeviceState.WAITING_STATE_C")
-                # else:
-                #     print("Hata Lock Connector Çalışmadı !!!")
+                time.sleep(2)
+                self.application.serialPort.get_command_pid_locker_control()
+                print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
+                if self.application.ev.pid_locker_control == LockerState.Lock.value:
+                    self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
+                    print("************************* DeviceState.WAITING_STATE_C")
+                else:
+                    print("Hata Lock Connector Çalışmadı !!!")
             elif self.application.socketType == SocketType.TetheredType:
                 self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
                 self.application.deviceState = DeviceState.WAITING_STATE_C

@@ -149,7 +149,7 @@ class SerialPort():
         State E : Error
         State F : Unknown error
         '''
-        time.sleep(5)
+        time.sleep(10)
         while True:
             self.parameter_data = "001"
             self.connector_id = "1"

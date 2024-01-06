@@ -41,9 +41,9 @@ class LockerState(Enum):
     Unlock = "0"
 
 class PowerType(Enum):
-    kw = "P"        # kw        Şuan sadece bu var
-    kVAR = "R"      # kVAR
-    kVA = "S"       # kVA
+    kw = "P"        # kw        AKTİF GÜÇ       (şuan sadece bu var)
+    kVAR = "R"      # kVAR      REAKTİF GÜÇ  
+    kVA = "S"       # kVA       GÖRÜNÜR GÜÇ
 
 class EnergyType(Enum):
     kwh = "P"        # kw        Şuan sadece bu var

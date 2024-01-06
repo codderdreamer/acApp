@@ -46,7 +46,7 @@ class SerialPort():
         # başarılı
         
         # PID PROXIMITY PILOT
-        # Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
+        Thread(target=self.get_command_pid_proximity_pilot,daemon=True).start()
         # çalışmadı yeni hex ile test edilecek
         
         # PID RELAY CONTROL
@@ -110,7 +110,7 @@ class SerialPort():
         # self.get_command_pid_current()
         
         # PID VOLTAGE
-        self.get_command_pid_voltage()
+        # self.get_command_pid_voltage()
         
         
         pass
@@ -142,7 +142,13 @@ class SerialPort():
     def get_command_PID_control_pilot(self):
         '''
         Şarj kablosu ile araç arasında kablo bağlantısı yapıldıktan sonra kablo üzerindeki CP(Control Pilot) 
-        iletkeni vasıtasıyla bir haberleşme gerçekleşmektedir
+        iletkeni vasıtasıyla bir haberleşme gerçekleşmektedir.
+        State A : Not Connected
+        State B : EV connected, ready to charge
+        State C : EV charging
+        State D : EV charging, ventilation required
+        State E : Error
+        State F : Unknown error
         '''
         while True:
             self.parameter_data = "001"
@@ -156,14 +162,15 @@ class SerialPort():
 
     def get_command_pid_proximity_pilot(self):
         '''
-        Kendi üzerinde şarj kablosu olmayan Soketli Tip (Type 2) AC Şarj cihazlarında kullanıcı, 
-        şarj işlemi için kendi kablosunu kullanmaktadır. 
+        Soketli Tip AC Şarj Cihazları'nda bu sorgulanmalıdır. (Kendi üzerinde şarj kablosu olmayan!)
+        
         Şarj işlemi başlatılırken, tüm hata durumları kontrol edilir ve Control Pilot sinyalinden “State C” 
         alındıktan sonra kablonun takılı olup olmadığı Proximity Pilot sinyali okunarak kontrol edilir ve 
         takılı olan kablonun maximum akım taşıma kapasitesi algılandıktan sonra şarj işlemine devam edilir. 
-        Örneğin, AC Şarj cihazı 32 Amper akım verme kapasitesine sahip olduğu halde, takılan kablo 13 Amperlik 
-        bir kablo ise bu durumda araçtan, kablonun maximum kapasitesi kadar(13A) akım çekilmesi talep edilir. 
-        (Bu işlem Control Pilot ucundaki PWM duty genişliği ile ayarlanır. (Bknz:PID_CP_PWM)
+        
+        Örneğin, AC Şarj cihazı 32 Amper akım verme kapasitesine sahip olduğu halde, takılan kablo 
+        13 Amperlik bir kablo ise bu durumda araçtan, kablonun maximum kapasitesi kadar(13A) akım çekilmesi 
+        talep edilir. (Bu işlem Control Pilot ucundaki PWM duty genişliği ile ayarlanır. (Bknz:PID_CP_PWM)
         '''
         while True:
             self.parameter_data = "001"
@@ -253,7 +260,7 @@ class SerialPort():
         self.send_data_list.append(send_data)
 
 
-    def get_command_pid_power(self,power_type):
+    def get_command_pid_power(self,power_type:PowerType):
         self.parameter_data = "002"
         data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
         checksum = self.calculate_checksum(data)
@@ -261,7 +268,7 @@ class SerialPort():
         print("send data",send_data)
         self.send_data_list.append(send_data)
 
-    def get_command_pid_energy(self,energy_type):
+    def get_command_pid_energy(self,energy_type:EnergyType):
         self.parameter_data = "002"
         data = self.get_command + self.pid_energy + self.parameter_data + self.connector_id + energy_type.value
         checksum = self.calculate_checksum(data)
@@ -272,12 +279,19 @@ class SerialPort():
     #   ************************ RESPONSE  *****************************************************
 
     def get_response_control_pilot(self,data):
+        '''
+        State A : Not Connected
+        State B : EV connected, ready to charge
+        State C : EV charging
+        State D : EV charging, ventilation required
+        State E : Error
+        State F : Unknown error
+        '''
         if data[2] == self.pid_control_pilot:
             self.application.ev.control_pilot = data[7]
             print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
             
     def get_response_pid_proximity_pilot(self,data):
-        print("*****************************************",data)
         if data[2] == self.pid_proximity_pilot:
             self.application.ev.proximity_pilot = data[7]
             print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
@@ -352,26 +366,39 @@ class SerialPort():
 
     def get_response_pid_current(self,data):
         if data[2] == self.pid_current:
-            current_L1 = data[8] + data[9] + data[10] + data[11] + data[12] + data[13]
-            self.application.ev.current_L1 = int(current_L1)/1000
+            current_L1 = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
+            self.application.ev.current_L1 = current_L1
             print("current_L1",self.application.ev.current_L1)
-            current_L2 = data[15] + data[16] + data[17] + data[18] + data[19] + data[20]
-            self.application.ev.current_L2 = int(current_L2)/1000
+            current_L2 = int(data[15] + data[16] + data[17] + data[18] + data[19] + data[20])/1000
+            self.application.ev.current_L2 = current_L2
             print("current_L2",self.application.ev.current_L2)
-            current_L3 = data[22] + data[23] + data[24] + data[25] + data[26] + data[27]
-            self.application.ev.current_L3 = int(current_L3)/1000
+            current_L3 = int(data[22] + data[23] + data[24] + data[25] + data[26] + data[27])/1000
+            self.application.ev.current_L3 = current_L3
             print("current_L3",self.application.ev.current_L3)
+            
+    def get_response_pid_voltage(self,data):
+        if data[2] == self.pid_voltage:
+            voltage_L1 = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
+            self.application.ev.voltage_L1 = voltage_L1
+            print("voltage_L1",self.application.ev.voltage_L1)
+            voltage_L2 = int(data[15] + data[16] + data[17] + data[18] + data[19] + data[20])/1000
+            self.application.ev.voltage_L2 = voltage_L2
+            print("voltage_L2",self.application.ev.voltage_L2)
+            voltage_L3 = int(data[22] + data[23] + data[24] + data[25] + data[26] + data[27])/1000
+            self.application.ev.voltage_L3 = voltage_L3
+            print("voltage_L3",self.application.ev.voltage_L3)
+            
 
     def get_response_pid_power(self,data):
         if data[2] == self.pid_power:
-            power = data[8] + data[9] + data[10] + data[11] + data[12] + data[13]
-            self.application.ev.power = int(power)/1000
+            power = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
+            self.application.ev.power = power
             print("power",self.application.ev.power)
 
     def get_response_pid_energy(self,data):
         if data[2] == self.pid_energy:
-            energy = data[8] + data[9] + data[10] + data[11] + data[12] + data[13] + data[14] + data[15] + data[16] + data[17]
-            self.application.ev.energy = int(energy)/1000
+            energy = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13] + data[14] + data[15] + data[16] + data[17])/1000
+            self.application.ev.energy = energy
             print("energy",self.application.ev.energy)
 
     def read(self):

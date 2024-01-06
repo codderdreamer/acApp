@@ -22,6 +22,8 @@ class Process():
                 self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
                 time.sleep(1)
                 self.application.serialPort.get_command_pid_locker_control()
+                self.application.serialPort.get_command_pid_locker_control()
+                self.application.serialPort.get_command_pid_locker_control()
                 time.sleep(1)
                 print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
                 if self.application.ev.pid_locker_control == LockerState.Lock.value:

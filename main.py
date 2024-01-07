@@ -87,7 +87,7 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.idle,daemon=True).start()
                 self.serialPort.set_command_pid_led_control(LedState.StandBy)
-                self.ensureFutures.on_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
+                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.loop)
             elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
                 self.control_A_B_C = False
                 self.control_C_B = False

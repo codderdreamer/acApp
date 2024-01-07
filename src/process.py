@@ -50,14 +50,16 @@ class Process():
             self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
+        def on_authorize_callback(future):
+            result = future.result()
+            print("******************************************** result on_authorize_callback",result)
+            
         print("****************************************************************** waiting_auth")
         # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = "12345678911"),self.application.loop)
         future = self.application.chargePoint.send_authorize(id_tag = "12345678911")
         future.add_done_callback(on_authorize_callback)
         
-        def on_authorize_callback(future):
-            result = future.result()
-            print("******************************************** result on_authorize_callback",result)
+        
     
     
     def waiting_state_c(self):

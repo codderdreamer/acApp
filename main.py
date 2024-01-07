@@ -21,6 +21,16 @@ class Application():
     def __init__(self,loop):
         self.loop = loop
         self.chargePoint = None
+        
+        self.ocppActive = True
+        self.cardType = CardType.BillingCard
+        self.__deviceState = None
+        self.socketType = SocketType.Type2
+        self.max_current = 63
+        self.control_A_B_C = False
+        self.control_C_B = False
+        self.meter_values_on = False
+        
         self.settings = Settings()
         self.networkSettings = NetworkSettings(self)
         self.databaseModule = DatabaseModule(self)
@@ -48,14 +58,7 @@ class Application():
         while self.config.config_writed == False:
             time.sleep(0.01)
             
-        self.ocppActive = True
-        self.cardType = CardType.BillingCard
-        self.__deviceState = None
-        self.socketType = SocketType.Type2
-        self.max_current = 63
-        self.control_A_B_C = False
-        self.control_C_B = False
-        self.meter_values_on = False
+
         
     @property
     def deviceState(self):

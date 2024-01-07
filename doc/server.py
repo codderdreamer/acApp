@@ -76,6 +76,16 @@ class ChargePoint(cp):
     def on_meter_values(self,**kwargs):
         print("on_meter_values:",kwargs)
         return call_result.MeterValuesPayload()
+    
+    @on(Action.StartTransaction)
+    def on_start_transaction(self,**kwargs):
+        print("on_start_transaction:",kwargs)
+        return call_result.StartTransactionPayload(
+            transaction_id=1,
+            id_tag_info = {
+                "status":"Accepted"
+            }
+        )
 
 
 async def on_connect(websocket, path):

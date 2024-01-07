@@ -34,7 +34,7 @@ class Process():
         self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
         
         if self.application.ocppActive:
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.loop)
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         
         time.sleep(1)
         print("&&&&&&&&&&&&&&&&&&&&",self.application.control_C_B)
@@ -88,7 +88,8 @@ class Process():
     
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
-        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         time.sleep(1)
         
         if self.application.deviceState != DeviceState.WAITING_STATE_C:
@@ -111,6 +112,10 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
+        self.application.serialPort.set_command_pid_led_control(LedState.Charging)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
+        
         time.sleep(1)
         if self.application.control_A_B_C != True:                               # Adan Cye geçen için
             self.application.deviceState = DeviceState.CONNECTED
@@ -131,6 +136,10 @@ class Process():
         
     def fault(self):
         print("****************************************************************** fault")
+        self.application.serialPort.set_command_pid_led_control(LedState.Fault)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.faulted),self.application.loop)
+        
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -140,12 +149,18 @@ class Process():
         
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
+        self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspended_evse),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             
     def idle(self):
         print("****************************************************************** idle")
+        self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -155,6 +170,9 @@ class Process():
             
     def stopped_by_user(self):
         print("****************************************************************** stopped_by_user")
+        self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspendedevse),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)

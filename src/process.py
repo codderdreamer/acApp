@@ -7,8 +7,35 @@ class Process():
     def __init__(self,application) -> None:
         self.application = application
         
+    def _lock_connector_set_control_pilot(self):
+        if self.application.socketType == SocketType.Type2:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+            time_start = time.time()
+            while True:
+                self.application.serialPort.get_command_pid_locker_control()
+                time.sleep(0.3)
+                print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
+                if self.application.ev.pid_locker_control == LockerState.Lock.value:
+                    self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
+                    break
+                else:
+                    print("Hata Lock Connector Çalışmadı !!!")
+                if time.time() - time_start > 10:
+                    self.application.deviceState = DeviceState.FAULT
+                    break
+        elif self.application.socketType == SocketType.TetheredType:
+            self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
+            self.application.deviceState = DeviceState.WAITING_STATE_C
+        
     def connected(self):
         print("****************************************************************** connected")
+        
+        self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+        
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.loop)
+        
         time.sleep(1)
         print("&&&&&&&&&&&&&&&&&&&&",self.application.control_C_B)
         if self.application.control_C_B:
@@ -24,25 +51,7 @@ class Process():
                 return 
                  
         if self.application.cardType == CardType.LocalPnC:
-            if self.application.socketType == SocketType.Type2:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-                time_start = time.time()
-                while True:
-                    self.application.serialPort.get_command_pid_locker_control()
-                    time.sleep(0.3)
-                    print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
-                    if self.application.ev.pid_locker_control == LockerState.Lock.value:
-                        self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
-                        self.application.deviceState = DeviceState.WAITING_STATE_C
-                        break
-                    else:
-                        print("Hata Lock Connector Çalışmadı !!!")
-                    if time.time() - time_start > 10:
-                        self.application.deviceState = DeviceState.FAULT
-                        break
-            elif self.application.socketType == SocketType.TetheredType:
-                self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
-                self.application.deviceState = DeviceState.WAITING_STATE_C
+            self._lock_connector_set_control_pilot()
             
         elif self.application.cardType == CardType.BillingCard:
             self.application.deviceState = DeviceState.WAITING_AUTH
@@ -53,46 +62,33 @@ class Process():
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
         id_tag = input("RFID KART GIRINIZ !!!!!!!!!!!!!!!!!!!")
-        self.application.chargePoint.authorize = None
-        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = id_tag),self.application.loop)
-        time_start = time.time()
-        while True:
-            if self.application.chargePoint.authorize != None:
-                break
-            if time.time() - time_start > 20:
-                print("Authorizatinon cevabı gelmedi !!! FAULT")
+        
+        if self.application.ocppActive:
+            self.application.chargePoint.authorize = None
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = id_tag),self.application.loop)
+            
+            time_start = time.time()
+            while True:
+                if self.application.chargePoint.authorize != None:
+                    break
+                if time.time() - time_start > 20:
+                    print("Authorizatinon cevabı gelmedi !!! FAULT")
+                    self.application.deviceState = DeviceState.FAULT
+                    return
+            if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                self._lock_connector_set_control_pilot()
+            else:
+                print("Authorizatinon kabul edilmedi !!! FAULT")
                 self.application.deviceState = DeviceState.FAULT
-                return
-        
-        if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-            if self.application.socketType == SocketType.Type2:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-                time_start = time.time()
-                while True:
-                    self.application.serialPort.get_command_pid_locker_control()
-                    time.sleep(0.3)
-                    print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
-                    if self.application.ev.pid_locker_control == LockerState.Lock.value:
-                        self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
-                        self.application.deviceState = DeviceState.WAITING_STATE_C
-                        break
-                    else:
-                        print("Hata Lock Connector Çalışmadı !!!")
-                    if time.time() - time_start > 10:
-                        self.application.deviceState = DeviceState.FAULT
-                        break
-            elif self.application.socketType == SocketType.TetheredType:
-                self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
-                self.application.deviceState = DeviceState.WAITING_STATE_C
-            
-            
-                
-        
-        
-    
+        else:
+            # Bu kart DB'de kayıtlı local cartlardan mı?
+            # kayıtlı değilse fault
+            # kayıtlı is devam et
+            pass 
     
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
+        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         time.sleep(1)
         
         if self.application.deviceState != DeviceState.WAITING_STATE_C:
@@ -131,10 +127,6 @@ class Process():
                 time.sleep(3)
                 if self.application.deviceState != DeviceState.CHARGING:
                     break
-            
-        
-        
-        
         
         
     def fault(self):

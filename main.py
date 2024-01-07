@@ -68,24 +68,27 @@ class Application():
             if self.__deviceState == DeviceState.CONNECTED:
                 self.control_A_B_C = True
                 Thread(target=self.process.connected,daemon=True).start()
-                self.serialPort.set_command_pid_led_control(LedState.Connecting)
-                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.loop)
+    
             elif self.__deviceState == DeviceState.WAITING_AUTH:
                 Thread(target=self.process.waiting_auth,daemon=True).start()
+            
             elif self.__deviceState == DeviceState.WAITING_STATE_C:
                 Thread(target=self.process.waiting_state_c,daemon=True).start()
-                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.loop)
+                
+            
             elif self.__deviceState == DeviceState.CHARGING:
                 self.control_C_B = True
                 Thread(target=self.process.charging,daemon=True).start()
                 self.serialPort.set_command_pid_led_control(LedState.Charging)
                 asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.loop)
+            
             elif self.__deviceState == DeviceState.FAULT:
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.fault,daemon=True).start()
                 self.serialPort.set_command_pid_led_control(LedState.Fault)
                 asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.faulted),self.loop)
+            
             elif self.__deviceState == DeviceState.IDLE:
                 self.control_A_B_C = False
                 self.control_C_B = False

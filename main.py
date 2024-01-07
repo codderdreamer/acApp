@@ -107,6 +107,7 @@ class Application():
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                     await self.chargePoint.send_boot_notification(self.config.charge_point_model,self.config.charge_point_vendor)
+                    print("tesssssssssssssssssssssssssss")
                     await self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
                 elif self.ocpp_subprotocols == OcppVersion.ocpp20:
                     pass

@@ -85,6 +85,7 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.idle,daemon=True).start()
                 self.serialPort.set_command_pid_led_control(LedState.StandBy)
+                print("hereeeeeeeeeeeeeeeeeeeeeeeeeeeee")
             elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
                 self.control_A_B_C = False
                 self.control_C_B = False

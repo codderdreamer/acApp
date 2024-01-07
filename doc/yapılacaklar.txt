@@ -12,3 +12,6 @@
 Öncelik Sıralaması:
 ------------------------
 - Şarj etme
+
+## ocpp stop charging yazılacak. meter values tamam
+        

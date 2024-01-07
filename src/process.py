@@ -214,4 +214,3 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         
         
-        

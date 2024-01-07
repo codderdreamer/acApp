@@ -31,6 +31,7 @@ class ChargePoint16(cp):
     def __init__(self, application, id, connection, response_timeout=30):
         super().__init__(id, connection, response_timeout)
         self.application = application
+        
 
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 

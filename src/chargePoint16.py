@@ -33,6 +33,8 @@ class ChargePoint16(cp):
         self.application = application
         
         self.authorize = None
+        self.transaction_id = None
+        self.start_transaction_result = None
         
 
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
@@ -183,15 +185,7 @@ class ChargePoint16(cp):
 
     # 7. METER VALUES
     async def send_meter_values(
-                                self,
-                                connector_id:int,
-                                output_energy_on_cable:float,
-                                state_of_charge:int,
-                                demandchargeVoltage:float,
-                                demandchargeCurrent:float,
-                                moduleOutputCurrent:float,
-                                moduleOutputPower:float,
-                                transaction_id:int=None
+                                self
                                 ):
         """
         connector_id: int,
@@ -200,14 +194,14 @@ class ChargePoint16(cp):
         """
         try :
             request = call.MeterValuesPayload(
-                connector_id = connector_id,
-                transaction_id = transaction_id,
+                connector_id = 1,
+                transaction_id = self.transaction_id,
                 meter_value = [
                     {
                         "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
                         "sampledValue": [
                             {
-                                "value": str(output_energy_on_cable),
+                                "value": str(self.application.ev.energy),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.energy_active_import_register,
@@ -216,43 +210,61 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.kwh
                             },
                             {
-                                "value": str(state_of_charge),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.soc,
-                                "phase" : None,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.percent
-                            },
-                            {
-                                "value": str(demandchargeVoltage),
+                                "value": str(self.application.ev.voltage_L1),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.voltage,
-                                "phase" : None,
-                                "location": Location.ev,
+                                "phase" : Phase.l1,
+                                "location": Location.cable,
                                 "unit": UnitOfMeasure.v
                             },
                             {
-                                "value": str(demandchargeCurrent),
+                                "value": str(self.application.ev.voltage_L2),
+                                "context": ReadingContext.sample_periodic,
+                                "format": ValueFormat.raw,
+                                "measurand": Measurand.voltage,
+                                "phase" : Phase.l2,
+                                "location": Location.cable,
+                                "unit": UnitOfMeasure.v
+                            },
+                            {
+                                "value": str(self.application.ev.voltage_L3),
+                                "context": ReadingContext.sample_periodic,
+                                "format": ValueFormat.raw,
+                                "measurand": Measurand.voltage,
+                                "phase" : Phase.l3,
+                                "location": Location.cable,
+                                "unit": UnitOfMeasure.v
+                            },
+                            {
+                                "value": str(self.application.ev.current_L1),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.current_export,
-                                "phase" : None,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(moduleOutputCurrent),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : None,
+                                "phase" : Phase.l1,
                                 "location": Location.cable,
                                 "unit": UnitOfMeasure.a
                             },
                             {
-                                "value": str(moduleOutputPower),
+                                "value": str(self.application.ev.current_L2),
+                                "context": ReadingContext.sample_periodic,
+                                "format": ValueFormat.raw,
+                                "measurand": Measurand.current_export,
+                                "phase" : Phase.l2,
+                                "location": Location.cable,
+                                "unit": UnitOfMeasure.a
+                            },
+                            {
+                                "value": str(self.application.ev.current_L3),
+                                "context": ReadingContext.sample_periodic,
+                                "format": ValueFormat.raw,
+                                "measurand": Measurand.current_export,
+                                "phase" : Phase.l3,
+                                "location": Location.cable,
+                                "unit": UnitOfMeasure.a
+                            },
+                            {
+                                "value": str(self.application.ev.power),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.power_active_import,
@@ -277,17 +289,17 @@ class ChargePoint16(cp):
                                         connector_id:int,
                                         id_tag:str,
                                         meter_start:int,
-                                        timestamp: str,
                                         reservation_id: int=None
                                     ):
         """
         connector_id: int,
         id_tag: str,
-        meter_start: int,
-        timestamp: str,
+        meter_start: int
         reservation_id: int | None = None
         """
         try :
+            timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            
             request = call.StartTransactionPayload(
                 connector_id,
                 id_tag,
@@ -298,6 +310,8 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            self.transaction_id = response.transaction_id
+            self.start_transaction_result = response.id_tag_info['status']
             return response
         except Exception as e:
             print(e)
@@ -316,7 +330,6 @@ class ChargePoint16(cp):
         connector_id: int,
         error_code: ChargePointErrorCode,
         status: ChargePointStatus,
-        timestamp: str | None = None,
         info: str | None = None,
         vendor_id: str | None = None,
         vendor_error_code: str | None = None

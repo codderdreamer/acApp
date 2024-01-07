@@ -71,6 +71,11 @@ class ChargePoint(cp):
                 "status":"Accepted"
             }
         )
+    
+    @on(Action.MeterValues)
+    def on_meter_values(self,**kwargs):
+        print("on_meter_values:",kwargs)
+        return call_result.MeterValuesPayload()
 
 
 async def on_connect(websocket, path):

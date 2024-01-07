@@ -55,6 +55,7 @@ class Application():
         self.max_current = 63
         self.control_A_B_C = False
         self.control_C_B = False
+        self.meter_values_on = False
         
     @property
     def deviceState(self):

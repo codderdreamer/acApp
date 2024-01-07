@@ -15,6 +15,7 @@ from src.networkSettings import NetworkSettings
 from src.websocketServer import WebSocketServer
 from src.bluetoothService.bluetoothService import BluetoothService
 from src.process import Process
+from ocpp.v16.enums import *
 
 class Application():
     def __init__(self,loop):
@@ -86,7 +87,6 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.idle,daemon=True).start()
                 self.serialPort.set_command_pid_led_control(LedState.StandBy)
-                print("hereeeeeeeeeeeeeeeeeeeeeeeeeeeee")
             elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
                 self.control_A_B_C = False
                 self.control_C_B = False
@@ -107,6 +107,7 @@ class Application():
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                     await self.chargePoint.send_boot_notification(self.config.charge_point_model,self.config.charge_point_vendor)
+                    await self.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
                 elif self.ocpp_subprotocols == OcppVersion.ocpp20:
                     pass
                 elif self.ocpp_subprotocols == OcppVersion.ocpp21:

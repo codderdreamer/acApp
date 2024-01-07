@@ -23,7 +23,6 @@ class ChargePoint(cp):
         asyncio.set_event_loop(loop)
         while True:
             time.sleep(1)
-            print("hi")
             x = input()
             if x=="1":
                 future = self.send_cancel_reservation()
@@ -45,8 +44,6 @@ class ChargePoint(cp):
             print(e)
 
 
-
-
     @on(Action.BootNotification)
     def on_boot_notification(self, charge_point_vendor: str, charge_point_model: str, **kwargs):
         return call_result.BootNotificationPayload(
@@ -59,6 +56,11 @@ class ChargePoint(cp):
     def on_heartbeat(self):
         return call_result.HeartbeatPayload(
             current_time=datetime.utcnow().isoformat()
+        )
+        
+    @on(Action.StatusNotification)
+    def on_status_notification(self):
+        return call_result.StatusNotificationPayload(
         )
     
     @on(Action.Authorize)

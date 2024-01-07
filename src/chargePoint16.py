@@ -305,7 +305,6 @@ class ChargePoint16(cp):
                                         connector_id:int,
                                         error_code: ChargePointErrorCode,
                                         status: ChargePointStatus,
-                                        timestamp: str = None,
                                         info: str = None,
                                         vendor_id: str = None,
                                         vendor_error_code: str = None
@@ -320,6 +319,8 @@ class ChargePoint16(cp):
         vendor_error_code: str | None = None
         """
         try :
+            timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            
             request = call.StatusNotificationPayload(
                 connector_id,
                 error_code,

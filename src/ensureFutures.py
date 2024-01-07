@@ -19,7 +19,7 @@ class EnsureFutures():
             print("run_charge_point",e)
         
     def on_run_charge_point(self):
-        asyncio.ensure_future(self.application.run_charge_point())
+        asyncio.ensure_future(self.run_charge_point())
 
     def on_authorize(self,id_tag):
         return asyncio.ensure_future(self.application.chargePoint.send_authorize(id_tag))

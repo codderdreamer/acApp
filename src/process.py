@@ -52,7 +52,7 @@ class Process():
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
         # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = "12345678911"),self.application.loop)
-        future = self.application.ensureFutures.on_authorize(id_tag = "12345678911")
+        future = self.application.chargePoint.send_authorize(id_tag = "12345678911")
         future.add_done_callback(on_authorize_callback)
         
         def on_authorize_callback(future):

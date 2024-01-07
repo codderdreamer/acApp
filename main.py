@@ -48,7 +48,7 @@ class Application():
             time.sleep(0.01)
             
         self.cardType = CardType.LocalPnC
-        self.__deviceState = DeviceState.IDLE
+        self.__deviceState = None
         self.socketType = SocketType.Type2
         self.max_current = 63
         self.control_A_B_C = False

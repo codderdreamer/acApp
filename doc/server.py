@@ -59,7 +59,8 @@ class ChargePoint(cp):
         )
         
     @on(Action.StatusNotification)
-    def on_status_notification(self):
+    def on_status_notification(self,**kwargs):
+        print(kwargs)
         return call_result.StatusNotificationPayload(
         )
     

@@ -1,5 +1,6 @@
 import time
 from src.enums import *
+import asyncio
 
 class Process():
     def __init__(self,application) -> None:
@@ -50,7 +51,14 @@ class Process():
             
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
-        pass
+        # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = "12345678911"),self.application.loop)
+        future = self.application.ensureFutures.on_authorize(id_tag = "12345678911")
+        future.add_done_callback(on_authorize_callback)
+        
+        def on_authorize_callback(future):
+            result = future.result()
+            print("******************************************** result on_authorize_callback",result)
+    
     
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")

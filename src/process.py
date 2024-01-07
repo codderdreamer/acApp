@@ -8,8 +8,6 @@ class Process():
     def __init__(self,application) -> None:
         self.application = application
         self.id_tag = None
-        if self.application.ocppActive:
-            Thread(target=self.meter_values_thread,daemon=True).start()
         
     def _lock_connector_set_control_pilot(self):
         if self.application.socketType == SocketType.Type2:
@@ -153,6 +151,7 @@ class Process():
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
                 time.sleep(1)
                 self.application.meter_values_on = True
+                Thread(target=self.meter_values_thread,daemon=True).start()
             while True:
                 self.application.serialPort.get_command_pid_current()
                 self.application.serialPort.get_command_pid_voltage()

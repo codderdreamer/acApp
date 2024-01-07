@@ -66,6 +66,7 @@ class Application():
             if self.__deviceState == DeviceState.CONNECTED:
                 self.control_A_B_C = True
                 Thread(target=self.process.connected,daemon=True).start()
+                self.serialPort.set_command_pid_led_control(LedState.Connecting)
             elif self.__deviceState == DeviceState.WAITING_AUTH:
                 Thread(target=self.process.waiting_auth,daemon=True).start()
             elif self.__deviceState == DeviceState.WAITING_STATE_C:
@@ -73,22 +74,27 @@ class Application():
             elif self.__deviceState == DeviceState.CHARGING:
                 self.control_C_B = True
                 Thread(target=self.process.charging,daemon=True).start()
+                self.serialPort.set_command_pid_led_control(LedState.Charging)
             elif self.__deviceState == DeviceState.FAULT:
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.fault,daemon=True).start()
+                self.serialPort.set_command_pid_led_control(LedState.Fault)
             elif self.__deviceState == DeviceState.IDLE:
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.idle,daemon=True).start()
+                self.serialPort.set_command_pid_led_control(LedState.StandBy)
             elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_evse,daemon=True).start()
+                self.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
             elif self.__deviceState == DeviceState.STOPPED_BY_USER:
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
+                self.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
             
                 
         

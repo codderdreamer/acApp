@@ -58,14 +58,14 @@ class Process():
         
         if self.application.deviceState != DeviceState.WAITING_STATE_C:
             return
-        self.application.serialPort.set_command_pid_relay_control(Relay.On)
+        
         time_start = time.time()
         while True:
             if self.application.ev.control_pilot == ControlPlot.stateB.value:
                 if time.time() - time_start > 60*5:
                     self.application.deviceState = DeviceState.STOPPED_BY_EVSE
                     break
-            elif self.application.ev.control_pilot == ControlPlot.stateC.value:  # Adan Cye geçen için
+            elif self.application.ev.control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING
                 break
             else:
@@ -76,18 +76,22 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
+        time.sleep(1)
         if self.application.control_A_B_C != True:                               # Adan Cye geçen için
             self.application.deviceState = DeviceState.CONNECTED
             return
         
-        while True:
-            self.application.serialPort.get_command_pid_current()
-            self.application.serialPort.get_command_pid_voltage()
-            self.application.serialPort.get_command_pid_power(PowerType.kw)
-            self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-            time.sleep(3)
-            if self.application.deviceState != DeviceState.CHARGING:
-                break
+        if self.application.ev.control_pilot == ControlPlot.stateC.value:
+            self.application.serialPort.set_command_pid_relay_control(Relay.On)
+            time.sleep(4)
+            while True:
+                self.application.serialPort.get_command_pid_current()
+                self.application.serialPort.get_command_pid_voltage()
+                self.application.serialPort.get_command_pid_power(PowerType.kw)
+                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                time.sleep(3)
+                if self.application.deviceState != DeviceState.CHARGING:
+                    break
             
         
         

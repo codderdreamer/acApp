@@ -468,6 +468,7 @@ class SerialPort():
                         self.get_response_pid_locker_control(incoming)
                         self.get_response_pid_current(incoming)
                         self.get_response_pid_power(incoming)
+                        self.get_response_pid_voltage(incoming)
                         self.get_response_pid_energy(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_pid_cp_pwm(incoming)

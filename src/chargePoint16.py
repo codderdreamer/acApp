@@ -32,6 +32,8 @@ class ChargePoint16(cp):
         super().__init__(id, connection, response_timeout)
         self.application = application
         
+        self.authorize = None
+        
 
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 
@@ -50,6 +52,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            self.authorize = response.id_tag_info['status']
             return response
         except Exception as e:
             print(e)

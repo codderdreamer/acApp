@@ -1,6 +1,7 @@
 import time
 from src.enums import *
 import asyncio
+from ocpp.v16.enums import *
 
 class Process():
     def __init__(self,application) -> None:
@@ -50,14 +51,40 @@ class Process():
             self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
-        def on_authorize_callback(future):
-            result = future.result()
-            print("******************************************** result on_authorize_callback",result)
-            
         print("****************************************************************** waiting_auth")
-        # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = "12345678911"),self.application.loop)
-        future = self.application.chargePoint.send_authorize(id_tag = "12345678911")
-        future.add_done_callback(on_authorize_callback)
+        self.application.chargePoint.authorize = None
+        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = "12345678911"),self.application.loop)
+        time_start = time.time()
+        while True:
+            if self.application.chargePoint.authorize != None:
+                break
+            if time.time() - time_start > 20:
+                print("Authorizatinon cevabı gelmedi !!! FAULT")
+                self.application.deviceState = DeviceState.FAULT
+                return
+        if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+            if self.application.socketType == SocketType.Type2:
+                self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+                time_start = time.time()
+                while True:
+                    self.application.serialPort.get_command_pid_locker_control()
+                    time.sleep(0.3)
+                    print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
+                    if self.application.ev.pid_locker_control == LockerState.Lock.value:
+                        self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
+                        self.application.deviceState = DeviceState.WAITING_STATE_C
+                        break
+                    else:
+                        print("Hata Lock Connector Çalışmadı !!!")
+                    if time.time() - time_start > 10:
+                        self.application.deviceState = DeviceState.FAULT
+                        break
+            elif self.application.socketType == SocketType.TetheredType:
+                self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
+                self.application.deviceState = DeviceState.WAITING_STATE_C
+            
+            
+                
         
         
     

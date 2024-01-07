@@ -10,6 +10,7 @@ class EnsureFutures():
         self.on_run_charge_point()
         
     async def run_charge_point(self):
+        print("******************************************* run_charge_point")
         try:
             print("******************************************* websockets.connect")
             async with websockets.connect(self.application.config.ocpp_server_url + self.application.config.charge_point_id, subprotocols=[self.application.ocpp_subprotocols.value]) as ws:
@@ -17,7 +18,7 @@ class EnsureFutures():
                 future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.application.loop)
                 await self.chargePoint.send_boot_notification(self.application.config.charge_point_model,self.application.config.charge_point_vendor)
         except Exception as e:
-            print("run_charge_point",e)
+            print("run_charge_point******************************************",e)
         
     def on_run_charge_point(self):
         print("*******************************************ensure_future on_run_charge_point")

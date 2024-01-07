@@ -52,8 +52,9 @@ class Process():
             
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
+        id_tag = input("RFID KART GIRINIZ !!!!!!!!!!!!!!!!!!!")
         self.application.chargePoint.authorize = None
-        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = "12345678911"),self.application.loop)
+        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = id_tag),self.application.loop)
         time_start = time.time()
         while True:
             if self.application.chargePoint.authorize != None:
@@ -62,6 +63,7 @@ class Process():
                 print("Authorizatinon cevabı gelmedi !!! FAULT")
                 self.application.deviceState = DeviceState.FAULT
                 return
+        
         if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
             if self.application.socketType == SocketType.Type2:
                 self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)

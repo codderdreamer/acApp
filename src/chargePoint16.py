@@ -11,6 +11,7 @@ from ocpp.v16 import call_result
 from ocpp.v16.enums import *
 from ocpp.routing import *
 from datetime import datetime
+from src.enums import *
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
 handler = logging.StreamHandler()
@@ -35,6 +36,7 @@ class ChargePoint16(cp):
         self.authorize = None
         self.transaction_id = None
         self.start_transaction_result = None
+        self.id_tag = None
         
 
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
@@ -568,6 +570,7 @@ class ChargePoint16(cp):
     @on(Action.RemoteStartTransaction)
     def on_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
+            self.id_tag = id_tag
             request = call.RemoteStartTransactionPayload(
                 id_tag,
                 connector_id,
@@ -581,11 +584,21 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(e)
-
+            
+    @after(Action.RemoteStartTransaction)
+    def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
+        try :
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+        except Exception as e:
+            print(e)
+            
+            
+            
     # 12. REMOTE STOP TRANSACTION
     @on(Action.RemoteStopTransaction)
     def on_remote_stop_transaction(self,transaction_id:int):
         try :
+            self.id_tag = None
             request = call.RemoteStopTransactionPayload(
                 transaction_id = transaction_id
             )
@@ -597,6 +610,14 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(e)
+            
+    @after(Action.RemoteStopTransaction)
+    def after_remote_stop_transaction(self,transaction_id:int):
+        try :
+            self.application.deviceState = DeviceState.STOPPED_BY_EVSE
+        except Exception as e:
+            print(e)
+            
 
     # 13. RESERVE NOW
     @on(Action.ReserveNow)

@@ -64,25 +64,28 @@ class Process():
             
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
-        self.id_tag = input("RFID KART GIRINIZ !!!!!!!!!!!!!!!!!!!")
         
         if self.application.ocppActive:
-            self.application.chargePoint.authorize = None
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = self.id_tag),self.application.loop)
-            
-            time_start = time.time()
-            while True:
-                if self.application.chargePoint.authorize != None:
-                    break
-                if time.time() - time_start > 20:
-                    print("\nAuthorization cevabı gelmedi !!! FAULT\n")
+            if self.application.chargePoint.id_tag == None:
+                self.id_tag = input("RFID KART GIRINIZ !!!!!!!!!!!!!!!!!!!")
+                self.application.chargePoint.authorize = None
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = self.id_tag),self.application.loop)
+                time_start = time.time()
+                while True:
+                    if self.application.chargePoint.authorize != None:
+                        break
+                    if time.time() - time_start > 20:
+                        print("\nAuthorization cevabı gelmedi !!! FAULT\n")
+                        self.application.deviceState = DeviceState.FAULT
+                        return
+                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                    self._lock_connector_set_control_pilot()
+                else:
+                    print("Authorizatinon kabul edilmedi !!! FAULT")
                     self.application.deviceState = DeviceState.FAULT
-                    return
-            if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-                self._lock_connector_set_control_pilot()
             else:
-                print("Authorizatinon kabul edilmedi !!! FAULT")
-                self.application.deviceState = DeviceState.FAULT
+                self.id_tag = self.application.chargePoint.id_tag
+                self._lock_connector_set_control_pilot()
         else:
             # Bu kart DB'de kayıtlı local cartlardan mı?
             # kayıtlı değilse fault

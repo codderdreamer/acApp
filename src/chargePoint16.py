@@ -355,13 +355,7 @@ class ChargePoint16(cp):
 
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
-                                    self,
-                                    meter_stop: int,
-                                    timestamp: str,
-                                    transaction_id: int,
-                                    reason: Reason = None,
-                                    id_tag: str = None,
-                                    transaction_data: list = None
+                                    self
                                     ):
         """
         meter_stop: int,
@@ -371,6 +365,12 @@ class ChargePoint16(cp):
         id_tag: str | None = None,
         transaction_data: List | None = None
         """
+        meter_stop = self.application.ev.energy*1000
+        timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+        transaction_id = self.transaction_id
+        reason = None
+        id_tag = self.application.process.id_tag
+        transaction_data = None
         try :
             request = call.StopTransactionPayload(
                 meter_stop,

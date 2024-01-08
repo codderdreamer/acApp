@@ -86,6 +86,13 @@ class ChargePoint(cp):
                 "status":"Accepted"
             }
         )
+        
+    @on(Action.StartTransaction)
+    def on_stop_transaction(self,**kwargs):
+        print("on_start_transaction:",kwargs)
+        return call_result.StopTransactionPayload(
+
+        )
 
 
 async def on_connect(websocket, path):

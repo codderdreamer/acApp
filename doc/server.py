@@ -104,14 +104,18 @@ class ChargePoint(cp):
     @on(Action.StartTransaction)
     def on_start_transaction(self,**kwargs):
         print("on_start_transaction:",kwargs)
+        transaction_id = 1
+        id_tag_info = IdTagInfo(
+            status=AuthorizationStatus.accepted,
+            parent_id_tag=None,
+            expiry_date=None
+        )
         return call_result.StartTransactionPayload(
-            transaction_id=1,
-            id_tag_info = {
-                "status":"Accepted"
-            }
+            transaction_id=transaction_id,
+            id_tag_info=id_tag_info
         )
         
-    @on(Action.StartTransaction)
+    @on(Action.StopTransaction)
     def on_stop_transaction(self,**kwargs):
         print("on_start_transaction:",kwargs)
         return call_result.StopTransactionPayload(

@@ -36,7 +36,9 @@ class Process():
         self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
         
         if self.application.ocppActive:
-            self.application.meter_values_on = False
+            if self.application.meter_values_on:
+                self.application.meter_values_on = False
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         
         time.sleep(1)

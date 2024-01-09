@@ -367,7 +367,7 @@ class ChargePoint16(cp):
         id_tag: str | None = None,
         transaction_data: List | None = None
         """
-        meter_stop = self.application.ev.energy*1000
+        meter_stop = int(self.application.ev.energy*1000)
         timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
         transaction_id = self.transaction_id
         reason = None

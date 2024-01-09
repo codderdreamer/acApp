@@ -25,11 +25,21 @@ class ChargePoint(cp):
             time.sleep(1)
             x = input()
             if x=="1":
+                future = self.send_remote_start()
+            elif x=="2":
+                future = self.send_remote_stop()
+            elif x=="3":
                 future = self.send_cancel_reservation()
                 future.add_done_callback(self.send_cancel_reservation_callback)
 
     def send_cancel_reservation(self):
         return asyncio.ensure_future(self.send_cancel_reservation_func())
+    
+    def send_remote_start(self):
+        return asyncio.ensure_future(self.send_remote_start_func())
+    
+    def send_remote_stop(self):
+        return asyncio.ensure_future(self.send_remote_stop_func())
     
     def send_cancel_reservation_callback(self,future):
         result = future.result()
@@ -40,6 +50,20 @@ class ChargePoint(cp):
             request = call.CancelReservationPayload(1)
             response = await self.call(request)
             return response
+        except Exception as e:
+            print(e)
+            
+    async def send_remote_start_func(self):
+        try:
+            request = call.RemoteStartTransactionPayload("123456")
+            response = await self.call(request)
+        except Exception as e:
+            print(e)
+            
+    async def send_remote_stop_func(self):
+        try:
+            request = call.RemoteStopTransactionPayload(1)
+            response = await self.call(request)
         except Exception as e:
             print(e)
 

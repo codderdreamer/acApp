@@ -1,7 +1,7 @@
 {
-    "charge_point_model" : "CP98765",
-    "charge_point_vendor" : "CP98765",
-    "charge_point_id" : "CP98765",
-    "ocpp_server_url" : "ws://192.168.1.201:9000/"
+    "charge_point_model" : "HCAC12345",
+    "charge_point_vendor" : "HCAC12345",
+    "charge_point_id" : "HCAC12345",
+    "ocpp_server_url" : "ws://34.16.180.181:9000/"
 
 }

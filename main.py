@@ -44,14 +44,13 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
-        self.flaskapp = FlaskApp()
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()
         self.databaseModule.get_dns_settings()
         self.databaseModule.get_wifi_settings()
         
-        Thread(target=self.flaskapp.run,daemon=True).start()
+        
         
         ethernetEnable = True
         ip = "192.168.1.70"
@@ -129,6 +128,8 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
+        flaskapp = FlaskApp()
+        Thread(target=flaskapp.run,daemon=True).start()
         if app.ocppActive:
             res = loop.run_until_complete(app.ocppStart())
     except Exception as e:

@@ -73,7 +73,11 @@ class WebSocketServer():
                                 "mod" : self.application.settings.wifiSettings.mod,
                                 "ssid" : self.application.settings.wifiSettings.ssid,
                                 "password" : self.application.settings.wifiSettings.password,
-                                "encryptionType" : self.application.settings.wifiSettings.encryptionType
+                                "encryptionType" : self.application.settings.wifiSettings.encryptionType,
+                                "wifidhcpcEnable" : bool(self.application.settings.wifiSettings.wifidhcpcEnable=="True"),
+                                "ip" : self.application.settings.wifiSettings.ip,
+                                "netmask" : self.application.settings.wifiSettings.netmask,
+                                "gateway" : self.application.settings.wifiSettings.gateway
                             }
                 }
         print("Gönderilen:",command)
@@ -108,7 +112,7 @@ class WebSocketServer():
                 third = sjon["Data"]["3"]
                 self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
             elif(sjon["Command"] == "4GSettings"):
-                enableModification = str(sjon["Data"]["enableWorkmode"])
+                enableModification = str(sjon["Data"]["enableModification"])
                 apn = sjon["Data"]["apn"]
                 user = sjon["Data"]["user"]
                 password = sjon["Data"]["password"]

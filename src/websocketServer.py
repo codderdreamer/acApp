@@ -92,7 +92,6 @@ class WebSocketServer():
                 whether_to_open_the_qr_code_process = sjon["Data"]["whether_to_open_the_qr_code_process"]
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
-                path = sjon["Data"]["path"]
                 self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
                 
         except Exception as e:

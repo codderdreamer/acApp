@@ -16,6 +16,7 @@ from src.websocketServer import WebSocketServer
 from src.bluetoothService.bluetoothService import BluetoothService
 from src.process import Process
 from ocpp.v16.enums import *
+from flaskApp import *
 
 class Application():
     def __init__(self,loop):

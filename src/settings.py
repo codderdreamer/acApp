@@ -84,6 +84,22 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
+    
+    def get_ocpp_settings(self):
+        command = {
+                    "Command" : "DNSSettings",
+                    "Data" : {
+                                "domainName" : self.ocppSettings.domainName,
+                                "port" : self.ocppSettings.port,
+                                "sslEnable" : self.ocppSettings.sslEnable,
+                                "authorizationKey" : self.ocppSettings.authorizationKey,
+                                "path" : self.ocppSettings.path,
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
+        
         
 
         

@@ -13,78 +13,6 @@ class WebSocketServer():
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         print("Web Socket started... 0.0.0.0  8000")
         
-    def send_network_priority(self):
-        self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority() )
-
-    def send_4g_settings(self):
-        command = {
-                    "Command" : "4GSettings",
-                    "Data" : {
-                                "enableModification" : bool(self.application.settings.settings4G.enableModification=="True"),
-                                "apn" : self.application.settings.settings4G.apn,
-                                "user" : self.application.settings.settings4G.user,
-                                "password" : self.application.settings.settings4G.password,
-                                "pin" : self.application.settings.settings4G.pin,
-                            }
-                }
-        print("Gönderilen:",command)
-        self.websocketServer.send_message_to_all(msg = json.dumps(command))
-        
-    def send_ethernet_settings(self):
-        command = {
-                    "Command" : "EthernetSettings",
-                    "Data" : {
-                                "ethernetEnable" : bool(self.application.settings.ethernetSettings.ethernetEnable=="True"),
-                                "ip" : self.application.settings.ethernetSettings.ip,
-                                "netmask" : self.application.settings.ethernetSettings.netmask,
-                                "gateway" : self.application.settings.ethernetSettings.gateway
-                            }
-                }
-        print("Gönderilen:",command)
-        self.websocketServer.send_message_to_all(msg = json.dumps(command))
-        
-    def send_dns_settings(self):
-        command = {
-                    "Command" : "DNSSettings",
-                    "Data" : {
-                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable=="True"),
-                                "DNS1" : self.application.settings.dnsSettings.DNS1,
-                                "DNS2" : self.application.settings.dnsSettings.DNS2
-                            }
-                }
-        print("Gönderilen:",command)
-        self.websocketServer.send_message_to_all(msg = json.dumps(command))
-        
-    def send_wifi_settings(self):
-        command = {
-                    "Command" : "WifiSettings",
-                    "Data" : {
-                                "wifiEnable" : bool(self.application.settings.wifiSettings.wifiEnable=="True"),
-                                "mod" : self.application.settings.wifiSettings.mod,
-                                "ssid" : self.application.settings.wifiSettings.ssid,
-                                "password" : self.application.settings.wifiSettings.password,
-                                "encryptionType" : self.application.settings.wifiSettings.encryptionType,
-                                "wifidhcpcEnable" : bool(self.application.settings.wifiSettings.wifidhcpcEnable=="True"),
-                                "ip" : self.application.settings.wifiSettings.ip,
-                                "netmask" : self.application.settings.wifiSettings.netmask,
-                                "gateway" : self.application.settings.wifiSettings.gateway
-                            }
-                }
-        print("Gönderilen:",command)
-        self.websocketServer.send_message_to_all(msg = json.dumps(command))
-        
-    def send_ocpp_settings(self):
-        command = {
-                    "Command" : "DNSSettings",
-                    "Data" : {
-                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable=="True"),
-                                "DNS1" : self.application.settings.dnsSettings.DNS1,
-                                "DNS2" : self.application.settings.dnsSettings.DNS2
-                            }
-                }
-        print("Gönderilen:",command)
-        self.websocketServer.send_message_to_all(msg = json.dumps(command))
-        
     def NewClientws(self, client, server):
         if client:
             try:
@@ -94,6 +22,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_dns_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_ocpp_settings())
             except Exception as e:
                 print("could not get New Client id",e)
                 

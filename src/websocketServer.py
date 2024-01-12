@@ -143,7 +143,7 @@ class WebSocketServer():
                 ssid = sjon["Data"]["ssid"]
                 password = sjon["Data"]["password"]
                 encryptionType = sjon["Data"]["encryptionType"]
-                wifidhcpcEnable = sjon["Data"]["wifidhcpcEnable"]
+                wifidhcpcEnable = str(sjon["Data"]["wifidhcpcEnable"])
                 ip = sjon["Data"]["ip"]
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]

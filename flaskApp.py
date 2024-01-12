@@ -25,10 +25,10 @@ def get_flask_ip():
     ip_address = request.environ.get('REMOTE_ADDR')
     return jsonify({'ip': ip_address})
 
-# def flaskmain():
-#     app.run(use_reloader=True, host='0.0.0.0', port=80, threaded=True)
-#     while True:
-#         time.sleep(10)
+def flaskmain():
+    app.run(use_reloader=True, host='0.0.0.0', port=80, threaded=True)
+    while True:
+        time.sleep(10)
 
 # Thread(target=flaskmain,daemon=True).start()
 

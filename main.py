@@ -50,6 +50,8 @@ class Application():
         self.databaseModule.get_dns_settings()
         self.databaseModule.get_wifi_settings()
         
+        Thread(target=flaskmain,daemon=True).start()
+        
         ethernetEnable = True
         ip = "192.168.1.70"
         netmask = "255.255.255.0"

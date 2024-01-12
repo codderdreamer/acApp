@@ -87,7 +87,7 @@ class Settings():
     
     def get_ocpp_settings(self):
         command = {
-                    "Command" : "DNSSettings",
+                    "Command" : "OcppSettings",
                     "Data" : {
                                 "domainName" : self.ocppSettings.domainName,
                                 "port" : self.ocppSettings.port,

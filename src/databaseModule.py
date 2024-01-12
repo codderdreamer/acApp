@@ -109,6 +109,23 @@ class DatabaseModule():
             print(e)
         return data_dict
     
+    def get_ocpp_settings(self):
+        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+        self.cursor = self.settings_database.cursor()
+        data_dict = {}
+        query = "SELECT * FROM ocpp_settings"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        self.settings_database.close()
+        for row in data:
+            data_dict[row[0]] = row[1]
+        print("get_ocpp_settings",data_dict,"\n")
+        self.application.settings.ocppSettings.domainName = data_dict["domainName"]
+        self.application.settings.ocppSettings.port = data_dict["port"]
+        self.application.settings.ocppSettings.sslEnable = data_dict["sslEnable"]
+        self.application.settings.ocppSettings.authorizationKey = data_dict["authorizationKey"]
+        self.application.settings.ocppSettings.path = data_dict["path"]
+    
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
@@ -288,7 +305,40 @@ class DatabaseModule():
             self.application.settings.wifiSettings.gateway = gateway
         except Exception as e:
             print(e)
+            
+    def set_ocpp_settings(self,domainName,port,sslEnable,authorizationKey,path):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
+            
+            value = (domainName,"domainName")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (port,"port")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (sslEnable,"sslEnable")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (authorizationKey,"authorizationKey")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (path,"path")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.settings.ocppSettings.domainName = domainName
+            self.application.settings.ocppSettings.port = port
+            self.application.settings.ocppSettings.sslEnable = sslEnable
+            self.application.settings.ocppSettings.authorizationKey = authorizationKey
+            self.application.settings.ocppSettings.path = path
+        except Exception as e:
+            print(e)
     
-    
-    
-DatabaseModule(None)

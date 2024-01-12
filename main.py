@@ -48,6 +48,7 @@ class Application():
         self.databaseModule.get_ethernet_settings()
         self.databaseModule.get_dns_settings()
         self.databaseModule.get_wifi_settings()
+        self.databaseModule.get_ocpp_settings()
         
         
         

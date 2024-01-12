@@ -7,6 +7,7 @@ class Settings():
         self.ethernetSettings = EthernetSettings()
         self.dnsSettings = DNSSettings()
         self.wifiSettings = WifiSettings()
+        self.ocppSettings = OcppSettings()
         
     def get_network_priority(self):
         command = {
@@ -19,6 +20,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
+        print("Gönderilen:",command)
         return json_string
     
     def get_Settings4G(self):
@@ -33,6 +35,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
+        print("Gönderilen:",command)
         return json_string
     
     def get_ethernet_settings(self):
@@ -47,6 +50,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
+        print("Gönderilen:",command)
         return json_string
     
     def get_dns_settings(self):
@@ -59,7 +63,28 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
+        print("Gönderilen:",command)
         return json_string
+    
+    def get_wifi_settings(self):
+        command = {
+                    "Command" : "WifiSettings",
+                    "Data" : {
+                                "wifiEnable" : bool(self.wifiSettings.wifiEnable=="True"),
+                                "mod" : self.wifiSettings.mod,
+                                "ssid" : self.wifiSettings.ssid,
+                                "password" : self.wifiSettings.password,
+                                "encryptionType" : self.wifiSettings.encryptionType,
+                                "wifidhcpcEnable" : bool(self.wifiSettings.wifidhcpcEnable=="True"),
+                                "ip" : self.wifiSettings.ip,
+                                "netmask" : self.wifiSettings.netmask,
+                                "gateway" : self.wifiSettings.gateway
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
+        
 
         
     
@@ -102,4 +127,12 @@ class WifiSettings():
         self.ip = None
         self.netmask = None
         self.gateway = None
+        
+class OcppSettings():
+    def __init__(self) -> None:
+        self.domainName = None
+        self.port = None
+        self.sslEnable = None
+        self.authorizationKey = None
+        self.path = None
         

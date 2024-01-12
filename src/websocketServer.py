@@ -14,17 +14,7 @@ class WebSocketServer():
         print("Web Socket started... 0.0.0.0  8000")
         
     def send_network_priority(self):
-        command = {
-                    "Command" : "NetworkPriority",
-                    "Data" : {
-                                "enableWorkmode" : bool(self.application.settings.networkPriority.enableWorkmode=="True"),
-                                "1" : self.application.settings.networkPriority.first,
-                                "2" : self.application.settings.networkPriority.second,
-                                "3" : self.application.settings.networkPriority.third
-                            }
-                }
-        print("Gönderilen:",command)
-        self.websocketServer.send_message_to_all(msg = json.dumps(command))
+        self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority() )
 
     def send_4g_settings(self):
         command = {
@@ -83,15 +73,27 @@ class WebSocketServer():
         print("Gönderilen:",command)
         self.websocketServer.send_message_to_all(msg = json.dumps(command))
         
+    def send_ocpp_settings(self):
+        command = {
+                    "Command" : "DNSSettings",
+                    "Data" : {
+                                "dnsEnable" : bool(self.application.settings.dnsSettings.dnsEnable=="True"),
+                                "DNS1" : self.application.settings.dnsSettings.DNS1,
+                                "DNS2" : self.application.settings.dnsSettings.DNS2
+                            }
+                }
+        print("Gönderilen:",command)
+        self.websocketServer.send_message_to_all(msg = json.dumps(command))
+        
     def NewClientws(self, client, server):
         if client:
             try:
                 print("New client connected and was given id %d" % client['id'], client['address'] )
-                self.send_network_priority()
-                self.send_4g_settings()
-                self.send_ethernet_settings()
-                self.send_dns_settings()
-                self.send_wifi_settings()
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_dns_settings())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
             except Exception as e:
                 print("could not get New Client id",e)
                 
@@ -148,7 +150,15 @@ class WebSocketServer():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
-            
+            elif(sjon["Command"] == "OcppSettings"):
+                domainName = str(sjon["Data"]["domainName"])
+                port = sjon["Data"]["port"]
+                sslEnable = sjon["Data"]["sslEnable"]
+                authorizationKey = sjon["Data"]["authorizationKey"]
+                path = sjon["Data"]["path"]
+                self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path)
+                
+                
         except Exception as e:
             print("MessageReceivedws",e)
         

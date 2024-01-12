@@ -128,8 +128,6 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        flaskapp = FlaskApp()
-        Thread(target=flaskapp.run,daemon=True).start()
         if app.ocppActive:
             res = loop.run_until_complete(app.ocppStart())
     except Exception as e:

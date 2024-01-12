@@ -28,5 +28,3 @@ def get_flask_ip():
 
 app.run(use_reloader=True, host='0.0.0.0', port=80, threaded=True)
     
-while True:
-    time.sleep(1)

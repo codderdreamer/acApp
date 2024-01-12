@@ -44,13 +44,14 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
+        self.flaskapp = FlaskApp()
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()
         self.databaseModule.get_dns_settings()
         self.databaseModule.get_wifi_settings()
         
-        Thread(target=flaskmain,daemon=True).start()
+        Thread(target=self.flaskapp.run,daemon=True).start()
         
         ethernetEnable = True
         ip = "192.168.1.70"

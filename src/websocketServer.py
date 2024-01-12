@@ -23,6 +23,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_dns_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_ocpp_settings())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())
             except Exception as e:
                 print("could not get New Client id",e)
                 
@@ -86,7 +87,13 @@ class WebSocketServer():
                 authorizationKey = sjon["Data"]["authorizationKey"]
                 path = sjon["Data"]["path"]
                 self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path)
-                
+            elif(sjon["Command"] == "FunctionsEnable"):
+                card_type = str(sjon["Data"]["card_type"])
+                whether_to_open_the_qr_code_process = sjon["Data"]["whether_to_open_the_qr_code_process"]
+                local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
+                whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
+                path = sjon["Data"]["path"]
+                self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
                 
         except Exception as e:
             print("MessageReceivedws",e)

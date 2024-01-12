@@ -8,6 +8,7 @@ class Settings():
         self.dnsSettings = DNSSettings()
         self.wifiSettings = WifiSettings()
         self.ocppSettings = OcppSettings()
+        self.functionsEnable = FunctionsEnable()
         
     def get_network_priority(self):
         command = {
@@ -99,6 +100,20 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
+    
+    def get_functions_enable(self):
+        command = {
+                    "Command" : "FunctionsEnable",
+                    "Data" : {
+                                "card_type" : self.functionsEnable.card_type,
+                                "whether_to_open_the_qr_code_process" : self.functionsEnable.whether_to_open_the_qr_code_process,
+                                "local_startup_whether_to_go_ocpp_background" : self.functionsEnable.local_startup_whether_to_go_ocpp_background,
+                                "whether_to_transfer_private_data" : self.functionsEnable.whether_to_transfer_private_data
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
         
         
 
@@ -152,3 +167,9 @@ class OcppSettings():
         self.authorizationKey = None
         self.path = None
         
+class FunctionsEnable():
+    def __init__(self) -> None:
+        self.card_type = None
+        self.whether_to_open_the_qr_code_process = None
+        self.local_startup_whether_to_go_ocpp_background = None
+        self.whether_to_transfer_private_data = None

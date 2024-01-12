@@ -101,6 +101,10 @@ class DatabaseModule():
             self.application.settings.wifiSettings.ssid = data_dict["ssid"]
             self.application.settings.wifiSettings.password = data_dict["password"]
             self.application.settings.wifiSettings.encryptionType = data_dict["encryptionType"]
+            self.application.settings.wifiSettings.wifidhcpcEnable = data_dict["wifidhcpcEnable"]
+            self.application.settings.wifiSettings.ip = data_dict["ip"]
+            self.application.settings.wifiSettings.netmask = data_dict["netmask"]
+            self.application.settings.wifiSettings.gateway = data_dict["gateway"]
         except Exception as e:
             print(e)
         return data_dict
@@ -229,7 +233,7 @@ class DatabaseModule():
         except Exception as e:
             print(e)
     
-    def set_wifi_settings(self,wifiEnable,mod,ssid,password,encryptionType):
+    def set_wifi_settings(self,wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway):
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
@@ -255,6 +259,22 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
+            value = (wifidhcpcEnable,"wifidhcpcEnable")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (ip,"ip")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (netmask,"netmask")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (gateway,"gateway")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
             self.settings_database.close()
             
             self.application.settings.wifiSettings.wifiEnable = wifiEnable
@@ -262,6 +282,10 @@ class DatabaseModule():
             self.application.settings.wifiSettings.ssid = ssid
             self.application.settings.wifiSettings.password = password
             self.application.settings.wifiSettings.encryptionType = encryptionType
+            self.application.settings.wifiSettings.wifidhcpcEnable = wifidhcpcEnable
+            self.application.settings.wifiSettings.ip = ip
+            self.application.settings.wifiSettings.netmask = netmask
+            self.application.settings.wifiSettings.gateway = gateway
         except Exception as e:
             print(e)
     

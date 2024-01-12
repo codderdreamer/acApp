@@ -22,7 +22,7 @@ class Application():
         self.loop = loop
         self.chargePoint = None
         
-        self.ocppActive = True
+        self.ocppActive = False
         self.cardType = CardType.BillingCard
         self.__deviceState = None
         self.socketType = SocketType.Type2
@@ -125,7 +125,8 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        res = loop.run_until_complete(app.ocppStart())
+        if app.ocppActive:
+            res = loop.run_until_complete(app.ocppStart())
     except Exception as e:
         print("__main__",e)
     while True:

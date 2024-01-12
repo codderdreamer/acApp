@@ -98,4 +98,8 @@ class WifiSettings():
         self.ssid = None
         self.password = None
         self.encryptionType = None
+        self.wifidhcpcEnable = None
+        self.ip = None
+        self.netmask = None
+        self.gateway = None
         

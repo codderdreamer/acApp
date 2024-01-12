@@ -139,44 +139,13 @@ class WebSocketServer():
                 ssid = sjon["Data"]["ssid"]
                 password = sjon["Data"]["password"]
                 encryptionType = sjon["Data"]["encryptionType"]
-                self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType)
+                wifidhcpcEnable = sjon["Data"]["wifidhcpcEnable"]
+                ip = sjon["Data"]["ip"]
+                netmask = sjon["Data"]["netmask"]
+                gateway = sjon["Data"]["gateway"]
+                self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
             
         except Exception as e:
             print("MessageReceivedws",e)
         
         
-        
-        
-
-# websocketServer = websocket_server.WebsocketServer('0.0.0.0',8000)
-
-# def NewClientws(client, server):
-#     if client:
-#         try:
-#             print("New client connected and was given id %d" % client['id'], client['address'] )
-#         except Exception as e:
-#             print("could not get New Client id",e)
-            
-# def ClientLeftws(client, server):
-#     try:
-#         print("Client disconnected client[id]:{}  client['address'] ={}  ".format(client["id"], client['address'] ))
-#     except Exception as e:
-#         print("c['handler'] client remove problem",e )
-        
-# def MessageReceivedws(client, server, message):
-#     try:
-#         sjon = json.loads(message)
-#         print(sjon)
-        
-#     except Exception as e:
-#         print("MessageReceivedws",e)
-
-
-# websocketServer.set_fn_new_client(NewClientws)
-# websocketServer.set_fn_client_left(ClientLeftws)
-# websocketServer.set_fn_message_received(MessageReceivedws)
-
-# threading.Thread(target=websocketServer.run_forever(), daemon=True).start()
-
-# while True:
-#     time.sleep(1)

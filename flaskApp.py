@@ -26,7 +26,7 @@ def get_flask_ip():
     return jsonify({'ip': ip_address})
 
 def flaskmain():
-    app.run(use_reloader=True, host='0.0.0.0', port=80, threaded=True)
+    app.run(use_reloader=True, host='0.0.0.0', port=80)
     while True:
         time.sleep(10)
 

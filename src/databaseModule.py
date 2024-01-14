@@ -407,6 +407,7 @@ class DatabaseModule():
             
     def set_bluetooth_settings(self,bluetooth_enable,pin,bluetooth_name):
         try:
+            print("set_bluetooth_settings")
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE bluetooth_settings SET key = ? WHERE value = ?"
@@ -428,6 +429,7 @@ class DatabaseModule():
             self.application.settings.bluetoothSettings.bluetooth_enable = bluetooth_enable
             self.application.settings.bluetoothSettings.pin = pin
             self.application.settings.bluetoothSettings.bluetooth_name = bluetooth_name
+            print("set_bluetooth_settings finish")
         except Exception as e:
             print(e)
     

@@ -10,6 +10,7 @@ class Settings():
         self.ocppSettings = OcppSettings()
         self.functionsEnable = FunctionsEnable()
         self.bluetoothSettings = BluetoothSettings()
+        self.timezoonSettings = TimeZoneSettings()
         
     def get_network_priority(self):
         command = {
@@ -128,6 +129,17 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
+    
+    def get_timezoon_settings(self):
+        command = {
+                    "Command" : "TimeZoneSettings",
+                    "Data" : {
+                                "timezone" : self.timezoonSettings.timezone
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
         
         
 
@@ -193,6 +205,10 @@ class BluetoothSettings():
         self.bluetooth_enable = None
         self.pin = None
         self.bluetooth_name = None
+        
+class TimeZoneSettings():
+    def __init__(self) -> None:
+        self.timezone = None
         
         
         

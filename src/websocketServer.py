@@ -26,6 +26,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_bluetooth_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_timezoon_settings())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
             except Exception as e:
                 print("could not get New Client id",e)
                 
@@ -103,6 +104,9 @@ class WebSocketServer():
             elif(sjon["Command"] == "TimeZoneSettings"):
                 timezone = str(sjon["Data"]["timezone"])
                 self.application.databaseModule.set_timezone_settings(timezone)
+            elif(sjon["Command"] == "FirmwareVersion"):
+                version = str(sjon["Data"]["version"])
+                self.application.databaseModule.set_firmware_version(version)
         
         except Exception as e:
             print("MessageReceivedws",e)

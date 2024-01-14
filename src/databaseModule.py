@@ -446,4 +446,20 @@ class DatabaseModule():
             self.application.settings.timezoonSettings.timezone = timezone
         except Exception as e:
             print(e)
+            
+    def set_firmware_version(self,version):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE firmware_version SET key = ? WHERE value = ?"
+            
+            value = (version,"version")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.settings.firmwareVersion.version = version
+        except Exception as e:
+            print(e)
     

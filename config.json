@@ -3,5 +3,4 @@
     "charge_point_vendor" : "HCAC12345",
     "charge_point_id" : "HCAC12345",
     "ocpp_server_url" : "ws://34.16.180.181:9000/"
-
 }

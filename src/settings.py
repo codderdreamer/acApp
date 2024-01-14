@@ -11,6 +11,7 @@ class Settings():
         self.functionsEnable = FunctionsEnable()
         self.bluetoothSettings = BluetoothSettings()
         self.timezoonSettings = TimeZoneSettings()
+        self.firmwareVersion = FirmwareVersion()
         
     def get_network_priority(self):
         command = {
@@ -140,6 +141,17 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
+    
+    def get_firmware_version(self):
+        command = {
+                    "Command" : "FirmwareVersion",
+                    "Data" : {
+                                "version" : self.firmwareVersion.version
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
         
         
 
@@ -209,6 +221,10 @@ class BluetoothSettings():
 class TimeZoneSettings():
     def __init__(self) -> None:
         self.timezone = None
+        
+class FirmwareVersion():
+    def __init__(self) -> None:
+        self.version = None
         
         
         

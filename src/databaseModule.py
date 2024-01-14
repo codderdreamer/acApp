@@ -142,6 +142,22 @@ class DatabaseModule():
         self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = data_dict["local_startup_whether_to_go_ocpp_background"]
         self.application.settings.functionsEnable.whether_to_transfer_private_data = data_dict["whether_to_transfer_private_data"]
     
+    def get_bluetooth_settings(self):
+        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+        self.cursor = self.settings_database.cursor()
+        data_dict = {}
+        query = "SELECT * FROM bluetooth_settings"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        self.settings_database.close()
+        for row in data:
+            data_dict[row[0]] = row[1]
+        print("get_bluetooth_settings",data_dict,"\n")
+        self.application.settings.bluetoothSettings.bluetooth_enable = data_dict["bluetooth_enable"]
+        self.application.settings.bluetoothSettings.pin = data_dict["pin"]
+        self.application.settings.bluetoothSettings.bluetooth_name = data_dict["bluetooth_name"]
+        
+    
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
@@ -386,6 +402,32 @@ class DatabaseModule():
             self.application.settings.functionsEnable.whether_to_open_the_qr_code_process = whether_to_open_the_qr_code_process
             self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = local_startup_whether_to_go_ocpp_background
             self.application.settings.functionsEnable.whether_to_transfer_private_data = whether_to_transfer_private_data
+        except Exception as e:
+            print(e)
+            
+    def set_bluetooth_settings(self,bluetooth_enable,pin,bluetooth_name):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE bluetooth_settings SET key = ? WHERE value = ?"
+            
+            value = (bluetooth_enable,"bluetooth_enable")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (pin,"pin")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (bluetooth_name,"bluetooth_name")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.settings.bluetoothSettings.bluetooth_enable = bluetooth_enable
+            self.application.settings.bluetoothSettings.pin = pin
+            self.application.settings.bluetoothSettings.bluetooth_name = bluetooth_name
         except Exception as e:
             print(e)
     

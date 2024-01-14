@@ -24,6 +24,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_ocpp_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_bluetooth_settings())
             except Exception as e:
                 print("could not get New Client id",e)
                 
@@ -93,7 +94,11 @@ class WebSocketServer():
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
                 self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
-                
+            elif(sjon["Command"] == "BluetoothSettings"):
+                bluetooth_enable = str(sjon["Data"]["bluetooth_enable"])
+                pin = sjon["Data"]["pin"]
+                bluetooth_name = sjon["Data"]["bluetooth_name"]
+                self.application.databaseModule.set_bluetooth_settings(bluetooth_enable,pin,bluetooth_name)
         except Exception as e:
             print("MessageReceivedws",e)
         

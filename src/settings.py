@@ -9,6 +9,7 @@ class Settings():
         self.wifiSettings = WifiSettings()
         self.ocppSettings = OcppSettings()
         self.functionsEnable = FunctionsEnable()
+        self.bluetoothSettings = BluetoothSettings()
         
     def get_network_priority(self):
         command = {
@@ -114,6 +115,19 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
+    
+    def get_bluetooth_settings(self):
+        command = {
+                    "Command" : "BluetoothSettings",
+                    "Data" : {
+                                "bluetooth_enable" : self.bluetoothSettings.bluetooth_enable,
+                                "pin" : self.bluetoothSettings.pin,
+                                "bluetooth_name" : self.bluetoothSettings.bluetooth_name
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
         
         
 
@@ -173,3 +187,13 @@ class FunctionsEnable():
         self.whether_to_open_the_qr_code_process = None
         self.local_startup_whether_to_go_ocpp_background = None
         self.whether_to_transfer_private_data = None
+        
+class BluetoothSettings():
+    def __init__(self) -> None:
+        self.bluetooth_enable = None
+        self.pin = None
+        self.bluetooth_name = None
+        
+        
+        
+        

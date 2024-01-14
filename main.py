@@ -50,6 +50,8 @@ class Application():
         self.databaseModule.get_wifi_settings()
         self.databaseModule.get_ocpp_settings()
         self.databaseModule.get_bluetooth_settings()
+        self.databaseModule.get_bluetooth_settings()
+        self.databaseModule.get_bluetooth_settings()
         
         
         

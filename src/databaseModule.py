@@ -157,6 +157,32 @@ class DatabaseModule():
         self.application.settings.bluetoothSettings.pin = data_dict["pin"]
         self.application.settings.bluetoothSettings.bluetooth_name = data_dict["bluetooth_name"]
         
+    def get_timezoon_settings(self):
+        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+        self.cursor = self.settings_database.cursor()
+        data_dict = {}
+        query = "SELECT * FROM timezoon_settings"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        self.settings_database.close()
+        for row in data:
+            data_dict[row[0]] = row[1]
+        print("get_timezoon_settings",data_dict,"\n")
+        self.application.settings.timezoonSettings.timezone = data_dict["timezone"]
+        
+    def get_firmware_version(self):
+        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+        self.cursor = self.settings_database.cursor()
+        data_dict = {}
+        query = "SELECT * FROM firmware_version"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        self.settings_database.close()
+        for row in data:
+            data_dict[row[0]] = row[1]
+        print("get_firmware_version",data_dict,"\n")
+        self.application.settings.firmwareVersion.version = data_dict["version"]
+        
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:

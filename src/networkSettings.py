@@ -3,7 +3,6 @@ import time
 import ipaddress
 import json
 import socket
-import netifaces as ni
 import subprocess
 import re
 
@@ -95,7 +94,7 @@ class NetworkSettings():
             if dnsEnable == "True":
                 setDns = 'sudo nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
                 os.system(setDns)
-                os.system('nmcli con up "static-eth1" ifname eth1')
+                os.system('nmcli con up "eth1" ifname eth1')
         
         
     def set_4G(self):
@@ -115,20 +114,20 @@ class NetworkSettings():
         else:
             os.system("nmcli connection delete ppp0")
         
-        
-        # connection_name = "ppp0"
-        # apn = "3gnet"
-        # user = "uninet"
-        # password = "uninet"
-        # print("gpio ayarlanıyor")
-        # os.system("gpio-test.64 w d 20 1")
-        # time.sleep(5)
-        # print("gpio ayarlandı")
-        # add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
-        # print(add_connection_string)
-        # os.system(add_connection_string)
-        
     def set_wifi(self):
+        wifiEnable = self.application.settings.wifiSettings.wifiEnable
+        mod = self.application.settings.wifiSettings.mod
+        ssid = self.application.settings.wifiSettings.ssid
+        password = self.application.settings.wifiSettings.password
+        encryptionType = self.application.settings.wifiSettings.encryptionType
+        wifidhcpcEnable = self.application.settings.wifiSettings.wifidhcpcEnable
+        ip = self.application.settings.wifiSettings.ip
+        netmask = self.application.settings.wifiSettings.netmask
+        gateway = self.application.settings.wifiSettings.gateway
+        
+        
+        
+        
         ssid = "FiberHGW_TP06BA_5GHz_EXT"
         password = "xNUEjvX9"
         set_wifi = 'nmcli device wifi connect "{0}" password "{1}" name wifi'.format(ssid,password)

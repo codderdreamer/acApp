@@ -4,6 +4,8 @@ import ipaddress
 import json
 import socket
 import netifaces as ni
+import subprocess
+import re
 
 class NetworkSettings():
     def __init__(self,application) -> None:
@@ -15,6 +17,32 @@ class NetworkSettings():
         ip = self.application.settings.ethernetSettings.ip
         netmask = self.application.settings.ethernetSettings.netmask
         gateway = self.application.settings.ethernetSettings.gateway
+        
+        ip_test = socket.gethostbyname(socket.gethostname())
+        
+        try:
+            proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
+            output, _ = proc.communicate()
+            netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
+            if netmask:
+                netmask_test = netmask.group(1)
+        except:
+            pass
+        
+        
+        try:
+            proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
+            output, _ = proc.communicate()
+            gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
+            if gateway:
+                gateway_test = gateway.group(1)
+        except:
+            pass
+        
+        print("test:",ip_test,netmask_test,gateway_test)
+        
+        
+        
         
         if ethernetEnable == "True":
             if dhcpcEnable == "True":
@@ -35,11 +63,9 @@ class NetworkSettings():
                 os.system("nmcli con delete static-eth1")
                 os.system("stty erase ^h")
                 
-                print(ni.ifaddresses)
-                
-                self.application.settings.ethernetSettings.ip = ni.ifaddresses("eth1")[ni.AF_INET][0]['addr']
-                self.application.settings.ethernetSettings.netmask = ni.ifaddresses("eth1")[ni.AF_INET][0]['netmask']
-                self.application.settings.ethernetSettings.gateway = ni.gateways()['default'][ni.AF_INET][0]
+                # self.application.settings.ethernetSettings.ip = ni.ifaddresses("eth1")[ni.AF_INET][0]['addr']
+                # self.application.settings.ethernetSettings.netmask = ni.ifaddresses("eth1")[ni.AF_INET][0]['netmask']
+                # self.application.settings.ethernetSettings.gateway = ni.gateways()['default'][ni.AF_INET][0]
         else:
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")

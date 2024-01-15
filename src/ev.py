@@ -24,6 +24,9 @@ class EV():
         self.power = None
         self.energy = None
         
+        self.start_date = None
+        self.duration = None
+        
         
     @property
     def proximity_pilot(self):

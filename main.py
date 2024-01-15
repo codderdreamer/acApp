@@ -31,7 +31,7 @@ class Application():
         self.control_C_B = False
         self.meter_values_on = False
         
-        self.settings = Settings()
+        self.settings = Settings(self)
         self.networkSettings = NetworkSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)

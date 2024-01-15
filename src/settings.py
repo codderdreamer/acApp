@@ -1,7 +1,8 @@
 import json
 
 class Settings():
-    def __init__(self) -> None:
+    def __init__(self,application) -> None:
+        self.application = application
         self.networkPriority = NetworkPriority()
         self.settings4G = Settings4G()
         self.ethernetSettings = EthernetSettings()
@@ -157,7 +158,16 @@ class Settings():
         command = {
                     "Command" : "Charging",
                     "Data" : {
-                                
+                                "charge" : False,
+                                "start_date" : self.application.ev.start_date,
+                                "duration" : self.application.ev.duration,
+                                "current_L1" : self.application.ev.current_L1,
+                                "current_L2" : self.application.ev.current_L2,
+                                "current_L3" : self.application.ev.current_L3,
+                                "voltage_L1" : self.application.ev.voltage_L1,
+                                "voltage_L2" : self.application.ev.voltage_L2,
+                                "power" : self.application.ev.power,
+                                "energy" : self.application.ev.energy
                             }
                 }
         json_string = json.dumps(command)

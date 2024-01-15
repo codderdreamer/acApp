@@ -44,8 +44,8 @@ class NetworkSettings():
         if dhcpcEnable == "False":
             try:
                 self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
-            except:
-                pass
+            except Exception as e:
+                print(e)
         
             try:
                 proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
@@ -53,8 +53,8 @@ class NetworkSettings():
                 netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
                 if netmask:
                     self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
-            except:
-                pass
+            except Exception as e:
+                print(e)
             
             
             try:
@@ -63,8 +63,8 @@ class NetworkSettings():
                 gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
                 if gateway:
                     self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
-            except:
-                pass
+            except Exception as e:
+                print(e)
             
             data = {
                 "ip" : self.application.settings.ethernetSettings.ip

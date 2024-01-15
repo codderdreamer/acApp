@@ -63,6 +63,7 @@ class WebSocketServer():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
                 self.application.networkSettings.set_eth()
+                self.application.networkSettings.set_dns()
             elif(sjon["Command"] == "DNSSettings"):
                 dnsEnable = str(sjon["Data"]["dnsEnable"])
                 dns1 = sjon["Data"]["DNS1"]

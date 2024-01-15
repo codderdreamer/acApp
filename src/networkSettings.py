@@ -39,6 +39,8 @@ class NetworkSettings():
             os.system("nmcli con delete static-eth1")
             # os.system("stty erase ^h")
             
+        os.system("systemctl restart NetworkManager")
+            
         time.sleep(7)
             
         if dhcpcEnable == "False":

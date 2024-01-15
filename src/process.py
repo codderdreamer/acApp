@@ -32,6 +32,7 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
+        self.application.ev.charge = False
         
         self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
         
@@ -67,6 +68,8 @@ class Process():
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
         
+        self.application.ev.charge = False
+        
         if self.application.ocppActive:
             if self.application.chargePoint.id_tag == None:
                 self.id_tag = input("RFID KART GIRINIZ !!!!!!!!!!!!!!!!!!!")
@@ -96,6 +99,8 @@ class Process():
     
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
+        self.application.ev.charge = False
+        
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         time.sleep(1)
@@ -123,6 +128,8 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
+        self.application.ev.charge = True
+        
         self.application.serialPort.set_command_pid_led_control(LedState.Charging)
         
         if self.application.ocppActive:
@@ -170,6 +177,7 @@ class Process():
         
     def fault(self):
         print("****************************************************************** fault")
+        self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.Fault)
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.faulted),self.application.loop)
@@ -186,6 +194,7 @@ class Process():
         
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
+        self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.finishing),self.application.loop)
@@ -198,6 +207,7 @@ class Process():
             
     def idle(self):
         print("****************************************************************** idle")
+        self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
@@ -213,6 +223,7 @@ class Process():
             
     def stopped_by_user(self):
         print("****************************************************************** stopped_by_user")
+        self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.finishing),self.application.loop)

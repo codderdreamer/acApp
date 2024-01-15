@@ -54,7 +54,7 @@ class Application():
         self.databaseModule.get_firmware_version()
         
         self.networkSettings.set_eth()
-        # self.networkSettings.set_dns()
+        self.networkSettings.set_dns()
         self.networkSettings.set_4G()
         
         

@@ -2,6 +2,8 @@ import os
 import time
 import ipaddress
 import json
+import socket
+import netifaces as ni
 
 class NetworkSettings():
     def __init__(self,application) -> None:
@@ -32,6 +34,10 @@ class NetworkSettings():
             else:
                 os.system("nmcli con delete static-eth1")
                 os.system("stty erase ^h")
+                
+                self.application.settings.ethernetSettings.ip = ni.ifaddresses("eth1")[ni.AF_INET][0]['addr']
+                self.application.settings.ethernetSettings.netmask = ni.ifaddresses("eth1")[ni.AF_INET][0]['netmask']
+                self.application.settings.ethernetSettings.gateway = ni.gateways()['default'][ni.AF_INET][0]
         else:
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")

@@ -56,23 +56,18 @@ class WebSocketServer():
                 self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
             elif(sjon["Command"] == "EthernetSettings"):
                 ethernetEnable = str(sjon["Data"]["ethernetEnable"])
+                dhcpcEnable = str(sjon["Data"]["dhcpcEnable"])
                 ip = sjon["Data"]["ip"]
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
-                self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
-                # self.application.networkSettings.set_eth(ethernetEnable,ip,netmask,gateway)
-                # data = {
-                #     "ip" : ip
-                # }
-                # with open("/root/acApp/client/build/websocket.json", "w") as file:
-                #     json.dump(data, file)
-                #     print("ip yazıldı")
+                self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
+                self.application.networkSettings.set_eth()
             elif(sjon["Command"] == "DNSSettings"):
                 dnsEnable = str(sjon["Data"]["dnsEnable"])
                 dns1 = sjon["Data"]["DNS1"]
                 dns2 = sjon["Data"]["DNS2"]
                 self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
-                self.application.networkSettings.set_dns(dnsEnable,dns1,dns2)
+                self.application.networkSettings.set_dns()
             elif(sjon["Command"] == "WifiSettings"):
                 wifiEnable = str(sjon["Data"]["wifiEnable"])
                 mod = sjon["Data"]["mod"]

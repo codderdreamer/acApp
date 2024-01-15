@@ -36,6 +36,7 @@ class DatabaseModule():
                 data_dict[row[0]] = row[1]
             print("get_ethernet_settings",data_dict,"\n")
             self.application.settings.ethernetSettings.ethernetEnable = data_dict["ethernetEnable"]
+            self.application.settings.ethernetSettings.dhcpcEnable = data_dict["dhcpcEnable"]
             self.application.settings.ethernetSettings.ip = data_dict["ip"]
             self.application.settings.ethernetSettings.netmask = data_dict["netmask"]
             self.application.settings.ethernetSettings.gateway = data_dict["gateway"]
@@ -210,13 +211,17 @@ class DatabaseModule():
         except Exception as e:
             print(e)
 
-    def set_ethernet_settings(self,ethernetEnable,ip,netmask,gateway):
+    def set_ethernet_settings(self,ethernetEnable,dhcpcEnable,ip,netmask,gateway):
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
             
             value = (ethernetEnable,"ethernetEnable")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (dhcpcEnable,"dhcpcEnable")
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
@@ -235,6 +240,7 @@ class DatabaseModule():
             self.settings_database.close()
             
             self.application.settings.ethernetSettings.ethernetEnable = ethernetEnable
+            self.application.settings.ethernetSettings.dhcpcEnable = dhcpcEnable
             self.application.settings.ethernetSettings.ip = ip
             self.application.settings.ethernetSettings.netmask = netmask
             self.application.settings.ethernetSettings.gateway = gateway

@@ -1,27 +1,80 @@
 import os
 import time
 import ipaddress
+import json
 
 class NetworkSettings():
     def __init__(self,application) -> None:
         self.application = application
         
-    def set_eth(self,ethernetEnable,ip,netmask,gateway):
-        if ethernetEnable:
-            netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
-            netmask_prefix_length = netmask_obj.prefixlen
+    def set_eth(self):
+        ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
+        dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
+        ip = self.application.settings.ethernetSettings.ip
+        netmask = self.application.settings.ethernetSettings.netmask
+        gateway = self.application.settings.ethernetSettings.gateway
+        
+        if ethernetEnable == "True":
+            if dhcpcEnable == "True":
+                netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+                netmask_prefix_length = netmask_obj.prefixlen
+                os.system("nmcli con delete static-eth1")
+                os.system("stty erase ^h")
+                set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
+                os.system(set_eth)
+                os.system('nmcli con up "static-eth1" ifname eth1')
+                data = {
+                    "ip" : ip
+                }
+                with open("/root/acApp/client/build/websocket.json", "w") as file:
+                    json.dump(data, file)
+                    print("ip yazıldı")
+            else:
+                os.system("nmcli con delete static-eth1")
+                os.system("stty erase ^h")
+        else:
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")
-            set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
-            os.system(set_eth)
-            os.system('sudo nmcli con modify "static-eth1" ipv4.dns "8.8.8.8,8.8.4.4"')
-            os.system('nmcli con up "static-eth1" ifname eth1')
+            
         
-    def set_dns(self,dnsEnable,dns1,dns2):
-        if dnsEnable:
-            setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(dns1,dns2)
-            os.system(setDns)
-            os.system('nmcli con up "static-eth1" ifname eth1')
+        # if ethernetEnable:
+        #     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+        #     netmask_prefix_length = netmask_obj.prefixlen
+        #     os.system("nmcli con delete static-eth1")
+        #     os.system("stty erase ^h")
+        #     set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
+        #     os.system(set_eth)
+        #     os.system('sudo nmcli con modify "static-eth1" ipv4.dns "8.8.8.8,8.8.4.4"')
+        #     os.system('nmcli con up "static-eth1" ifname eth1')
+            
+        # data = {
+        #     "ip" : ip
+        # }
+        # with open("/root/acApp/client/build/websocket.json", "w") as file:
+        #     json.dump(data, file)
+        #     print("ip yazıldı")
+        
+    def set_dns(self):
+        dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
+        dnsEnable = self.application.settings.dnsSettings.dnsEnable
+        DNS1 = self.application.settings.dnsSettings.DNS1
+        DNS2 = self.application.settings.dnsSettings.DNS2
+        
+        if dhcpcEnable == "True":
+            if dnsEnable == "True":
+                setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+                os.system(setDns)
+                os.system('nmcli con up "static-eth1" ifname eth1')
+        else:
+            if dnsEnable == "True":
+                setDns = 'sudo nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+                os.system(setDns)
+                os.system('nmcli con up "static-eth1" ifname eth1')
+        
+        # if dnsEnable:
+        #     setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(dns1,dns2)
+        #     os.system(setDns)
+        #     os.system('nmcli con up "static-eth1" ifname eth1')
         
     def set_4G(self):
         connection_name = "ppp0"

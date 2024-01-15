@@ -49,6 +49,7 @@ class Settings():
                     "Command" : "EthernetSettings",
                     "Data" : {
                                 "ethernetEnable" : bool(self.ethernetSettings.ethernetEnable=="True"),
+                                "dhcpcEnable" : bool(self.ethernetSettings.dhcpcEnable=="True"),
                                 "ip" : self.ethernetSettings.ip,
                                 "netmask" : self.ethernetSettings.netmask,
                                 "gateway" : self.ethernetSettings.gateway
@@ -197,6 +198,7 @@ class Settings4G():
 class EthernetSettings():
     def __init__(self) -> None:
         self.ethernetEnable = None
+        self.dhcpcEnable = None
         self.ip = None
         self.netmask = None
         self.gateway = None

@@ -53,13 +53,15 @@ class Application():
         self.databaseModule.get_timezoon_settings()
         self.databaseModule.get_firmware_version()
         
+        self.networkSettings.set_eth()
+        self.networkSettings.set_dns()
         
         
-        ethernetEnable = True
-        ip = "192.168.1.70"
-        netmask = "255.255.255.0"
-        gateway = "192.168.1.1"
-        self.networkSettings.set_eth(ethernetEnable,ip,netmask,gateway)
+        # ethernetEnable = True
+        # ip = "192.168.1.70"
+        # netmask = "255.255.255.0"
+        # gateway = "192.168.1.1"
+        # self.networkSettings.set_eth(ethernetEnable,ip,netmask,gateway)
         
         while self.config.config_writed == False:
             time.sleep(0.01)

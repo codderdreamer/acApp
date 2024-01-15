@@ -158,7 +158,7 @@ class Settings():
         command = {
                     "Command" : "Charging",
                     "Data" : {
-                                "charge" : False,
+                                "charge" : self.application.ev.charge,
                                 "start_date" : self.application.ev.start_date,
                                 "duration" : self.application.ev.duration,
                                 "current_L1" : self.application.ev.current_L1,
@@ -166,6 +166,7 @@ class Settings():
                                 "current_L3" : self.application.ev.current_L3,
                                 "voltage_L1" : self.application.ev.voltage_L1,
                                 "voltage_L2" : self.application.ev.voltage_L2,
+                                "voltage_L3" : self.application.ev.voltage_L3,
                                 "power" : self.application.ev.power,
                                 "energy" : self.application.ev.energy
                             }

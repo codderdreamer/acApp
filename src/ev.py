@@ -26,6 +26,7 @@ class EV():
         
         self.start_date = None
         self.duration = None
+        self.charge = False
         
         
     @property

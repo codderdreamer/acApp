@@ -34,10 +34,10 @@ class NetworkSettings():
                     print("ip yazıldı")
             else:
                 os.system("nmcli con delete static-eth1")
-                os.system("stty erase ^h")
+                # os.system("stty erase ^h")
         else:
             os.system("nmcli con delete static-eth1")
-            os.system("stty erase ^h")
+            # os.system("stty erase ^h")
             
         time.sleep(7)
             

@@ -18,32 +18,6 @@ class NetworkSettings():
         netmask = self.application.settings.ethernetSettings.netmask
         gateway = self.application.settings.ethernetSettings.gateway
         
-        ip_test = socket.gethostbyname(socket.gethostname())
-        
-        try:
-            proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
-            output, _ = proc.communicate()
-            netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
-            if netmask:
-                netmask_test = netmask.group(1)
-        except:
-            pass
-        
-        
-        try:
-            proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
-            output, _ = proc.communicate()
-            gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
-            if gateway:
-                gateway_test = gateway.group(1)
-        except:
-            pass
-        
-        print("test:",ip_test,netmask_test,gateway_test)
-        
-        
-        
-        
         if ethernetEnable == "True":
             if dhcpcEnable == "True":
                 netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
@@ -62,13 +36,39 @@ class NetworkSettings():
             else:
                 os.system("nmcli con delete static-eth1")
                 os.system("stty erase ^h")
-                
-                # self.application.settings.ethernetSettings.ip = ni.ifaddresses("eth1")[ni.AF_INET][0]['addr']
-                # self.application.settings.ethernetSettings.netmask = ni.ifaddresses("eth1")[ni.AF_INET][0]['netmask']
-                # self.application.settings.ethernetSettings.gateway = ni.gateways()['default'][ni.AF_INET][0]
         else:
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")
+            
+        if dhcpcEnable == False:
+            try:
+                self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
+            except:
+                pass
+        
+            try:
+                proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
+                output, _ = proc.communicate()
+                netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
+                if netmask:
+                    self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
+            except:
+                pass
+            
+            
+            try:
+                proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
+                output, _ = proc.communicate()
+                gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
+                if gateway:
+                    self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
+            except:
+                pass
+            
+            print(self.application.settings.ethernetSettings.ip)
+            print(self.application.settings.ethernetSettings.netmask)
+            print(self.application.settings.ethernetSettings.gateway)
+            
             
         
         # if ethernetEnable:

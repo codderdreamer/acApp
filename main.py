@@ -55,6 +55,7 @@ class Application():
         
         self.networkSettings.set_eth()
         self.networkSettings.set_dns()
+        self.networkSettings.set_4G()
         
         
         # ethernetEnable = True

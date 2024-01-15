@@ -78,24 +78,7 @@ class NetworkSettings():
             print(self.application.settings.ethernetSettings.netmask)
             print(self.application.settings.ethernetSettings.gateway)
             
-            
         
-        # if ethernetEnable:
-        #     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
-        #     netmask_prefix_length = netmask_obj.prefixlen
-        #     os.system("nmcli con delete static-eth1")
-        #     os.system("stty erase ^h")
-        #     set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
-        #     os.system(set_eth)
-        #     os.system('sudo nmcli con modify "static-eth1" ipv4.dns "8.8.8.8,8.8.4.4"')
-        #     os.system('nmcli con up "static-eth1" ifname eth1')
-            
-        # data = {
-        #     "ip" : ip
-        # }
-        # with open("/root/acApp/client/build/websocket.json", "w") as file:
-        #     json.dump(data, file)
-        #     print("ip yazıldı")
         
     def set_dns(self):
         dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
@@ -114,23 +97,34 @@ class NetworkSettings():
                 os.system(setDns)
                 os.system('nmcli con up "static-eth1" ifname eth1')
         
-        # if dnsEnable:
-        #     setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(dns1,dns2)
-        #     os.system(setDns)
-        #     os.system('nmcli con up "static-eth1" ifname eth1')
         
     def set_4G(self):
         connection_name = "ppp0"
-        apn = "3gnet"
-        user = "uninet"
-        password = "uninet"
-        print("gpio ayarlanıyor")
-        os.system("gpio-test.64 w d 20 1")
-        time.sleep(5)
-        print("gpio ayarlandı")
-        add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
-        print(add_connection_string)
-        os.system(add_connection_string)
+        apn = self.application.settings.settings4G.apn
+        user = self.application.settings.settings4G.user
+        password = self.application.settings.settings4G.password
+        pin = self.application.settings.settings4G.pin
+        enableModification = self.application.settings.settings4G.enableModification
+        
+        if enableModification=="True":
+            os.system("gpio-test.64 w d 20 1")
+            time.sleep(5)
+            add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
+            print(add_connection_string)
+            os.system(add_connection_string)
+        
+        
+        # connection_name = "ppp0"
+        # apn = "3gnet"
+        # user = "uninet"
+        # password = "uninet"
+        # print("gpio ayarlanıyor")
+        # os.system("gpio-test.64 w d 20 1")
+        # time.sleep(5)
+        # print("gpio ayarlandı")
+        # add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
+        # print(add_connection_string)
+        # os.system(add_connection_string)
         
     def set_wifi(self):
         ssid = "FiberHGW_TP06BA_5GHz_EXT"

@@ -54,6 +54,7 @@ class WebSocketServer():
                 password = sjon["Data"]["password"]
                 pin = sjon["Data"]["pin"]
                 self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
+                self.application.networkSettings.set_4G()
             elif(sjon["Command"] == "EthernetSettings"):
                 ethernetEnable = str(sjon["Data"]["ethernetEnable"])
                 dhcpcEnable = str(sjon["Data"]["dhcpcEnable"])

@@ -36,7 +36,7 @@ class EV():
         self.send_message_thread_start = True
         while self.send_message_thread_start:
             try:
-                self.application.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+                self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
             except Exception as e:
                 print("send_message",e)
             time.sleep(3)
@@ -92,7 +92,7 @@ class EV():
             Thread(target=self.send_message,daemon=True).start()
         else:
             self.send_message_thread_start = False
-            self.application.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+            self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
         self.__charge = value
         
         

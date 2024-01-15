@@ -35,6 +35,8 @@ class NetworkSettings():
                 os.system("nmcli con delete static-eth1")
                 os.system("stty erase ^h")
                 
+                print(ni.ifaddresses)
+                
                 self.application.settings.ethernetSettings.ip = ni.ifaddresses("eth1")[ni.AF_INET][0]['addr']
                 self.application.settings.ethernetSettings.netmask = ni.ifaddresses("eth1")[ni.AF_INET][0]['netmask']
                 self.application.settings.ethernetSettings.gateway = ni.gateways()['default'][ni.AF_INET][0]

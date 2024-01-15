@@ -65,6 +65,13 @@ class NetworkSettings():
             except:
                 pass
             
+            data = {
+                "ip" : self.application.settings.ethernetSettings.ip
+            }
+            with open("/root/acApp/client/build/websocket.json", "w") as file:
+                json.dump(data, file)
+                print("ip yazıldı")
+            
             print(self.application.settings.ethernetSettings.ip)
             print(self.application.settings.ethernetSettings.netmask)
             print(self.application.settings.ethernetSettings.gateway)

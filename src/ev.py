@@ -1,4 +1,6 @@
 from src.enums import *
+from threading import Thread
+import time
 
 class EV():
     def __init__(self,application):
@@ -26,8 +28,18 @@ class EV():
         
         self.start_date = None
         self.duration = None
-        self.charge = False
+        self.__charge = False
         
+        self.send_message_thread_start = False
+        
+    def send_message(self):
+        self.send_message_thread_start = True
+        while self.send_message_thread_start:
+            try:
+                self.application.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+            except Exception as e:
+                print("send_message",e)
+            time.sleep(3)
         
     @property
     def proximity_pilot(self):
@@ -69,4 +81,19 @@ class EV():
                 self.application.deviceState = DeviceState.FAULT
             else:
                 self.application.deviceState = DeviceState.FAULT
+                
+    @property
+    def charge(self):
+        return self.__charge
+
+    @charge.setter
+    def charge(self, value):
+        if value:
+            Thread(target=self.send_message,daemon=True).start()
+        else:
+            self.send_message_thread_start = False
+            self.application.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+        self.__charge = value
+        
+        
         

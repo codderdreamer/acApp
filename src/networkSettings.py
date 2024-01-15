@@ -40,6 +40,8 @@ class NetworkSettings():
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")
             
+        time.sleep(5)
+            
         if dhcpcEnable == "False":
             try:
                 self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))

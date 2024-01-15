@@ -112,6 +112,8 @@ class NetworkSettings():
             add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
             print(add_connection_string)
             os.system(add_connection_string)
+        else:
+            os.system("nmcli connection delete ppp0")
         
         
         # connection_name = "ppp0"

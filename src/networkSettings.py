@@ -45,7 +45,7 @@ class NetworkSettings():
             try:
                 self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
             except Exception as e:
-                print(e)
+                print( "ip" ,e)
         
             try:
                 proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
@@ -54,7 +54,7 @@ class NetworkSettings():
                 if netmask:
                     self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
             except Exception as e:
-                print(e)
+                print( "netmask" ,e)
             
             
             try:
@@ -64,7 +64,7 @@ class NetworkSettings():
                 if gateway:
                     self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
             except Exception as e:
-                print(e)
+                print( "gateway" ,e)
             
             data = {
                 "ip" : self.application.settings.ethernetSettings.ip

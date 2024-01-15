@@ -39,7 +39,7 @@ class NetworkSettings():
             os.system("nmcli con delete static-eth1")
             os.system("stty erase ^h")
             
-        time.sleep(5)
+        time.sleep(7)
             
         if dhcpcEnable == "False":
             try:
@@ -87,12 +87,12 @@ class NetworkSettings():
         
         if dhcpcEnable == "True":
             if dnsEnable == "True":
-                setDns = 'sudo nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+                setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
                 os.system(setDns)
                 os.system('nmcli con up "static-eth1" ifname eth1')
         else:
             if dnsEnable == "True":
-                setDns = 'sudo nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+                setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
                 os.system(setDns)
                 os.system('nmcli con up "eth1" ifname eth1')
         

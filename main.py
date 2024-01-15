@@ -23,7 +23,7 @@ class Application():
         self.chargePoint = None
         
         self.ocppActive = False
-        self.cardType = CardType.StartStopCard
+        self.cardType = CardType.LocalPnC
         self.__deviceState = None
         self.socketType = SocketType.Type2
         self.max_current = 63

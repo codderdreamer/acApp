@@ -152,6 +152,17 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
+    
+    def get_charging(self):
+        command = {
+                    "Command" : "Charging",
+                    "Data" : {
+                                
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
         
         
 

@@ -27,6 +27,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_bluetooth_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_timezoon_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
             except Exception as e:
                 print("could not get New Client id",e)
                 

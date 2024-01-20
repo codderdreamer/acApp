@@ -22,7 +22,7 @@ class Application():
         self.loop = loop
         self.chargePoint = None
         
-        self.ocppActive = False
+        self.ocppActive = True
         self.cardType = CardType.LocalPnC
         self.__deviceState = None
         self.socketType = SocketType.Type2

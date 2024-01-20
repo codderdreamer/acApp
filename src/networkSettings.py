@@ -123,8 +123,7 @@ class NetworkSettings():
             os.system(add_connection_string)
         else:
             os.system("nmcli connection delete ppp0")
-            
-        os.system("systemctl restart NetworkManager")
+
           
     def set_wifi(self):
         wifiEnable = self.application.settings.wifiSettings.wifiEnable

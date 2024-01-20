@@ -23,7 +23,7 @@ class Application():
         self.chargePoint = None
         
         self.ocppActive = True
-        self.cardType = CardType.LocalPnC
+        self.cardType = CardType.BillingCard
         self.__deviceState = None
         self.socketType = SocketType.Type2
         self.max_current = 63

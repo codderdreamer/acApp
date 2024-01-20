@@ -11,7 +11,7 @@ from src.ev import EV
 from src.serialPort import SerialPort
 from src.settings import Settings
 from src.databaseModule import DatabaseModule
-from src.networkSettings import NetworkSettings
+from src.softwareSettings import SoftwareSettings
 from src.websocketServer import WebSocketServer
 from src.bluetoothService.bluetoothService import BluetoothService
 from src.process import Process
@@ -32,7 +32,7 @@ class Application():
         self.meter_values_on = False
         
         self.settings = Settings(self)
-        self.networkSettings = NetworkSettings(self)
+        self.softwareSettings = SoftwareSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)
         self.bluetoothService = BluetoothService(self)
@@ -53,18 +53,18 @@ class Application():
         self.databaseModule.get_timezoon_settings()
         self.databaseModule.get_firmware_version()
         
-        self.networkSettings.set_eth()
-        self.networkSettings.set_4G()
-        self.networkSettings.set_wifi()
-        self.networkSettings.set_dns()
-        Thread(target=self.networkSettings.set_network_priority,daemon=True).start()
+        self.softwareSettings.set_eth()
+        self.softwareSettings.set_4G()
+        self.softwareSettings.set_wifi()
+        self.softwareSettings.set_dns()
+        Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         
         
         # ethernetEnable = True
         # ip = "192.168.1.70"
         # netmask = "255.255.255.0"
         # gateway = "192.168.1.1"
-        # self.networkSettings.set_eth(ethernetEnable,ip,netmask,gateway)
+        # self.softwareSettings.set_eth(ethernetEnable,ip,netmask,gateway)
         
         while self.config.config_writed == False:
             time.sleep(0.01)

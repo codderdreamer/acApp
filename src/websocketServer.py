@@ -3,6 +3,7 @@ import json
 import threading
 import time
 from threading import Thread
+from src.enums import *
 
 class WebSocketServer():
     def __init__(self,application) -> None:
@@ -48,7 +49,7 @@ class WebSocketServer():
                 second = sjon["Data"]["2"]
                 third = sjon["Data"]["3"]
                 self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
-                Thread(target=self.application.networkSettings.set_network_priority,daemon=True).start()
+                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
             elif(sjon["Command"] == "4GSettings"):
                 enableModification = str(sjon["Data"]["enableModification"])
                 apn = sjon["Data"]["apn"]
@@ -56,8 +57,8 @@ class WebSocketServer():
                 password = sjon["Data"]["password"]
                 pin = sjon["Data"]["pin"]
                 self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
-                self.application.networkSettings.set_4G()
-                Thread(target=self.application.networkSettings.set_network_priority,daemon=True).start()
+                self.application.softwareSettings.set_4G()
+                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
             elif(sjon["Command"] == "EthernetSettings"):
                 ethernetEnable = str(sjon["Data"]["ethernetEnable"])
                 dhcpcEnable = str(sjon["Data"]["dhcpcEnable"])
@@ -65,15 +66,15 @@ class WebSocketServer():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
-                self.application.networkSettings.set_eth()
-                self.application.networkSettings.set_dns()
-                Thread(target=self.application.networkSettings.set_network_priority,daemon=True).start()
+                self.application.softwareSettings.set_eth()
+                self.application.softwareSettings.set_dns()
+                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
             elif(sjon["Command"] == "DNSSettings"):
                 dnsEnable = str(sjon["Data"]["dnsEnable"])
                 dns1 = sjon["Data"]["DNS1"]
                 dns2 = sjon["Data"]["DNS2"]
                 self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
-                self.application.networkSettings.set_dns()
+                self.application.softwareSettings.set_dns()
             elif(sjon["Command"] == "WifiSettings"):
                 wifiEnable = str(sjon["Data"]["wifiEnable"])
                 mod = sjon["Data"]["mod"]
@@ -85,8 +86,8 @@ class WebSocketServer():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
-                self.application.networkSettings.set_wifi()
-                Thread(target=self.application.networkSettings.set_network_priority,daemon=True).start()
+                self.application.softwareSettings.set_wifi()
+                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
             elif(sjon["Command"] == "OcppSettings"):
                 domainName = str(sjon["Data"]["domainName"])
                 port = sjon["Data"]["port"]
@@ -100,6 +101,7 @@ class WebSocketServer():
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
                 self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
+                self.application.softwareSettings.set_functions_enable()
             elif(sjon["Command"] == "BluetoothSettings"):
                 bluetooth_enable = str(sjon["Data"]["bluetooth_enable"])
                 pin = sjon["Data"]["pin"]

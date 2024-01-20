@@ -8,12 +8,11 @@ import re
 import fcntl
 import struct
 import psutil
+from src.enums import *
 
-class NetworkSettings():
+class SoftwareSettings():
     def __init__(self,application) -> None:
         self.application = application
-        
-
         
     def set_eth(self):
         ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
@@ -123,8 +122,7 @@ class NetworkSettings():
             os.system(add_connection_string)
         else:
             os.system("nmcli connection delete ppp0")
-
-          
+    
     def set_wifi(self):
         wifiEnable = self.application.settings.wifiSettings.wifiEnable
         mod = self.application.settings.wifiSettings.mod
@@ -182,8 +180,7 @@ class NetworkSettings():
                 os.system("nmcli connection up wifi_connection")
             else:
                 os.system("ifconfig wlan0 down")
-            
-            
+                  
     def set_network_priority(self):
         time.sleep(10)
         enableWorkmode = self.application.settings.networkPriority.enableWorkmode
@@ -227,9 +224,14 @@ class NetworkSettings():
                 print("*** ifmetric ppp0 700")
         print("************* - ************\n")
     
-        
-        
-            
+    def set_functions_enable(self):
+        card_type = self.application.settings.functionsEnable.card_type
+        if card_type == CardType.StartStopCard.value:
+            self.application.cardType = CardType.StartStopCard
+        elif card_type == CardType.LocalPnC.value:
+            self.application.cardType = CardType.LocalPnC
+        elif card_type == CardType.BillingCard.value:
+            self.application.cardType = CardType.BillingCard
         
 
         

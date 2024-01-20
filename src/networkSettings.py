@@ -17,6 +17,14 @@ class NetworkSettings():
         netmask = self.application.settings.ethernetSettings.netmask
         gateway = self.application.settings.ethernetSettings.gateway
         
+        print("\n")
+        print("************* Ethrenet Configration ************")
+        print(f"*** ethernetEnable {ethernetEnable}")
+        print(f"*** dhcpcEnable {dhcpcEnable}")
+        print(f"*** ip {ip}")
+        print(f"*** netmask {netmask}")
+        print(f"*** gateway {gateway}")
+        
         if ethernetEnable == "True":
             if dhcpcEnable == "True":
                 netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
@@ -81,6 +89,8 @@ class NetworkSettings():
                 print(self.application.settings.ethernetSettings.ip)
                 print(self.application.settings.ethernetSettings.netmask)
                 print(self.application.settings.ethernetSettings.gateway)
+     
+     
               
     def set_dns(self):
         dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
@@ -117,8 +127,7 @@ class NetworkSettings():
             os.system("nmcli connection delete ppp0")
             
         os.system("systemctl restart NetworkManager")
-        
-        
+          
     def set_wifi(self):
         wifiEnable = self.application.settings.wifiSettings.wifiEnable
         mod = self.application.settings.wifiSettings.mod

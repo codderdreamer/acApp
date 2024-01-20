@@ -5,10 +5,15 @@ import json
 import socket
 import subprocess
 import re
+import fcntl
+import struct
+import psutil
 
 class NetworkSettings():
     def __init__(self,application) -> None:
         self.application = application
+        
+
         
     def set_eth(self):
         ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
@@ -146,15 +151,30 @@ class NetworkSettings():
             subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
         else:
             if wifiEnable=="True":
-                netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
-                netmask_prefix_length = netmask_obj.prefixlen
                 os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
                 os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")
                 os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password}")
                 if wifidhcpcEnable == "True":
+                    netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+                    netmask_prefix_length = netmask_obj.prefixlen
                     os.system("nmcli con modify wifi_connection ipv4.method manual")
                     os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}")
                     os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
+                else:
+                    try:
+                        network_info = psutil.net_if_addrs()["wlan0"]
+                        for info in network_info:
+                            if info.family == psutil.AF_INET:
+                                self.application.settings.wifiSettings.ip = info.address
+                                self.application.settings.wifiSettings.netmask = info.netmask
+                    except Exception as e:
+                        print(f'Hata: {e}')
+                    try:
+                        gateway = psutil.net_if_stats()
+                        self.application.settings.wifiSettings.gateway = gateway['default']['gateway']
+                    except Exception as e:
+                        print(f'Hata: {e}')
+
                 os.system("nmcli connection up wifi_connection")
             else:
                 os.system("ifconfig wlan0 down")

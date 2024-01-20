@@ -148,6 +148,7 @@ class NetworkSettings():
             
             
     def set_network_priority(self):
+        time.sleep(10)
         enableWorkmode = self.application.settings.networkPriority.enableWorkmode
         first = self.application.settings.networkPriority.first
         second = self.application.settings.networkPriority.second

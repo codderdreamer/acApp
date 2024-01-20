@@ -102,7 +102,7 @@ class NetworkSettings():
         else:
             pass
             # if dnsEnable == "True":
-            #     setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+            #     setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)       bunu kesinlikle yapma hatayı buluna kadar canım çıktı
             #     os.system(setDns)
             #     os.system('nmcli con up "eth1" ifname eth1')
           

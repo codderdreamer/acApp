@@ -34,6 +34,7 @@ class NetworkSettings():
                     print("ip yazıldı")
             else:
                 os.system("nmcli con delete static-eth1")
+
         else:
             print("Statik eth1 varsa siliniyor")
             os.system("nmcli con delete static-eth1")
@@ -43,42 +44,43 @@ class NetworkSettings():
         os.system("systemctl restart NetworkManager")
             
         time.sleep(7)
-            
-        if dhcpcEnable == "False":
-            try:
-                self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
-            except Exception as e:
-                print( "ip" ,e)
         
-            try:
-                proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
-                output, _ = proc.communicate()
-                netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
-                if netmask:
-                    self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
-            except Exception as e:
-                print( "netmask" ,e)
+        if ethernetEnable == "True":
+            if dhcpcEnable == "False":
+                try:
+                    self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
+                except Exception as e:
+                    print( "ip" ,e)
             
-            
-            try:
-                proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
-                output, _ = proc.communicate()
-                gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
-                if gateway:
-                    self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
-            except Exception as e:
-                print( "gateway" ,e)
-            
-            data = {
-                "ip" : self.application.settings.ethernetSettings.ip
-            }
-            with open("/root/acApp/client/build/websocket.json", "w") as file:
-                json.dump(data, file)
-                print("ip yazıldı")
-            
-            print(self.application.settings.ethernetSettings.ip)
-            print(self.application.settings.ethernetSettings.netmask)
-            print(self.application.settings.ethernetSettings.gateway)
+                try:
+                    proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
+                    output, _ = proc.communicate()
+                    netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
+                    if netmask:
+                        self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
+                except Exception as e:
+                    print( "netmask" ,e)
+                
+                
+                try:
+                    proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
+                    output, _ = proc.communicate()
+                    gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
+                    if gateway:
+                        self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
+                except Exception as e:
+                    print( "gateway" ,e)
+                
+                data = {
+                    "ip" : self.application.settings.ethernetSettings.ip
+                }
+                with open("/root/acApp/client/build/websocket.json", "w") as file:
+                    json.dump(data, file)
+                    print("ip yazıldı")
+                
+                print(self.application.settings.ethernetSettings.ip)
+                print(self.application.settings.ethernetSettings.netmask)
+                print(self.application.settings.ethernetSettings.gateway)
             
         
         

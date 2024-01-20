@@ -17,13 +17,13 @@ class NetworkSettings():
         netmask = self.application.settings.ethernetSettings.netmask
         gateway = self.application.settings.ethernetSettings.gateway
         
-        print("\n")
-        print("************* Ethrenet Configration ************")
+        print("\n************* Ethrenet Configration ************")
         print(f"*** ethernetEnable {ethernetEnable}")
         print(f"*** dhcpcEnable {dhcpcEnable}")
         print(f"*** ip {ip}")
         print(f"*** netmask {netmask}")
         print(f"*** gateway {gateway}")
+        print("************* - ************\n")
         
         if ethernetEnable == "True":
             if dhcpcEnable == "True":

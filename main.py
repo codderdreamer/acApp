@@ -54,10 +54,10 @@ class Application():
         self.databaseModule.get_firmware_version()
         
         self.networkSettings.set_eth()
-        self.networkSettings.set_4G()
-        self.networkSettings.set_wifi()
-        self.networkSettings.set_dns()
-        self.networkSettings.set_network_priority()
+        # self.networkSettings.set_4G()
+        # self.networkSettings.set_wifi()
+        # self.networkSettings.set_dns()
+        # self.networkSettings.set_network_priority()
         
         
         # ethernetEnable = True

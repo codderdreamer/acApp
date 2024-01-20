@@ -232,8 +232,6 @@ class SoftwareSettings():
             self.application.cardType = CardType.LocalPnC
         elif card_type == CardType.BillingCard.value:
             self.application.cardType = CardType.BillingCard
-            res = self.application.loop.run_until_complete(self.application.ocppStart())
-            print("------------------------------------------------------------------------------------------------")
         
 
         

@@ -122,7 +122,6 @@ class Application():
         
     async def ocppStart(self):
         try:
-            
             async with websockets.connect(self.config.ocpp_server_url + self.config.charge_point_id, subprotocols=[self.ocpp_subprotocols.value]) as ws:
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
@@ -140,8 +139,13 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        if app.ocppActive:
-            res = loop.run_until_complete(app.ocppStart())
+        while True:
+            if app.cardType == CardType.BillingCard:
+                if app.ocppActive:
+                    app.ocppActive = False
+                    res = loop.run_until_complete(app.ocppStart())
+                    print("-------------------------------------------------------------------------")
+                    break
     except Exception as e:
         print("__main__",e)
     while True:

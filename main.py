@@ -119,6 +119,7 @@ class Application():
         
     async def ocppStart(self):
         try:
+            
             async with websockets.connect(self.config.ocpp_server_url + self.config.charge_point_id, subprotocols=[self.ocpp_subprotocols.value]) as ws:
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)

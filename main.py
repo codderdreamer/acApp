@@ -55,7 +55,7 @@ class Application():
         
         self.networkSettings.set_eth()
         self.networkSettings.set_4G()
-        self.networkSettings.set_wifi()
+        # self.networkSettings.set_wifi()
         self.networkSettings.set_dns()
         Thread(target=self.networkSettings.set_network_priority,daemon=True).start()
         

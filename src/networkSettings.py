@@ -81,9 +81,7 @@ class NetworkSettings():
                 print(self.application.settings.ethernetSettings.ip)
                 print(self.application.settings.ethernetSettings.netmask)
                 print(self.application.settings.ethernetSettings.gateway)
-            
-        
-        
+              
     def set_dns(self):
         dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
         dnsEnable = self.application.settings.dnsSettings.dnsEnable
@@ -100,8 +98,7 @@ class NetworkSettings():
                 setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
                 os.system(setDns)
                 os.system('nmcli con up "static-eth1" ifname eth1')
-        
-        
+          
     def set_4G(self):
         connection_name = "ppp0"
         apn = self.application.settings.settings4G.apn

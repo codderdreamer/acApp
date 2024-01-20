@@ -58,6 +58,8 @@ class Application():
         self.softwareSettings.set_wifi()
         self.softwareSettings.set_dns()
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
+        self.softwareSettings.set_functions_enable()
+        print("main *****************************************************")
         
         
         # ethernetEnable = True

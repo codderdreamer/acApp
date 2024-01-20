@@ -177,7 +177,7 @@ class ChargePoint16(cp):
         """
         try :
             request = call.HeartbeatPayload()
-            while True:
+            while self.application.cardType == CardType.BillingCard:
                 LOGGER_CHARGE_POINT.info("Request:%s", request)
                 response = await self.call(request)
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)

@@ -178,16 +178,6 @@ class NetworkSettings():
                             self.application.settings.wifiSettings.netmask = str(netmask.group(1))
                     except Exception as e:
                         print( "netmask" ,e)
-                    
-                    
-                    try:
-                        proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
-                        output, _ = proc.communicate()
-                        gateway = re.search(r'wlan0.*?default via (\d+\.\d+\.\d+\.\d+)', str(output))
-                        if gateway:
-                            self.application.settings.wifiSettings.gateway = str(gateway.group(1))
-                    except Exception as e:
-                        print( "gateway" ,e)
 
                 os.system("nmcli connection up wifi_connection")
             else:

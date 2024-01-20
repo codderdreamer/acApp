@@ -100,10 +100,11 @@ class NetworkSettings():
                 os.system(setDns)
                 os.system('nmcli con up "static-eth1" ifname eth1')
         else:
-            if dnsEnable == "True":
-                setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
-                os.system(setDns)
-                os.system('nmcli con up "eth1" ifname eth1')
+            pass
+            # if dnsEnable == "True":
+            #     setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+            #     os.system(setDns)
+            #     os.system('nmcli con up "eth1" ifname eth1')
           
     def set_4G(self):
         connection_name = "ppp0"

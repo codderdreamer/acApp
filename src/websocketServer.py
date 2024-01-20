@@ -47,6 +47,7 @@ class WebSocketServer():
                 second = sjon["Data"]["2"]
                 third = sjon["Data"]["3"]
                 self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
+                self.application.networkSettings.set_network_priority()
             elif(sjon["Command"] == "4GSettings"):
                 enableModification = str(sjon["Data"]["enableModification"])
                 apn = sjon["Data"]["apn"]
@@ -81,6 +82,7 @@ class WebSocketServer():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
+                self.application.networkSettings.set_wifi()
             elif(sjon["Command"] == "OcppSettings"):
                 domainName = str(sjon["Data"]["domainName"])
                 port = sjon["Data"]["port"]

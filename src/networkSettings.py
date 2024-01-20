@@ -136,8 +136,36 @@ class NetworkSettings():
             os.system("nmcli radio wifi on")
             set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
             os.system(set_wifi)
+            
+    def set_network_priority(self):
+        enableWorkmode = self.application.settings.networkPriority.enableWorkmode
+        first = self.application.settings.networkPriority.first
+        second = self.application.settings.networkPriority.second
+        third = self.application.settings.networkPriority.third
+        if enableWorkmode == "True":
+            if first == "ETH":
+                os.system("ifmetric eth1 100")
+            elif first == "WLAN":
+                os.system("ifmetric wlan0 100")
+            elif first == "4G":
+                os.system("ifmetric ppp0 100")
+                
+            if second == "ETH":
+                os.system("ifmetric eth1 300")
+            elif second == "WLAN":
+                os.system("ifmetric wlan0 300")
+            elif second == "4G":
+                os.system("ifmetric ppp0 300")
+                
+            if third == "ETH":
+                os.system("ifmetric eth1 700")
+            elif third == "WLAN":
+                os.system("ifmetric wlan0 700")
+            elif third == "4G":
+                os.system("ifmetric ppp0 700")
+            
         
-        
+
         
         
         

@@ -89,9 +89,7 @@ class NetworkSettings():
                 print(self.application.settings.ethernetSettings.ip)
                 print(self.application.settings.ethernetSettings.netmask)
                 print(self.application.settings.ethernetSettings.gateway)
-     
-     
-              
+            
     def set_dns(self):
         dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
         dnsEnable = self.application.settings.dnsSettings.dnsEnable
@@ -145,6 +143,10 @@ class NetworkSettings():
             os.system("nmcli radio wifi on")
             set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
             os.system(set_wifi)
+            os.system("systemctl restart NetworkManager")
+        else:
+            os.system("nmcli connection delete wifi")
+            
             
     def set_network_priority(self):
         enableWorkmode = self.application.settings.networkPriority.enableWorkmode

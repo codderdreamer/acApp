@@ -115,6 +115,8 @@ class NetworkSettings():
         enableModification = self.application.settings.settings4G.enableModification
         
         if enableModification=="True":
+            os.system("nmcli connection delete ppp0")
+            time.sleep(3)
             os.system("gpio-test.64 w d 20 1")
             time.sleep(5)
             add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)

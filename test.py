@@ -1,18 +1,7 @@
 import os
 import time
 
-import psutil
 
-def check_interface(interface_name):
-    interfaces = psutil.net_if_addrs()
-    if interface_name in interfaces:
-        return f"{interface_name} arabirimi mevcut."
-    else:
-        return f"{interface_name} arabirimi bulunamadı."
-
-interface_name = "ppp0"
-result = check_interface(interface_name)
-print(result)
 
 connection_name = "ppp0"
 apn = "3gnet"
@@ -29,6 +18,20 @@ if enableModification=="True":
     os.system(add_connection_string)
 else:
     os.system("nmcli connection delete ppp0")
+    
+wifiEnable = "True"
+ssid = "FiberHGW_TP06BA_5GHz_EXT"
+password = "xNUEjvX9"
+    
+if wifiEnable=="True":
+    os.system("systemctl restart NetworkManager")
+    time.sleep(3)
+    os.system("nmcli radio wifi on")
+    set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
+    os.system(set_wifi)
+    os.system("systemctl restart NetworkManager")
+else:
+    os.system("ifconfig wlan0 down")
     
 while True:
     time.sleep(1)

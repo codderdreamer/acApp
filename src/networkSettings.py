@@ -35,7 +35,10 @@ class NetworkSettings():
             else:
                 os.system("nmcli con delete static-eth1")
         else:
+            print("Statik eth1 varsa siliniyor")
             os.system("nmcli con delete static-eth1")
+            print("Dinamik eth1 varsa siliniyor")
+            os.system("nmcli con delete eth1")
             
         os.system("systemctl restart NetworkManager")
             

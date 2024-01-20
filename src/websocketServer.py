@@ -56,6 +56,7 @@ class WebSocketServer():
                 pin = sjon["Data"]["pin"]
                 self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
                 self.application.networkSettings.set_4G()
+                self.application.networkSettings.set_network_priority()
             elif(sjon["Command"] == "EthernetSettings"):
                 ethernetEnable = str(sjon["Data"]["ethernetEnable"])
                 dhcpcEnable = str(sjon["Data"]["dhcpcEnable"])
@@ -65,6 +66,7 @@ class WebSocketServer():
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
                 self.application.networkSettings.set_eth()
                 self.application.networkSettings.set_dns()
+                self.application.networkSettings.set_network_priority()
             elif(sjon["Command"] == "DNSSettings"):
                 dnsEnable = str(sjon["Data"]["dnsEnable"])
                 dns1 = sjon["Data"]["DNS1"]
@@ -83,6 +85,7 @@ class WebSocketServer():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
                 self.application.networkSettings.set_wifi()
+                self.application.networkSettings.set_network_priority()
             elif(sjon["Command"] == "OcppSettings"):
                 domainName = str(sjon["Data"]["domainName"])
                 port = sjon["Data"]["port"]

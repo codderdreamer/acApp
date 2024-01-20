@@ -138,7 +138,7 @@ class NetworkSettings():
         gateway = self.application.settings.wifiSettings.gateway
         
         if mod == "AP":
-            subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"])
+            subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
         else:
             if wifiEnable=="True":
                 os.system("nmcli con delete HelperBox")

@@ -34,10 +34,8 @@ class NetworkSettings():
                     print("ip yazıldı")
             else:
                 os.system("nmcli con delete static-eth1")
-                # os.system("stty erase ^h")
         else:
             os.system("nmcli con delete static-eth1")
-            # os.system("stty erase ^h")
             
         os.system("systemctl restart NetworkManager")
             
@@ -127,13 +125,12 @@ class NetworkSettings():
         netmask = self.application.settings.wifiSettings.netmask
         gateway = self.application.settings.wifiSettings.gateway
         
-        
-        
-        
-        ssid = "FiberHGW_TP06BA_5GHz_EXT"
-        password = "xNUEjvX9"
-        set_wifi = 'nmcli device wifi connect "{0}" password "{1}" name wifi'.format(ssid,password)
-        os.system(set_wifi)
+        if wifiEnable=="True":
+            os.system("systemctl restart NetworkManager")
+            time.sleep(3)
+            os.system("nmcli radio wifi on")
+            set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
+            os.system(set_wifi)
         
         
         

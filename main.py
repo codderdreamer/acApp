@@ -52,6 +52,7 @@ class Application():
         self.databaseModule.get_bluetooth_settings()
         self.databaseModule.get_timezoon_settings()
         self.databaseModule.get_firmware_version()
+        self.databaseModule.get_functions_enable()
         
         self.softwareSettings.set_eth()
         self.softwareSettings.set_4G()

@@ -141,11 +141,8 @@ if __name__ == "__main__":
         app = Application(loop)
         while True:
             if app.cardType == CardType.BillingCard:
-                if app.ocppActive:
-                    app.ocppActive = False
-                    res = loop.run_until_complete(app.ocppStart())
-                    print("-------------------------------------------------------------------------")
-                    break
+                res = loop.run_until_complete(app.ocppStart())
+                print("-----------------------------------ocpp stop--------------------------------------")
     except Exception as e:
         print("__main__",e)
     while True:

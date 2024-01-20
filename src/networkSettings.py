@@ -145,7 +145,7 @@ class NetworkSettings():
             os.system(set_wifi)
             os.system("systemctl restart NetworkManager")
         else:
-            os.system("nmcli connection delete wifi")
+            os.system("ifconfig wlan0 down")
             
             
     def set_network_priority(self):

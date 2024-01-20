@@ -141,10 +141,21 @@ class NetworkSettings():
             subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
         else:
             if wifiEnable=="True":
-                os.system("nmcli con delete HelperBox")
-                os.system("nmcli radio wifi on")
-                set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
-                os.system(set_wifi)
+                # os.system("nmcli con delete HelperBox")
+                # os.system("nmcli radio wifi on")
+                # set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
+                # os.system(set_wifi)
+                
+                netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+                netmask_prefix_length = netmask_obj.prefixlen
+                os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
+                os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")
+                os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password}")
+                if wifidhcpcEnable == "True":
+                    os.system("nmcli con modify wifi_connection ipv4.method manual")
+                    os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}")
+                    os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
+                os.system("nmcli connection up wifi_connection")
             else:
                 os.system("ifconfig wlan0 down")
             

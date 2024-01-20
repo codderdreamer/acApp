@@ -137,15 +137,16 @@ class NetworkSettings():
         netmask = self.application.settings.wifiSettings.netmask
         gateway = self.application.settings.wifiSettings.gateway
         
-        if wifiEnable=="True":
-            # os.system("systemctl restart NetworkManager")
-            time.sleep(3)
-            os.system("nmcli radio wifi on")
-            set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
-            os.system(set_wifi)
-            # os.system("systemctl restart NetworkManager")
+        if mod == "AP":
+            subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"])
         else:
-            os.system("ifconfig wlan0 down")
+            if wifiEnable=="True":
+                os.system("nmcli con delete HelperBox")
+                os.system("nmcli radio wifi on")
+                set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
+                os.system(set_wifi)
+            else:
+                os.system("ifconfig wlan0 down")
             
             
     def set_network_priority(self):

@@ -162,18 +162,32 @@ class NetworkSettings():
                     os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
                 else:
                     try:
-                        network_info = psutil.net_if_addrs()["wlan0"]
-                        for info in network_info:
-                            if info.family == psutil.AF_INET:
-                                self.application.settings.wifiSettings.ip = info.address
-                                self.application.settings.wifiSettings.netmask = info.netmask
+                        addresses = psutil.net_if_addrs()
+                        if "wlan0" in addresses:
+                            for address in addresses["wlan0"]:
+                                if address.family == socket.AF_INET:
+                                    self.application.settings.wifiSettings.ip = address.address
                     except Exception as e:
-                        print(f'Hata: {e}')
+                        print( "ip" ,e)
+                
                     try:
-                        gateway = psutil.net_if_stats()
-                        self.application.settings.wifiSettings.gateway = gateway['default']['gateway']
+                        proc = subprocess.Popen(['ifconfig', "wlan0"], stdout=subprocess.PIPE)
+                        output, _ = proc.communicate()
+                        netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
+                        if netmask:
+                            self.application.settings.wifiSettings.netmask = str(netmask.group(1))
                     except Exception as e:
-                        print(f'Hata: {e}')
+                        print( "netmask" ,e)
+                    
+                    
+                    try:
+                        proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
+                        output, _ = proc.communicate()
+                        gateway = re.search(r'wlan0.*?default via (\d+\.\d+\.\d+\.\d+)', str(output))
+                        if gateway:
+                            self.application.settings.wifiSettings.gateway = str(gateway.group(1))
+                    except Exception as e:
+                        print( "gateway" ,e)
 
                 os.system("nmcli connection up wifi_connection")
             else:
@@ -222,6 +236,9 @@ class NetworkSettings():
                 os.system("ifmetric ppp0 700")
                 print("*** ifmetric ppp0 700")
         print("************* - ************\n")
+    
+        
+        
             
         
 

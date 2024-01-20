@@ -99,12 +99,6 @@ class NetworkSettings():
                 setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
                 os.system(setDns)
                 os.system('nmcli con up "static-eth1" ifname eth1')
-        else:
-            pass
-            # if dnsEnable == "True":
-            #     setDns = 'nmcli con modify "eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)       bunu kesinlikle yapma hatayı buluna kadar canım çıktı
-            #     os.system(setDns)
-            #     os.system('nmcli con up "eth1" ifname eth1')
           
     def set_4G(self):
         connection_name = "ppp0"
@@ -137,15 +131,21 @@ class NetworkSettings():
         netmask = self.application.settings.wifiSettings.netmask
         gateway = self.application.settings.wifiSettings.gateway
         
+        print("\n************* Wifi Configration ************")
+        print(f"*** wifiEnable {wifiEnable}")
+        print(f"*** mod {mod}")
+        print(f"*** ssid {ssid}")
+        print(f"*** password {password}")
+        print(f"*** encryptionType {encryptionType}")
+        print(f"*** wifidhcpcEnable {wifidhcpcEnable}")
+        print(f"*** ip {ip}")
+        print(f"*** netmask {netmask}")
+        print("************* - ************\n")
+        
         if mod == "AP":
             subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
         else:
             if wifiEnable=="True":
-                # os.system("nmcli con delete HelperBox")
-                # os.system("nmcli radio wifi on")
-                # set_wifi = 'nmcli dev wifi connect {0} password {1} ifname wlan0'.format(ssid,password)
-                # os.system(set_wifi)
-                
                 netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                 netmask_prefix_length = netmask_obj.prefixlen
                 os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")

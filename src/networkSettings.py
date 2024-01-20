@@ -115,6 +115,9 @@ class NetworkSettings():
             os.system(add_connection_string)
         else:
             os.system("nmcli connection delete ppp0")
+            
+        os.system("systemctl restart NetworkManager")
+        
         
     def set_wifi(self):
         wifiEnable = self.application.settings.wifiSettings.wifiEnable
@@ -174,6 +177,7 @@ class NetworkSettings():
             elif third == "4G":
                 os.system("ifmetric ppp0 700")
                 print("*** ifmetric ppp0 700")
+        print("************* - ************\n")
             
         
 

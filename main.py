@@ -62,14 +62,6 @@ class Application():
         self.softwareSettings.set_dns()
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         self.softwareSettings.set_functions_enable()
-        print("main *****************************************************")
-        
-        
-        # ethernetEnable = True
-        # ip = "192.168.1.70"
-        # netmask = "255.255.255.0"
-        # gateway = "192.168.1.1"
-        # self.softwareSettings.set_eth(ethernetEnable,ip,netmask,gateway)
         
         while self.config.config_writed == False:
             time.sleep(0.01)
@@ -131,7 +123,7 @@ class Application():
             # self.settings.ocppSettings.authorizationKey 
             # self.settings.ocppSettings.path 
             
-            async with websockets.connect("ws://" +  + "192.168.1.201:9000/" + "HCAC12345", subprotocols=[self.ocpp_subprotocols.value]) as ws:
+            async with websockets.connect("ws://" + "192.168.1.201:9000/" + "HCAC12345", subprotocols=[self.ocpp_subprotocols.value]) as ws:
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
@@ -148,7 +140,6 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        print("Application ------------------------")
         while True:
             if app.cardType == CardType.BillingCard:
                 res = loop.run_until_complete(app.ocppStart())

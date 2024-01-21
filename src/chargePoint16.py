@@ -107,7 +107,10 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
-                await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
+                if self.application.availability == AvailabilityType.operative:
+                    await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
+                else:
+                    await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable)
                 await self.send_heartbeat(response.interval)
             return response
         except Exception as e:
@@ -344,6 +347,9 @@ class ChargePoint16(cp):
         """
         try :
             timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            
+            if self.application.availability == AvailabilityType.inoperative:
+                status = ChargePointStatus.unavailable
             
             request = call.StatusNotificationPayload(
                 connector_id,

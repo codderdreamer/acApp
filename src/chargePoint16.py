@@ -443,8 +443,10 @@ class ChargePoint16(cp):
         try :
             if type == AvailabilityType.operative:
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
+                self.application.databaseModule.set_availability(AvailabilityType.operative.value)
             elif type == AvailabilityType.inoperative:
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable),self.application.loop)
+                self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
             print(e)
 

@@ -514,4 +514,23 @@ class DatabaseModule():
             self.application.settings.firmwareVersion.version = version
         except Exception as e:
             print(e)
+            
+    def set_availability(self,availability):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            value = (availability,"availability")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            if availability == AvailabilityType.operative.value:
+                self.application.availability = AvailabilityType.operative
+            elif availability == AvailabilityType.inoperative.value:
+                self.application.availability = AvailabilityType.inoperative
+        except Exception as e:
+            print(e)
     

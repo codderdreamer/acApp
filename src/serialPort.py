@@ -482,8 +482,9 @@ class SerialPort():
             print("get_response_pid_rfid",data)
             card_id = ""
             card_id_length = int(data[7] + data[8])
-            for i in range(9,9+card_id_length+1):
-                card_id += data[i]
+            if card_id_length > 0:
+                for i in range(9,9+card_id_length+1):
+                    card_id += data[i]
             print("Okunan kart id: ",card_id)
 
     def read(self):

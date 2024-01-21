@@ -486,6 +486,9 @@ class SerialPort():
                 for i in range(9,9+card_id_length+1):
                     card_id += data[i]
             print("Okunan kart id: ",card_id)
+            if card_id != "":
+                self.application.ev.card_id = card_id
+                self.set_command_pid_rfid()
 
     def read(self):
         while True:

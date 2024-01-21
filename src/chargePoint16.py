@@ -57,9 +57,14 @@ class ChargePoint16(cp):
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             self.authorize = response.id_tag_info['status']
+            if self.authorize == AuthorizationStatus.accepted:
+                self.application.serialPort.set_command_pid_led_control(LedState.RfidVerified)
+            else:
+                self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
             return response
         except Exception as e:
             print(e)
+            self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(

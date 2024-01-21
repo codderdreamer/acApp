@@ -1,6 +1,7 @@
 from src.enums import *
 from threading import Thread
 import time
+import asyncio
 
 class EV():
     def __init__(self,application):
@@ -104,8 +105,18 @@ class EV():
     @card_id.setter
     def card_id(self, value):
         
-        
+        if (self.__card_id != value) and (value != None) and (value != ""):
+            if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+                self.application.chargePoint.authorize = None
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = self.__card_id),self.application.loop)
+            elif (self.application.cardType == CardType.StartStopCard):
+                # Local cardlarda var mı database bak...
+                pass
         self.__card_id = value
+                
+            
+
+        
         
         
         

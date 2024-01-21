@@ -1,5 +1,7 @@
 import sqlite3
 import time
+from ocpp.v16.enums import *
+
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
@@ -183,6 +185,24 @@ class DatabaseModule():
             data_dict[row[0]] = row[1]
         print("get_firmware_version",data_dict,"\n")
         self.application.settings.firmwareVersion.version = data_dict["version"]
+        
+    def get_availability(self):
+        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+        self.cursor = self.settings_database.cursor()
+        data_dict = {}
+        query = "SELECT * FROM device_settings"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        self.settings_database.close()
+        for row in data:
+            data_dict[row[0]] = row[1]
+        print("device_settings",data_dict,"\n")
+        if data_dict["availability"] == AvailabilityType.operative.value:
+            self.application.availability = AvailabilityType.operative
+        elif data_dict["availability"] == AvailabilityType.inoperative.value:
+            self.application.availability = AvailabilityType.inoperative
+        else:
+            self.application.availability = AvailabilityType.operative
         
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):

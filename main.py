@@ -21,11 +21,14 @@ class Application():
         self.loop = loop
         self.chargePoint = None
         
+        self.availability = AvailabilityType.operative
+        
         self.ocppActive = True
         self.cardType = CardType.BillingCard
         self.__deviceState = None
         self.socketType = SocketType.Type2
         self.max_current = 63
+        
         self.control_A_B_C = False
         self.control_C_B = False
         self.meter_values_on = False
@@ -51,6 +54,7 @@ class Application():
         self.databaseModule.get_timezoon_settings()
         self.databaseModule.get_firmware_version()
         self.databaseModule.get_functions_enable()
+        self.databaseModule.get_availability()
         
         self.softwareSettings.set_eth()
         self.softwareSettings.set_4G()
@@ -144,10 +148,12 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
+        print("Application ------------------------")
         while True:
             if app.cardType == CardType.BillingCard:
                 res = loop.run_until_complete(app.ocppStart())
                 print("-----------------------------------ocpp stop--------------------------------------")
+            time.sleep(1)
     except Exception as e:
         print("__main__",e)
     while True:

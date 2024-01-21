@@ -38,6 +38,7 @@ class SerialPort():
         Thread(target=self.write,daemon=True).start()
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
+        self.set_command_pid_rfid()
 
     def seri_port_test(self):
         time.sleep(5)

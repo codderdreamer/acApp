@@ -479,6 +479,7 @@ class SerialPort():
             
     def get_response_pid_rfid(self,data):
         if data[2] == self.pid_rfid:
+            print("get_response_pid_rfid",data)
             card_id = ""
             card_id_length = int(data[7] + data[8])
             for i in range(9,9+card_id_length+1):

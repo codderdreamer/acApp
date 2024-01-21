@@ -30,6 +30,8 @@ class EV():
         self.duration = None
         self.__charge = False
         
+        self.card_id = None
+        
         self.send_message_thread_start = False
         
     def send_message(self):

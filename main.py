@@ -122,7 +122,14 @@ class Application():
         
     async def ocppStart(self):
         try:
-            async with websockets.connect(self.config.ocpp_server_url + self.config.charge_point_id, subprotocols=[self.ocpp_subprotocols.value]) as ws:
+            # ocpp_url = "ws://" + 
+            # self.settings.ocppSettings.domainName 
+            # self.settings.ocppSettings.port 
+            # self.settings.ocppSettings.sslEnable 
+            # self.settings.ocppSettings.authorizationKey 
+            # self.settings.ocppSettings.path 
+            
+            async with websockets.connect("ws://" +  + "192.168.1.201:9000/" + "HCAC12345", subprotocols=[self.ocpp_subprotocols.value]) as ws:
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)

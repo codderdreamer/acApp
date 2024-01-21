@@ -29,6 +29,7 @@ class SerialPort():
         self.pid_power              = "P"   # PID_POWER		        ('P')
         self.pid_energy             = "E"   # PID_ENERGY		    ('E')
         self.pid_evse_temp          = "T"   # PID_EVSE_TEMP		    ('T')
+        self.pid_rfid               = "N"   # PID_RFID              ('N')
         
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -36,9 +37,7 @@ class SerialPort():
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
-        # Thread(target=self.seri_port_test,daemon=True).start()
-
-
+        Thread(target=self.get_command_pid_rfid,daemon=True).start()
 
     def seri_port_test(self):
         time.sleep(5)
@@ -288,7 +287,6 @@ class SerialPort():
         print("Send get_command_pid_voltage -->", send_data)
         self.send_data_list.append(send_data)
 
-
     def get_command_pid_power(self,power_type:PowerType):
         self.parameter_data = "002"
         data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
@@ -304,6 +302,28 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("Send get_command_pid_energy -->", send_data)
         self.send_data_list.append(send_data)
+
+    def set_command_pid_rfid(self):
+        '''
+        Yeni bir okuma işleminden önce Linux tarafından MCU Board’a bir kez SET komutu gönderilerek, hafızasındaki UniqID ‘nin silinmesi talep edilir
+        '''
+        self.parameter_data = "002"
+        data = self.set_command + self.pid_rfid + self.parameter_data + self.connector_id + "R"
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        print("Send set_command_pid_rfid -->", send_data)
+        self.send_data_list.append(send_data)
+        
+    def get_command_pid_rfid(self):
+        time.sleep(10)
+        while True:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_rfid + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            print("Send get_command_pid_rfid -->", send_data)
+            self.send_data_list.append(send_data)
+            time.sleep(1)
 
     #   ************************ RESPONSE  *****************************************************
 
@@ -439,7 +459,6 @@ class SerialPort():
             self.application.ev.voltage_L3 = voltage_L3
             print("voltage_L3",self.application.ev.voltage_L3)
             
-
     def get_response_pid_power(self,data):
         if data[2] == self.pid_power:
             power = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
@@ -451,6 +470,19 @@ class SerialPort():
             energy = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13] + data[14] + data[15] + data[16] + data[17])/1000
             self.application.ev.energy = energy
             print("energy",self.application.ev.energy)
+
+    def set_response_pid_rfid(self,data):
+        if data[2] == self.pid_rfid:
+            result = data[7]
+            print("Rfid Reset -->",result)
+            
+    def get_response_pid_rfid(self,data):
+        if data[2] == self.pid_rfid:
+            card_id = ""
+            card_id_length = int(data[7] + data[8])
+            for i in range(9,9+card_id_length+1):
+                card_id += data[i]
+            print("Okunan kart id: ",card_id)
 
     def read(self):
         while True:
@@ -470,11 +502,13 @@ class SerialPort():
                         self.get_response_pid_power(incoming)
                         self.get_response_pid_voltage(incoming)
                         self.get_response_pid_energy(incoming)
+                        self.get_response_pid_rfid(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_pid_cp_pwm(incoming)
                         self.set_response_pid_relay_control(incoming)
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
+                        self.set_response_pid_rfid(incoming)
                     
             except Exception as e:
                 print(e)

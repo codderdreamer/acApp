@@ -173,8 +173,7 @@ class Process():
                 time.sleep(3)
                 if self.application.deviceState != DeviceState.CHARGING:
                     break
-        
-        
+          
     def fault(self):
         print("****************************************************************** fault")
         self.application.ev.charge = False

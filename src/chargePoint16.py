@@ -598,7 +598,6 @@ class ChargePoint16(cp):
     @on(Action.RemoteStopTransaction)
     def on_remote_stop_transaction(self,transaction_id:int):
         try :
-            self.id_tag = None
             request = call.RemoteStopTransactionPayload(
                 transaction_id = transaction_id
             )

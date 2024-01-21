@@ -3,7 +3,6 @@ import websockets
 from src.chargePoint16 import ChargePoint16
 from src.configModule import Config
 from threading import Thread
-from src.ensureFutures import EnsureFutures
 from src.callbacks import OcppCallbacks
 from src.enums import *
 import time
@@ -38,7 +37,6 @@ class Application():
         self.bluetoothService = BluetoothService(self)
         self.ev = EV(self)
         self.config = Config()
-        self.ensureFutures = EnsureFutures(self)
         self.ocppCallbacks =  OcppCallbacks(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)

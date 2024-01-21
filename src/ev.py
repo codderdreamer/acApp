@@ -30,7 +30,7 @@ class EV():
         self.duration = None
         self.__charge = False
         
-        self.card_id = None
+        self.__card_id = None
         
         self.send_message_thread_start = False
         
@@ -96,6 +96,16 @@ class EV():
             self.send_message_thread_start = False
             self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
         self.__charge = value
+        
+    @property
+    def card_id(self):
+        return self.__card_id
+
+    @card_id.setter
+    def card_id(self, value):
+        
+        
+        self.__card_id = value
         
         
         

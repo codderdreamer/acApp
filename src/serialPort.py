@@ -517,6 +517,9 @@ class SerialPort():
                 print(e)
             time.sleep(0.1)
             
+# 04E2D04A0074801
+# 0485A54A0074801
+            
 
 
 		

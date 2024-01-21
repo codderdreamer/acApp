@@ -436,6 +436,16 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(e)
+            
+    @after(Action.ChangeAvailability)
+    def after_change_availability(self,connector_id: int, type: AvailabilityType):
+        try :
+            if type == AvailabilityType.operative:
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
+            elif type == AvailabilityType.inoperative:
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable),self.application.loop)
+        except Exception as e:
+            print(e)
 
     # 3. CHANGE CONFIGRATION
     @on(Action.ChangeConfiguration)

@@ -12,6 +12,7 @@ from ocpp.v16.enums import *
 from ocpp.routing import *
 from datetime import datetime
 from src.enums import *
+import os
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
 handler = logging.StreamHandler()
@@ -673,6 +674,13 @@ class ChargePoint16(cp):
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
+        except Exception as e:
+            print(e)
+            
+    @after(Action.Reset)
+    def after_reset(self,type: ResetType):
+        try :
+            os.system("reboot")
         except Exception as e:
             print(e)
 

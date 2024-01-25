@@ -23,7 +23,7 @@ class Application():
         
         self.availability = AvailabilityType.operative
         
-        self.ocppActive = True
+        self.ocppActive = False
         self.cardType = CardType.BillingCard
         self.__deviceState = None
         self.socketType = SocketType.Type2
@@ -129,6 +129,7 @@ class Application():
             print("********************************************************ocpp_url:",ocpp_url)
             
             async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
+                self.ocppActive = True
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
@@ -150,6 +151,7 @@ if __name__ == "__main__":
             if app.cardType == CardType.BillingCard:
                 print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(app.ocppStart())
+                app.ocppActive = False
                 print("-----------------------------------ocpp stop--------------------------------------")
             time.sleep(1)
     except Exception as e:

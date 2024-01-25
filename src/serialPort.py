@@ -438,37 +438,37 @@ class SerialPort():
 
     def get_response_pid_current(self,data):
         if data[2] == self.pid_current:
-            current_L1 = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
+            current_L1 = int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001
             self.application.ev.current_L1 = current_L1
             print("current_L1",self.application.ev.current_L1)
-            current_L2 = int(data[15] + data[16] + data[17] + data[18] + data[19] + data[20])/1000
+            current_L2 = int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001
             self.application.ev.current_L2 = current_L2
             print("current_L2",self.application.ev.current_L2)
-            current_L3 = int(data[22] + data[23] + data[24] + data[25] + data[26] + data[27])/1000
+            current_L3 = int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001
             self.application.ev.current_L3 = current_L3
             print("current_L3",self.application.ev.current_L3)
             
     def get_response_pid_voltage(self,data):
         if data[2] == self.pid_voltage:
-            voltage_L1 = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
+            voltage_L1 = int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01
             self.application.ev.voltage_L1 = voltage_L1
             print("voltage_L1",self.application.ev.voltage_L1)
-            voltage_L2 = int(data[15] + data[16] + data[17] + data[18] + data[19] + data[20])/1000
+            voltage_L2 = int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01
             self.application.ev.voltage_L2 = voltage_L2
             print("voltage_L2",self.application.ev.voltage_L2)
-            voltage_L3 = int(data[22] + data[23] + data[24] + data[25] + data[26] + data[27])/1000
+            voltage_L3 = int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01
             self.application.ev.voltage_L3 = voltage_L3
             print("voltage_L3",self.application.ev.voltage_L3)
             
     def get_response_pid_power(self,data):
         if data[2] == self.pid_power:
-            power = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13])/1000
+            power = int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001
             self.application.ev.power = power
             print("power",self.application.ev.power)
 
     def get_response_pid_energy(self,data):
         if data[2] == self.pid_energy:
-            energy = int(data[8] + data[9] + data[10] + data[11] + data[12] + data[13] + data[14] + data[15] + data[16] + data[17])/1000
+            energy = int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001
             self.application.ev.energy = energy
             print("energy",self.application.ev.energy)
 

@@ -159,8 +159,10 @@ class Settings():
         return json_string
     
     def get_charging(self):
-        date_obj = datetime.strptime(self.application.ev.start_date, "%d-%m-%Y %H:%M")
-        duration = time.time() - time.mktime(date_obj.timetuple())
+        duration = None
+        if self.application.ev.start_date != None or self.application.ev.start_date != "":
+            date_obj = datetime.strptime(self.application.ev.start_date, "%d-%m-%Y %H:%M")
+            duration = time.time() - time.mktime(date_obj.timetuple())
         
         command = {
                     "Command" : "Charging",

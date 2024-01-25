@@ -137,6 +137,7 @@ class Application():
                     pass
                 elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                     pass
+        
         except Exception as e:
             print("******************************************************** ocppStart",e)
 
@@ -147,6 +148,7 @@ if __name__ == "__main__":
         app = Application(loop)
         while True:
             if app.cardType == CardType.BillingCard:
+                print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(app.ocppStart())
                 print("-----------------------------------ocpp stop--------------------------------------")
             time.sleep(1)

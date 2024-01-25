@@ -128,6 +128,7 @@ class DatabaseModule():
         self.application.settings.ocppSettings.sslEnable = data_dict["sslEnable"]
         self.application.settings.ocppSettings.authorizationKey = data_dict["authorizationKey"]
         self.application.settings.ocppSettings.path = data_dict["path"]
+        self.application.settings.ocppSettings.chargePointId = data_dict["chargePointId"]
         
     def get_functions_enable(self):
         self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')

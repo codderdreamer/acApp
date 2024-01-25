@@ -125,6 +125,8 @@ class Application():
                 ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
             else:
                 ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path
+                
+            print("ocpp_url:",ocpp_url)
             
             async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value]) as ws:
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:

@@ -160,7 +160,7 @@ class Settings():
     
     def get_charging(self):
         duration = None
-        if self.application.ev.start_date != None or self.application.ev.start_date != "":
+        if self.application.ev.start_date != None and self.application.ev.start_date != "":
             date_obj = datetime.strptime(self.application.ev.start_date, "%d-%m-%Y %H:%M")
             duration = time.time() - time.mktime(date_obj.timetuple())
         

@@ -158,7 +158,7 @@ class SerialPort():
             data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("Send get_command_PID_control_pilot -->", send_data)
+            # print("Send get_command_PID_control_pilot -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(1)
 
@@ -322,7 +322,7 @@ class SerialPort():
             data = self.get_command + self.pid_rfid + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("Send get_command_pid_rfid -->", send_data)
+            # print("Send get_command_pid_rfid -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(1)
 
@@ -339,7 +339,7 @@ class SerialPort():
         '''
         if data[2] == self.pid_control_pilot:
             self.application.ev.control_pilot = data[7]
-            print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
+            # print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
             
     def get_response_pid_proximity_pilot(self,data):
         if data[2] == self.pid_proximity_pilot:
@@ -479,13 +479,12 @@ class SerialPort():
             
     def get_response_pid_rfid(self,data):
         if data[2] == self.pid_rfid:
-            print("get_response_pid_rfid",data)
             card_id = ""
             card_id_length = int(data[7] + data[8])
             if card_id_length > 0:
                 for i in range(9,9+card_id_length+1):
                     card_id += data[i]
-            print("Okunan kart id: ",card_id)
+            # print("Okunan kart id: ",card_id)
             if card_id != "":
                 self.application.ev.card_id = card_id
                 self.set_command_pid_rfid()

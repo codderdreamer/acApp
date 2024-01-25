@@ -162,14 +162,19 @@ class Settings():
         duration = None
         if self.application.ev.start_date != None and self.application.ev.start_date != "":
             date_obj = datetime.strptime(self.application.ev.start_date, "%d-%m-%Y %H:%M")
-            duration = time.time() - time.mktime(date_obj.timetuple())
+            second = int(time.time() - time.mktime(date_obj.timetuple()))
+            hour, remainder = divmod(second, 3600)
+            minute, second = divmod(remainder, 60)
+
+            # Formatlı string olarak saat:dakika:saniye
+            duration = f"{hour:02d}:{minute:02d}:{second:02d}"
         
         command = {
                     "Command" : "Charging",
                     "Data" : {
                                 "charge" : self.application.ev.charge,
                                 "start_date" : self.application.ev.start_date,
-                                "duration" : (duration),
+                                "duration" : duration,
                                 "current_L1" : self.application.ev.current_L1,
                                 "current_L2" : self.application.ev.current_L2,
                                 "current_L3" : self.application.ev.current_L3,

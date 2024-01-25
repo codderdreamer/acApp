@@ -3,6 +3,7 @@ from src.enums import *
 import asyncio
 from ocpp.v16.enums import *
 from threading import Thread
+from datetime import datetime
 
 class Process():
     def __init__(self,application) -> None:
@@ -134,6 +135,7 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
+        self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
         self.application.ev.charge = True
         
         self.application.serialPort.set_command_pid_led_control(LedState.Charging)

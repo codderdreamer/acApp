@@ -28,7 +28,7 @@ class EV():
         self.energy = None
         
         self.start_date = None
-        self.duration = None
+        
         self.__charge = False
         
         self.__card_id = None

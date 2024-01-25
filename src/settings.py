@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+import time
 
 class Settings():
     def __init__(self,application) -> None:
@@ -157,12 +159,15 @@ class Settings():
         return json_string
     
     def get_charging(self):
+        date_obj = datetime.strptime(self.application.ev.start_date, "%d-%m-%Y %H:%M")
+        duration = time.time() - time.mktime(date_obj.timetuple())
+        
         command = {
                     "Command" : "Charging",
                     "Data" : {
                                 "charge" : self.application.ev.charge,
                                 "start_date" : self.application.ev.start_date,
-                                "duration" : self.application.ev.duration,
+                                "duration" : (duration),
                                 "current_L1" : self.application.ev.current_L1,
                                 "current_L2" : self.application.ev.current_L2,
                                 "current_L3" : self.application.ev.current_L3,

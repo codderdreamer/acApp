@@ -617,8 +617,6 @@ class ChargePoint16(cp):
         except Exception as e:
             print(e)
             
-            
-            
     # 12. REMOTE STOP TRANSACTION
     @on(Action.RemoteStopTransaction)
     def on_remote_stop_transaction(self,transaction_id:int):

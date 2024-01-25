@@ -94,7 +94,8 @@ class WebSocketServer():
                 sslEnable = sjon["Data"]["sslEnable"]
                 authorizationKey = sjon["Data"]["authorizationKey"]
                 path = sjon["Data"]["path"]
-                self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path)
+                chargePointId = sjon["Data"]["chargePointId"]
+                self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path,chargePointId)
             elif(sjon["Command"] == "FunctionsEnable"):
                 card_type = str(sjon["Data"]["card_type"])
                 whether_to_open_the_qr_code_process = sjon["Data"]["whether_to_open_the_qr_code_process"]

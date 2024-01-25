@@ -100,6 +100,7 @@ class Settings():
                                 "sslEnable" : self.ocppSettings.sslEnable,
                                 "authorizationKey" : self.ocppSettings.authorizationKey,
                                 "path" : self.ocppSettings.path,
+                                "chargePointId" : self.ocppSettings.chargePointId
                             }
                 }
         json_string = json.dumps(command)
@@ -228,6 +229,7 @@ class OcppSettings():
         self.sslEnable = None
         self.authorizationKey = None
         self.path = None
+        self.chargePointId = None
         
 class FunctionsEnable():
     def __init__(self) -> None:

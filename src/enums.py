@@ -92,6 +92,9 @@ class CardType(Enum):
     and the UID of RFID card needs to be entered into the platform before swipping card for use.
     '''
 
+class SSLEnable(Enum):
+    Enable = "Enable"
+    Disable = "Disable"
 
 
 

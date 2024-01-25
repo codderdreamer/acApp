@@ -390,7 +390,7 @@ class DatabaseModule():
         except Exception as e:
             print(e)
             
-    def set_ocpp_settings(self,domainName,port,sslEnable,authorizationKey,path):
+    def set_ocpp_settings(self,domainName,port,sslEnable,authorizationKey,path,chargePointId):
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
@@ -413,6 +413,10 @@ class DatabaseModule():
             self.settings_database.commit()
             
             value = (path,"path")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (chargePointId,"chargePointId")
             self.cursor.execute(query,value)
             self.settings_database.commit()
             

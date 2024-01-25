@@ -428,6 +428,7 @@ class DatabaseModule():
             self.application.settings.ocppSettings.sslEnable = sslEnable
             self.application.settings.ocppSettings.authorizationKey = authorizationKey
             self.application.settings.ocppSettings.path = path
+            self.application.settings.ocppSettings.chargePointId = chargePointId
         except Exception as e:
             print(e)
             

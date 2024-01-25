@@ -128,7 +128,7 @@ class Application():
                 
             print("********************************************************ocpp_url:",ocpp_url)
             
-            async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],timeout=10) as ws:
+            async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,open_timeout=10) as ws:
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
                     self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)

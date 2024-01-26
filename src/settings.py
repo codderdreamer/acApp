@@ -281,5 +281,9 @@ class DeviceStatus():
         self.strenghtOf4G = None
         self.networkCard = None
         self.stateOfOcpp = None  
+
+class ACCurrent():
+    def __init__(self) -> None:
+        self.maxcurrent = None
         
         

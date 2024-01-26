@@ -151,7 +151,7 @@ class Application():
                 result_list = result.split("\n")
                 for data in result_list:
                     if "signal quality" in data:
-                        data = int(re.findall(r'\d+', data.split("signal quality:")[1]))
+                        data = re.findall(r'\d+', data.split("signal quality:")[1])
                         print(data)
                     
                     

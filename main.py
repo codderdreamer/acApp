@@ -124,20 +124,13 @@ class Application():
 
                 # result = subprocess.check_output("ifconfig", shell=True).decode()
                 # print(result)
+            
                 
-                   # 'ip addr' komutunu kullanarak ağ arayüzlerini ve durumlarını al
-                try:
-                    cikti = subprocess.check_output("ip addr", shell=True).decode('utf-8')
-                except subprocess.SubprocessError:
-                    return "Komut çalıştırılamadı."
-                aktif_arayuzler = []
-                arayuz_bloklari = cikti.split("\n\n") 
-                for blok in arayuz_bloklari:
-                    if "UP" in blok.split('\n')[0]:
-                        arayuz_adi = blok.split(':')[1].strip().split(' ')[0]
-                        aktif_arayuzler.append(arayuz_adi)
-
-                print(aktif_arayuzler) 
+                result = subprocess.check_output("ip route", shell=True).decode('utf-8')
+                print(result)
+                result_list = result.split("\n")
+                print(result_list)
+                
                 
             except Exception as e:
                 print("control_device_status",e)  

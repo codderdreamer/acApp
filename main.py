@@ -120,47 +120,43 @@ class Application():
         while True:
             try:
                 response = requests.get("http://www.google.com", timeout=5)
-                self.settings.deviceStatus.linkStatus = True if response.status_code == 200 else False
-
-                # result = subprocess.check_output("ifconfig", shell=True).decode()
-                # print(result)
-            
-                
+                self.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
                 result = subprocess.check_output("ip route", shell=True).decode('utf-8')
-                # print(result)
                 result_list = result.split("\n")
-                # print(result_list)
-                
-                eth1_metric = None
-                wlan0_metric = None
-                ppp0_metric = None
-                
+                eth1_metric = 1000
+                wlan0_metric = 1000
+                ppp0_metric = 1000
                 for data in result_list:
                     if "eth1" in data:
-                        data = int(data.split("metric")[1])
-                        eth1_metric = data
-                        
+                        eth1_metric = int(data.split("metric")[1]) 
                     elif "wlan0" in data:
-                        data = int(data.split("metric")[1])
-                        wlan0_metric = data
-                        
+                        wlan0_metric = int(data.split("metric")[1])
                     elif "ppp0" in data:
-                        data = int(data.split("metric")[1])
-                        ppp0_metric = data
-                        
-                        
-                
-                        
-                print("\n\n")
-                print("eth1:-->    ", int(eth1_metric))
-                print("wlan0:-->   ",int(wlan0_metric))
-                print("ppp0:-->   ",int(ppp0_metric))
-                        
-                
-                
+                        ppp0_metric = int(data.split("metric")[1])
+                min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
+                if min_metric == eth1_metric:
+                    self.settings.deviceStatus.networkCard = "Ethernet"
+                elif min_metric == wlan0_metric:
+                    self.settings.deviceStatus.networkCard = "Wifi"
+                elif min_metric == ppp0_metric:
+                    self.settings.deviceStatus.networkCard = "4G"
+                if self.ocppActive:
+                    self.settings.deviceStatus.stateOfOcpp = "Online"
+                else:
+                    self.settings.deviceStatus.stateOfOcpp = "Offline"
+                    
+                result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
+                result_list = result.split("\n")
+                for data in result_list:
+                    if "signal quality" in data:
+                        print(data)
+                    
+                    
+                    
+                    
             except Exception as e:
                 print("control_device_status",e)  
-            time.sleep(1)   
+            time.sleep(10)   
         
     async def ocppStart(self):
         try:

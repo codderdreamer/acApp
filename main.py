@@ -146,17 +146,12 @@ class Application():
                     self.settings.deviceStatus.stateOfOcpp = "Online"
                 else:
                     self.settings.deviceStatus.stateOfOcpp = "Offline"
-                    
                 result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
                 result_list = result.split("\n")
                 for data in result_list:
                     if "signal quality" in data:
-                        data = re.findall(r'\d+', data.split("signal quality:")[1])
-                        print(data)
-                    
-                    
-                    
-                    
+                        self.settings.deviceStatus.strenghtOf4G = re.findall(r'\d+', data.split("signal quality:")[1])[0] + "%"
+                self.webSocketServer.websocketServer.send_message_to_all(msg = self.settings.get_device_status()) 
             except Exception as e:
                 print("control_device_status",e)  
             time.sleep(10)   

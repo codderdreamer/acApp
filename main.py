@@ -139,6 +139,8 @@ class Application():
                     elif "ppp0" in data:
                         print("ppp0:-->   ",data)
                         
+                print("\n\n")
+                        
                 
                 
             except Exception as e:

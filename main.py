@@ -127,9 +127,18 @@ class Application():
             
                 
                 result = subprocess.check_output("ip route", shell=True).decode('utf-8')
-                print(result)
+                # print(result)
                 result_list = result.split("\n")
-                print(result_list)
+                # print(result_list)
+                
+                for data in result_list:
+                    if "eth1" in data:
+                        print("eth1:-->    ", data)
+                    elif "wlan0" in data:
+                        print("wlan0:-->   ",data)
+                    elif "ppp0" in data:
+                        print("ppp0:-->   ",data)
+                        
                 
                 
             except Exception as e:

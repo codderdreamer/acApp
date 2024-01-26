@@ -133,10 +133,13 @@ class Application():
                 
                 for data in result_list:
                     if "eth1" in data:
+                        data = data.split("metric")
                         print("eth1:-->    ", data)
                     elif "wlan0" in data:
+                        data = data.split("metric")
                         print("wlan0:-->   ",data)
                     elif "ppp0" in data:
+                        data = data.split("metric")
                         print("ppp0:-->   ",data)
                         
                 print("\n\n")

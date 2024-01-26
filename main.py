@@ -18,6 +18,8 @@ from ocpp.v16.enums import *
 import requests
 import subprocess
 import sys
+import re
+
 
 class Application():
     def __init__(self,loop):
@@ -149,7 +151,7 @@ class Application():
                 result_list = result.split("\n")
                 for data in result_list:
                     if "signal quality" in data:
-                        data = int(data.split("signal quality:")[1])
+                        data = int(re.findall(r'\d+', data.split("signal quality:")[1]))
                         print(data)
                     
                     

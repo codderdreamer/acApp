@@ -152,9 +152,9 @@ class Application():
                 
                         
                 print("\n\n")
-                print("eth1:-->    ", eth1_metric)
-                print("wlan0:-->   ",wlan0_metric)
-                print("ppp0:-->   ",ppp0_metric)
+                print("eth1:-->    ", int(eth1_metric))
+                print("wlan0:-->   ",int(wlan0_metric))
+                print("ppp0:-->   ",int(ppp0_metric))
                         
                 
                 

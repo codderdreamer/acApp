@@ -122,8 +122,22 @@ class Application():
                 response = requests.get("http://www.google.com", timeout=5)
                 self.settings.deviceStatus.linkStatus = True if response.status_code == 200 else False
 
-                result = subprocess.check_output("ifconfig", shell=True).decode()
-                print(result)
+                # result = subprocess.check_output("ifconfig", shell=True).decode()
+                # print(result)
+                
+                   # 'ip addr' komutunu kullanarak ağ arayüzlerini ve durumlarını al
+                try:
+                    cikti = subprocess.check_output("ip addr", shell=True).decode('utf-8')
+                except subprocess.SubprocessError:
+                    return "Komut çalıştırılamadı."
+                aktif_arayuzler = []
+                arayuz_bloklari = cikti.split("\n\n") 
+                for blok in arayuz_bloklari:
+                    if "UP" in blok.split('\n')[0]:
+                        arayuz_adi = blok.split(':')[1].strip().split(' ')[0]
+                        aktif_arayuzler.append(arayuz_adi)
+
+                print(aktif_arayuzler) 
                 
             except Exception as e:
                 print("control_device_status",e)  

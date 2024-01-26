@@ -15,6 +15,9 @@ from src.websocketServer import WebSocketServer
 from src.bluetoothService.bluetoothService import BluetoothService
 from src.process import Process
 from ocpp.v16.enums import *
+import requests
+import subprocess
+import sys
 
 class Application():
     def __init__(self,loop):
@@ -61,6 +64,7 @@ class Application():
         self.softwareSettings.set_wifi()
         self.softwareSettings.set_dns()
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
+        Thread(target=self.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
         
         while self.config.config_writed == False:
@@ -112,7 +116,18 @@ class Application():
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
                 
             
+    def control_device_status(self):
+        while True:
+            try:
+                response = requests.get("http://www.google.com", timeout=5)
+                self.settings.deviceStatus.linkStatus = True if response.status_code == 200 else False
+
+                result = subprocess.check_output("ifconfig", shell=True).decode()
+                print(result)
                 
+            except Exception as e:
+                print("control_device_status",e)  
+            time.sleep(1)   
         
     async def ocppStart(self):
         try:

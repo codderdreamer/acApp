@@ -233,7 +233,6 @@ class SoftwareSettings():
         elif card_type == CardType.BillingCard.value:
             self.application.cardType = CardType.BillingCard
         
-
         
         
         

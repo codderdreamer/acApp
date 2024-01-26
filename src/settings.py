@@ -15,6 +15,7 @@ class Settings():
         self.bluetoothSettings = BluetoothSettings()
         self.timezoonSettings = TimeZoneSettings()
         self.firmwareVersion = FirmwareVersion()
+        self.deviceStatus = DeviceStatus()
         
     def get_network_priority(self):
         command = {
@@ -188,10 +189,20 @@ class Settings():
         json_string = json.dumps(command)
         print("Gönderilen:",command)
         return json_string
-        
-        
-
-        
+    
+    def get_device_status(self):
+        command = {
+                    "Command" : "DeviceStatus",
+                    "Data" : {
+                                "linkStatus" : self.deviceStatus.linkStatus,
+                                "strenghtOf4G" : self.deviceStatus.strenghtOf4G,
+                                "networkCard" : self.deviceStatus.networkCard,
+                                "stateOfOcpp" : self.deviceStatus.stateOfOcpp
+                            }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
     
 class NetworkPriority():
     def __init__(self) -> None:
@@ -264,6 +275,11 @@ class FirmwareVersion():
     def __init__(self) -> None:
         self.version = None
         
-        
+class DeviceStatus():
+    def __init__(self) -> None:
+        self.linkStatus = None
+        self.strenghtOf4G = None
+        self.networkCard = None
+        self.stateOfOcpp = None  
         
         

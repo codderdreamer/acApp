@@ -131,16 +131,23 @@ class Application():
                 result_list = result.split("\n")
                 # print(result_list)
                 
+                eth1_metric = None
+                wlan0_metric = None
+                ppp0_metric = None
+                
                 for data in result_list:
                     if "eth1" in data:
-                        data = data.split("metric")
-                        print("eth1:-->    ", data)
+                        data = int(data.split("metric")[1])
+                        eth1_metric = data
+                        print("eth1:-->    ", eth1_metric)
                     elif "wlan0" in data:
-                        data = data.split("metric")
-                        print("wlan0:-->   ",data)
+                        data = int(data.split("metric")[1])
+                        wlan0_metric = data
+                        print("wlan0:-->   ",wlan0_metric)
                     elif "ppp0" in data:
-                        data = data.split("metric")
-                        print("ppp0:-->   ",data)
+                        data = int(data.split("metric")[1])
+                        ppp0_metric = data
+                        print("ppp0:-->   ",ppp0_metric)
                         
                 print("\n\n")
                         

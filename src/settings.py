@@ -224,7 +224,7 @@ class Settings():
                 second = sjon["Data"]["2"]
                 third = sjon["Data"]["3"]
                 self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
+                # Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
         except Exception as e:
             print(e)
@@ -238,8 +238,8 @@ class Settings():
                 password = sjon["Data"]["password"]
                 pin = sjon["Data"]["pin"]
                 self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
-                self.application.softwareSettings.set_4G()
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
+                # self.application.softwareSettings.set_4G()
+                # Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
         except Exception as e:
             print(e)
@@ -253,9 +253,9 @@ class Settings():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
-                self.application.softwareSettings.set_eth()
-                self.application.softwareSettings.set_dns()
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
+                # self.application.softwareSettings.set_eth()
+                # self.application.softwareSettings.set_dns()
+                # Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())
         except Exception as e:
             print(e)
@@ -267,7 +267,7 @@ class Settings():
                 dns1 = sjon["Data"]["DNS1"]
                 dns2 = sjon["Data"]["DNS2"]
                 self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
-                self.application.softwareSettings.set_dns()
+                # self.application.softwareSettings.set_dns()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_dns_settings())
         except Exception as e:
             print(e)
@@ -285,8 +285,8 @@ class Settings():
                 netmask = sjon["Data"]["netmask"]
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
-                self.application.softwareSettings.set_wifi()
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
+                # self.application.softwareSettings.set_wifi()
+                # Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
         except Exception as e:
             print(e)
@@ -313,7 +313,7 @@ class Settings():
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
                 self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
-                self.application.softwareSettings.set_functions_enable()
+                # self.application.softwareSettings.set_functions_enable()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())
         except Exception as e:
             print(e)

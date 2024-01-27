@@ -634,39 +634,10 @@ class FunctionsSettingsCharacteristic(Characteristic):
             self.application.settings.set_functions_enable(json_object)
         except Exception as e:
             print("FunctionsSettingsCharacteristic Write Exception:",e)
-            
-class BluetoothSettingsCharacteristic(Characteristic):
-    
-    BluetoothSettings_UUID = '12345678-1234-5678-1234-56789abcab08'
-    
-    def __init__(self, bus, index, service, application):
-        self.application = application
-        Characteristic.__init__(
-                self, bus, index,
-                self.BluetoothSettings_UUID,
-                ['read', 'write', 'writable-auxiliaries'],
-                service)
-        self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
-        
-    def ReadValue(self, options):
-        self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
-        print('BluetoothSettingsCharacteristic Read: ' + repr(self.value))
-        return self.value
 
-    def WriteValue(self, value, options):
-        print("BluetoothSettingsCharacteristic Write: ",repr(value) )
-        try:
-            byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
-            json_object = json.loads(json_string)
-            print("BluetoothSettingsCharacteristic WriteValue -->", json_object)
-            self.application.settings.set_bluetooth_settings(json_object)
-        except Exception as e:
-            print("BluetoothSettingsCharacteristic Write Exception:",e)   
-            
 class TimezoonSettingsCharacteristic(Characteristic):
     
-    TimezoonSettings_UUID = '12345678-1234-5678-1234-56789abcab09'
+    TimezoonSettings_UUID = '12345678-1234-5678-1234-56789abcab08'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -693,6 +664,36 @@ class TimezoonSettingsCharacteristic(Characteristic):
         except Exception as e:
             print("TimezoonSettingsCharacteristic Write Exception:",e)
             
+class BluetoothSettingsCharacteristic(Characteristic):
+    
+    BluetoothSettings_UUID = '12345678-1234-5678-1234-56789abcab09'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.BluetoothSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
+        print('BluetoothSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("BluetoothSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("BluetoothSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_bluetooth_settings(json_object)
+        except Exception as e:
+            print("BluetoothSettingsCharacteristic Write Exception:",e)   
+            
+
 class FirmwareSettingsCharacteristic(Characteristic):
     
     FirmwareSettings_UUID = '12345678-1234-5678-1234-56789abcab10'
@@ -722,9 +723,27 @@ class FirmwareSettingsCharacteristic(Characteristic):
         except Exception as e:
             print("FirmwareSettingsCharacteristic Write Exception:",e)
             
+class DeviceStatusSettingsCharacteristic(Characteristic):
+    
+    DeviceStatusSettings_UUID = '12345678-1234-5678-1234-56789abcab11'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.DeviceStatusSettings_UUID,
+                ['read', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_device_status().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_device_status().encode('utf-8')
+        print('DeviceStatusSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+            
 class MaxCurrentSettingsCharacteristic(Characteristic):
     
-    MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab11'
+    MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab12'
     
     def __init__(self, bus, index, service, application):
         self.application = application
@@ -751,23 +770,6 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
         except Exception as e:
             print("MaxCurrentSettingsCharacteristic Write Exception:",e)
             
-class DeviceStatusSettingsCharacteristic(Characteristic):
-    
-    DeviceStatusSettings_UUID = '12345678-1234-5678-1234-56789abcab12'
-    
-    def __init__(self, bus, index, service, application):
-        self.application = application
-        Characteristic.__init__(
-                self, bus, index,
-                self.DeviceStatusSettings_UUID,
-                ['read', 'writable-auxiliaries'],
-                service)
-        self.value = self.application.settings.get_device_status().encode('utf-8')
-        
-    def ReadValue(self, options):
-        self.value = self.application.settings.get_device_status().encode('utf-8')
-        print('DeviceStatusSettingsCharacteristic Read: ' + repr(self.value))
-        return self.value
 
             
 class TestService(Service):

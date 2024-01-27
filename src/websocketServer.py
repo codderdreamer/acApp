@@ -30,6 +30,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_timezoon_settings())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
             except Exception as e:
                 print("could not get New Client id",e)
                 
@@ -124,7 +125,10 @@ class WebSocketServer():
                 version = str(sjon["Data"]["version"])
                 self.application.databaseModule.set_firmware_version(version)
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
-        
+            elif(sjon["Command"] == "ACCurrent"):
+                maxcurrent = str(sjon["Data"]["maxcurrent"])
+                self.application.databaseModule.set_max_current(version)
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
         except Exception as e:
             print("MessageReceivedws",e)
         

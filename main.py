@@ -60,6 +60,7 @@ class Application():
         self.databaseModule.get_firmware_version()
         self.databaseModule.get_functions_enable()
         self.databaseModule.get_availability()
+        self.databaseModule.get_max_current()
         
         self.softwareSettings.set_eth()
         self.softwareSettings.set_4G()

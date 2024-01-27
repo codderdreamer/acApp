@@ -204,6 +204,18 @@ class Settings():
         print("Gönderilen:",command)
         return json_string
     
+    def get_maxcurrent(self):
+        command = {
+                    "Command": "ACCurrent",
+                    "Data": {
+                                "maxcurrent": self.application.max_current
+                    }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
+        
+    
 class NetworkPriority():
     def __init__(self) -> None:
         self.enableWorkmode = None

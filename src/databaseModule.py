@@ -204,7 +204,19 @@ class DatabaseModule():
             self.application.availability = AvailabilityType.inoperative
         else:
             self.application.availability = AvailabilityType.operative
-        
+     
+    def get_max_current(self):
+        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+        self.cursor = self.settings_database.cursor()
+        data_dict = {}
+        query = "SELECT * FROM device_settings"
+        self.cursor.execute(query)
+        data = self.cursor.fetchall()
+        self.settings_database.close()
+        for row in data:
+            data_dict[row[0]] = row[1]
+            
+        self.application.max_current = int(data_dict["maxcurrent"])
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
@@ -537,6 +549,23 @@ class DatabaseModule():
                 self.application.availability = AvailabilityType.operative
             elif availability == AvailabilityType.inoperative.value:
                 self.application.availability = AvailabilityType.inoperative
+        except Exception as e:
+            print(e)
+            
+    def set_max_current(self,maxcurrent):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            value = (maxcurrent,"maxcurrent")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.max_current = maxcurrent
+            
         except Exception as e:
             print(e)
     

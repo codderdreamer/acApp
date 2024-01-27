@@ -422,6 +422,14 @@ class SoftwareSettingsService(Service):
         self.add_characteristic(SettingsFourGCharacteristic(bus, 1, self, application))
         self.add_characteristic(EthernetSettingsCharacteristic(bus, 2, self, application))
         self.add_characteristic(DNSSettingsCharacteristic(bus, 3, self, application))
+        self.add_characteristic(WifiSettingsCharacteristic(bus, 4, self, application))
+        self.add_characteristic(OcppSettingsCharacteristic(bus, 5, self, application))
+        self.add_characteristic(FunctionsSettingsCharacteristic(bus, 6, self, application))
+        self.add_characteristic(BluetoothSettingsCharacteristic(bus, 7, self, application))
+        self.add_characteristic(TimezoonSettingsCharacteristic(bus, 8, self, application))
+        self.add_characteristic(FirmwareSettingsCharacteristic(bus, 9, self, application))
+        self.add_characteristic(MaxCurrentSettingsCharacteristic(bus, 10, self, application))
+        self.add_characteristic(DeviceStatusSettingsCharacteristic(bus, 11, self, application))
         
 class NetworkPriorityCharacteristic(Characteristic):
     

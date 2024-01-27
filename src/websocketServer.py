@@ -127,7 +127,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
             elif(sjon["Command"] == "ACCurrent"):
                 maxcurrent = str(sjon["Data"]["maxcurrent"])
-                self.application.databaseModule.set_max_current(version)
+                self.application.databaseModule.set_max_current(maxcurrent)
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
         except Exception as e:
             print("MessageReceivedws",e)

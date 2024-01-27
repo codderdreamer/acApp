@@ -23,6 +23,7 @@
     "Command" : "EthernetSettings",
     "Data" : {
                 "ethernetEnable" : true,
+                "dhcpcEnable" : false,
                 "ip" : "89.32.117.63",
                 "netmask" : "255.255.255.0",
                 "gateway" : "89.32.117.1"
@@ -45,7 +46,72 @@
                 "mod" : "AP",
                 "ssid" : "HeraNet",
                 "password" : "Hera2023*",
-                "encryptionType" : "wpa"
+                "encryptionType" : "wpa",
+                "wifidhcpcEnable" : true,
+                "ip" : "89.32.117.63",
+                "netmask" : "255.255.255.0",
+                "gateway" : "89.32.117.1"
+            }
+}
+
+{
+    "Command" : "OcppSettings",
+    "Data" : {
+                "domainName" : "34.16.180.181",
+                "port" : "9000",
+                "sslEnable" : "Disable",
+                "authorizationKey" : "",
+                "path" : "/",
+                "chargePointId" : "HCAC12345"
             }
 }
     
+{
+    "Command" : "FunctionsEnable",
+    "Data" : {
+                "card_type" : "BillingCard",
+                "whether_to_open_the_qr_code_process" : "no",
+                "local_startup_whether_to_go_ocpp_background" : "yes",
+                "whether_to_transfer_private_data" : "no"
+            }
+}
+
+{
+    "Command" : "TimeZoneSettings",
+    "Data" : {
+                "timezone" : "Europe/Istanbul"
+            }
+}
+
+{
+    "Command" : "BluetoothSettings",
+    "Data" : {
+                "bluetooth_enable" : "Enable",
+                "pin" : "0000",
+                "bluetooth_name" : ""
+            }
+}
+
+{
+    "Command" : "FirmwareVersion",
+    "Data" : {
+                "version" : "v1.0.5"
+            }
+}
+
+{
+    "Command" : "DeviceStatus",
+    "Data" : {
+                "linkStatus" : "Online",
+                "strenghtOf4G" : "100%",
+                "networkCard" : "Ethernet",
+                "stateOfOcpp" : "Offline"
+            }
+}
+
+{
+    "Command": "ACCurrent",
+    "Data": {
+                "maxcurrent": 30
+    }
+}

@@ -44,91 +44,27 @@ class WebSocketServer():
         try:
             sjon = json.loads(message)
             print(sjon)
-            if(sjon["Command"] == "NetworkPriority"):
-                enableWorkmode = str(sjon["Data"]["enableWorkmode"])
-                first = sjon["Data"]["1"]
-                second = sjon["Data"]["2"]
-                third = sjon["Data"]["3"]
-                self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
-            elif(sjon["Command"] == "4GSettings"):
-                enableModification = str(sjon["Data"]["enableModification"])
-                apn = sjon["Data"]["apn"]
-                user = sjon["Data"]["user"]
-                password = sjon["Data"]["password"]
-                pin = sjon["Data"]["pin"]
-                self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
-                self.application.softwareSettings.set_4G()
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
-            elif(sjon["Command"] == "EthernetSettings"):
-                ethernetEnable = str(sjon["Data"]["ethernetEnable"])
-                dhcpcEnable = str(sjon["Data"]["dhcpcEnable"])
-                ip = sjon["Data"]["ip"]
-                netmask = sjon["Data"]["netmask"]
-                gateway = sjon["Data"]["gateway"]
-                self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
-                self.application.softwareSettings.set_eth()
-                self.application.softwareSettings.set_dns()
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())
-            elif(sjon["Command"] == "DNSSettings"):
-                dnsEnable = str(sjon["Data"]["dnsEnable"])
-                dns1 = sjon["Data"]["DNS1"]
-                dns2 = sjon["Data"]["DNS2"]
-                self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
-                self.application.softwareSettings.set_dns()
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_dns_settings())
-            elif(sjon["Command"] == "WifiSettings"):
-                wifiEnable = str(sjon["Data"]["wifiEnable"])
-                mod = sjon["Data"]["mod"]
-                ssid = sjon["Data"]["ssid"]
-                password = sjon["Data"]["password"]
-                encryptionType = sjon["Data"]["encryptionType"]
-                wifidhcpcEnable = str(sjon["Data"]["wifidhcpcEnable"])
-                ip = sjon["Data"]["ip"]
-                netmask = sjon["Data"]["netmask"]
-                gateway = sjon["Data"]["gateway"]
-                self.application.databaseModule.set_wifi_settings(wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway)
-                self.application.softwareSettings.set_wifi()
-                Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
-            elif(sjon["Command"] == "OcppSettings"):
-                domainName = str(sjon["Data"]["domainName"])
-                port = sjon["Data"]["port"]
-                sslEnable = sjon["Data"]["sslEnable"]
-                authorizationKey = sjon["Data"]["authorizationKey"]
-                path = sjon["Data"]["path"]
-                chargePointId = sjon["Data"]["chargePointId"]
-                self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path,chargePointId)
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_ocpp_settings())
-            elif(sjon["Command"] == "FunctionsEnable"):
-                card_type = str(sjon["Data"]["card_type"])
-                whether_to_open_the_qr_code_process = sjon["Data"]["whether_to_open_the_qr_code_process"]
-                local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
-                whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
-                self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
-                self.application.softwareSettings.set_functions_enable()
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())
-            elif(sjon["Command"] == "BluetoothSettings"):
-                bluetooth_enable = str(sjon["Data"]["bluetooth_enable"])
-                pin = sjon["Data"]["pin"]
-                bluetooth_name = sjon["Data"]["bluetooth_name"]
-                self.application.databaseModule.set_bluetooth_settings(bluetooth_enable,pin,bluetooth_name)
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_bluetooth_settings())
-            elif(sjon["Command"] == "TimeZoneSettings"):
-                timezone = str(sjon["Data"]["timezone"])
-                self.application.databaseModule.set_timezone_settings(timezone)
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_timezoon_settings())
-            elif(sjon["Command"] == "FirmwareVersion"):
-                version = str(sjon["Data"]["version"])
-                self.application.databaseModule.set_firmware_version(version)
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
-            elif(sjon["Command"] == "ACCurrent"):
-                maxcurrent = str(sjon["Data"]["maxcurrent"])
-                self.application.databaseModule.set_max_current(maxcurrent)
-                self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
+            self.application.settings.set_network_priority(sjon)
+            self.application.settings.set_Settings4G(sjon)
+            self.application.settings.set_ethernet_settings(sjon)
+            self.application.settings.set_dns_settings(sjon)
+            self.application.settings.set_wifi_settings(sjon)
+            self.application.settings.set_ocpp_settings(sjon)
+            self.application.settings.set_functions_enable(sjon)
+            self.application.settings.set_bluetooth_settings(sjon)
+            self.application.settings.set_timezoon_settings(sjon)
+            self.application.settings.set_firmware_version(sjon)
+            self.application.settings.set_maxcurrent(sjon)
+            
+          
+          
+   
+            
+            
+            
+            
+            
+            
         except Exception as e:
             print("MessageReceivedws",e)
             

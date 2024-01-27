@@ -67,7 +67,6 @@ class ApplicationBluetooth(dbus.service.Object):
 
         return response
 
-
 class Service(dbus.service.Object):
     """
     org.bluez.GattService1 interface implementation
@@ -449,12 +448,7 @@ class NetworkPriorityCharacteristic(Characteristic):
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             print("NetworkPriorityCharacteristic WriteValue -->", json_object)
-            if(json_object["Command"]=="NetworkPriority"):
-                enableWorkmode = str(json_object["Data"]["enableWorkmode"])
-                first = json_object["Data"]["1"]
-                second = json_object["Data"]["2"]
-                third = json_object["Data"]["3"]
-                self.application.databaseModule.set_network_priority(enableWorkmode,first,second,third)
+            self.application.settings.set_network_priority(json_object)
         except Exception as e:
             print("NetworkPriorityCharacteristic Write Exception:",e)
             
@@ -483,13 +477,7 @@ class SettingsFourGCharacteristic(Characteristic):
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             print("SettingsFourGCharacteristic WriteValue -->", json_object)
-            if(json_object["Command"]=="4GSettings"):
-                enableModification = str(json_object["Data"]["enableModification"])
-                apn = json_object["Data"]["apn"]
-                user = json_object["Data"]["user"]
-                password = json_object["Data"]["password"]
-                pin = json_object["Data"]["pin"]
-                self.application.databaseModule.set_settings_4g(apn,user,password,enableModification,pin)
+            self.application.settings.set_Settings4G(json_object)
         except Exception as e:
             print("Settings4GCharacteristic Write Exception:",e)
 
@@ -519,12 +507,7 @@ class EthernetSettingsCharacteristic(Characteristic):
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             print("EthernetSettingsCharacteristic WriteValue -->", json_object)
-            if(json_object["Command"]=="EthernetSettings"):
-                ethernetEnable = str(json_object["Data"]["ethernetEnable"])
-                ip = json_object["Data"]["ip"]
-                netmask = json_object["Data"]["netmask"]
-                gateway = json_object["Data"]["gateway"]
-                self.application.databaseModule.set_ethernet_settings(ethernetEnable,ip,netmask,gateway)
+            self.application.settings.set_ethernet_settings(json_object)
         except Exception as e:
             print("EthernetSettingsCharacteristic Write Exception:",e)
 
@@ -553,14 +536,232 @@ class DNSSettingsCharacteristic(Characteristic):
             json_string = byte_array.decode('utf-8')
             json_object = json.loads(json_string)
             print("DNSSettingsCharacteristic WriteValue -->", json_object)
-            if(json_object["Command"]=="DNSSettings"):
-                dnsEnable = str(json_object["Data"]["dnsEnable"])
-                dns1 = json_object["Data"]["DNS1"]
-                dns2 = json_object["Data"]["DNS2"]
-                self.application.databaseModule.set_dns_settings(dnsEnable,dns1,dns2)
+            self.application.settings.set_dns_settings(json_object)
         except Exception as e:
             print("DNSSettingsCharacteristic Write Exception:",e)
+            
+class WifiSettingsCharacteristic(Characteristic):
+    
+    WifiSettings_UUID = '12345678-1234-5678-1234-56789abcab05'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.WifiSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_wifi_settings().encode('utf-8')
         
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_wifi_settings().encode('utf-8')
+        print('WifiSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("WifiSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("WifiSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_wifi_settings(json_object)
+        except Exception as e:
+            print("WifiSettingsCharacteristic Write Exception:",e)
+            
+class OcppSettingsCharacteristic(Characteristic):
+    
+    OcppSettings_UUID = '12345678-1234-5678-1234-56789abcab06'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.OcppSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_ocpp_settings().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_ocpp_settings().encode('utf-8')
+        print('OcppSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("OcppSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("OcppSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_ocpp_settings(json_object)
+        except Exception as e:
+            print("OcppSettingsCharacteristic Write Exception:",e)
+            
+class FunctionsSettingsCharacteristic(Characteristic):
+    
+    FunctionsSettings_UUID = '12345678-1234-5678-1234-56789abcab07'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.FunctionsSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_functions_enable().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_functions_enable().encode('utf-8')
+        print('FunctionsSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("FunctionsSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("FunctionsSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_functions_enable(json_object)
+        except Exception as e:
+            print("FunctionsSettingsCharacteristic Write Exception:",e)
+            
+class BluetoothSettingsCharacteristic(Characteristic):
+    
+    BluetoothSettings_UUID = '12345678-1234-5678-1234-56789abcab08'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.BluetoothSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
+        print('BluetoothSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("BluetoothSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("BluetoothSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_bluetooth_settings(json_object)
+        except Exception as e:
+            print("BluetoothSettingsCharacteristic Write Exception:",e)   
+            
+class TimezoonSettingsCharacteristic(Characteristic):
+    
+    TimezoonSettings_UUID = '12345678-1234-5678-1234-56789abcab09'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.TimezoonSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_timezoon_settings().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_timezoon_settings().encode('utf-8')
+        print('TimezoonSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("TimezoonSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("TimezoonSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_timezoon_settings(json_object)
+        except Exception as e:
+            print("TimezoonSettingsCharacteristic Write Exception:",e)
+            
+class FirmwareSettingsCharacteristic(Characteristic):
+    
+    FirmwareSettings_UUID = '12345678-1234-5678-1234-56789abcab10'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.FirmwareSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_firmware_version().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_firmware_version().encode('utf-8')
+        print('FirmwareSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("FirmwareSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("FirmwareSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_firmware_version(json_object)
+        except Exception as e:
+            print("FirmwareSettingsCharacteristic Write Exception:",e)
+            
+class MaxCurrentSettingsCharacteristic(Characteristic):
+    
+    MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab11'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.MaxCurrentSettings_UUID,
+                ['read', 'write', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_maxcurrent().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_maxcurrent().encode('utf-8')
+        print('MaxCurrentSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print("MaxCurrentSettingsCharacteristic Write: ",repr(value) )
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_maxcurrent(json_object)
+        except Exception as e:
+            print("MaxCurrentSettingsCharacteristic Write Exception:",e)
+            
+class DeviceStatusSettingsCharacteristic(Characteristic):
+    
+    DeviceStatusSettings_UUID = '12345678-1234-5678-1234-56789abcab12'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.DeviceStatusSettings_UUID,
+                ['read', 'writable-auxiliaries'],
+                service)
+        self.value = self.application.settings.get_device_status().encode('utf-8')
+        
+    def ReadValue(self, options):
+        self.value = self.application.settings.get_device_status().encode('utf-8')
+        print('DeviceStatusSettingsCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+            
 class TestService(Service):
     """
     Dummy test service that provides characteristics and descriptors that
@@ -604,8 +805,6 @@ class TestCharacteristic(Characteristic):
         value_str = bytes(value).decode('utf-8')
         print(f'Value received in UTF-8 format: {value_str}')
 
-
-
 class TestDescriptor(Descriptor):
     """
     Dummy test descriptor. Returns a static value.
@@ -624,7 +823,6 @@ class TestDescriptor(Descriptor):
         return [
                 dbus.Byte('T'), dbus.Byte('e'), dbus.Byte('s'), dbus.Byte('t')
         ]
-
 
 class CharacteristicUserDescriptionDescriptor(Descriptor):
     """
@@ -696,7 +894,6 @@ class TestEncryptDescriptor(Descriptor):
                 dbus.Byte('T'), dbus.Byte('e'), dbus.Byte('s'), dbus.Byte('t')
         ]
 
-
 class TestSecureCharacteristic(Characteristic):
     """
     Dummy test characteristic requiring secure connection.
@@ -723,7 +920,6 @@ class TestSecureCharacteristic(Characteristic):
         print('TestSecureCharacteristic Write: ' + repr(value))
         self.value = value
 
-
 class TestSecureDescriptor(Descriptor):
     """
     Dummy test descriptor requiring secure connection. Returns a static value.
@@ -746,11 +942,9 @@ class TestSecureDescriptor(Descriptor):
 def register_app_cb():
     print('GATT application registered')
 
-
 def register_app_error_cb(mainloop, error):
     print('Failed to register application: ' + str(error))
     mainloop.quit()
-
 
 def gatt_server_main(application, mainloop, bus, adapter_name):
     adapter = adapters.find_adapter(bus, GATT_MANAGER_IFACE, adapter_name)

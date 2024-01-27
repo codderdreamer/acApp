@@ -131,5 +131,6 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
         except Exception as e:
             print("MessageReceivedws",e)
+            
         
         

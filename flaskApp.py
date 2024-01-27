@@ -8,16 +8,36 @@ app = Flask(__name__, static_url_path='',
                   static_folder='client/build',
                   template_folder='client/build')
 
+@app.route("/")
+def hera():
+    return render_template("index.html")
+
 @app.route("/admin/dashboard")
 def dashboard():
+    return render_template("index.html")
+
+@app.route("/admin/quick-setup")
+def quick():
+    return render_template("index.html")
+
+@app.route("/admin/charging")
+def charging():
+    return render_template("index.html")
+
+@app.route("/admin/hardware")
+def hardware():
     return render_template("index.html")
 
 @app.route("/admin/software")
 def software():
     return render_template("index.html")
 
-@app.route("/")
-def hera():
+@app.route("/admin/status")
+def status():
+    return render_template("index.html")
+
+@app.route("/admin/profile")
+def profile():
     return render_template("index.html")
 
 @app.route('/get_flask_ip', methods=['GET'])

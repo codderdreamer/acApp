@@ -55,16 +55,6 @@ class WebSocketServer():
             self.application.settings.set_timezoon_settings(sjon)
             self.application.settings.set_firmware_version(sjon)
             self.application.settings.set_maxcurrent(sjon)
-            
-          
-          
-   
-            
-            
-            
-            
-            
-            
         except Exception as e:
             print("MessageReceivedws",e)
             

@@ -309,7 +309,7 @@ class HeartRateMeasurementChrc(Characteristic):
             self.service.energy_expended = \
                     min(0xffff, self.service.energy_expended + 1)
             self.hr_ee_count += 1
-            print('Updating value: ' + repr(value))
+            # print('Updating value: ' + repr(value))
             self.PropertiesChanged(GATT_CHRC_IFACE, { 'Value': value }, [])
             return self.notifying
         except Exception as e:

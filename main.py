@@ -1,7 +1,6 @@
 import asyncio
 import websockets
 from src.chargePoint16 import ChargePoint16
-from src.configModule import Config
 from threading import Thread
 from src.enums import *
 import time
@@ -18,6 +17,7 @@ import requests
 import subprocess
 import sys
 import re
+from datetime import datetime
 
 
 class Application():
@@ -43,7 +43,6 @@ class Application():
         self.webSocketServer = WebSocketServer(self)
         self.bluetoothService = BluetoothService(self)
         self.ev = EV(self)
-        self.config = Config()
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
@@ -67,11 +66,6 @@ class Application():
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         Thread(target=self.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
-        
-        while self.config.config_writed == False:
-            time.sleep(0.01)
-            
-
         
     @property
     def deviceState(self):
@@ -116,40 +110,64 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
                 
+    def ping_google(self):
+        try:
+            response = requests.get("http://www.google.com", timeout=5)
+            self.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
+        except Exception as e:
+            print(datetime.now(),"ping_google Exception:",e)
             
+    def find_network(self):
+        try:
+            result = subprocess.check_output("ip route", shell=True).decode('utf-8')
+            result_list = result.split("\n")
+            eth1_metric = 1000
+            wlan0_metric = 1000
+            ppp0_metric = 1000
+            for data in result_list:
+                if "eth1" in data:
+                    eth1_metric = int(data.split("metric")[1]) 
+                elif "wlan0" in data:
+                    wlan0_metric = int(data.split("metric")[1])
+                elif "ppp0" in data:
+                    ppp0_metric = int(data.split("metric")[1])
+            min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
+            if min_metric == eth1_metric:
+                self.settings.deviceStatus.networkCard = "Ethernet"
+            elif min_metric == wlan0_metric:
+                self.settings.deviceStatus.networkCard = "Wifi"
+            elif min_metric == ppp0_metric:
+                self.settings.deviceStatus.networkCard = "4G"
+        except Exception as e:
+            print(datetime.now(),"find_network Exception:",e)
+            
+    def find_stateOfOcpp(self):
+        try:
+            if self.ocppActive:
+                self.settings.deviceStatus.stateOfOcpp = "Online"
+            else:
+                self.settings.deviceStatus.stateOfOcpp = "Offline"
+        except Exception as e:
+            print(datetime.now(),"find_stateOfOcpp Exception:",e)
+            
+    def strenghtOf4G(self):
+        try:
+            result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
+            result_list = result.split("\n")
+            for data in result_list:
+                if "signal quality" in data:
+                    self.settings.deviceStatus.strenghtOf4G = re.findall(r'\d+', data.split("signal quality:")[1])[0] + "%"
+        except Exception as e:
+            print(datetime.now(),"strenghtOf4G Exception:",e)
+            
+              
     def control_device_status(self):
         while True:
             try:
-                response = requests.get("http://www.google.com", timeout=5)
-                self.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
-                result = subprocess.check_output("ip route", shell=True).decode('utf-8')
-                result_list = result.split("\n")
-                eth1_metric = 1000
-                wlan0_metric = 1000
-                ppp0_metric = 1000
-                for data in result_list:
-                    if "eth1" in data:
-                        eth1_metric = int(data.split("metric")[1]) 
-                    elif "wlan0" in data:
-                        wlan0_metric = int(data.split("metric")[1])
-                    elif "ppp0" in data:
-                        ppp0_metric = int(data.split("metric")[1])
-                min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
-                if min_metric == eth1_metric:
-                    self.settings.deviceStatus.networkCard = "Ethernet"
-                elif min_metric == wlan0_metric:
-                    self.settings.deviceStatus.networkCard = "Wifi"
-                elif min_metric == ppp0_metric:
-                    self.settings.deviceStatus.networkCard = "4G"
-                if self.ocppActive:
-                    self.settings.deviceStatus.stateOfOcpp = "Online"
-                else:
-                    self.settings.deviceStatus.stateOfOcpp = "Offline"
-                result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
-                result_list = result.split("\n")
-                for data in result_list:
-                    if "signal quality" in data:
-                        self.settings.deviceStatus.strenghtOf4G = re.findall(r'\d+', data.split("signal quality:")[1])[0] + "%"
+                self.ping_google()
+                self.find_network()
+                self.find_stateOfOcpp()
+                self.strenghtOf4G()
                 self.webSocketServer.websocketServer.send_message_to_all(msg = self.settings.get_device_status()) 
             except Exception as e:
                 print("control_device_status",e)  
@@ -165,21 +183,18 @@ class Application():
             if self.settings.ocppSettings.port != None or self.settings.ocppSettings.port != "":
                 ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
             else:
-                ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path
-                
+                ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path 
             print("********************************************************ocpp_url:",ocpp_url)
-            
             async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
                 self.ocppActive = True
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
-                    self.chargePoint = ChargePoint16(self,self.config.charge_point_id, ws)
+                    self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws)
                     future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
-                    await self.chargePoint.send_boot_notification(self.config.charge_point_model,self.config.charge_point_vendor)
+                    await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId,self.settings.ocppSettings.chargePointId)
                 elif self.ocpp_subprotocols == OcppVersion.ocpp20:
                     pass
                 elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                     pass
-        
         except Exception as e:
             print("******************************************************** ocppStart",e)
 
@@ -199,5 +214,3 @@ if __name__ == "__main__":
         print("__main__",e)
     while True:
         time.sleep(5)
-
-# ttyS5 rfid kart için 

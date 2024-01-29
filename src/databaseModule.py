@@ -1,16 +1,17 @@
 import sqlite3
 import time
 from ocpp.v16.enums import *
+from datetime import datetime
 
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
         
     def get_dns_settings(self):
+        data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            data_dict = {}
             query = "SELECT * FROM dns_settings"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
@@ -22,14 +23,14 @@ class DatabaseModule():
             self.application.settings.dnsSettings.DNS1 = data_dict["dns1"]
             self.application.settings.dnsSettings.DNS2 = data_dict["dns2"]
         except Exception as e:
-            print(e)
+            print(datetime.now(),"get_dns_settings Exception:",e)
         return data_dict
     
     def get_ethernet_settings(self):
+        data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            data_dict = {}
             query = "SELECT * FROM ethernet_settings"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
@@ -43,14 +44,14 @@ class DatabaseModule():
             self.application.settings.ethernetSettings.netmask = data_dict["netmask"]
             self.application.settings.ethernetSettings.gateway = data_dict["gateway"]
         except Exception as e:
-            print(e)
+            print(datetime.now(),"get_ethernet_settings Exception:",e)
         return data_dict
     
     def get_network_priority(self):
+        data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            data_dict = {}
             query = "SELECT * FROM network_priority"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
@@ -63,14 +64,14 @@ class DatabaseModule():
             self.application.settings.networkPriority.second = data_dict["second"]
             self.application.settings.networkPriority.third = data_dict["third"]
         except Exception as e:
-            print(e)
+            print(datetime.now(),"get_network_priority Exception:",e)
         return data_dict
     
     def get_settings_4g(self):
+        data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            data_dict = {}
             query = "SELECT * FROM settings_4g"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
@@ -84,14 +85,14 @@ class DatabaseModule():
             self.application.settings.settings4G.pin = data_dict["pin"]
             self.application.settings.settings4G.enableModification = data_dict["enableModification"]
         except Exception as e:
-            print(e)
+            print(datetime.now(),"get_settings_4g Exception:",e)
         return data_dict
     
     def get_wifi_settings(self):
+        data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            data_dict = {}
             query = "SELECT * FROM wifi_settings"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
@@ -109,114 +110,142 @@ class DatabaseModule():
             self.application.settings.wifiSettings.netmask = data_dict["netmask"]
             self.application.settings.wifiSettings.gateway = data_dict["gateway"]
         except Exception as e:
-            print(e)
+            print(datetime.now(),"get_wifi_settings Exception:",e)
         return data_dict
     
     def get_ocpp_settings(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM ocpp_settings"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("get_ocpp_settings",data_dict,"\n")
-        self.application.settings.ocppSettings.domainName = data_dict["domainName"]
-        self.application.settings.ocppSettings.port = data_dict["port"]
-        self.application.settings.ocppSettings.sslEnable = data_dict["sslEnable"]
-        self.application.settings.ocppSettings.authorizationKey = data_dict["authorizationKey"]
-        self.application.settings.ocppSettings.path = data_dict["path"]
-        self.application.settings.ocppSettings.chargePointId = data_dict["chargePointId"]
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM ocpp_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            print("get_ocpp_settings",data_dict,"\n")
+            self.application.settings.ocppSettings.domainName = data_dict["domainName"]
+            self.application.settings.ocppSettings.port = data_dict["port"]
+            self.application.settings.ocppSettings.sslEnable = data_dict["sslEnable"]
+            self.application.settings.ocppSettings.authorizationKey = data_dict["authorizationKey"]
+            self.application.settings.ocppSettings.path = data_dict["path"]
+            self.application.settings.ocppSettings.chargePointId = data_dict["chargePointId"]
+        except Exception as e:
+            print(datetime.now(),"get_ocpp_settings Exception:",e)
+        return data_dict
         
     def get_functions_enable(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM functions_enable"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("get_functions_enable",data_dict,"\n")
-        self.application.settings.functionsEnable.card_type = data_dict["card_type"]
-        self.application.settings.functionsEnable.whether_to_open_the_qr_code_process = data_dict["whether_to_open_the_qr_code_process"]
-        self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = data_dict["local_startup_whether_to_go_ocpp_background"]
-        self.application.settings.functionsEnable.whether_to_transfer_private_data = data_dict["whether_to_transfer_private_data"]
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM functions_enable"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            print("get_functions_enable",data_dict,"\n")
+            self.application.settings.functionsEnable.card_type = data_dict["card_type"]
+            self.application.settings.functionsEnable.whether_to_open_the_qr_code_process = data_dict["whether_to_open_the_qr_code_process"]
+            self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = data_dict["local_startup_whether_to_go_ocpp_background"]
+            self.application.settings.functionsEnable.whether_to_transfer_private_data = data_dict["whether_to_transfer_private_data"]
+        except Exception as e:
+            print(datetime.now(),"get_functions_enable Exception:",e)
+        return data_dict
     
     def get_bluetooth_settings(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM bluetooth_settings"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("get_bluetooth_settings",data_dict,"\n")
-        self.application.settings.bluetoothSettings.bluetooth_enable = data_dict["bluetooth_enable"]
-        self.application.settings.bluetoothSettings.pin = data_dict["pin"]
-        self.application.settings.bluetoothSettings.bluetooth_name = data_dict["bluetooth_name"]
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM bluetooth_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            print("get_bluetooth_settings",data_dict,"\n")
+            self.application.settings.bluetoothSettings.bluetooth_enable = data_dict["bluetooth_enable"]
+            self.application.settings.bluetoothSettings.pin = data_dict["pin"]
+            self.application.settings.bluetoothSettings.bluetooth_name = data_dict["bluetooth_name"]
+        except Exception as e:
+            print(datetime.now(),"get_bluetooth_settings Exception:",e)
+        return data_dict
         
     def get_timezoon_settings(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM timezoon_settings"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("get_timezoon_settings",data_dict,"\n")
-        self.application.settings.timezoonSettings.timezone = data_dict["timezone"]
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM timezoon_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            print("get_timezoon_settings",data_dict,"\n")
+            self.application.settings.timezoonSettings.timezone = data_dict["timezone"]
+        except Exception as e:
+            print(datetime.now(),"get_timezoon_settings Exception:",e)
+        return data_dict
         
     def get_firmware_version(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM firmware_version"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("get_firmware_version",data_dict,"\n")
-        self.application.settings.firmwareVersion.version = data_dict["version"]
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM firmware_version"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            print("get_firmware_version",data_dict,"\n")
+            self.application.settings.firmwareVersion.version = data_dict["version"]
+        except Exception as e:
+            print(datetime.now(),"get_firmware_version Exception:",e)
+        return data_dict
         
     def get_availability(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM device_settings"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("device_settings",data_dict,"\n")
-        if data_dict["availability"] == AvailabilityType.operative.value:
-            self.application.availability = AvailabilityType.operative
-        elif data_dict["availability"] == AvailabilityType.inoperative.value:
-            self.application.availability = AvailabilityType.inoperative
-        else:
-            self.application.availability = AvailabilityType.operative
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            data_dict = {}
+            query = "SELECT * FROM device_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            print("device_settings",data_dict,"\n")
+            if data_dict["availability"] == AvailabilityType.operative.value:
+                self.application.availability = AvailabilityType.operative
+            elif data_dict["availability"] == AvailabilityType.inoperative.value:
+                self.application.availability = AvailabilityType.inoperative
+            else:
+                self.application.availability = AvailabilityType.operative
+        except Exception as e:
+            print(datetime.now(),"get_availability Exception:",e)
+        return data_dict
      
     def get_max_current(self):
-        self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
-        self.cursor = self.settings_database.cursor()
         data_dict = {}
-        query = "SELECT * FROM device_settings"
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        self.settings_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-            
-        self.application.max_current = int(data_dict["maxcurrent"])
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM device_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            self.application.max_current = int(data_dict["maxcurrent"])
+        except Exception as e:
+            print(datetime.now(),"get_max_current Exception:",e)
+        return data_dict
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
@@ -242,7 +271,7 @@ class DatabaseModule():
             self.application.settings.dnsSettings.DNS1 = dns1
             self.application.settings.dnsSettings.DNS2 = dns2
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_dns_settings Exception:",e)
 
     def set_ethernet_settings(self,ethernetEnable,dhcpcEnable,ip,netmask,gateway):
         try:
@@ -278,7 +307,7 @@ class DatabaseModule():
             self.application.settings.ethernetSettings.netmask = netmask
             self.application.settings.ethernetSettings.gateway = gateway
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_ethernet_settings Exception:",e)
 
     def set_network_priority(self,enableWorkmode,first,second,third):
         try:
@@ -309,7 +338,7 @@ class DatabaseModule():
             self.application.settings.networkPriority.second = second
             self.application.settings.networkPriority.third = third
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_network_priority Exception:",e)
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:
@@ -345,7 +374,7 @@ class DatabaseModule():
             self.application.settings.settings4G.enableModification = enableModification
             self.application.settings.settings4G.pin = pin
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_settings_4g Exception:",e)
     
     def set_wifi_settings(self,wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway):
         try:
@@ -401,7 +430,7 @@ class DatabaseModule():
             self.application.settings.wifiSettings.netmask = netmask
             self.application.settings.wifiSettings.gateway = gateway
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_wifi_settings Exception:",e)
             
     def set_ocpp_settings(self,domainName,port,sslEnable,authorizationKey,path,chargePointId):
         try:
@@ -442,7 +471,7 @@ class DatabaseModule():
             self.application.settings.ocppSettings.path = path
             self.application.settings.ocppSettings.chargePointId = chargePointId
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_ocpp_settings Exception:",e)
             
     def set_functions_enable(self,card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data):
         try:
@@ -473,7 +502,7 @@ class DatabaseModule():
             self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = local_startup_whether_to_go_ocpp_background
             self.application.settings.functionsEnable.whether_to_transfer_private_data = whether_to_transfer_private_data
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_functions_enable Exception:",e)
             
     def set_bluetooth_settings(self,bluetooth_enable,pin,bluetooth_name):
         try:
@@ -499,7 +528,7 @@ class DatabaseModule():
             self.application.settings.bluetoothSettings.pin = pin
             self.application.settings.bluetoothSettings.bluetooth_name = bluetooth_name
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_bluetooth_settings Exception:",e)
             
     def set_timezone_settings(self,timezone):
         try:
@@ -515,7 +544,7 @@ class DatabaseModule():
             
             self.application.settings.timezoonSettings.timezone = timezone
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_timezone_settings Exception:",e)
             
     def set_firmware_version(self,version):
         try:
@@ -531,7 +560,7 @@ class DatabaseModule():
             
             self.application.settings.firmwareVersion.version = version
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_firmware_version Exception:",e)
             
     def set_availability(self,availability):
         try:
@@ -550,7 +579,7 @@ class DatabaseModule():
             elif availability == AvailabilityType.inoperative.value:
                 self.application.availability = AvailabilityType.inoperative
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_availability Exception:",e)
             
     def set_max_current(self,maxcurrent):
         try:
@@ -567,5 +596,5 @@ class DatabaseModule():
             self.application.max_current = maxcurrent
             
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_max_current Exception:",e)
     

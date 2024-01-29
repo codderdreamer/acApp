@@ -39,6 +39,21 @@ class SerialPort():
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
         self.set_command_pid_rfid()
+        
+        Thread(target=self.test,daemon=True).start()
+        
+        
+    def test(self):
+        while True:
+            self.set_command_pid_led_control(LedState.Charging)
+            time.sleep(0.5)
+            self.set_command_pid_led_control(LedState.StandBy)
+            time.sleep(0.5)
+            self.set_command_pid_led_control(LedState.Fault)
+            time.sleep(0.5)
+            self.set_command_pid_led_control(LedState.RfidFailed)
+            time.sleep(0.5)
+            self.set_command_pid_led_control(LedState.RfidVerified)
 
     def write(self):
         while True:

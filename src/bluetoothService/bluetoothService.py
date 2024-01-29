@@ -14,8 +14,7 @@ from threading import Thread
 from src.bluetoothService import advertising
 from src.bluetoothService import gatt_server
 import time
-
-
+from datetime import datetime
 
 class BluetoothService():
     def __init__(self,application) -> None:
@@ -27,26 +26,18 @@ class BluetoothService():
         self.mainloop = None
         Thread(target=self.run,daemon=True).start()
         
-
-        
     def run(self):
-        self.parser = argparse.ArgumentParser()
-        self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
-        self.args = self.parser.parse_args()
-        self.adapter_name = self.args.adapter_name
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-        self.bus = dbus.SystemBus()
-        self.mainloop = GObject.MainLoop()
+        try:
+            self.parser = argparse.ArgumentParser()
+            self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
+            self.args = self.parser.parse_args()
+            self.adapter_name = self.args.adapter_name
+            dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+            self.bus = dbus.SystemBus()
+            self.mainloop = GObject.MainLoop()
+            advertising.advertising_main(self.mainloop, self.bus, self.adapter_name)
+            gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
+            self.mainloop.run()
+        except Exception as e:
+            print(datetime.now(),"BluetoothService run Exception:",e)
         
-        advertising.advertising_main(self.mainloop, self.bus, self.adapter_name)
-        gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
-        
-        self.mainloop.run()
-        
-        
-        
-# bleService = BluetoothService()
-# while True:
-#     time.sleep(1)
-    
-            

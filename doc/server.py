@@ -6,7 +6,7 @@ from ocpp.routing import on
 from ocpp.v16 import ChargePoint as cp
 from ocpp.v16 import call_result
 from ocpp.v16.enums import Action, RegistrationStatus
-from ocpp.v16.datatypes import IdTagInfo
+from ocpp.v16.datatypes import *
 from ocpp.v16.enums import *
 from ocpp.v16 import call
 from threading import Thread
@@ -31,6 +31,8 @@ class ChargePoint(cp):
             elif x=="3":
                 future = self.send_cancel_reservation()
                 future.add_done_callback(self.send_cancel_reservation_callback)
+            elif x =="4":
+               future =  self.send_local_list()
 
     def send_cancel_reservation(self):
         return asyncio.ensure_future(self.send_cancel_reservation_func())
@@ -63,6 +65,18 @@ class ChargePoint(cp):
     async def send_remote_stop_func(self):
         try:
             request = call.RemoteStopTransactionPayload(1)
+            response = await self.call(request)
+        except Exception as e:
+            print(e)
+            
+    async def send_local_list(self):
+        try:
+            data = []
+            data1 = AuthorizationData(id_tag="123456677",id_tag_info=IdTagInfo(status=AuthorizationStatus.accepted))
+            data2 = AuthorizationData(id_tag="123456677",id_tag_info=IdTagInfo(status=AuthorizationStatus.accepted))
+            data.append(data1)
+            data.append(data2)
+            request = call.SendLocalListPayload(list_version=1, update_type=UpdateType.full,local_authorization_list=data)
             response = await self.call(request)
         except Exception as e:
             print(e)

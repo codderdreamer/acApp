@@ -701,6 +701,14 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(e)
+            
+    @after(Action.SendLocalList)
+    def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
+        try :
+            print(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
+            
+        except Exception as e:
+            print(e)
 
     # 16. SET CHARGING PROFILE
     @on(Action.SetChargingProfile)

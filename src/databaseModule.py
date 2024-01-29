@@ -598,3 +598,32 @@ class DatabaseModule():
         except Exception as e:
             print(datetime.now(),"set_max_current Exception:",e)
     
+    def set_local_list(self,local_list:list):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            self.cursor.execute('DELETE FROM tablo_adi;')
+            self.settings_database.commit()
+            for idTag in local_list:
+                query = '''INSERT INTO local_list (idTag) VALUES (?);'''
+                self.cursor.execute(query, (idTag))
+                self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+        except Exception as e:
+            print(datetime.now(),"set_local_list Exception:",e)
+            
+    def get_local_list(self):
+        # data = []
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM local_list"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            print("\n get_local_list",data)
+        except Exception as e:
+            print(datetime.now(),"get_bluetooth_settings Exception:",e)
+        

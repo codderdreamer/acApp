@@ -711,6 +711,8 @@ class ChargePoint16(cp):
             for data in local_authorization_list:
                 localList.append(data["id_tag"])
             print("\n\n", localList, "\n\n")
+            self.application.databaseModule.set_local_list(localList)
+            self.application.databaseModule.get_local_list()
         except Exception as e:
             print(e)
 

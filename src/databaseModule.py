@@ -602,7 +602,7 @@ class DatabaseModule():
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            self.cursor.execute('DELETE FROM tablo_adi;')
+            self.cursor.execute('DELETE FROM local_list;')
             self.settings_database.commit()
             for idTag in local_list:
                 query = '''INSERT INTO local_list (idTag) VALUES (?);'''

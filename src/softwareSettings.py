@@ -116,6 +116,12 @@ class SoftwareSettings():
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
                 print(add_connection_string)
                 os.system(add_connection_string)
+                
+                time.sleep(10)
+                proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
+                output, _ = proc.communicate()
+                inet = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
+                print("inet------>" inet)
             else:
                 os.system("nmcli connection delete ppp0")
         except Exception as e:

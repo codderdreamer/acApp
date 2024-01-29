@@ -606,16 +606,14 @@ class DatabaseModule():
             self.settings_database.commit()
             for idTag in local_list:
                 query = '''INSERT INTO local_list (idTag) VALUES (?);'''
-                self.cursor.execute(query, (idTag))
+                self.cursor.execute(query, (idTag,))
                 self.settings_database.commit()
-            
             self.settings_database.close()
-            
         except Exception as e:
             print(datetime.now(),"set_local_list Exception:",e)
             
     def get_local_list(self):
-        # data = []
+        id_tag_list = []
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
@@ -624,6 +622,9 @@ class DatabaseModule():
             data = self.cursor.fetchall()
             self.settings_database.close()
             print("\n get_local_list",data)
+            for id in data:
+                id_tag_list.append(id[0])
+            return id_tag_list
         except Exception as e:
             print(datetime.now(),"get_bluetooth_settings Exception:",e)
         

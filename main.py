@@ -59,6 +59,8 @@ class Application():
         self.databaseModule.get_availability()
         self.databaseModule.get_max_current()
         
+        self.id_tag_list = self.databaseModule.get_local_list()
+        
         self.softwareSettings.set_eth()
         self.softwareSettings.set_4G()
         self.softwareSettings.set_wifi()

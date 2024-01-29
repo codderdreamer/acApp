@@ -46,6 +46,9 @@ class ChargePoint(cp):
     def send_cancel_reservation_callback(self,future):
         result = future.result()
         print("result",result)
+        
+    def send_local_list(self):
+        return asyncio.ensure_future(self.send_local_list_func())
 
     async def send_cancel_reservation_func(self):
         try:
@@ -69,7 +72,7 @@ class ChargePoint(cp):
         except Exception as e:
             print(e)
             
-    async def send_local_list(self):
+    async def send_local_list_func(self):
         try:
             data = []
             data1 = AuthorizationData(id_tag="123456677",id_tag_info=IdTagInfo(status=AuthorizationStatus.accepted))

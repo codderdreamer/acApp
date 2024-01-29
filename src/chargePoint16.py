@@ -12,6 +12,7 @@ from ocpp.v16.enums import *
 from ocpp.routing import *
 from datetime import datetime
 from src.enums import *
+from ocpp.v16.datatypes import *
 import os
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
@@ -705,8 +706,11 @@ class ChargePoint16(cp):
     @after(Action.SendLocalList)
     def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
         try :
+            localList = []
             print(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
-            
+            for data in local_authorization_list:
+                localList.append(data["id_tag"])
+            print("\n\n", localList, "\n\n")
         except Exception as e:
             print(e)
 

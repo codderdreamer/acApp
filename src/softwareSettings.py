@@ -159,7 +159,7 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
-            self.delete_connection_type("wifi")
+            # self.delete_connection_type("wifi")
             time.sleep(5)
             if wifiEnable=="True":
                 if mod == "AP":

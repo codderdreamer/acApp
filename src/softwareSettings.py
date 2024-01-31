@@ -66,6 +66,8 @@ class SoftwareSettings():
             print(f"*** gateway {gateway}")
             print("************* - ************\n")
             
+            self.delete_connection_type("ethernet")
+            
             if ethernetEnable == "True":
                 if dhcpcEnable == "True":
                     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)

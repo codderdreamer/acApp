@@ -159,8 +159,7 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
-            # self.delete_connection_type("wifi")
-            time.sleep(5)
+            self.delete_connection_type("wifi")
             if wifiEnable=="True":
                 if mod == "AP":
                     subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True"])

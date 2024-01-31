@@ -35,10 +35,12 @@ class SoftwareSettings():
                 else:
                     process = subprocess.Popen(['nmcli', 'con', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = process.communicate()
-                    if 'static-eth1' in stdout.decode():
-                        subprocess.run(["nmcli", "con", "delete", "static-eth1"])
-                    if 'eth1' in stdout.decode():
-                        subprocess.run(["nmcli", "con", "delete", "Wired connection 1"])
+                    result = stdout.decode()
+                    print(result)
+                    # if 'static-eth1' in stdout.decode():
+                    #     subprocess.run(["nmcli", "con", "delete", "static-eth1"])
+                    # if 'eth1' in stdout.decode():
+                    #     subprocess.run(["nmcli", "con", "delete", "Wired connection 1"])
             else:
                 pass
             

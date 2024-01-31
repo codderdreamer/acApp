@@ -75,6 +75,7 @@ class Process():
                         self._lock_connector_set_control_pilot()
                         return
                     elif self.application.ev.card_id:
+                        self.id_tag = self.application.ev.card_id
                         time_start = time.time()
                         while True:
                             if self.application.chargePoint.authorize != None:

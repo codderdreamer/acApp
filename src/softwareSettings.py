@@ -120,73 +120,7 @@ class SoftwareSettings():
                 self.delete_connection_type("ethernet")
         except Exception as e:
             print(datetime.now(),"set_eth Exception:",e)
-        
-    def set_eth_old(self):
-        try:
-            ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
-            dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
-            ip = self.application.settings.ethernetSettings.ip
-            netmask = self.application.settings.ethernetSettings.netmask
-            gateway = self.application.settings.ethernetSettings.gateway
-            # print("\n************* Ethrenet Configration ************")
-            # print(f"*** ethernetEnable {ethernetEnable}")
-            # print(f"*** dhcpcEnable {dhcpcEnable}")
-            # print(f"*** ip {ip}")
-            # print(f"*** netmask {netmask}")
-            # print(f"*** gateway {gateway}")
-            # print("************* - ************\n")
-            if ethernetEnable == "True":
-                if dhcpcEnable == "True":
-                    netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
-                    netmask_prefix_length = netmask_obj.prefixlen
-                    os.system("nmcli con delete static-eth1")
-                    os.system("stty erase ^h")
-                    set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
-                    os.system(set_eth)
-                    os.system('nmcli con up "static-eth1" ifname eth1')
-                    data = {
-                        "ip" : ip
-                    }
-                    with open("/root/acApp/client/build/websocket.json", "w") as file:
-                        json.dump(data, file)
-                else:
-                    os.system("nmcli con delete static-eth1")
-            else:
-                os.system("nmcli con delete static-eth1")    
-            time.sleep(7)
-            if ethernetEnable == "True":
-                if dhcpcEnable == "False":
-                    try:
-                        self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
-                    except Exception as e:
-                        print(datetime.now(),"str(socket.gethostbyname(socket.gethostname())) Exception:",e)
-                
-                    try:
-                        proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
-                        output, _ = proc.communicate()
-                        netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
-                        if netmask:
-                            self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
-                    except Exception as e:
-                        print(datetime.now(),"subprocess.Popen(['ifconfig', 'eth1'], stdout=subprocess.PIPE) Exception:",e)
-                    
-                    try:
-                        proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
-                        output, _ = proc.communicate()
-                        gateway = re.search(r'default via (\d+\.\d+\.\d+\.\d+)', str(output))
-                        if gateway:
-                            self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
-                    except Exception as e:
-                        print(datetime.now(),"subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE) Exception:",e)
-                    
-                    data = {
-                        "ip" : self.application.settings.ethernetSettings.ip
-                    }
-                    with open("/root/acApp/client/build/websocket.json", "w") as file:
-                        json.dump(data, file)
-        except Exception as e:
-            print(datetime.now(),"set_eth Exception:",e)
-            
+         
     def set_dns(self):
         try:
             dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable

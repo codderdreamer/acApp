@@ -94,11 +94,13 @@ class Process():
         elif self.application.cardType == CardType.StartStopCard:
             time_start = time.time()
             while True:
+                print("self.application.ev.start_stop_authorize", self.application.ev.start_stop_authorize)
                 if self.application.ev.start_stop_authorize:
                     self.application.ev.start_stop_authorize = False
                     self._lock_connector_set_control_pilot()
                     break
                 if time.time() - time_start > 20:
+                    print("20 saniye doldu")
                     self.application.deviceState = DeviceState.FAULT
                     break
                 time.sleep(1)

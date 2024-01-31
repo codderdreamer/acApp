@@ -14,41 +14,39 @@ class SoftwareSettings():
     def __init__(self,application) -> None:
         self.application = application
         
-        self.get_active_ips()
+    def control_websocket_ip(self):
+        try:
+            self.get_active_ips()
+            if self.application.settings.deviceStatus.networkCard == "Ethernet":
+                self.application.settings.websocketIp = self.application.settings.networkip.eth1
+            elif self.application.settings.deviceStatus.networkCard == "Wifi":
+                self.application.settings.websocketIp = self.application.settings.networkip.wlan0
+            elif self.application.settings.deviceStatus.networkCard == "4G":
+                self.application.settings.websocketIp = self.application.settings.networkip.ppp0
+        except Exception as e:
+            print(datetime.now(),"get_active_ips Exception:",e)
         
     def get_active_ips(self):
         try:
+            eth1, ppp0, wlan0 = None, None, None
             process = subprocess.Popen(['ifconfig'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             result = stdout.decode()
-            print(result)
             data = result.split("\n")
             counter = 0
             for net in data:
                 if "eth1" in net:
-                    print(data[counter + 1].split())
-                    ip_data = data[counter + 1].split()[2]
-                    print("eth1",ip_data)
+                    eth1 = data[counter + 1].split()[1]
                 if "ppp0" in net:
-                    ip_data = data[counter + 1].split()[2]
-                    print("ppp0",ip_data)
+                    ppp0 = data[counter + 1].split()[1]
                 if "wlan0" in net:
-                    ip_data = data[counter + 1].split()[2]
-                    print("wlan0",ip_data)
+                    wlan0 = data[counter + 1].split()[1]
                 counter+=1
-        
+            self.application.settings.networkip.eth1 = eth1
+            self.application.settings.networkip.ppp0 = ppp0
+            self.application.settings.networkip.wlan0 = wlan0
         except Exception as e:
             print(datetime.now(),"get_active_ips Exception:",e)
-        
-    def set_websocket_ip(self,ip):
-        try:
-            data = {
-                    "ip" : ip
-                }
-            with open("/root/acApp/client/build/websocket.json", "w") as file:
-                json.dump(data, file)
-        except Exception as e:
-            print(datetime.now(),"set_websocket_ip Exception:",e)
         
     def get_connections(self):
         try:
@@ -373,10 +371,7 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.networkCard = "Wifi"
             elif min_metric == ppp0_metric:
                 self.application.settings.deviceStatus.networkCard = "4G"
-                proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
-                output, _ = proc.communicate()
-                ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
-                # print("ip------>" ,ip.group(1))
+            self.control_websocket_ip()
         except Exception as e:
             print(datetime.now(),"find_network Exception:",e)
             
@@ -411,6 +406,6 @@ class SoftwareSettings():
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_device_status()) 
             except Exception as e:
                 print(datetime.now(),"control_device_status Exception:",e)
-            time.sleep(10)   
+            time.sleep(10)
         
     

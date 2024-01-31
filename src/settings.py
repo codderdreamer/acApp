@@ -17,6 +17,29 @@ class Settings():
         self.timezoonSettings = TimeZoneSettings()
         self.firmwareVersion = FirmwareVersion()
         self.deviceStatus = DeviceStatus()
+        self.networkip = NeworkIP()
+        
+        self.__websocketIp = None
+        
+    @property
+    def websocketIp(self):
+        return self.__websocketIp
+
+    @websocketIp.setter
+    def websocketIp(self, value):
+        if self.__websocketIp != value:
+            self.__websocketIp = value
+            self.set_websocket_ip(value)
+            
+    def set_websocket_ip(self,ip):
+        try:
+            data = {
+                    "ip" : ip
+                }
+            with open("/root/acApp/client/build/websocket.json", "w") as file:
+                json.dump(data, file)
+        except Exception as e:
+            print(datetime.now(),"set_websocket_ip Exception:",e)
         
     def get_network_priority(self):
         command = {
@@ -439,4 +462,9 @@ class ACCurrent():
     def __init__(self) -> None:
         self.maxcurrent = None
         
+class NeworkIP():
+    def __init__(self) -> None:
+        self.eth1 = None
+        self.ppp0 = None
+        self.wlan0 = None
         

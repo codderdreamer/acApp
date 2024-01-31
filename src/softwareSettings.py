@@ -170,7 +170,7 @@ class SoftwareSettings():
             self.delete_connection_type("wifi")
             if wifiEnable=="True":
                 if mod == "AP":
-                    subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
+                    subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password,wifidhcpcEnable,ip,gateway])
                 else:
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")

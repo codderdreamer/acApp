@@ -5,17 +5,49 @@ import json
 import socket
 import subprocess
 import re
-import fcntl
-import struct
 import psutil
 from src.enums import *
 from datetime import datetime
+import requests
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
         self.application = application
         
     def set_eth(self):
+        try:
+            ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
+            dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
+            ip = self.application.settings.ethernetSettings.ip
+            netmask = self.application.settings.ethernetSettings.netmask
+            gateway = self.application.settings.ethernetSettings.gateway
+            print("\n************* Ethrenet Configration ************")
+            print(f"*** ethernetEnable {ethernetEnable}")
+            print(f"*** dhcpcEnable {dhcpcEnable}")
+            print(f"*** ip {ip}")
+            print(f"*** netmask {netmask}")
+            print(f"*** gateway {gateway}")
+            print("************* - ************\n")
+            
+            if ethernetEnable == "True":
+                if dhcpcEnable == "True":
+                    pass
+                else:
+                    process = subprocess.Popen(['nmcli', 'con', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = process.communicate()
+                    if 'static-eth1' in stdout.decode():
+                        subprocess.run(["nmcli", "con", "delete", "static-eth1"])
+                    if 'eth1' in stdout.decode():
+                        subprocess.run(["nmcli", "con", "delete", "eth1"])
+            else:
+                pass
+            
+            
+            
+        except Exception as e:
+            print(datetime.now(),"set_eth Exception:",e)
+        
+    def set_eth_old(self):
         try:
             ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
             dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
@@ -43,11 +75,9 @@ class SoftwareSettings():
                     }
                     with open("/root/acApp/client/build/websocket.json", "w") as file:
                         json.dump(data, file)
-                        # print("ip yazıldı")
                 else:
                     os.system("nmcli con delete static-eth1")
             else:
-                # print("Statik eth1 varsa siliniyor")
                 os.system("nmcli con delete static-eth1")    
             time.sleep(7)
             if ethernetEnable == "True":
@@ -80,10 +110,6 @@ class SoftwareSettings():
                     }
                     with open("/root/acApp/client/build/websocket.json", "w") as file:
                         json.dump(data, file)
-                        # print("ip yazıldı")
-                    # print(self.application.settings.ethernetSettings.ip)
-                    # print(self.application.settings.ethernetSettings.netmask)
-                    # print(self.application.settings.ethernetSettings.gateway)
         except Exception as e:
             print(datetime.now(),"set_eth Exception:",e)
             
@@ -243,6 +269,73 @@ class SoftwareSettings():
         except Exception as e:
             print(datetime.now(),"set_functions_enable Exception:",e)
         
-        
+    def ping_google(self):
+        try:
+            response = requests.get("http://www.google.com", timeout=5)
+            self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
+        except Exception as e:
+            print(datetime.now(),"ping_google Exception:",e)
+            
+    def find_network(self):
+        try:
+            result = subprocess.check_output("ip route", shell=True).decode('utf-8')
+            result_list = result.split("\n")
+            eth1_metric = 1000
+            wlan0_metric = 1000
+            ppp0_metric = 1000
+            for data in result_list:
+                if "eth1" in data:
+                    eth1_metric = int(data.split("metric")[1]) 
+                elif "wlan0" in data:
+                    wlan0_metric = int(data.split("metric")[1])
+                elif "ppp0" in data:
+                    ppp0_metric = int(data.split("metric")[1])
+            min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
+            if min_metric == eth1_metric:
+                self.application.settings.deviceStatus.networkCard = "Ethernet"
+            elif min_metric == wlan0_metric:
+                self.application.settings.deviceStatus.networkCard = "Wifi"
+            elif min_metric == ppp0_metric:
+                self.application.settings.deviceStatus.networkCard = "4G"
+                proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
+                output, _ = proc.communicate()
+                ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
+                # print("ip------>" ,ip.group(1))
+        except Exception as e:
+            print(datetime.now(),"find_network Exception:",e)
+            
+    def find_stateOfOcpp(self):
+        try:
+            if self.application.ocppActive:
+                self.application.settings.deviceStatus.stateOfOcpp = "Online"
+            else:
+                self.application.settings.deviceStatus.stateOfOcpp = "Offline"
+        except Exception as e:
+            print(datetime.now(),"find_stateOfOcpp Exception:",e)
+            pass
+            
+    def strenghtOf4G(self):
+        try:
+            result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
+            result_list = result.split("\n")
+            for data in result_list:
+                if "signal quality" in data:
+                    self.application.settings.deviceStatus.strenghtOf4G = re.findall(r'\d+', data.split("signal quality:")[1])[0] + "%"
+        except Exception as e:
+            print(datetime.now(),"strenghtOf4G Exception:",e)
+            pass
+            
+              
+    def control_device_status(self):
+        while True:
+            try:
+                self.ping_google()
+                self.find_network()
+                self.find_stateOfOcpp()
+                self.strenghtOf4G()
+                self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_device_status()) 
+            except Exception as e:
+                print(datetime.now(),"control_device_status Exception:",e)
+            time.sleep(10)   
         
     

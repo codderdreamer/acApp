@@ -13,10 +13,6 @@ from src.websocketServer import WebSocketServer
 from src.bluetoothService.bluetoothService import BluetoothService
 from src.process import Process
 from ocpp.v16.enums import *
-import requests
-import subprocess
-import sys
-import re
 from datetime import datetime
 
 
@@ -66,7 +62,7 @@ class Application():
         self.softwareSettings.set_wifi()
         self.softwareSettings.set_dns()
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
-        Thread(target=self.control_device_status,daemon=True).start()
+        Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
         
     @property
@@ -112,74 +108,7 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
                 
-    def ping_google(self):
-        try:
-            response = requests.get("http://www.google.com", timeout=5)
-            self.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
-        except Exception as e:
-            print(datetime.now(),"ping_google Exception:",e)
-            
-    def find_network(self):
-        try:
-            result = subprocess.check_output("ip route", shell=True).decode('utf-8')
-            result_list = result.split("\n")
-            eth1_metric = 1000
-            wlan0_metric = 1000
-            ppp0_metric = 1000
-            for data in result_list:
-                if "eth1" in data:
-                    eth1_metric = int(data.split("metric")[1]) 
-                elif "wlan0" in data:
-                    wlan0_metric = int(data.split("metric")[1])
-                elif "ppp0" in data:
-                    ppp0_metric = int(data.split("metric")[1])
-            min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
-            if min_metric == eth1_metric:
-                self.settings.deviceStatus.networkCard = "Ethernet"
-            elif min_metric == wlan0_metric:
-                self.settings.deviceStatus.networkCard = "Wifi"
-            elif min_metric == ppp0_metric:
-                self.settings.deviceStatus.networkCard = "4G"
-                proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
-                output, _ = proc.communicate()
-                ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
-                # print("ip------>" ,ip.group(1))
-        except Exception as e:
-            print(datetime.now(),"find_network Exception:",e)
-            
-    def find_stateOfOcpp(self):
-        try:
-            if self.ocppActive:
-                self.settings.deviceStatus.stateOfOcpp = "Online"
-            else:
-                self.settings.deviceStatus.stateOfOcpp = "Offline"
-        except Exception as e:
-            print(datetime.now(),"find_stateOfOcpp Exception:",e)
-            pass
-            
-    def strenghtOf4G(self):
-        try:
-            result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
-            result_list = result.split("\n")
-            for data in result_list:
-                if "signal quality" in data:
-                    self.settings.deviceStatus.strenghtOf4G = re.findall(r'\d+', data.split("signal quality:")[1])[0] + "%"
-        except Exception as e:
-            print(datetime.now(),"strenghtOf4G Exception:",e)
-            pass
-            
-              
-    def control_device_status(self):
-        while True:
-            try:
-                self.ping_google()
-                self.find_network()
-                self.find_stateOfOcpp()
-                self.strenghtOf4G()
-                self.webSocketServer.websocketServer.send_message_to_all(msg = self.settings.get_device_status()) 
-            except Exception as e:
-                print(datetime.now(),"control_device_status Exception:",e)
-            time.sleep(10)   
+
         
     async def ocppStart(self):
         try:

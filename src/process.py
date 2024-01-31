@@ -68,8 +68,8 @@ class Process():
             if self.application.ocppActive:
                 # ya rfid kart ile auth edecek yada remote start ile auth edecek..
                 time_start = time.time()
+                print("\nAuthorization edilmesi bekleniyor...\n")
                 while True:
-                    print("\nAuthorization edilmesi bekleniyor...\n")
                     if self.application.chargePoint.id_tag:
                         self.id_tag = self.application.chargePoint.id_tag
                         self._lock_connector_set_control_pilot()
@@ -80,7 +80,7 @@ class Process():
                             if self.application.chargePoint.authorize != None:
                                 break
                             if time.time() - time_start > 20:
-                                # print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
+                                print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
                                 self.application.deviceState = DeviceState.FAULT
                                 return
                             if self.application.deviceState != DeviceState.WAITING_AUTH:
@@ -88,7 +88,7 @@ class Process():
                         if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                             self._lock_connector_set_control_pilot()
                         else:
-                            # print("Authorizatinon kabul edilmedi !!! FAULT")
+                            print("Authorizatinon kabul edilmedi !!! FAULT")
                             self.application.deviceState = DeviceState.FAULT
                         return
                     if time.time() - time_start > 20:
@@ -96,6 +96,7 @@ class Process():
                         return
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
+                    time.sleep(1)
             else:
                 print("Ocpp Aktif değil Hata !!!")
                 self.application.deviceState = DeviceState.FAULT

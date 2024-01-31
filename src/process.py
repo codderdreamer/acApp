@@ -17,13 +17,14 @@ class Process():
             while True:
                 self.application.serialPort.get_command_pid_locker_control()
                 time.sleep(0.3)
-                print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
+                # print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
                 if self.application.ev.pid_locker_control == LockerState.Lock.value:
                     self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
                     self.application.deviceState = DeviceState.WAITING_STATE_C
                     break
                 else:
-                    print("Hata Lock Connector Çalışmadı !!!")
+                    # print("Hata Lock Connector Çalışmadı !!!")
+                    pass
                 if time.time() - time_start > 10:
                     self.application.deviceState = DeviceState.FAULT
                     break
@@ -32,7 +33,7 @@ class Process():
             self.application.deviceState = DeviceState.WAITING_STATE_C
         
     def connected(self):
-        print("****************************************************************** connected")
+        # print("****************************************************************** connected")
         self.application.ev.charge = False
         
         self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
@@ -44,7 +45,7 @@ class Process():
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         
         time.sleep(1)
-        print("&&&&&&&&&&&&&&&&&&&&",self.application.control_C_B)
+        # print("&&&&&&&&&&&&&&&&&&&&",self.application.control_C_B)
         if self.application.control_C_B:
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             return
@@ -67,7 +68,7 @@ class Process():
             self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
-        print("****************************************************************** waiting_auth")
+        # print("****************************************************************** waiting_auth")
         
         self.application.ev.charge = False
         
@@ -75,7 +76,7 @@ class Process():
             if self.application.ocppActive:
                 # ya rfid kart ile auth edecek yada remote start ile auth edecek..
                 while True:
-                    print("\nAuthorization edilmesi bekleniyor...\n")
+                    # print("\nAuthorization edilmesi bekleniyor...\n")
                     if self.application.chargePoint.id_tag:
                         self.id_tag = self.application.chargePoint.id_tag
                         self._lock_connector_set_control_pilot()
@@ -86,17 +87,18 @@ class Process():
                             if self.application.chargePoint.authorize != None:
                                 break
                             if time.time() - time_start > 20:
-                                print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
+                                # print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
                                 self.application.deviceState = DeviceState.FAULT
                                 return
                         if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                             self._lock_connector_set_control_pilot()
                         else:
-                            print("Authorizatinon kabul edilmedi !!! FAULT")
+                            # print("Authorizatinon kabul edilmedi !!! FAULT")
                             self.application.deviceState = DeviceState.FAULT
                         return
             else:
-                print("Ocpp Aktif değil Hata !!!")
+                # print("Ocpp Aktif değil Hata !!!")
+                pass
         elif self.application.cardType == CardType.StartStopCard:
             # Bu kart DB'de kayıtlı local cartlardan mı?
             # kayıtlı değilse fault
@@ -105,7 +107,7 @@ class Process():
                     
     
     def waiting_state_c(self):
-        print("****************************************************************** waiting_state_c")
+        # print("****************************************************************** waiting_state_c")
         self.application.ev.charge = False
         
         if self.application.ocppActive:
@@ -134,7 +136,7 @@ class Process():
             time.sleep(10)
             
     def charging(self):
-        print("****************************************************************** charging")
+        # print("****************************************************************** charging")
         self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
         self.application.ev.charge = True
         
@@ -148,20 +150,20 @@ class Process():
                 if self.application.chargePoint.start_transaction_result != None:
                     break
                 if time.time() - time_start > 20:
-                    print("\nStart Transaction Cevabı Gelmedi !!! FAULT\n")
+                    # print("\nStart Transaction Cevabı Gelmedi !!! FAULT\n")
                     self.application.deviceState = DeviceState.FAULT
                     return
             if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
                 pass
             else:
-                print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
+                # print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
                 self.application.deviceState = DeviceState.FAULT
                 return
                 
         time.sleep(1)
         
         if self.application.control_A_B_C != True:                               # Adan Cye geçen için
-            print("Adan Cye geçen için !!! CONNECTED")
+            # print("Adan Cye geçen için !!! CONNECTED")
             self.application.deviceState = DeviceState.CONNECTED
             return
         
@@ -183,7 +185,7 @@ class Process():
                     break
           
     def fault(self):
-        print("****************************************************************** fault")
+        # print("****************************************************************** fault")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.Fault)
         if self.application.ocppActive:
@@ -200,7 +202,7 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         
     def stopped_by_evse(self):
-        print("****************************************************************** stopped_by_evse")
+        # print("****************************************************************** stopped_by_evse")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
         if self.application.ocppActive:
@@ -213,7 +215,7 @@ class Process():
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             
     def idle(self):
-        print("****************************************************************** idle")
+        # print("****************************************************************** idle")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
         if self.application.ocppActive:
@@ -230,7 +232,7 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
     def stopped_by_user(self):
-        print("****************************************************************** stopped_by_user")
+        # print("****************************************************************** stopped_by_user")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
         if self.application.ocppActive:

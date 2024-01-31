@@ -65,7 +65,7 @@ class ChargePoint16(cp):
                 self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_authorize Exception:",e)
             self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
 
     # 2. BOOT NOTIFICATION
@@ -116,7 +116,7 @@ class ChargePoint16(cp):
                 await self.send_heartbeat(response.interval)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_boot_notification Exception:",e)
 
     # 3. DATA TRANSFER
     async def send_data_transfer(
@@ -141,7 +141,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_data_transfer Exception:",e)
 
     # 4. DIAGNOSTICS STATUS NOTIFICATION
     async def send_diagnostics_status_notification(
@@ -160,7 +160,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_diagnostics_status_notification Exception:",e)
 
     # 5. FIRMWARE STATUS NOTIFICATION
     async def send_firmware_status_notification(
@@ -179,7 +179,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_firmware_status_notification Exception:",e)
 
     # 6. HEARTBEAT
     async def send_heartbeat(self, interval):
@@ -194,7 +194,7 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 await asyncio.sleep(interval)
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_heartbeat Exception:",e)
 
     # 7. METER VALUES
     async def send_meter_values(
@@ -294,7 +294,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_meter_values Exception:",e)
 
     # 8. START TRANSACTION
     async def send_start_transaction(
@@ -327,7 +327,7 @@ class ChargePoint16(cp):
             self.start_transaction_result = response.id_tag_info['status']
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_start_transaction Exception:",e)
 
     # 9. STATUS NOTIFICATION
     async def send_status_notification(
@@ -367,7 +367,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_status_notification Exception:",e)
 
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
@@ -401,7 +401,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"send_stop_transaction Exception:",e)
 
 
     # --------------------------------------------- OPERATIONS INITIATED BY CENTRAL SYSTEM ---------------------------------------------
@@ -420,7 +420,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_cancel_reservation Exception:",e)
 
     # 2. CHANGE AVAILABILITY
     @on(Action.ChangeAvailability)
@@ -437,7 +437,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_change_availability Exception:",e)
             
     @after(Action.ChangeAvailability)
     def after_change_availability(self,connector_id: int, type: AvailabilityType):
@@ -449,7 +449,7 @@ class ChargePoint16(cp):
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable),self.application.loop)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
-            print(e)
+            print(datetime.now(),"after_change_availability Exception:",e)
 
     # 3. CHANGE CONFIGRATION
     @on(Action.ChangeConfiguration)
@@ -466,7 +466,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_change_configration Exception:",e)
 
     # 4. CLEAR CACHE
     @on(Action.ClearCache)
@@ -480,7 +480,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_clear_cache Exception:",e)
 
     # 5. CLEAR CHARGING PROFILE
     @on(Action.ClearChargingProfile)
@@ -499,7 +499,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_clear_charging_profile Exception:",e)
 
     # 6. DATA TRANSFER
     @on(Action.DataTransfer)
@@ -518,7 +518,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_data_transfer Exception:",e)
 
     # 7. GET COMPOSITE SCHEDULE
     @on(Action.GetCompositeSchedule)
@@ -539,7 +539,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_get_composite_schedule Exception:",e)
 
     # 8. GET CONFIGRATION
     @on(Action.GetConfiguration)
@@ -556,7 +556,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_get_configration Exception:",e)
 
     # 9. GET DIAGNOSTICS
     @on(Action.GetDiagnostics)
@@ -576,7 +576,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_get_diagnostics Exception:",e)
 
     # 10. GET LOCAL LIST VERSION
     @on(Action.GetLocalListVersion)
@@ -590,7 +590,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_get_local_list_version Exception:",e)
 
     # 11. REMOTE START TRANSACTION
     @on(Action.RemoteStartTransaction)
@@ -609,14 +609,14 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_remote_start_transaction Exception:",e)
             
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         except Exception as e:
-            print(e)
+            print(datetime.now(),"after_remote_start_transaction Exception:",e)
             
     # 12. REMOTE STOP TRANSACTION
     @on(Action.RemoteStopTransaction)
@@ -632,14 +632,14 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_remote_stop_transaction Exception:",e)
             
     @after(Action.RemoteStopTransaction)
     def after_remote_stop_transaction(self,transaction_id:int):
         try :
             self.application.deviceState = DeviceState.STOPPED_BY_EVSE
         except Exception as e:
-            print(e)
+            print(datetime.now(),"after_remote_stop_transaction Exception:",e)
             
 
     # 13. RESERVE NOW
@@ -660,7 +660,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_reserve_now Exception:",e)
 
     # 14. RESET
     @on(Action.Reset)
@@ -676,14 +676,14 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_reset Exception:",e)
             
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
             os.system("reboot")
         except Exception as e:
-            print(e)
+            print(datetime.now(),"after_reset Exception:",e)
 
     # 15. SEND LOCAL LIST
     @on(Action.SendLocalList)
@@ -701,20 +701,20 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_send_local_list Exception:",e)
             
     @after(Action.SendLocalList)
     def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
         try :
             localList = []
-            print(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
+            # print(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
             for data in local_authorization_list:
                 localList.append(data["id_tag"])
-            print("\n\n", localList, "\n\n")
+            # print("\n\n", localList, "\n\n")
             self.application.databaseModule.set_local_list(localList)
             self.application.databaseModule.get_local_list()
         except Exception as e:
-            print(e)
+            print(datetime.now(),"after_send_local_list Exception:",e)
 
     # 16. SET CHARGING PROFILE
     @on(Action.SetChargingProfile)
@@ -731,7 +731,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_set_charging_profile Exception:",e)
 
     # 17. TRIGGER MESSAGE
     @on(Action.TriggerMessage)
@@ -748,7 +748,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_trigger_message Exception:",e)
         
     @after(Action.TriggerMessage)
     def after_trigger_message(self,requested_message,connector_id = None):
@@ -756,7 +756,7 @@ class ChargePoint16(cp):
             if requested_message == MessageTrigger.bootNotification:
                 pass
         except Exception as e:
-            print(e)
+            print(datetime.now(),"after_trigger_message Exception:",e)
 
     # 18. UNLOCK CONNECTOR 
     @on(Action.UnlockConnector)
@@ -772,7 +772,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_unlock_connector Exception:",e)
 
     # 19. UPDATE FIRMWARE
     @on(Action.UpdateFirmware)
@@ -789,7 +789,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print(e)
+            print(datetime.now(),"on_update_firmware Exception:",e)
 
 
 

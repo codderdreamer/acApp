@@ -29,7 +29,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_Settings4G(self):
@@ -44,11 +44,11 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_ethernet_settings(self):
-        print("get_ethernet_settings func")
+        # print("get_ethernet_settings func")
         command = {
                     "Command" : "EthernetSettings",
                     "Data" : {
@@ -60,7 +60,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_dns_settings(self):
@@ -73,7 +73,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_wifi_settings(self):
@@ -92,7 +92,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_ocpp_settings(self):
@@ -108,7 +108,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_functions_enable(self):
@@ -122,7 +122,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_bluetooth_settings(self):
@@ -135,7 +135,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_timezoon_settings(self):
@@ -146,7 +146,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_firmware_version(self):
@@ -157,7 +157,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_charging(self):
@@ -188,7 +188,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_device_status(self):
@@ -202,7 +202,7 @@ class Settings():
                             }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
     
     def get_maxcurrent(self):
@@ -213,7 +213,7 @@ class Settings():
                     }
                 }
         json_string = json.dumps(command)
-        print("Gönderilen:",command)
+        # print("Gönderilen:",command)
         return json_string
         
     def set_network_priority(self,sjon):
@@ -227,7 +227,7 @@ class Settings():
                 Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_network_priority Exception:",e)
     
     def set_Settings4G(self,sjon):
         try:
@@ -242,7 +242,7 @@ class Settings():
                 Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_Settings4G Exception:",e)
         
     def set_ethernet_settings(self,sjon):
         try:
@@ -258,7 +258,7 @@ class Settings():
                 Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_ethernet_settings Exception:",e)
             
     def set_dns_settings(self,sjon):
         try:
@@ -270,7 +270,7 @@ class Settings():
                 self.application.softwareSettings.set_dns()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_dns_settings())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_dns_settings Exception:",e)
             
     def set_wifi_settings(self,sjon):
         try:
@@ -289,7 +289,7 @@ class Settings():
                 Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_wifi_settings())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_wifi_settings Exception:",e)
             
     def set_ocpp_settings(self,sjon):
         try:
@@ -303,7 +303,7 @@ class Settings():
                 self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path,chargePointId)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_ocpp_settings())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_ocpp_settings Exception:",e)
         
     def set_functions_enable(self,sjon):
         try:
@@ -316,7 +316,7 @@ class Settings():
                 self.application.softwareSettings.set_functions_enable()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_functions_enable Exception:",e)
     
     def set_bluetooth_settings(self,sjon):
         try:
@@ -327,7 +327,7 @@ class Settings():
                 self.application.databaseModule.set_bluetooth_settings(bluetooth_enable,pin,bluetooth_name)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_bluetooth_settings())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_bluetooth_settings Exception:",e)
             
     def set_timezoon_settings(self,sjon):
         try:
@@ -336,7 +336,7 @@ class Settings():
                 self.application.databaseModule.set_timezone_settings(timezone)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_timezoon_settings())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_timezoon_settings Exception:",e)
     
     def set_firmware_version(self,sjon):
         try:
@@ -345,7 +345,7 @@ class Settings():
                 self.application.databaseModule.set_firmware_version(version)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_firmware_version Exception:",e)
             
     def set_maxcurrent(self,sjon):
         try:
@@ -354,7 +354,7 @@ class Settings():
                 self.application.databaseModule.set_max_current(maxcurrent)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
         except Exception as e:
-            print(e)
+            print(datetime.now(),"set_maxcurrent Exception:",e)
     
     
 class NetworkPriority():

@@ -2,6 +2,7 @@ from src.enums import *
 from threading import Thread
 import time
 import asyncio
+from datetime import datetime
 
 class EV():
     def __init__(self,application):
@@ -41,7 +42,7 @@ class EV():
             try:
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
             except Exception as e:
-                print("send_message",e)
+                print(datetime.now(),"send_message Exception:",e)
             time.sleep(3)
         
     @property
@@ -64,7 +65,7 @@ class EV():
             self.proximity_pilot_current = 32
         elif self.__proximity_pilot == ProximityPilot.CablePluggedIntoCharger63Amper.value:
             self.proximity_pilot_current = 63
-        print(self.proximity_pilot_current)
+        # print(self.proximity_pilot_current)
         
     @property
     def control_pilot(self):

@@ -105,7 +105,8 @@ class Advertisement(dbus.service.Object):
                          in_signature='',
                          out_signature='')
     def Release(self):
-        print('%s: Released!' % self.path)
+        # print('%s: Released!' % self.path)
+        pass
 
 class TestAdvertisement(Advertisement):
     def __init__(self, bus, index):
@@ -117,7 +118,8 @@ class TestAdvertisement(Advertisement):
         self.include_tx_power = True
 
 def register_ad_cb():
-    print('Advertisement registered')
+    # print('Advertisement registered')
+    pass
 
 def register_ad_error_cb(mainloop, error):
     try:
@@ -130,7 +132,7 @@ def register_ad_error_cb(mainloop, error):
 def advertising_main(mainloop, bus, adapter_name):
     try:
         adapter = adapters.find_adapter(bus, LE_ADVERTISING_MANAGER_IFACE, adapter_name)
-        print('adapter: %s' % (adapter,))
+        # print('adapter: %s' % (adapter,))
         if not adapter:
             raise Exception('LEAdvertisingManager1 interface not found')
 

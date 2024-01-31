@@ -18,7 +18,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_dns_settings:",data_dict,"\n")
+            # print("get_dns_settings:",data_dict,"\n")
             self.application.settings.dnsSettings.dnsEnable = data_dict["dnsEnable"]
             self.application.settings.dnsSettings.DNS1 = data_dict["dns1"]
             self.application.settings.dnsSettings.DNS2 = data_dict["dns2"]
@@ -37,7 +37,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_ethernet_settings",data_dict,"\n")
+            # print("get_ethernet_settings",data_dict,"\n")
             self.application.settings.ethernetSettings.ethernetEnable = data_dict["ethernetEnable"]
             self.application.settings.ethernetSettings.dhcpcEnable = data_dict["dhcpcEnable"]
             self.application.settings.ethernetSettings.ip = data_dict["ip"]
@@ -58,7 +58,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_network_priority",data_dict,"\n")
+            # print("get_network_priority",data_dict,"\n")
             self.application.settings.networkPriority.enableWorkmode = data_dict["enableWorkmode"]
             self.application.settings.networkPriority.first = data_dict["first"]
             self.application.settings.networkPriority.second = data_dict["second"]
@@ -78,7 +78,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_settings_4g",data_dict,"\n")
+            # print("get_settings_4g",data_dict,"\n")
             self.application.settings.settings4G.apn = data_dict["apn"]
             self.application.settings.settings4G.user = data_dict["user"]
             self.application.settings.settings4G.password = data_dict["password"]
@@ -99,7 +99,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_wifi_settings",data_dict,"\n")
+            # print("get_wifi_settings",data_dict,"\n")
             self.application.settings.wifiSettings.wifiEnable = data_dict["wifiEnable"]
             self.application.settings.wifiSettings.mod = data_dict["mod"]
             self.application.settings.wifiSettings.ssid = data_dict["ssid"]
@@ -124,7 +124,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_ocpp_settings",data_dict,"\n")
+            # print("get_ocpp_settings",data_dict,"\n")
             self.application.settings.ocppSettings.domainName = data_dict["domainName"]
             self.application.settings.ocppSettings.port = data_dict["port"]
             self.application.settings.ocppSettings.sslEnable = data_dict["sslEnable"]
@@ -146,7 +146,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_functions_enable",data_dict,"\n")
+            # print("get_functions_enable",data_dict,"\n")
             self.application.settings.functionsEnable.card_type = data_dict["card_type"]
             self.application.settings.functionsEnable.whether_to_open_the_qr_code_process = data_dict["whether_to_open_the_qr_code_process"]
             self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = data_dict["local_startup_whether_to_go_ocpp_background"]
@@ -166,7 +166,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_bluetooth_settings",data_dict,"\n")
+            # print("get_bluetooth_settings",data_dict,"\n")
             self.application.settings.bluetoothSettings.bluetooth_enable = data_dict["bluetooth_enable"]
             self.application.settings.bluetoothSettings.pin = data_dict["pin"]
             self.application.settings.bluetoothSettings.bluetooth_name = data_dict["bluetooth_name"]
@@ -185,7 +185,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_timezoon_settings",data_dict,"\n")
+            # print("get_timezoon_settings",data_dict,"\n")
             self.application.settings.timezoonSettings.timezone = data_dict["timezone"]
         except Exception as e:
             print(datetime.now(),"get_timezoon_settings Exception:",e)
@@ -202,7 +202,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_firmware_version",data_dict,"\n")
+            # print("get_firmware_version",data_dict,"\n")
             self.application.settings.firmwareVersion.version = data_dict["version"]
         except Exception as e:
             print(datetime.now(),"get_firmware_version Exception:",e)
@@ -220,7 +220,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("device_settings",data_dict,"\n")
+            # print("device_settings",data_dict,"\n")
             if data_dict["availability"] == AvailabilityType.operative.value:
                 self.application.availability = AvailabilityType.operative
             elif data_dict["availability"] == AvailabilityType.inoperative.value:
@@ -621,7 +621,7 @@ class DatabaseModule():
             self.cursor.execute(query)
             data = self.cursor.fetchall()
             self.settings_database.close()
-            print("\n get_local_list",data)
+            # print("\n get_local_list",data)
             for id in data:
                 id_tag_list.append(id[0])
             return id_tag_list

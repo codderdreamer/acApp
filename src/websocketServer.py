@@ -4,6 +4,7 @@ import threading
 import time
 from threading import Thread
 from src.enums import *
+from datetime import datetime
 
 class WebSocketServer():
     def __init__(self,application) -> None:
@@ -13,7 +14,7 @@ class WebSocketServer():
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
-        print("Web Socket started... 0.0.0.0  8000")
+        # print("Web Socket started... 0.0.0.0  8000")
         
     def NewClientws(self, client, server):
         if client:
@@ -32,13 +33,13 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
             except Exception as e:
-                print("could not get New Client id",e)
+                print(datetime.now(),"NewClientws Exception:",e)
                 
     def ClientLeftws(self, client, server):
         try:
             print("Client disconnected client[id]:{}  client['address'] ={}  ".format(client["id"], client['address'] ))
         except Exception as e:
-            print("c['handler'] client remove problem",e )
+            print(datetime.now(),"ClientLeftws Exception:",e)
             
     def MessageReceivedws(self, client, server, message):
         try:
@@ -56,7 +57,7 @@ class WebSocketServer():
             self.application.settings.set_firmware_version(sjon)
             self.application.settings.set_maxcurrent(sjon)
         except Exception as e:
-            print("MessageReceivedws",e)
+            print(datetime.now(),"MessageReceivedws Exception:",e)
             
         
         

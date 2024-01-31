@@ -22,13 +22,13 @@ class SoftwareSettings():
             ip = self.application.settings.ethernetSettings.ip
             netmask = self.application.settings.ethernetSettings.netmask
             gateway = self.application.settings.ethernetSettings.gateway
-            print("\n************* Ethrenet Configration ************")
-            print(f"*** ethernetEnable {ethernetEnable}")
-            print(f"*** dhcpcEnable {dhcpcEnable}")
-            print(f"*** ip {ip}")
-            print(f"*** netmask {netmask}")
-            print(f"*** gateway {gateway}")
-            print("************* - ************\n")
+            # print("\n************* Ethrenet Configration ************")
+            # print(f"*** ethernetEnable {ethernetEnable}")
+            # print(f"*** dhcpcEnable {dhcpcEnable}")
+            # print(f"*** ip {ip}")
+            # print(f"*** netmask {netmask}")
+            # print(f"*** gateway {gateway}")
+            # print("************* - ************\n")
             if ethernetEnable == "True":
                 if dhcpcEnable == "True":
                     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
@@ -43,11 +43,11 @@ class SoftwareSettings():
                     }
                     with open("/root/acApp/client/build/websocket.json", "w") as file:
                         json.dump(data, file)
-                        print("ip yazıldı")
+                        # print("ip yazıldı")
                 else:
                     os.system("nmcli con delete static-eth1")
             else:
-                print("Statik eth1 varsa siliniyor")
+                # print("Statik eth1 varsa siliniyor")
                 os.system("nmcli con delete static-eth1")    
             time.sleep(7)
             if ethernetEnable == "True":
@@ -55,7 +55,7 @@ class SoftwareSettings():
                     try:
                         self.application.settings.ethernetSettings.ip = str(socket.gethostbyname(socket.gethostname()))
                     except Exception as e:
-                        print( "ip" ,e)
+                        print(datetime.now(),"str(socket.gethostbyname(socket.gethostname())) Exception:",e)
                 
                     try:
                         proc = subprocess.Popen(['ifconfig', "eth1"], stdout=subprocess.PIPE)
@@ -64,7 +64,8 @@ class SoftwareSettings():
                         if netmask:
                             self.application.settings.ethernetSettings.netmask = str(netmask.group(1))
                     except Exception as e:
-                        print( "netmask" ,e)
+                        print(datetime.now(),"subprocess.Popen(['ifconfig', 'eth1'], stdout=subprocess.PIPE) Exception:",e)
+                    
                     try:
                         proc = subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE)
                         output, _ = proc.communicate()
@@ -72,19 +73,19 @@ class SoftwareSettings():
                         if gateway:
                             self.application.settings.ethernetSettings.gateway = str(gateway.group(1))
                     except Exception as e:
-                        print( "gateway" ,e)
+                        print(datetime.now(),"subprocess.Popen(['ip', 'route'], stdout=subprocess.PIPE) Exception:",e)
                     
                     data = {
                         "ip" : self.application.settings.ethernetSettings.ip
                     }
                     with open("/root/acApp/client/build/websocket.json", "w") as file:
                         json.dump(data, file)
-                        print("ip yazıldı")
-                    print(self.application.settings.ethernetSettings.ip)
-                    print(self.application.settings.ethernetSettings.netmask)
-                    print(self.application.settings.ethernetSettings.gateway)
+                        # print("ip yazıldı")
+                    # print(self.application.settings.ethernetSettings.ip)
+                    # print(self.application.settings.ethernetSettings.netmask)
+                    # print(self.application.settings.ethernetSettings.gateway)
         except Exception as e:
-            print(datetime.now(),"find_adapter Exception:",e)
+            print(datetime.now(),"set_eth Exception:",e)
             
     def set_dns(self):
         try:
@@ -114,14 +115,14 @@ class SoftwareSettings():
                 os.system("gpio-test.64 w d 20 1")
                 time.sleep(5)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
-                print(add_connection_string)
+                # print(add_connection_string)
                 os.system(add_connection_string)
                 
                 # time.sleep(30)
                 # proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
                 # output, _ = proc.communicate()
                 # ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
-                # print("ip------>" ,ip.group(1))
+                # # print("ip------>" ,ip.group(1))
             else:
                 os.system("nmcli connection delete ppp0")
         except Exception as e:
@@ -138,16 +139,16 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
-            print("\n************* Wifi Configration ************")
-            print(f"*** wifiEnable {wifiEnable}")
-            print(f"*** mod {mod}")
-            print(f"*** ssid {ssid}")
-            print(f"*** password {password}")
-            print(f"*** encryptionType {encryptionType}")
-            print(f"*** wifidhcpcEnable {wifidhcpcEnable}")
-            print(f"*** ip {ip}")
-            print(f"*** netmask {netmask}")
-            print("************* - ************\n")
+            # print("\n************* Wifi Configration ************")
+            # print(f"*** wifiEnable {wifiEnable}")
+            # print(f"*** mod {mod}")
+            # print(f"*** ssid {ssid}")
+            # print(f"*** password {password}")
+            # print(f"*** encryptionType {encryptionType}")
+            # print(f"*** wifidhcpcEnable {wifidhcpcEnable}")
+            # print(f"*** ip {ip}")
+            # print(f"*** netmask {netmask}")
+            # print("************* - ************\n")
             if mod == "AP":
                 subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
             else:
@@ -169,7 +170,7 @@ class SoftwareSettings():
                                     if address.family == socket.AF_INET:
                                         self.application.settings.wifiSettings.ip = address.address
                         except Exception as e:
-                            print( "ip" ,e)
+                            print(datetime.now(),"psutil.net_if_addrs() Exception:",e)
                         try:
                             proc = subprocess.Popen(['ifconfig', "wlan0"], stdout=subprocess.PIPE)
                             output, _ = proc.communicate()
@@ -177,7 +178,7 @@ class SoftwareSettings():
                             if netmask:
                                 self.application.settings.wifiSettings.netmask = str(netmask.group(1))
                         except Exception as e:
-                            print( "netmask" ,e)
+                            print(datetime.now(),"subprocess.Popen(['ifconfig', 'wlan0'], stdout=subprocess.PIPE) Exception:",e)
                     os.system("nmcli connection up wifi_connection")
                 else:
                     os.system("ifconfig wlan0 down")
@@ -191,42 +192,42 @@ class SoftwareSettings():
             first = self.application.settings.networkPriority.first
             second = self.application.settings.networkPriority.second
             third = self.application.settings.networkPriority.third
-            print("\n")
-            print("************* Network Priority Ayarı ************")
-            print(f"*** first {first}")
-            print(f"*** second {second}")
-            print(f"*** third {third}")
+            # print("\n")
+            # print("************* Network Priority Ayarı ************")
+            # print(f"*** first {first}")
+            # print(f"*** second {second}")
+            # print(f"*** third {third}")
             if enableWorkmode == "True":
                 if first == "ETH":
                     os.system("ifmetric eth1 100")
-                    print("*** ifmetric eth1 100")
+                    # print("*** ifmetric eth1 100")
                 elif first == "WLAN":
                     os.system("ifmetric wlan0 100")
-                    print("*** ifmetric wlan0 100")
+                    # print("*** ifmetric wlan0 100")
                 elif first == "4G":
                     os.system("ifmetric ppp0 100")
-                    print("*** ifmetric ppp0 100")
+                    # print("*** ifmetric ppp0 100")
                     
                 if second == "ETH":
                     os.system("ifmetric eth1 300")
-                    print("*** ifmetric eth1 300")
+                    # print("*** ifmetric eth1 300")
                 elif second == "WLAN":
                     os.system("ifmetric wlan0 300")
-                    print("*** ifmetric wlan0 300")
+                    # print("*** ifmetric wlan0 300")
                 elif second == "4G":
                     os.system("ifmetric ppp0 300")
-                    print("*** ifmetric ppp0 300")
+                    # print("*** ifmetric ppp0 300")
                     
                 if third == "ETH":
                     os.system("ifmetric eth1 700")
-                    print("*** ifmetric eth1 700")
+                    # print("*** ifmetric eth1 700")
                 elif third == "WLAN":
                     os.system("ifmetric wlan0 700")
-                    print("*** ifmetric wlan0 700")
+                    # print("*** ifmetric wlan0 700")
                 elif third == "4G":
                     os.system("ifmetric ppp0 700")
-                    print("*** ifmetric ppp0 700")
-            print("************* - ************\n")
+                    # print("*** ifmetric ppp0 700")
+            # print("************* - ************\n")
         except Exception as e:
             print(datetime.now(),"set_network_priority Exception:",e)
     

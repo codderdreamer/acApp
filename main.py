@@ -75,7 +75,7 @@ class Application():
 
     @deviceState.setter
     def deviceState(self, value):
-        print("?????????????????????????????????????", value, self.__deviceState)
+        # print("?????????????????????????????????????", value, self.__deviceState)
         if self.__deviceState != value:
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
@@ -143,10 +143,7 @@ class Application():
                 proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
                 output, _ = proc.communicate()
                 ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
-                print("ip------>" ,ip.group(1))
-                
-                
-                
+                # print("ip------>" ,ip.group(1))
         except Exception as e:
             print(datetime.now(),"find_network Exception:",e)
             
@@ -158,6 +155,7 @@ class Application():
                 self.settings.deviceStatus.stateOfOcpp = "Offline"
         except Exception as e:
             print(datetime.now(),"find_stateOfOcpp Exception:",e)
+            pass
             
     def strenghtOf4G(self):
         try:
@@ -168,6 +166,7 @@ class Application():
                     self.settings.deviceStatus.strenghtOf4G = re.findall(r'\d+', data.split("signal quality:")[1])[0] + "%"
         except Exception as e:
             print(datetime.now(),"strenghtOf4G Exception:",e)
+            pass
             
               
     def control_device_status(self):
@@ -179,7 +178,7 @@ class Application():
                 self.strenghtOf4G()
                 self.webSocketServer.websocketServer.send_message_to_all(msg = self.settings.get_device_status()) 
             except Exception as e:
-                print("control_device_status",e)  
+                print(datetime.now(),"control_device_status Exception:",e)
             time.sleep(10)   
         
     async def ocppStart(self):
@@ -193,7 +192,7 @@ class Application():
                 ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
             else:
                 ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path 
-            print("********************************************************ocpp_url:",ocpp_url)
+            # print("********************************************************ocpp_url:",ocpp_url)
             async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
                 self.ocppActive = True
                 if self.ocpp_subprotocols == OcppVersion.ocpp16:
@@ -205,7 +204,7 @@ class Application():
                 elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                     pass
         except Exception as e:
-            print("******************************************************** ocppStart",e)
+            print(datetime.now(),"ocppStart Exception:",e)
 
     
 if __name__ == "__main__":
@@ -214,12 +213,12 @@ if __name__ == "__main__":
         app = Application(loop)
         while True:
             if app.cardType == CardType.BillingCard:
-                print("-----------------------------------ocpp start--------------------------------------")
+                # print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(app.ocppStart())
                 app.ocppActive = False
-                print("-----------------------------------ocpp stop--------------------------------------")
+                # print("-----------------------------------ocpp stop--------------------------------------")
             time.sleep(1)
     except Exception as e:
-        print("__main__",e)
+        print(datetime.now(),"__main__ Exception:",e)
     while True:
         time.sleep(5)

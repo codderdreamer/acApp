@@ -67,8 +67,9 @@ class Process():
         if self.application.cardType == CardType.BillingCard:
             if self.application.ocppActive:
                 # ya rfid kart ile auth edecek yada remote start ile auth edecek..
+                time_start = time.time()
                 while True:
-                    # print("\nAuthorization edilmesi bekleniyor...\n")
+                    print("\nAuthorization edilmesi bekleniyor...\n")
                     if self.application.chargePoint.id_tag:
                         self.id_tag = self.application.chargePoint.id_tag
                         self._lock_connector_set_control_pilot()
@@ -82,11 +83,18 @@ class Process():
                                 # print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
                                 self.application.deviceState = DeviceState.FAULT
                                 return
+                            if self.application.deviceState != DeviceState.WAITING_AUTH:
+                                return
                         if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                             self._lock_connector_set_control_pilot()
                         else:
                             # print("Authorizatinon kabul edilmedi !!! FAULT")
                             self.application.deviceState = DeviceState.FAULT
+                        return
+                    if time.time() - time_start > 20:
+                        self.application.deviceState = DeviceState.FAULT
+                        return
+                    if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
             else:
                 print("Ocpp Aktif değil Hata !!!")
@@ -104,6 +112,8 @@ class Process():
                     print("20 saniye doldu")
                     self.application.deviceState = DeviceState.FAULT
                     break
+                if self.application.deviceState != DeviceState.WAITING_AUTH:
+                    return
                 time.sleep(1)
                     
                     
@@ -129,6 +139,8 @@ class Process():
                 break
             else:
                 break
+            if self.application.deviceState != DeviceState.WAITING_STATE_C:
+                return
             time.sleep(0.3)
             
     def meter_values_thread(self):
@@ -153,6 +165,8 @@ class Process():
                 if time.time() - time_start > 20:
                     # print("\nStart Transaction Cevabı Gelmedi !!! FAULT\n")
                     self.application.deviceState = DeviceState.FAULT
+                    return
+                if self.application.deviceState != DeviceState.CHARGING:
                     return
             if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
                 pass

@@ -14,6 +14,28 @@ class SoftwareSettings():
     def __init__(self,application) -> None:
         self.application = application
         
+        self.get_active_ips()
+        
+    def get_active_ips(self):
+        try:
+            process = subprocess.Popen(['ifconfig'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            result = stdout.decode()
+            data = result.split("\n")
+            print(data)
+        except Exception as e:
+            print(datetime.now(),"get_active_ips Exception:",e)
+        
+    def set_websocket_ip(self,ip):
+        try:
+            data = {
+                    "ip" : ip
+                }
+            with open("/root/acApp/client/build/websocket.json", "w") as file:
+                json.dump(data, file)
+        except Exception as e:
+            print(datetime.now(),"set_websocket_ip Exception:",e)
+        
     def get_connections(self):
         try:
             connections = []

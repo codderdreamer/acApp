@@ -24,6 +24,7 @@ class SoftwareSettings():
             for i in range(1,len(data)):
                 new_connection = []
                 connection = data[i].split()
+                print(connection)
                 if len(connection) > 4:
                     connection_name = ""
                     for j in range(0,len(connection)-3):

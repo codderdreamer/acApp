@@ -26,13 +26,13 @@ class SoftwareSettings():
             counter = 0
             for net in data:
                 if "eth1" in net:
-                    ip_data = data[counter + 1]
+                    ip_data = data[counter + 1].split()[2]
                     print("eth1",ip_data)
                 if "ppp0" in net:
-                    ip_data = data[counter + 1]
+                    ip_data = data[counter + 1].split()[2]
                     print("ppp0",ip_data)
                 if "wlan0" in net:
-                    ip_data = data[counter + 1]
+                    ip_data = data[counter + 1].split()[2]
                     print("wlan0",ip_data)
                 counter+=1
         

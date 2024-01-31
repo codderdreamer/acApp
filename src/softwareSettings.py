@@ -38,7 +38,7 @@ class SoftwareSettings():
                     if 'static-eth1' in stdout.decode():
                         subprocess.run(["nmcli", "con", "delete", "static-eth1"])
                     if 'eth1' in stdout.decode():
-                        subprocess.run(["nmcli", "con", "delete", "eth1"])
+                        subprocess.run(["nmcli", "con", "delete", "Wired connection 1"])
             else:
                 pass
             

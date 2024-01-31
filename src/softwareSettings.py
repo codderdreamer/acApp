@@ -26,6 +26,7 @@ class SoftwareSettings():
             counter = 0
             for net in data:
                 if "eth1" in net:
+                    print(data[counter + 1].split())
                     ip_data = data[counter + 1].split()[2]
                     print("eth1",ip_data)
                 if "ppp0" in net:

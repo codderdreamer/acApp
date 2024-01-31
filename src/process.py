@@ -107,7 +107,7 @@ class Process():
                     
                     
     def waiting_state_c(self):
-        # print("****************************************************************** waiting_state_c")
+        print("****************************************************************** waiting_state_c")
         self.application.ev.charge = False
         
         if self.application.ocppActive:
@@ -136,7 +136,7 @@ class Process():
             time.sleep(10)
             
     def charging(self):
-        # print("****************************************************************** charging")
+        print("****************************************************************** charging")
         self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
         self.application.ev.charge = True
         
@@ -202,7 +202,7 @@ class Process():
         self.application.deviceState = DeviceState.IDLE
         
     def stopped_by_evse(self):
-        # print("****************************************************************** stopped_by_evse")
+        print("****************************************************************** stopped_by_evse")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
         if self.application.ocppActive:
@@ -215,7 +215,7 @@ class Process():
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             
     def idle(self):
-        # print("****************************************************************** idle")
+        print("****************************************************************** idle")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
         if self.application.ocppActive:
@@ -232,7 +232,7 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
     def stopped_by_user(self):
-        # print("****************************************************************** stopped_by_user")
+        print("****************************************************************** stopped_by_user")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
         if self.application.ocppActive:

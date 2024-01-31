@@ -37,7 +37,7 @@ class SoftwareSettings():
                     stdout, stderr = process.communicate()
                     result = stdout.decode()
                     for data in result.split("\n"):
-                        for data in  data.split(" "):
+                        for data in  data.split("\t"):
                             print(data)
                     # if 'static-eth1' in stdout.decode():
                     #     subprocess.run(["nmcli", "con", "delete", "static-eth1"])

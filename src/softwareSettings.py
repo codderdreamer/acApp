@@ -92,16 +92,7 @@ class SoftwareSettings():
             ip = self.application.settings.ethernetSettings.ip
             netmask = self.application.settings.ethernetSettings.netmask
             gateway = self.application.settings.ethernetSettings.gateway
-            print("\n************* Ethrenet Configration ************")
-            print(f"*** ethernetEnable {ethernetEnable}")
-            print(f"*** dhcpcEnable {dhcpcEnable}")
-            print(f"*** ip {ip}")
-            print(f"*** netmask {netmask}")
-            print(f"*** gateway {gateway}")
-            print("************* - ************\n")
-            
             self.delete_connection_type("ethernet")
-            
             if ethernetEnable == "True":
                 if dhcpcEnable == "True":
                     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
@@ -111,6 +102,7 @@ class SoftwareSettings():
                     set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
                     os.system(set_eth)
                     os.system('nmcli con up "static-eth1" ifname eth1')
+                    self.set_dns()
                 else:
                     os.system("stty erase ^h")
                     set_eth = 'nmcli con add con-name "wire" ifname eth1 type ethernet'

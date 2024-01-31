@@ -277,7 +277,6 @@ class Settings():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable,dhcpcEnable,ip,netmask,gateway)
                 self.application.softwareSettings.set_eth()
-                self.application.softwareSettings.set_dns()
                 Thread(target=self.application.softwareSettings.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())
         except Exception as e:

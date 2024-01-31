@@ -10,20 +10,21 @@ class Process():
         self.application = application
         self.id_tag = None
         
+        
     def _lock_connector_set_control_pilot(self):
+        print("************************************************ _lock_connector_set_control_pilot")
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
             time_start = time.time()
             while True:
                 self.application.serialPort.get_command_pid_locker_control()
                 time.sleep(0.3)
-                # print("self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
                 if self.application.ev.pid_locker_control == LockerState.Lock.value:
                     self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
                     self.application.deviceState = DeviceState.WAITING_STATE_C
                     break
                 else:
-                    # print("Hata Lock Connector Çalışmadı !!!")
+                    print("Hata Lock Connector Çalışmadı !!!")
                     pass
                 if time.time() - time_start > 10:
                     self.application.deviceState = DeviceState.FAULT
@@ -33,19 +34,15 @@ class Process():
             self.application.deviceState = DeviceState.WAITING_STATE_C
         
     def connected(self):
-        # print("****************************************************************** connected")
+        print("****************************************************************** connected")
         self.application.ev.charge = False
-        
         self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
-        
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
-        
         time.sleep(1)
-        # print("&&&&&&&&&&&&&&&&&&&&",self.application.control_C_B)
         if self.application.control_C_B:
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             return
@@ -57,21 +54,16 @@ class Process():
             if self.application.ev.proximity_pilot_current == 0:
                 self.application.deviceState = DeviceState.FAULT
                 return 
-                 
         if self.application.cardType == CardType.LocalPnC:
             self._lock_connector_set_control_pilot()
-            
         elif self.application.cardType == CardType.BillingCard:
             self.application.deviceState = DeviceState.WAITING_AUTH
-        
         elif self.application.cardType == CardType.StartStopCard:
             self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
-        # print("****************************************************************** waiting_auth")
-        
+        print("****************************************************************** waiting_auth")
         self.application.ev.charge = False
-        
         if self.application.cardType == CardType.BillingCard:
             if self.application.ocppActive:
                 # ya rfid kart ile auth edecek yada remote start ile auth edecek..
@@ -97,15 +89,21 @@ class Process():
                             self.application.deviceState = DeviceState.FAULT
                         return
             else:
-                # print("Ocpp Aktif değil Hata !!!")
-                pass
+                print("Ocpp Aktif değil Hata !!!")
+                self.application.deviceState = DeviceState.FAULT
         elif self.application.cardType == CardType.StartStopCard:
-            # Bu kart DB'de kayıtlı local cartlardan mı?
-            # kayıtlı değilse fault
-            # kayıtlı is devam et
-            pass
+            time_start = time.time()
+            while True:
+                if self.application.ev.start_stop_authorize:
+                    self.application.ev.start_stop_authorize = False
+                    self._lock_connector_set_control_pilot()
+                    break
+                if time.time() - time_start > 20:
+                    self.application.deviceState = DeviceState.FAULT
+                    break
+                time.sleep(1)
                     
-    
+                    
     def waiting_state_c(self):
         # print("****************************************************************** waiting_state_c")
         self.application.ev.charge = False

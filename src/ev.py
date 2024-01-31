@@ -36,6 +36,8 @@ class EV():
         
         self.send_message_thread_start = False
         
+        self.start_stop_authorize = False
+        
     def send_message(self):
         self.send_message_thread_start = True
         while self.send_message_thread_start:
@@ -105,14 +107,16 @@ class EV():
 
     @card_id.setter
     def card_id(self, value):
-        
         if (self.__card_id != value) and (value != None) and (value != ""):
             if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
                 self.application.chargePoint.authorize = None
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = self.__card_id),self.application.loop)
             elif (self.application.cardType == CardType.StartStopCard):
                 # Local cardlarda var mı database bak...
-                pass
+                card_id_list = self.application.databaseModule.get_local_list()
+                for id in card_id_list:
+                    if value == id:
+                        self.start_stop_authorize = True
         self.__card_id = value
                 
             

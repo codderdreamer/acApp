@@ -209,22 +209,16 @@ class SoftwareSettings():
             password = self.application.settings.settings4G.password
             pin = self.application.settings.settings4G.pin
             enableModification = self.application.settings.settings4G.enableModification
+            self.delete_connection_type("gsm")
             if enableModification=="True":
                 os.system("nmcli connection delete ppp0")
                 time.sleep(3)
                 os.system("gpio-test.64 w d 20 1")
                 time.sleep(5)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
-                # print(add_connection_string)
                 os.system(add_connection_string)
-                
-                # time.sleep(30)
-                # proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
-                # output, _ = proc.communicate()
-                # ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
-                # # print("ip------>" ,ip.group(1))
             else:
-                os.system("nmcli connection delete ppp0")
+                pass
         except Exception as e:
             print(datetime.now(),"set_4G Exception:",e)
     
@@ -239,16 +233,6 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
-            # print("\n************* Wifi Configration ************")
-            # print(f"*** wifiEnable {wifiEnable}")
-            # print(f"*** mod {mod}")
-            # print(f"*** ssid {ssid}")
-            # print(f"*** password {password}")
-            # print(f"*** encryptionType {encryptionType}")
-            # print(f"*** wifidhcpcEnable {wifidhcpcEnable}")
-            # print(f"*** ip {ip}")
-            # print(f"*** netmask {netmask}")
-            # print("************* - ************\n")
             self.delete_connection_type("wifi")
             if wifiEnable=="True":
                 if mod == "AP":
@@ -263,7 +247,6 @@ class SoftwareSettings():
                         os.system("nmcli con modify wifi_connection ipv4.method manual")
                         os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}")
                         os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
-                       
                     os.system("nmcli connection up wifi_connection")
             else:
                 pass

@@ -367,8 +367,7 @@ class SoftwareSettings():
         except Exception as e:
             print(datetime.now(),"strenghtOf4G Exception:",e)
             pass
-            
-              
+                     
     def control_device_status(self):
         while True:
             try:

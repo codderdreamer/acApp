@@ -36,7 +36,11 @@ class SoftwareSettings():
                     new_connection.append(connection[-3])
                     new_connection.append(connection[-2])
                     new_connection.append(connection[-1])
-                connections.append() 
+                    connections.append(new_connection)
+                else:
+                    connections.append(connection)
+                
+                 
             return connections
         except Exception as e:
             print(datetime.now(),"get_connections Exception:",e)

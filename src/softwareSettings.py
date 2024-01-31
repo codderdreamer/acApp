@@ -23,7 +23,19 @@ class SoftwareSettings():
             result = stdout.decode()
             print(result)
             data = result.split("\n")
-            # print(data)
+            counter = 0
+            for net in data:
+                if "eth1" in net:
+                    ip_data = data[counter + 1]
+                    print("eth1",ip_data)
+                if "ppp0" in net:
+                    ip_data = data[counter + 1]
+                    print("ppp0",ip_data)
+                if "wlan0" in net:
+                    ip_data = data[counter + 1]
+                    print("wlan0",ip_data)
+                counter+=1
+        
         except Exception as e:
             print(datetime.now(),"get_active_ips Exception:",e)
         

@@ -140,6 +140,13 @@ class Application():
                 self.settings.deviceStatus.networkCard = "Wifi"
             elif min_metric == ppp0_metric:
                 self.settings.deviceStatus.networkCard = "4G"
+                proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
+                output, _ = proc.communicate()
+                ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
+                print("ip------>" ,ip.group(1))
+                
+                
+                
         except Exception as e:
             print(datetime.now(),"find_network Exception:",e)
             

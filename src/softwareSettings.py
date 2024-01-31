@@ -117,11 +117,11 @@ class SoftwareSettings():
                 print(add_connection_string)
                 os.system(add_connection_string)
                 
-                time.sleep(30)
-                proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
-                output, _ = proc.communicate()
-                inet = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
-                print("inet------>" ,inet.group(1))
+                # time.sleep(30)
+                # proc = subprocess.Popen(['ifconfig', "ppp0"], stdout=subprocess.PIPE)
+                # output, _ = proc.communicate()
+                # ip = re.search(r'inet (\d+\.\d+\.\d+\.\d+)', str(output))
+                # print("ip------>" ,ip.group(1))
             else:
                 os.system("nmcli connection delete ppp0")
         except Exception as e:

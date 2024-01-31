@@ -105,6 +105,7 @@ class Process():
             while True:
                 print("self.application.ev.start_stop_authorize", self.application.ev.start_stop_authorize)
                 if self.application.ev.start_stop_authorize:
+                    self.id_tag = self.application.ev.card_id
                     self.application.ev.start_stop_authorize = False
                     self.application.ev.card_id = ""
                     self._lock_connector_set_control_pilot()

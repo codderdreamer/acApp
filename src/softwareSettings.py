@@ -84,9 +84,6 @@ class SoftwareSettings():
                     os.system('nmcli con up "wire" ifname eth1')
             else:
                 self.delete_connection_type("ethernet")
-            
-            
-            
         except Exception as e:
             print(datetime.now(),"set_eth Exception:",e)
         

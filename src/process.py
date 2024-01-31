@@ -97,6 +97,7 @@ class Process():
                 print("self.application.ev.start_stop_authorize", self.application.ev.start_stop_authorize)
                 if self.application.ev.start_stop_authorize:
                     self.application.ev.start_stop_authorize = False
+                    self.application.ev.card_id = ""
                     self._lock_connector_set_control_pilot()
                     break
                 if time.time() - time_start > 20:

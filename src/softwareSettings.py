@@ -31,7 +31,7 @@ class SoftwareSettings():
                         if j == len(connection)-4:
                             connection_name += connection[j]
                         else:
-                            connection_name += connection[j] + ""
+                            connection_name += connection[j] + " "
                     new_connection.append(connection_name)
                     new_connection.append(connection[-3])
                     new_connection.append(connection[-2])

@@ -185,7 +185,7 @@ class Process():
                     break
           
     def fault(self):
-        # print("****************************************************************** fault")
+        print("****************************************************************** fault")
         self.application.ev.charge = False
         self.application.serialPort.set_command_pid_led_control(LedState.Fault)
         if self.application.ocppActive:
@@ -193,13 +193,13 @@ class Process():
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-        
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        self.application.deviceState = DeviceState.IDLE
         
     def stopped_by_evse(self):
         # print("****************************************************************** stopped_by_evse")

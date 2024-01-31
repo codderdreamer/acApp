@@ -249,10 +249,11 @@ class SoftwareSettings():
             # print(f"*** ip {ip}")
             # print(f"*** netmask {netmask}")
             # print("************* - ************\n")
-            if mod == "AP":
-                subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
-            else:
-                if wifiEnable=="True":
+            self.delete_connection_type("wifi")
+            if wifiEnable=="True":
+                if mod == "AP":
+                    subprocess.call(["sh", "/root/acApp/accesspoint_add.sh"] + [ssid,password])
+                else:
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password}")
@@ -262,26 +263,10 @@ class SoftwareSettings():
                         os.system("nmcli con modify wifi_connection ipv4.method manual")
                         os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}")
                         os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
-                    else:
-                        try:
-                            addresses = psutil.net_if_addrs()
-                            if "wlan0" in addresses:
-                                for address in addresses["wlan0"]:
-                                    if address.family == socket.AF_INET:
-                                        self.application.settings.wifiSettings.ip = address.address
-                        except Exception as e:
-                            print(datetime.now(),"psutil.net_if_addrs() Exception:",e)
-                        try:
-                            proc = subprocess.Popen(['ifconfig', "wlan0"], stdout=subprocess.PIPE)
-                            output, _ = proc.communicate()
-                            netmask = re.search(r'netmask (\d+\.\d+\.\d+\.\d+)', str(output))
-                            if netmask:
-                                self.application.settings.wifiSettings.netmask = str(netmask.group(1))
-                        except Exception as e:
-                            print(datetime.now(),"subprocess.Popen(['ifconfig', 'wlan0'], stdout=subprocess.PIPE) Exception:",e)
+                       
                     os.system("nmcli connection up wifi_connection")
-                else:
-                    os.system("ifconfig wlan0 down")
+            else:
+                pass
         except Exception as e:
             print(datetime.now(),"set_wifi Exception:",e)
                   

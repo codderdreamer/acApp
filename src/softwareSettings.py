@@ -21,8 +21,9 @@ class SoftwareSettings():
             process = subprocess.Popen(['ifconfig'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             result = stdout.decode()
+            print(result)
             data = result.split("\n")
-            print(data)
+            # print(data)
         except Exception as e:
             print(datetime.now(),"get_active_ips Exception:",e)
         

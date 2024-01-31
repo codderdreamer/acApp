@@ -93,10 +93,10 @@ class Advertisement(dbus.service.Object):
                          out_signature='a{sv}')
     def GetAll(self, interface):
         try:
-            print('GetAll')
+            # print('GetAll')
             if interface != LE_ADVERTISEMENT_IFACE:
                 raise exceptions.InvalidArgsException()
-            print('returning props')
+            # print('returning props')
             return self.get_properties()[LE_ADVERTISEMENT_IFACE]
         except Exception as e:
             print(datetime.now(),"GetAll Exception:",e)

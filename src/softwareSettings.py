@@ -24,7 +24,6 @@ class SoftwareSettings():
             for i in range(1,len(data)):
                 new_connection = []
                 connection = data[i].split()
-                print(connection)
                 if len(connection) > 4:
                     connection_name = ""
                     for j in range(0,len(connection)-3):
@@ -43,7 +42,7 @@ class SoftwareSettings():
         except Exception as e:
             print(datetime.now(),"get_connections Exception:",e)
             
-    def delete_connection(self,con_type):
+    def delete_connection_type(self,con_type):
         try:
             connections = self.get_connections()
             for connection in connections:
@@ -69,11 +68,20 @@ class SoftwareSettings():
             
             if ethernetEnable == "True":
                 if dhcpcEnable == "True":
-                    pass
+                    netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+                    netmask_prefix_length = netmask_obj.prefixlen
+                    os.system("nmcli con delete static-eth1")
+                    os.system("stty erase ^h")
+                    set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
+                    os.system(set_eth)
+                    os.system('nmcli con up "static-eth1" ifname eth1')
                 else:
-                    self.delete_connection("ethernet")
+                    os.system("stty erase ^h")
+                    set_eth = 'nmcli con add con-name "wire" ifname eth1 type ethernet'
+                    os.system(set_eth)
+                    os.system('nmcli con up "wire" ifname eth1')
             else:
-                pass
+                self.delete_connection_type("ethernet")
             
             
             

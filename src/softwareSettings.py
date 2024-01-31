@@ -14,6 +14,32 @@ class SoftwareSettings():
     def __init__(self,application) -> None:
         self.application = application
         
+    def get_connections(self):
+        try:
+            connections = []
+            process = subprocess.Popen(['nmcli', 'con', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            result = stdout.decode()
+            data = result.split("\n")
+            for i in range(1,len(data)):
+                new_connection = []
+                connection = data[i].split()
+                if len(connection) > 4:
+                    connection_name = ""
+                    for j in range(0,len(connection)-3):
+                        if j == len(connection)-4:
+                            connection_name += connection[j]
+                        else:
+                            connection_name += connection[j] + ""
+                    new_connection.append(connection_name)
+                    new_connection.append(connection[-3])
+                    new_connection.append(connection[-2])
+                    new_connection.append(connection[-1])
+                connections.append() 
+            return connections
+        except Exception as e:
+            print(datetime.now(),"get_connections Exception:",e)
+        
     def set_eth(self):
         try:
             ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
@@ -33,12 +59,8 @@ class SoftwareSettings():
                 if dhcpcEnable == "True":
                     pass
                 else:
-                    process = subprocess.Popen(['nmcli', 'con', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    stdout, stderr = process.communicate()
-                    result = stdout.decode()
-                    for data in result.split("\n"):
-                        connections = data.split()
-                        print(connections)
+                    print(self.get_connections())
+                    pass
                     # if 'static-eth1' in stdout.decode():
                     #     subprocess.run(["nmcli", "con", "delete", "static-eth1"])
                     # if 'eth1' in stdout.decode():

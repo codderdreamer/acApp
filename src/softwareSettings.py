@@ -39,11 +39,18 @@ class SoftwareSettings():
                     connections.append(new_connection)
                 else:
                     connections.append(connection)
-                
-                 
             return connections
         except Exception as e:
             print(datetime.now(),"get_connections Exception:",e)
+            
+    def delete_connection(self,con_type):
+        try:
+            connections = self.get_connections()
+            for connection in connections:
+                if con_type in connection:
+                    subprocess.run(["nmcli", "con", "delete", connection[0]])
+        except Exception as e:
+            print(datetime.now(),"delete_connection Exception:",e)
         
     def set_eth(self):
         try:
@@ -64,12 +71,7 @@ class SoftwareSettings():
                 if dhcpcEnable == "True":
                     pass
                 else:
-                    print(self.get_connections())
-                    pass
-                    # if 'static-eth1' in stdout.decode():
-                    #     subprocess.run(["nmcli", "con", "delete", "static-eth1"])
-                    # if 'eth1' in stdout.decode():
-                    #     subprocess.run(["nmcli", "con", "delete", "Wired connection 1"])
+                    self.delete_connection("ethernet")
             else:
                 pass
             

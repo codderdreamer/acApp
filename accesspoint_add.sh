@@ -1,4 +1,4 @@
-# #!/bin/sh
+#!/bin/sh
 
 nmcli con add type wifi ifname wlan0 mode ap con-name $1 ssid $1 && \
 nmcli con modify $1 802-11-wireless.band bg && \

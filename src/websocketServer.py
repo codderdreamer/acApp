@@ -20,6 +20,7 @@ class WebSocketServer():
         if client:
             try:
                 print("New client connected and was given id %d" % client['id'], client['address'] )
+                
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_ethernet_settings())

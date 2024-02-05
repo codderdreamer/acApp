@@ -161,6 +161,7 @@ class SerialPort():
         self.send_data_list.append(send_data)
 
     def set_command_pid_led_control(self,led_state:LedState):
+        print(datetime.now(),led_state)
         self.parameter_data = "002"
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)

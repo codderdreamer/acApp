@@ -84,7 +84,6 @@ class Application():
                 self.serialPort.set_command_pid_led_control(LedState.Fault)
             elif x == "8":
                 self.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
-            time.sleep(1)
         
     @property
     def deviceState(self):

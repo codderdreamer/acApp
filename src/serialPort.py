@@ -144,7 +144,7 @@ class SerialPort():
         data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send set_command_pid_relay_control",send_data)
+        print("Send set_command_pid_relay_control",send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_relay_control(self):
@@ -182,7 +182,7 @@ class SerialPort():
         data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send set_command_pid_locker_control -->", send_data)
+        print("Send set_command_pid_locker_control -->", send_data)
         self.send_data_list.append(send_data)
 
     def get_command_pid_locker_control(self): 
@@ -296,7 +296,7 @@ class SerialPort():
     def set_response_pid_relay_control(self,data):
         if data[2] == self.pid_relay_control:
             result = data[7]
-            # print("set_response_pid_relay_control------>",result)
+            print("set_response_pid_relay_control------>",result)
 
     def get_response_pid_relay_control(self,data):
         if data[2] == self.pid_relay_control:
@@ -347,10 +347,10 @@ class SerialPort():
     def set_response_pid_locker_control(self,data):
         if data[2] == self.pid_locker_control:
             result = data[7]
-            # if result == LockerState.Lock.value:
-            #     print("set_response_pid_locker_control",LockerState.Lock.name)
-            # elif result == LockerState.Unlock.value:
-            #     print("set_response_pid_locker_control",LockerState.Unlock.name)
+            if result == LockerState.Lock.value:
+                print("set_response_pid_locker_control",LockerState.Lock.name)
+            elif result == LockerState.Unlock.value:
+                print("set_response_pid_locker_control",LockerState.Unlock.name)
 
     def get_response_pid_locker_control(self,data):
         if data[2] == self.pid_locker_control:

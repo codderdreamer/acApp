@@ -116,8 +116,7 @@ class Process():
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
                     return
                 time.sleep(1)
-                    
-                    
+                              
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
         self.application.ev.charge = False
@@ -235,7 +234,7 @@ class Process():
         self.application.ev.start_stop_authorize = False
         self.application.ev.card_id = ""
         self.application.ev.charge = False
-        # self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
+        self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
         if self.application.ocppActive:
             if self.application.chargePoint:
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
@@ -245,7 +244,7 @@ class Process():
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        time.sleep(4)
+        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             

@@ -68,7 +68,7 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
-            self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
+            # self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(

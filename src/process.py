@@ -184,7 +184,7 @@ class Process():
         
         if self.application.ev.control_pilot == ControlPlot.stateC.value:
             self.application.serialPort.set_command_pid_relay_control(Relay.On)
-            time.sleep(4)
+            # time.sleep(4)
             if self.application.ocppActive:
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
                 time.sleep(1)
@@ -211,7 +211,7 @@ class Process():
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        time.sleep(4)
+        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         self.application.deviceState = DeviceState.IDLE
@@ -244,7 +244,7 @@ class Process():
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        time.sleep(4)
+        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
@@ -260,7 +260,7 @@ class Process():
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        time.sleep(4)
+        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         

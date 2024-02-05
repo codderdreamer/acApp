@@ -119,7 +119,7 @@ class SoftwareSettings():
             dnsEnable = self.application.settings.dnsSettings.dnsEnable
             DNS1 = self.application.settings.dnsSettings.DNS1
             DNS2 = self.application.settings.dnsSettings.DNS2
-            if dhcpcEnable == "True":
+            if dhcpcEnable == "False":
                 if dnsEnable == "True":
                     setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
                     os.system(setDns)

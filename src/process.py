@@ -36,7 +36,19 @@ class Process():
     def connected(self):
         print("****************************************************************** connected")
         self.application.ev.charge = False
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+        if self.application.cardType == CardType.LocalPnC:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+        elif self.application.cardType == CardType.BillingCard:
+            if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+            else:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+        elif self.application.cardType == CardType.StartStopCard:
+            if self.application.ev.start_stop_authorize:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+            else:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+        
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
@@ -54,6 +66,7 @@ class Process():
             if self.application.ev.proximity_pilot_current == 0:
                 self.application.deviceState = DeviceState.FAULT
                 return 
+            
         if self.application.cardType == CardType.LocalPnC:
             self._lock_connector_set_control_pilot()
         elif self.application.cardType == CardType.BillingCard:
@@ -112,7 +125,7 @@ class Process():
                     break
                 if time.time() - time_start > 20:
                     print("20 saniye doldu")
-                    self.application.deviceState = DeviceState.FAULT
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                     break
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
                     return

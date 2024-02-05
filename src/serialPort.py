@@ -34,6 +34,8 @@ class SerialPort():
         
         self.parameter_data = "001"
         self.connector_id = "1"
+        
+        self.led_state = LedState.StandBy
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
@@ -165,6 +167,16 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         # print("Send set_command_pid_led_control -->", send_data)
         self.send_data_list.append(send_data)
+        if self.led_state != LedState.RfidVerified or self.led_state != LedState.RfidFailed:
+            self.led_state = led_state
+        else:
+            time.sleep(2)
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            # print("Send set_command_pid_led_control -->", send_data)
+            self.send_data_list.append(send_data)
 
     def get_command_pid_led_control(self):
         self.parameter_data = "001"

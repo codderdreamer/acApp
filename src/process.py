@@ -234,7 +234,8 @@ class Process():
         self.application.ev.start_stop_authorize = False
         self.application.ev.card_id = ""
         self.application.ev.charge = False
-        self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+        # self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
         if self.application.ocppActive:
             if self.application.chargePoint:
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)

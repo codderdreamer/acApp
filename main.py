@@ -69,21 +69,21 @@ class Application():
         while True:
             x = input()
             if x == "1":
-                self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
+                self.serialPort.set_command_pid_led_control(LedState.StandBy)
             elif x == "2":
-                self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+                self.serialPort.set_command_pid_led_control(LedState.Connecting)
             elif x == "3":
-                self.application.serialPort.set_command_pid_led_control(LedState.RfidVerified)
+                self.serialPort.set_command_pid_led_control(LedState.RfidVerified)
             elif x == "4":
-                self.application.serialPort.set_command_pid_led_control(LedState.Charging)
+                self.serialPort.set_command_pid_led_control(LedState.Charging)
             elif x == "5":
-                self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
+                self.serialPort.set_command_pid_led_control(LedState.RfidFailed)
             elif x == "6":
-                self.application.serialPort.set_command_pid_led_control(LedState.NeedReplugging)
+                self.serialPort.set_command_pid_led_control(LedState.NeedReplugging)
             elif x == "7":
-                self.application.serialPort.set_command_pid_led_control(LedState.Fault)
+                self.serialPort.set_command_pid_led_control(LedState.Fault)
             elif x == "8":
-                self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
+                self.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
             time.sleep(1)
         
     @property

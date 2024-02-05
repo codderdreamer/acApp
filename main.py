@@ -54,7 +54,6 @@ class Application():
         self.databaseModule.get_functions_enable()
         self.databaseModule.get_availability()
         self.databaseModule.get_max_current()
-        
         self.id_tag_list = self.databaseModule.get_local_list()
         
         self.softwareSettings.set_eth()
@@ -63,6 +62,7 @@ class Application():
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
+        self.process.idle()
         
     @property
     def deviceState(self):

@@ -168,7 +168,7 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         print("Send set_command_pid_led_control -->", send_data)
         self.send_data_list.append(send_data)
-        if self.led_state != LedState.RfidVerified or self.led_state != LedState.RfidFailed:
+        if self.led_state != LedState.RfidVerified and self.led_state != LedState.RfidFailed:
             print("********** önceli led setlendi",self.led_state)
             self.led_state = led_state
         else:

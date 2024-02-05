@@ -303,7 +303,7 @@ class Process():
             
     def idle(self):
         print("****************************************************************** idle")
-        self.application.ev.start_stop_authorize = False
+        self.application.ev.start_stop_authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()

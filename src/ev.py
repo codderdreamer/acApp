@@ -36,7 +36,7 @@ class EV():
         
         self.send_message_thread_start = False
         
-        self.start_stop_authorize = False
+        self.start_stop_authorize = None
         
     def send_message(self):
         self.send_message_thread_start = True
@@ -113,10 +113,16 @@ class EV():
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
             elif (self.application.cardType == CardType.StartStopCard):
                 # Local cardlarda var mı database bak...
+                finded = False
                 card_id_list = self.application.databaseModule.get_local_list()
                 for id in card_id_list:
                     if value == id:
                         self.start_stop_authorize = True
+                        finded = True
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                if finded == False:
+                    self.start_stop_authorize = False
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
         self.__card_id = value
                 
             

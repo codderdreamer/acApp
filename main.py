@@ -64,6 +64,26 @@ class Application():
         self.softwareSettings.set_functions_enable()
         self.process.idle()
         
+    def control_led(self):
+        while True:
+            x = input()
+            if x == "1":
+                self.application.serialPort.set_command_pid_led_control(LedState.StandBy)
+            elif x == "2":
+                self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+            elif x == "3":
+                self.application.serialPort.set_command_pid_led_control(LedState.RfidVerified)
+            elif x == "4":
+                self.application.serialPort.set_command_pid_led_control(LedState.Charging)
+            elif x == "5":
+                self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
+            elif x == "6":
+                self.application.serialPort.set_command_pid_led_control(LedState.NeedReplugging)
+            elif x == "7":
+                self.application.serialPort.set_command_pid_led_control(LedState.Fault)
+            elif x == "8":
+                self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
+        
     @property
     def deviceState(self):
         return self.__deviceState

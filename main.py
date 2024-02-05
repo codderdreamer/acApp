@@ -84,6 +84,14 @@ class Application():
                 self.serialPort.set_command_pid_led_control(LedState.Fault)
             elif x == "8":
                 self.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
+            elif x == "9":
+                self.serialPort.set_command_pid_relay_control(Relay.Off)
+            elif x == "10":
+                self.serialPort.set_command_pid_relay_control(Relay.On)
+            elif x == "11":  
+                self.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+            elif x == "12":  
+                self.serialPort.set_command_pid_locker_control(LockerState.Lock)
         
     @property
     def deviceState(self):

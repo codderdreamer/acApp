@@ -94,7 +94,7 @@ class SoftwareSettings():
             gateway = self.application.settings.ethernetSettings.gateway
             self.delete_connection_type("ethernet")
             if ethernetEnable == "True":
-                if dhcpcEnable == "True":
+                if dhcpcEnable == "False":
                     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                     netmask_prefix_length = netmask_obj.prefixlen
                     os.system("nmcli con delete static-eth1")
@@ -167,7 +167,7 @@ class SoftwareSettings():
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password}")
-                    if wifidhcpcEnable == "True":
+                    if wifidhcpcEnable == "False":
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
                         os.system("nmcli con modify wifi_connection ipv4.method manual")

@@ -63,6 +63,7 @@ class Application():
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
         self.process.idle()
+        Thread(target=self.control_led,daemon=True).start()
         
     def control_led(self):
         while True:
@@ -83,6 +84,7 @@ class Application():
                 self.application.serialPort.set_command_pid_led_control(LedState.Fault)
             elif x == "8":
                 self.application.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
+            time.sleep(1)
         
     @property
     def deviceState(self):

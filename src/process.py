@@ -29,7 +29,6 @@ class Process():
                 if time.time() - time_start > 10:
                     self.application.deviceState = DeviceState.FAULT
                     break
-                time.sleep(0.5)
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
             self.application.deviceState = DeviceState.WAITING_STATE_C

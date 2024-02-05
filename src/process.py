@@ -83,7 +83,7 @@ class Process():
                                 break
                             if time.time() - time_start > 20:
                                 print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
-                                self.application.deviceState = DeviceState.FAULT
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                                 return
                             if self.application.deviceState != DeviceState.WAITING_AUTH:
                                 return
@@ -91,10 +91,10 @@ class Process():
                             self._lock_connector_set_control_pilot()
                         else:
                             print("Authorizatinon kabul edilmedi !!! FAULT")
-                            self.application.deviceState = DeviceState.FAULT
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                         return
                     if time.time() - time_start > 20:
-                        self.application.deviceState = DeviceState.FAULT
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                         return
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return

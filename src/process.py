@@ -167,6 +167,8 @@ class Process():
                               
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+        
         self.application.ev.charge = False
         
         if self.application.ocppActive:

@@ -14,6 +14,7 @@ from datetime import datetime
 from src.enums import *
 from ocpp.v16.datatypes import *
 import os
+from threading import Thread
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
 handler = logging.StreamHandler()
@@ -60,15 +61,15 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             self.authorize = response.id_tag_info['status']
             if self.authorize == AuthorizationStatus.accepted:
-                # self.application.serialPort.set_command_pid_led_control(LedState.RfidVerified)
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                 pass
             else:
-                # self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                 pass
             return response
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
-            # self.application.serialPort.set_command_pid_led_control(LedState.RfidFailed)
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(

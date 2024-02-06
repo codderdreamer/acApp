@@ -205,6 +205,17 @@ class Process():
         if self.application.cardType == CardType.LocalPnC:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             print("Authorize edilmesine gerek yok şarj başlangıcı...")
+            self.application.serialPort.set_command_pid_relay_control(Relay.On)
+            # time.sleep(4)
+            while True:
+                self.application.serialPort.get_command_pid_current()
+                self.application.serialPort.get_command_pid_voltage()
+                self.application.serialPort.get_command_pid_power(PowerType.kw)
+                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                time.sleep(3)
+                if self.application.deviceState != DeviceState.CHARGING:
+                    break
+            
         elif self.application.cardType == CardType.BillingCard:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()

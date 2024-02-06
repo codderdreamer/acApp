@@ -107,7 +107,7 @@ class EV():
 
     @card_id.setter
     def card_id(self, value):
-        if (self.__card_id != value) and (value != None) and (value != ""):
+        if (value != None) and (value != ""):
             if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
                 self.application.chargePoint.authorize = None
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)

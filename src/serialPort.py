@@ -173,7 +173,7 @@ class SerialPort():
             self.led_state = led_state
         else:
             print("----->  2 sn bekleniyor",datetime.now())
-            time.sleep(2)
+            time.sleep(1)
             self.parameter_data = "002"
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)

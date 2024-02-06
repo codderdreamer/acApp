@@ -45,7 +45,9 @@ class Process():
                 return 
             
         if self.application.control_C_B:
+            print("Şarj C'den B'ye döndü Röle kapatıldı")
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+            self.application.deviceState = DeviceState.WAITING_STATE_C
             return
         
         if self.application.cardType == CardType.LocalPnC:
@@ -164,8 +166,7 @@ class Process():
         #             return
         #         time.sleep(1)
         
-        
-                              
+                           
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()

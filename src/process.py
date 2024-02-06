@@ -232,6 +232,7 @@ class Process():
             else:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
+                self.application.deviceState = DeviceState.WAITING_AUTH
         
         
         

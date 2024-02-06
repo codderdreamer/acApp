@@ -78,12 +78,7 @@ class Process():
                 print("self.application.ev.start_stop_authorize", self.application.ev.start_stop_authorize)
                 if self.application.ev.start_stop_authorize:
                     self.id_tag = self.application.ev.card_id
-                    time.sleep(2)
                     self._lock_connector_set_control_pilot()
-                    break
-                if time.time() - time_start > 20:
-                    print("20 saniye doldu")
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                     break
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
                     return

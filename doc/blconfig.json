@@ -115,3 +115,20 @@
                 "maxcurrent": 30
     }
 }
+
+{
+    "Command" : "Charging",
+    "Data" : {
+                "charge" : true,
+                "start_date" : "05-02-2024 18:01",
+                "duration" : "00:00:17",
+                "current_L1" : 0.05,
+                "current_L2" : 0.001,
+                "current_L3" : 0.001,
+                "voltage_L1" : 220.84,
+                "voltage_L2" : 1.93,
+                "voltage_L3" : 1.93,
+                "power" :0.011,
+                "energy" : 0.007
+            }
+}

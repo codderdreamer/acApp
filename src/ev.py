@@ -123,6 +123,10 @@ class EV():
                 if finded == False:
                     self.start_stop_authorize = False
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                if self.charge:
+                    self.application.deviceState = DeviceState.STOPPED_BY_USER
+        
+        
         self.__card_id = value
                 
             

@@ -24,7 +24,7 @@ class Process():
                     self.application.deviceState = DeviceState.WAITING_STATE_C
                     break
                 else:
-                    print("Hata Lock Connector Çalışmadı !!!")
+                    print("Lock connector bekleniyor...")
                     pass
                 if time.time() - time_start > 10:
                     self.application.deviceState = DeviceState.FAULT
@@ -175,9 +175,6 @@ class Process():
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         time.sleep(1)
-        
-        if self.application.deviceState != DeviceState.WAITING_STATE_C:
-            return
         
         time_start = time.time()
         while True:

@@ -57,6 +57,8 @@ class WebSocketServer():
             self.application.settings.set_timezoon_settings(sjon)
             self.application.settings.set_firmware_version(sjon)
             self.application.settings.set_maxcurrent(sjon)
+            self.application.settings.set_start_transaction(sjon)
+            self.application.settings.set_stop_transaction(sjon)
         except Exception as e:
             print(datetime.now(),"MessageReceivedws Exception:",e)
             

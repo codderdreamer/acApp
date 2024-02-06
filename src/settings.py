@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 import time
 from threading import Thread
+from src.enums import *
 
 class Settings():
     def __init__(self,application) -> None:
@@ -377,6 +378,20 @@ class Settings():
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
         except Exception as e:
             print(datetime.now(),"set_maxcurrent Exception:",e)
+            
+    def set_start_transaction(self,sjon):
+        try:
+            if(sjon["Command"] == "StartTransaction"):
+                self.application.ev.start_stop_authorize = True
+        except Exception as e:
+            print(datetime.now(),"set_start_transaction Exception:",e)
+            
+    def set_stop_transaction(self,sjon):
+        try:
+            if(sjon["Command"] == "StopTransaction"):
+                self.application.deviceState = DeviceState.STOPPED_BY_USER
+        except Exception as e:
+            print(datetime.now(),"set_stop_transaction Exception:",e)
     
     
 class NetworkPriority():

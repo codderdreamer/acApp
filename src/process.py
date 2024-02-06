@@ -199,7 +199,6 @@ class Process():
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             print("Authorize edilmesine gerek yok şarj başlangıcı...")
             self.application.serialPort.set_command_pid_relay_control(Relay.On)
-            # time.sleep(4)
             while True:
                 self.application.serialPort.get_command_pid_current()
                 self.application.serialPort.get_command_pid_voltage()
@@ -221,6 +220,15 @@ class Process():
             if self.application.ev.start_stop_authorize:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
                 print("rfid kart ile authorize edilmiş.")
+                self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                while True:
+                    self.application.serialPort.get_command_pid_current()
+                    self.application.serialPort.get_command_pid_voltage()
+                    self.application.serialPort.get_command_pid_power(PowerType.kw)
+                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                    time.sleep(3)
+                    if self.application.deviceState != DeviceState.CHARGING:
+                        break
             else:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")

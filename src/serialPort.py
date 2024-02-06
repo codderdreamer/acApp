@@ -264,7 +264,7 @@ class SerialPort():
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             # print("Send get_command_pid_rfid -->", send_data)
             self.send_data_list.append(send_data)
-            time.sleep(0.5)
+            time.sleep(0.2)
 
     #   ************************ RESPONSE  *****************************************************
 

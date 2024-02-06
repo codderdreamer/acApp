@@ -175,7 +175,7 @@ class SerialPort():
             print("----->  2 sn bekleniyor",datetime.now())
             time.sleep(2)
             self.parameter_data = "002"
-            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
+            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             print("Send set_command_pid_led_control -->", send_data)

@@ -400,6 +400,12 @@ class SoftwareSettingsService(Service):
         self.add_characteristic(FirmwareSettingsCharacteristic(bus, 9, self, application))
         self.add_characteristic(MaxCurrentSettingsCharacteristic(bus, 10, self, application))
         self.add_characteristic(DeviceStatusSettingsCharacteristic(bus, 11, self, application))
+        self.add_characteristic(StartTransactionCharacteristic(bus, 12, self, application))
+        self.add_characteristic(StopTransactionCharacteristic(bus, 13, self, application))
+        self.add_characteristic(ChargingCharacteristic(bus, 14, self, application))
+        
+        
+        
         
 class NetworkPriorityCharacteristic(Characteristic):
     
@@ -773,6 +779,77 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
             self.application.settings.set_maxcurrent(json_object)
         except Exception as e:
             print(datetime.now(),"MaxCurrentSettingsCharacteristic WriteValue Exception:",e)
+            
+class StartTransactionCharacteristic(Characteristic):
+    
+    MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab13'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.MaxCurrentSettings_UUID,
+                ['write', 'writable-auxiliaries'],
+                service)
+        self.value = None
+
+
+    def WriteValue(self, value, options):
+        try:
+            # print("MaxCurrentSettingsCharacteristic Write: ",repr(value) )
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            # print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_start_transaction(json_object)
+        except Exception as e:
+            print(datetime.now(),"MaxCurrentSettingsCharacteristic WriteValue Exception:",e)
+            
+class StopTransactionCharacteristic(Characteristic):
+    
+    MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab14'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.MaxCurrentSettings_UUID,
+                ['write', 'writable-auxiliaries'],
+                service)
+        self.value = None
+
+
+    def WriteValue(self, value, options):
+        try:
+            # print("MaxCurrentSettingsCharacteristic Write: ",repr(value) )
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            # print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_stop_transaction(json_object)
+        except Exception as e:
+            print(datetime.now(),"MaxCurrentSettingsCharacteristic WriteValue Exception:",e)
+            
+class ChargingCharacteristic(Characteristic):
+    
+    MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab15'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.MaxCurrentSettings_UUID,
+                ['read', 'writable-auxiliaries'],
+                service)
+        self.value = None
+        
+    def ReadValue(self, options):
+        try:
+            self.value = self.application.settings.get_charging().encode('utf-8')
+            # print('MaxCurrentSettingsCharacteristic Read: ' + repr(self.value))
+            return self.value
+        except Exception as e:
+            print(datetime.now(),"MaxCurrentSettingsCharacteristic ReadValue Exception:",e)
             
 def register_app_cb():
     print('GATT application registered')

@@ -52,23 +52,23 @@ class Process():
         else:
             self.application.ev.charge = False
         
-        if self.application.cardType == CardType.LocalPnC:
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
-            self._lock_connector_set_control_pilot()
-        
-        elif self.application.cardType == CardType.BillingCard:
-            if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+            if self.application.cardType == CardType.LocalPnC:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
-            else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
-                self.application.deviceState = DeviceState.WAITING_AUTH
-        
-        elif self.application.cardType == CardType.StartStopCard:
-            if self.application.ev.start_stop_authorize:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
-            else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
-                self.application.deviceState = DeviceState.WAITING_AUTH
+                self._lock_connector_set_control_pilot()
+            
+            elif self.application.cardType == CardType.BillingCard:
+                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+                else:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+                    self.application.deviceState = DeviceState.WAITING_AUTH
+            
+            elif self.application.cardType == CardType.StartStopCard:
+                if self.application.ev.start_stop_authorize:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+                else:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+                    self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")

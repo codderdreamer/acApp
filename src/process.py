@@ -9,13 +9,6 @@ class Process():
     def __init__(self,application) -> None:
         self.application = application
         self.id_tag = None
-        Thread(target=self.test,daemon=True).start()
-        
-    def test(self):
-        while True:
-            print("self.application.ev.start_stop_authorize",self.application.ev.start_stop_authorize)
-            time.sleep(1)
-        
         
     def _lock_connector_set_control_pilot(self):
         print("************************************************ _lock_connector_set_control_pilot")

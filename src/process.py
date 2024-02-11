@@ -90,10 +90,6 @@ class Process():
                 while True:
                     if self.application.chargePoint.authorize != None:
                         break
-                    if time.time() - time_start > 20:
-                        print("\nAuthorization yapılmadı 20 saniye doldu !!! FAULT\n")
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-                        return
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
                 if self.application.chargePoint.authorize == AuthorizationStatus.accepted:

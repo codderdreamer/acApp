@@ -215,7 +215,8 @@ class Process():
     def fault(self):
         print("****************************************************************** fault")
         self.application.ev.start_stop_authorize = None
-        self.application.chargePoint.authorize = None
+        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+            self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
@@ -235,7 +236,8 @@ class Process():
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
         self.application.ev.start_stop_authorize = None
-        self.application.chargePoint.authorize = None
+        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+            self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
@@ -251,7 +253,8 @@ class Process():
     def idle(self):
         print("****************************************************************** idle")
         self.application.ev.start_stop_authorize = None
-        self.application.chargePoint.authorize = None
+        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+            self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
@@ -271,7 +274,8 @@ class Process():
     def stopped_by_user(self):
         print("****************************************************************** stopped_by_user")
         self.application.ev.start_stop_authorize = None
-        self.application.chargePoint.authorize = None
+        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+            self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()

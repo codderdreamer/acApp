@@ -59,6 +59,10 @@ class ChargePoint16(cp):
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             self.authorize = response.id_tag_info['status']
+            if self.authorize == AuthorizationStatus.accepted:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+            else:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
             return response
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)

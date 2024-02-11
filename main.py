@@ -140,28 +140,29 @@ class Application():
         
     async def ocppStart(self):
         try:
-            if self.settings.ocppSettings.sslEnable == SSLEnable.Disable.value:
-                ws = "ws://"
-            elif self.settings.ocppSettings.sslEnable == SSLEnable.Enable.value:
-                ws = "wss://"
-            
-            if self.settings.ocppSettings.port != None and self.settings.ocppSettings.port != "" and self.settings.ocppSettings.port != "80":
-                ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
-            else:
-                ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
+            if self.cardType == CardType.BillingCard:
+                if self.settings.ocppSettings.sslEnable == SSLEnable.Disable.value:
+                    ws = "ws://"
+                elif self.settings.ocppSettings.sslEnable == SSLEnable.Enable.value:
+                    ws = "wss://"
                 
-            # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
-            print("********************************************************ocpp_url:",ocpp_url)
-            async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
-                self.ocppActive = True
-                if self.ocpp_subprotocols == OcppVersion.ocpp16:
-                    self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws)
-                    future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
-                    await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId,self.settings.ocppSettings.chargePointId)
-                elif self.ocpp_subprotocols == OcppVersion.ocpp20:
-                    pass
-                elif self.ocpp_subprotocols == OcppVersion.ocpp21:
-                    pass
+                if self.settings.ocppSettings.port != None and self.settings.ocppSettings.port != "" and self.settings.ocppSettings.port != "80":
+                    ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
+                else:
+                    ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
+                    
+                # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
+                print("********************************************************ocpp_url:",ocpp_url)
+                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
+                    self.ocppActive = True
+                    if self.ocpp_subprotocols == OcppVersion.ocpp16:
+                        self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws)
+                        future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
+                        await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId,self.settings.ocppSettings.chargePointId)
+                    elif self.ocpp_subprotocols == OcppVersion.ocpp20:
+                        pass
+                    elif self.ocpp_subprotocols == OcppVersion.ocpp21:
+                        pass
         except Exception as e:
             print(datetime.now(),"ocppStart Exception:",e)
 

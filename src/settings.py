@@ -382,6 +382,7 @@ class Settings():
     def set_start_transaction(self,sjon):
         try:
             if(sjon["Command"] == "StartTransaction"):
+                print("set_start_transaction")
                 self.application.ev.start_stop_authorize = True
         except Exception as e:
             print(datetime.now(),"set_start_transaction Exception:",e)

@@ -37,7 +37,7 @@ class EV():
         
         self.send_message_thread_start = False
         
-        self.start_stop_authorize = None
+        self.start_stop_authorize = False
         
     def send_message(self):
         self.send_message_thread_start = True

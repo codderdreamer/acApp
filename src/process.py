@@ -35,7 +35,6 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
-        print("self.application.ev.start_stop_authorize",self.application.ev.start_stop_authorize)
         
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -226,7 +225,7 @@ class Process():
           
     def fault(self):
         print("****************************************************************** fault")
-        self.application.ev.start_stop_authorize = None
+        self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
@@ -249,7 +248,7 @@ class Process():
         
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
-        self.application.ev.start_stop_authorize = None
+        self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
@@ -268,7 +267,7 @@ class Process():
             
     def idle(self):
         print("****************************************************************** idle")
-        self.application.ev.start_stop_authorize = None
+        self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
@@ -291,7 +290,7 @@ class Process():
             
     def stopped_by_user(self):
         print("****************************************************************** stopped_by_user")
-        self.application.ev.start_stop_authorize = None
+        self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""

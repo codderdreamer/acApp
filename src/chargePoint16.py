@@ -609,6 +609,7 @@ class ChargePoint16(cp):
             response = call_result.RemoteStartTransactionPayload(
                 status= RemoteStartStopStatus.accepted
             )
+            self.application.chargePoint.authorize = AuthorizationStatus.accepted
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

@@ -289,8 +289,9 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
     def stopped_by_user(self):
-        print("****************************************************************** stopped_by_user")
         self.application.ev.start_stop_authorize = False
+        print("****************************************************************** stopped_by_user",self.application.ev.start_stop_authorize)
+        
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""

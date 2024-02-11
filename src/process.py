@@ -52,27 +52,24 @@ class Process():
         if self.application.control_C_B:
             print("Şarj C'den B'ye döndü Röle kapatıldı")
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-            self.application.deviceState = DeviceState.WAITING_STATE_C
-            return
+        
         else:
             self.application.ev.charge = False
         
             if self.application.cardType == CardType.LocalPnC:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
                 self._lock_connector_set_control_pilot()
+                self.application.deviceState = DeviceState.WAITING_STATE_C
             
             elif self.application.cardType == CardType.BillingCard:
                 if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
                 else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                     self.application.deviceState = DeviceState.WAITING_AUTH
             
             elif self.application.cardType == CardType.StartStopCard:
                 if self.application.ev.start_stop_authorize:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
                 else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                     self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):

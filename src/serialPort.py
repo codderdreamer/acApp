@@ -161,24 +161,22 @@ class SerialPort():
         self.send_data_list.append(send_data)
 
     def set_command_pid_led_control(self,led_state:LedState):
-        print(datetime.now(),led_state)
         self.parameter_data = "002"
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send set_command_pid_led_control -->", send_data)
+        print("Send set_command_pid_led_control -->", led_state.value)
         self.send_data_list.append(send_data)
         if led_state != LedState.RfidVerified and led_state != LedState.RfidFailed:
             print("********** önceki led setlendi",self.led_state)
             self.led_state = led_state
         else:
-            print("----->  2 sn bekleniyor",datetime.now())
             time.sleep(1)
             self.parameter_data = "002"
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("Send set_command_pid_led_control -->", send_data)
+            print("1 sn sonra set_command_pid_led_control -->", self.led_state.value)
             self.send_data_list.append(send_data)
 
     def get_command_pid_led_control(self):

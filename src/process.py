@@ -93,9 +93,14 @@ class Process():
                 
                 while True:
                     if self.application.chargePoint.authorize != None:
-                        self.id_tag = self.application.ev.card_id
-                        self._lock_connector_set_control_pilot()
-                        break
+                        if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                            self.id_tag = self.application.ev.card_id
+                            self._lock_connector_set_control_pilot()
+                            break
+                        if self.application.ev.id_tag != None:
+                            self.id_tag = self.application.ev.id_tag
+                            self._lock_connector_set_control_pilot()
+                            break
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
                     time.sleep(1)
@@ -225,6 +230,7 @@ class Process():
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
+        self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
         if self.application.ocppActive:
@@ -247,6 +253,7 @@ class Process():
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
+        self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         if self.application.ocppActive:
@@ -265,6 +272,7 @@ class Process():
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
+        self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
         if self.application.ocppActive:
@@ -287,6 +295,7 @@ class Process():
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
+        self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         if self.application.ocppActive:

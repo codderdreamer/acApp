@@ -33,6 +33,7 @@ class EV():
         self.__charge = False
         
         self.__card_id = None
+        self.__id_tag = None
         
         self.send_message_thread_start = False
         
@@ -131,6 +132,14 @@ class EV():
         
         
         self.__card_id = value
+        
+    @property
+    def id_tag(self):
+        return self.__id_tag
+
+    @id_tag.setter
+    def id_tag(self, value):
+        self.__id_tag = value
                 
             
 

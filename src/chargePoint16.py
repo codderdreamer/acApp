@@ -601,7 +601,7 @@ class ChargePoint16(cp):
                 connector_id,
                 charging_profile
             )
-            self.application.ev.card_id = id_tag
+            self.application.ev.id_tag = id_tag
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
             response = call_result.RemoteStartTransactionPayload(
                 status= RemoteStartStopStatus.accepted

@@ -121,7 +121,7 @@ class EV():
                 card_id_list = self.application.databaseModule.get_local_list()
                 for id in card_id_list:
                     if value == id:
-                        if self.charge:
+                        if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
                             self.start_stop_authorize = False
                         else:
                             self.start_stop_authorize = True

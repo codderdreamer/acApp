@@ -35,7 +35,7 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
-        self.application.ev.charge = False
+        
         
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -49,6 +49,8 @@ class Process():
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             self.application.deviceState = DeviceState.WAITING_STATE_C
             return
+        else:
+            self.application.ev.charge = False
         
         if self.application.cardType == CardType.LocalPnC:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()

@@ -158,7 +158,6 @@ class Process():
                 
                 if self.application.ocppActive:
                     self.application.chargePoint.start_transaction_result = None
-                    self.id_tag = 
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
                     time_start = time.time()
                     while True:

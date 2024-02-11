@@ -140,6 +140,7 @@ class Application():
         
     async def ocppStart(self):
         try:
+            self.ocppActive = False
             if self.cardType == CardType.BillingCard:
                 if self.settings.ocppSettings.sslEnable == SSLEnable.Disable.value:
                     ws = "ws://"

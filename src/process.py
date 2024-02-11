@@ -98,7 +98,6 @@ class Process():
                     print("Authorizatinon kabul edilmedi !!! FAULT")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
             
-            
             else:
                 print("Ocpp Aktif değil Hata !!!")
                 self.application.deviceState = DeviceState.FAULT
@@ -164,10 +163,6 @@ class Process():
                     while True:
                         if self.application.chargePoint.start_transaction_result != None:
                             break
-                        if time.time() - time_start > 20:
-                            # print("\nStart Transaction Cevabı Gelmedi !!! FAULT\n")
-                            self.application.deviceState = DeviceState.FAULT
-                            return
                         if self.application.deviceState != DeviceState.CHARGING:
                             return
                     if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
@@ -176,11 +171,6 @@ class Process():
                         # print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
                         self.application.deviceState = DeviceState.FAULT
                         return
-                    
-                    # if self.application.control_A_B_C != True:                               # Adan Cye geçen için
-                    #     # print("Adan Cye geçen için !!! CONNECTED")
-                    #     self.application.deviceState = DeviceState.CONNECTED
-                    #     return
                     
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         self.application.serialPort.set_command_pid_relay_control(Relay.On)
@@ -225,6 +215,7 @@ class Process():
     def fault(self):
         print("****************************************************************** fault")
         self.application.ev.start_stop_authorize = None
+        self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
@@ -244,6 +235,7 @@ class Process():
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
         self.application.ev.start_stop_authorize = None
+        self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
@@ -259,6 +251,7 @@ class Process():
     def idle(self):
         print("****************************************************************** idle")
         self.application.ev.start_stop_authorize = None
+        self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
@@ -278,6 +271,7 @@ class Process():
     def stopped_by_user(self):
         print("****************************************************************** stopped_by_user")
         self.application.ev.start_stop_authorize = None
+        self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()

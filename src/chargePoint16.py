@@ -39,7 +39,6 @@ class ChargePoint16(cp):
         self.authorize = None
         self.transaction_id = None
         self.start_transaction_result = None
-        self.id_tag = None
         
 
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
@@ -599,12 +598,12 @@ class ChargePoint16(cp):
     @on(Action.RemoteStartTransaction)
     def on_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
-            self.id_tag = id_tag
             request = call.RemoteStartTransactionPayload(
                 id_tag,
                 connector_id,
                 charging_profile
             )
+            self.application.ev.card_id = id_tag
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
             response = call_result.RemoteStartTransactionPayload(
                 status= RemoteStartStopStatus.accepted

@@ -145,7 +145,7 @@ class Application():
             elif self.settings.ocppSettings.sslEnable == SSLEnable.Enable.value:
                 ws = "wss://"
             
-            if self.settings.ocppSettings.port != None or self.settings.ocppSettings.port != "":
+            if self.settings.ocppSettings.port != None and self.settings.ocppSettings.port != "":
                 ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
             else:
                 ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path 

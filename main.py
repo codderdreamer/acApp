@@ -148,9 +148,9 @@ class Application():
             if self.settings.ocppSettings.port != None and self.settings.ocppSettings.port != "":
                 ocpp_url = ws + self.settings.ocppSettings.domainName + ":" + self.settings.ocppSettings.port + self.settings.ocppSettings.path
             else:
-                ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path 
+                ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                 
-            # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/"
+            # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
             print("********************************************************ocpp_url:",ocpp_url)
             async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
                 self.ocppActive = True

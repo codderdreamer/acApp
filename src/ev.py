@@ -122,9 +122,9 @@ class EV():
                 for id in card_id_list:
                     if value == id:
                         if self.charge:
-                            self.start_stop_authorize = True
-                        else:
                             self.start_stop_authorize = False
+                        else:
+                            self.start_stop_authorize = True
                         finded = True
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                 

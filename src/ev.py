@@ -121,9 +121,13 @@ class EV():
                 card_id_list = self.application.databaseModule.get_local_list()
                 for id in card_id_list:
                     if value == id:
-                        self.start_stop_authorize = True
+                        if self.charge:
+                            self.start_stop_authorize = True
+                        else:
+                            self.start_stop_authorize = False
                         finded = True
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                
                 if finded == False:
                     self.start_stop_authorize = False
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()

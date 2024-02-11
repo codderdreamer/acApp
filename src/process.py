@@ -35,7 +35,7 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
-        
+        print("self.application.ev.start_stop_authorize",self.application.ev.start_stop_authorize)
         
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -64,7 +64,6 @@ class Process():
                     self.application.deviceState = DeviceState.WAITING_AUTH
             
             elif self.application.cardType == CardType.StartStopCard:
-                print("self.application.ev.start_stop_authorize",self.application.ev.start_stop_authorize)
                 if self.application.ev.start_stop_authorize:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
                 else:

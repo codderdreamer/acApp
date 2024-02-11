@@ -83,20 +83,20 @@ class Process():
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
                     return
                 time.sleep(1)
+        
         elif self.application.cardType == CardType.BillingCard:
             if self.application.ocppActive:
                 time_start = time.time()
                 print("\nAuthorization edilmesi bekleniyor...\n")
+                
                 while True:
                     if self.application.chargePoint.authorize != None:
+                        self.id_tag = self.application.ev.card_id
+                        self._lock_connector_set_control_pilot()
                         break
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
-                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-                    self._lock_connector_set_control_pilot()
-                else:
-                    print("Authorizatinon kabul edilmedi !!! FAULT")
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                    time.sleep(1)
             
             else:
                 print("Ocpp Aktif değil Hata !!!")
@@ -158,6 +158,7 @@ class Process():
                 
                 if self.application.ocppActive:
                     self.application.chargePoint.start_transaction_result = None
+                    self.id_tag = 
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
                     time_start = time.time()
                     while True:

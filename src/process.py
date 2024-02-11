@@ -52,6 +52,15 @@ class Process():
         if self.application.control_C_B:
             print("Şarj C'den B'ye döndü Röle kapatıldı")
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+            time_start = time.time()
+            while True:
+                if self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    if time.time() - time_start > 60*5:
+                        self.application.deviceState = DeviceState.STOPPED_BY_EVSE
+                        break
+                else:
+                    break
+                time.sleep(0.3)
         
         else:
             self.application.ev.charge = False

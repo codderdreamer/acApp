@@ -165,7 +165,7 @@ class SerialPort():
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send set_command_pid_led_control -->", led_state.value)
+        print("Send set_command_pid_led_control -->", led_state)
         self.send_data_list.append(send_data)
         if led_state != LedState.RfidVerified and led_state != LedState.RfidFailed:
             print("********** önceki led setlendi",self.led_state)
@@ -176,7 +176,7 @@ class SerialPort():
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("1 sn sonra set_command_pid_led_control -->", self.led_state.value)
+            print("1 sn sonra set_command_pid_led_control -->", self.led_state)
             self.send_data_list.append(send_data)
 
     def get_command_pid_led_control(self):

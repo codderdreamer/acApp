@@ -35,6 +35,9 @@ class Process():
     def connected(self):
         print("****************************************************************** connected")
         
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+        
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
             time.sleep(0.5)

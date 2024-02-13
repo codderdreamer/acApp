@@ -20,6 +20,8 @@ class Settings():
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
         
+        self.change_ocpp = False
+        
         self.__websocketIp = None
         
     @property
@@ -325,6 +327,7 @@ class Settings():
                 chargePointId = sjon["Data"]["chargePointId"]
                 self.application.databaseModule.set_ocpp_settings(domainName,port,sslEnable,authorizationKey,path,chargePointId)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_ocpp_settings())
+                self.change_ocpp = True
         except Exception as e:
             print(datetime.now(),"set_ocpp_settings Exception:",e)
         

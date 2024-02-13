@@ -189,6 +189,9 @@ class ChargePoint16(cp):
         try :
             request = call.HeartbeatPayload()
             while self.application.cardType == CardType.BillingCard:
+                if self.application.settings.change_ocpp:
+                    self.application.settings.change_ocpp = False
+                    break
                 LOGGER_CHARGE_POINT.info("Request:%s", request)
                 response = await self.call(request)
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)

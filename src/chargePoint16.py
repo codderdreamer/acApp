@@ -256,7 +256,7 @@ class ChargePoint16(cp):
                                 "value": str(self.application.ev.current_L1),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
-                                "measurand": Measurand.current_export,
+                                "measurand": Measurand.current_import,
                                 "phase" : Phase.l1,
                                 "location": Location.cable,
                                 "unit": UnitOfMeasure.a
@@ -265,7 +265,7 @@ class ChargePoint16(cp):
                                 "value": str(self.application.ev.current_L2),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
-                                "measurand": Measurand.current_export,
+                                "measurand": Measurand.current_import,
                                 "phase" : Phase.l2,
                                 "location": Location.cable,
                                 "unit": UnitOfMeasure.a
@@ -274,7 +274,7 @@ class ChargePoint16(cp):
                                 "value": str(self.application.ev.current_L3),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
-                                "measurand": Measurand.current_export,
+                                "measurand": Measurand.current_import,
                                 "phase" : Phase.l3,
                                 "location": Location.cable,
                                 "unit": UnitOfMeasure.a

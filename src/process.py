@@ -252,7 +252,13 @@ class Process():
         # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-        self.application.deviceState = DeviceState.IDLE
+            
+        while True:
+            if self.application.ev.control_pilot == ControlPlot.stateA.value or self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
+                self.application.deviceState = DeviceState.IDLE
+            else:
+                break
+            time.sleep(1)
         
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")

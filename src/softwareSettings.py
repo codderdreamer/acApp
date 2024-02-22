@@ -157,6 +157,7 @@ class SoftwareSettings():
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
             self.delete_connection_type("wifi")
+            print("wifiEnable",wifiEnable)
             if wifiEnable=="True":
                 if mod == "AP":
                     if wifidhcpcEnable == "False":

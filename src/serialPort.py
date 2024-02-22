@@ -456,7 +456,7 @@ class SerialPort():
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    print("incoming data",incoming)
+                    # print("incoming data",incoming)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)
@@ -469,13 +469,14 @@ class SerialPort():
                         self.get_response_pid_voltage(incoming)
                         self.get_response_pid_energy(incoming)
                         self.get_response_pid_rfid(incoming)
+                        self.get_response_pid_evse_temp(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_pid_cp_pwm(incoming)
                         self.set_response_pid_relay_control(incoming)
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
                         self.set_response_pid_rfid(incoming)
-                        self.get_response_pid_evse_temp(incoming)
+                        
                     
             except Exception as e:
                 print(datetime.now(),"read Exception:",e)

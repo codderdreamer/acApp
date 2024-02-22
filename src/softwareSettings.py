@@ -9,6 +9,7 @@ import psutil
 from src.enums import *
 from datetime import datetime
 import requests
+import pytz
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
@@ -291,7 +292,17 @@ class SoftwareSettings():
         except Exception as e:
             print(datetime.now(),"strenghtOf4G Exception:",e)
             pass
-                     
+         
+    def set_timezoon(self):
+        try:
+            timezone = pytz.timezone(self.application.settings.timezoonSettings.timezone)
+            now = datetime.now(timezone)
+            date_str = now.strftime('%Y-%m-%d %H:%M:%S')
+            subprocess.run(['sudo', 'date', '-s', date_str], check=True)
+            print("Sistem saati başarıyla güncellendi.")       
+        except Exception as e:
+            print(datetime.now(),"control_device_status Exception:",e)
+            
     def control_device_status(self):
         while True:
             try:

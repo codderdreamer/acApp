@@ -453,7 +453,7 @@ class SerialPort():
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    # print("incoming data",incoming)
+                    print("incoming data",incoming)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

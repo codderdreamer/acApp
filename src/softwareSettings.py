@@ -9,7 +9,8 @@ import psutil
 from src.enums import *
 from datetime import datetime
 import requests
-import pytz
+# import pytz
+from zoneinfo import ZoneInfo
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
@@ -295,7 +296,7 @@ class SoftwareSettings():
          
     def set_timezoon(self):
         try:
-            timezone = pytz.timezone(self.application.settings.timezoonSettings.timezone)
+            timezone = ZoneInfo(self.application.settings.timezoonSettings.timezone)
             now = datetime.now(timezone)
             date_str = now.strftime('%Y-%m-%d %H:%M:%S')
             subprocess.run(['sudo', 'date', '-s', date_str], check=True)

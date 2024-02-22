@@ -364,14 +364,7 @@ class Settings():
                 timezone = str(sjon["Data"]["timezone"])
                 self.application.databaseModule.set_timezone_settings(timezone)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_timezoon_settings())
-                timezone = pytz.timezone(timezone)
-                now = datetime.now(timezone)
-                date_str = now.strftime('%Y-%m-%d %H:%M:%S')
-                try:
-                    subprocess.run(['sudo', 'date', '-s', date_str], check=True)
-                    print("Sistem saati başarıyla güncellendi.")
-                except subprocess.CalledProcessError as e:
-                    print(f"Hata: {e}")
+                self.application.softwareSettings.set_timezoon()
         except Exception as e:
             print(datetime.now(),"set_timezoon_settings Exception:",e)
     

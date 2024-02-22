@@ -97,13 +97,13 @@ class EV():
 
     @charge.setter
     def charge(self, value):
+        self.__charge = value
         if value:
             Thread(target=self.send_message,daemon=True).start()
         else:
             self.send_message_thread_start = False
             self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
-            self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
-        self.__charge = value
+        
         
     @property
     def card_id(self):

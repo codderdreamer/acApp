@@ -159,7 +159,12 @@ class SoftwareSettings():
             self.delete_connection_type("wifi")
             if wifiEnable=="True":
                 if mod == "AP":
-                    subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", ip, netmask_prefix_length,gateway])
+                    if wifidhcpcEnable == "False":
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])
+                    else:
+                        netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
+                        netmask_prefix_length = netmask_obj.prefixlen
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", ip, netmask_prefix_length,gateway])
                 else:
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")

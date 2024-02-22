@@ -157,10 +157,9 @@ class SoftwareSettings():
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
             self.delete_connection_type("wifi")
-            print("wifidhcpcEnable",wifidhcpcEnable)
             if wifiEnable=="True":
                 if mod == "AP":
-                    if wifidhcpcEnable == "False":
+                    if wifidhcpcEnable == "True":
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])
                     else:
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)

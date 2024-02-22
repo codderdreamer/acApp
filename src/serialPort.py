@@ -441,6 +441,8 @@ class SerialPort():
                 self.set_command_pid_rfid()
                 
     def get_response_pid_evse_temp(self,data):
+        print(data)
+        print(data[2])
         if data[2] == self.pid_evse_temp:
             print(data)
             temp_sign = data[8]

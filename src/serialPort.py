@@ -433,7 +433,7 @@ class SerialPort():
             card_id = ""
             card_id_length = int(data[7] + data[8])
             if card_id_length > 0:
-                for i in range(9,9+card_id_length+1):
+                for i in range(9,9+card_id_length):
                     card_id += data[i]
             if card_id != "":
                 self.application.ev.card_id = card_id

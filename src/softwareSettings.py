@@ -296,13 +296,11 @@ class SoftwareSettings():
          
     def set_timezoon(self):
         try:
-            timezone = ZoneInfo(self.application.settings.timezoonSettings.timezone)
-            now = datetime.now(timezone)
-            date_str = now.strftime('%Y-%m-%d %H:%M:%S')
-            subprocess.run(['sudo', 'date', '-s', date_str], check=True)
-            print("Sistem saati başarıyla güncellendi.")       
-        except Exception as e:
-            print(datetime.now(),"control_device_status Exception:",e)
+            subprocess.run(['sudo', 'timedatectl', 'set-timezone', self.application.settings.timezoonSettings.timezone], check=True)
+            print(f"Zaman dilimi başarıyla '{self.application.settings.timezoonSettings.timezone}' olarak ayarlandı.")
+        except subprocess.CalledProcessError as e:
+            print(datetime.now(),"set_timezoon Exception:",e)
+        
             
     def control_device_status(self):
         while True:

@@ -1,16 +1,11 @@
 import os
 import time
 import ipaddress
-import json
-import socket
 import subprocess
 import re
-import psutil
 from src.enums import *
 from datetime import datetime
 import requests
-# import pytz
-from zoneinfo import ZoneInfo
 
 class SoftwareSettings():
     def __init__(self,application) -> None:

@@ -41,6 +41,7 @@ class SerialPort():
         Thread(target=self.write,daemon=True).start()
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
+        Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
 
     def write(self):
@@ -263,6 +264,18 @@ class SerialPort():
             # print("Send get_command_pid_rfid -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(0.5)
+            
+    def get_command_pid_evse_temp(self):
+        time.sleep(10)
+        while True:
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "M"
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            # print("Send get_command_pid_evse_temp -->", send_data)
+            self.send_data_list.append(send_data)
+            time.sleep(15)
+        
 
     #   ************************ RESPONSE  *****************************************************
 
@@ -426,6 +439,13 @@ class SerialPort():
                 self.application.ev.card_id = card_id
                 print(card_id)
                 self.set_command_pid_rfid()
+                
+    def get_response_pid_evse_temp(self,data):
+        if data[2] == self.pid_evse_temp:
+            temp_sign = data[8]
+            temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
+            self.application.ev.temp = temp_sign + str(temp)
+            print("temp:", self.application.ev.temp)
 
     def read(self):
         while True:
@@ -452,6 +472,7 @@ class SerialPort():
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
                         self.set_response_pid_rfid(incoming)
+                        self.get_response_pid_evse_temp(incoming)
                     
             except Exception as e:
                 print(datetime.now(),"read Exception:",e)

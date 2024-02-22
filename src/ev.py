@@ -28,6 +28,8 @@ class EV():
         self.power = None
         self.energy = None
         
+        self.temp = None
+        
         self.start_date = None
         
         self.__charge = False

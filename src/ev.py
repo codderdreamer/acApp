@@ -28,7 +28,7 @@ class EV():
         self.power = None
         self.energy = None
         
-        self.temp = None
+        self.temperature = None
         
         self.start_date = None
         

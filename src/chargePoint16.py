@@ -287,6 +287,15 @@ class ChargePoint16(cp):
                                 "phase" : None,
                                 "location": Location.cable,
                                 "unit": UnitOfMeasure.kw
+                            },
+                            {
+                                "value": str(self.application.ev.temperature),
+                                "context": ReadingContext.sample_periodic,
+                                "format": ValueFormat.raw,
+                                "measurand": Measurand.temperature,
+                                "phase" : None,
+                                "location": Location.body,
+                                "unit": UnitOfMeasure.celsius
                             }
                         ]
                     }

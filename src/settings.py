@@ -210,7 +210,8 @@ class Settings():
                                 "voltage_L2" : self.application.ev.voltage_L2,
                                 "voltage_L3" : self.application.ev.voltage_L3,
                                 "power" : self.application.ev.power,
-                                "energy" : self.application.ev.energy
+                                "energy" : self.application.ev.energy,
+                                "temperature" : self.application.ev.temperature
                             }
                 }
         json_string = json.dumps(command)

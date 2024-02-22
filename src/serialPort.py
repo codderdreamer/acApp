@@ -39,8 +39,8 @@ class SerialPort():
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
-        # Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
-        # Thread(target=self.get_command_pid_rfid,daemon=True).start()
+        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
+        Thread(target=self.get_command_pid_rfid,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
 
@@ -444,8 +444,8 @@ class SerialPort():
         if data[2] == self.pid_evse_temp:
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
-            self.application.ev.temp = temp_sign + str(temp)
-            print("temp:", self.application.ev.temp)
+            self.application.ev.temperature = temp_sign + str(temp)
+            print("temp:", self.application.ev.temperature)
 
     def read(self):
         while True:

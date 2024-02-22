@@ -102,6 +102,7 @@ class EV():
         else:
             self.send_message_thread_start = False
             self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+            self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
         self.__charge = value
         
     @property

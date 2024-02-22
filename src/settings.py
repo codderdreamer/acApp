@@ -3,8 +3,6 @@ from datetime import datetime
 import time
 from threading import Thread
 from src.enums import *
-import pytz
-import subprocess
 
 class Settings():
     def __init__(self,application) -> None:

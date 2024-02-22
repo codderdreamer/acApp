@@ -272,7 +272,7 @@ class SerialPort():
             data = self.get_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "M"
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("Send get_command_pid_evse_temp -->", send_data)
+            # print("Send get_command_pid_evse_temp -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(15)
         
@@ -442,7 +442,6 @@ class SerialPort():
                 
     def get_response_pid_evse_temp(self,data):
         if data[2] == self.pid_evse_temp:
-            print(data)
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)

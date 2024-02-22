@@ -445,7 +445,7 @@ class SerialPort():
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)
-            print("temp:", self.application.ev.temperature)
+            # print("temp:", self.application.ev.temperature)
 
     def read(self):
         while True:

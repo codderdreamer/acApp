@@ -129,6 +129,7 @@
                 "voltage_L2" : 1.93,
                 "voltage_L3" : 1.93,
                 "power" :0.011,
-                "energy" : 0.007
+                "energy" : 0.007,
+                "temperature" : "+40.4"
             }
 }

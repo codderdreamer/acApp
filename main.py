@@ -14,6 +14,7 @@ from src.bluetoothService.bluetoothService import BluetoothService
 from src.process import Process
 from ocpp.v16.enums import *
 from datetime import datetime
+from src.modbusModule import ModbusModule
 
 
 class Application():
@@ -42,6 +43,7 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
+        self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=1)
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()

@@ -10,7 +10,7 @@ nmcli con modify $1 802-11-wireless-security.pairwise ccmp && \
 nmcli con modify $1 802-11-wireless-security.psk $2 && \
 nmcli con modify "$1" ipv4.method shared && \
 nmcli con up "$1"
-if [ "$3" = "True" ]; then
+if [ "$3" == "True" ]; then
     nmcli con modify "$1" ipv4.method manual
     nmcli con modify "$1" ipv4.addresses "$4/$5"
     nmcli con modify "$1" ipv4.gateway "$6"

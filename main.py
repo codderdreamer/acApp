@@ -70,6 +70,7 @@ class Application():
         Thread(target=self.control_led,daemon=True).start()
         
         self.flaskModule = FlaskModule(self)
+        Thread(target=self.flaskModule.run,daemon=True).start()
         
     def control_led(self):
         while True:

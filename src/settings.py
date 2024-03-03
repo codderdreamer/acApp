@@ -43,6 +43,7 @@ class Settings():
             data = {
                     "ip" : ip
                 }
+            print(data)
             with open("/root/acApp/client/build/websocket.json", "w") as file:
                 json.dump(data, file)
         except Exception as e:

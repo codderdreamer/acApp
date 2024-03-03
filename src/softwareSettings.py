@@ -336,5 +336,5 @@ class SoftwareSettings():
             os.system("""hostnamectl set-hostname {0}""".format(self.application.settings.bluetoothSettings.bluetooth_name))
             subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
             
-            BluetoothService(self)
+            BluetoothService(self.application)
     

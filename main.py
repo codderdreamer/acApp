@@ -15,6 +15,7 @@ from src.process import Process
 from ocpp.v16.enums import *
 from datetime import datetime
 from src.modbusModule import ModbusModule
+from src.flaskModule import FlaskModule
 
 
 class Application():
@@ -67,6 +68,8 @@ class Application():
         self.softwareSettings.set_timezoon()
         self.process.idle()
         Thread(target=self.control_led,daemon=True).start()
+        
+        self.flaskModule = FlaskModule(self)
         
     def control_led(self):
         while True:

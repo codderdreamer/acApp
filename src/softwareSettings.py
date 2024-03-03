@@ -167,12 +167,12 @@ class SoftwareSettings():
                     print("mod AP ye girdi","wifidhcpcEnable",wifidhcpcEnable)
                     if wifidhcpcEnable == "True":
                         print("wifidhcpcEnable True")
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable])
                     else:
                         print("wifidhcpcEnable else")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", ip, netmask_prefix_length,gateway])
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable, ip, netmask_prefix_length,gateway])
                 else:
                     print("mod diğer ye girdi")
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")

@@ -67,7 +67,6 @@ class Application():
         self.softwareSettings.set_functions_enable()
         self.softwareSettings.set_timezoon()
         self.process.idle()
-        Thread(target=self.control_led,daemon=True).start()
         
         self.flaskModule = FlaskModule(self)
         Thread(target=self.flaskModule.run,daemon=True).start()

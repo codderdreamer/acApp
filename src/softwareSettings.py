@@ -167,7 +167,7 @@ class SoftwareSettings():
                     print("mod AP ye girdi","wifidhcpcEnable",wifidhcpcEnable)
                     if wifidhcpcEnable == "True":
                         print("wifidhcpcEnable True")
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable])
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable,'',''])
                     else:
                         print("wifidhcpcEnable else")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)

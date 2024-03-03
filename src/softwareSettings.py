@@ -317,6 +317,7 @@ class SoftwareSettings():
     def control_device_status(self):
         while True:
             try:
+                print("control_device_status")
                 self.ping_google()
                 self.find_network()
                 self.find_stateOfOcpp()

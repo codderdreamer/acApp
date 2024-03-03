@@ -72,6 +72,7 @@ class Application():
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
         self.softwareSettings.set_timezoon()
+        self.softwareSettings.set_bluetooth_settings()
         self.process.idle()
         
         # self.flaskModule = FlaskModule(self)

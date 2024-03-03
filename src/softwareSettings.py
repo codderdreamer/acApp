@@ -330,6 +330,8 @@ class SoftwareSettings():
                 print(datetime.now(),"control_device_status Exception:",e)
             time.sleep(10)
             
-    # def set_bluetooth_settings
-        
+    def set_bluetooth_settings(self):
+        if self.application.settings.bluetoothSettings.bluetooth_name != None or self.application.settings.bluetoothSettings.bluetooth_name != "":
+            os.system("""hostnamectl set-hostname {0}""".format(self.application.settings.bluetoothSettings.bluetooth_name))
+            subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
     

@@ -161,6 +161,7 @@ class SoftwareSettings():
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
             self.delete_connection_type("wifi")
+            time.sleep(5)
             if wifiEnable=="True":
                 print("wifi enable True girdi")
                 if mod == "AP":

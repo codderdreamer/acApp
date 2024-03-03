@@ -143,6 +143,7 @@ class SoftwareSettings():
                 if pin:
                     set_pin_command = """nmcli modem gsm unlock sim-pin {0}""".format(pin)
                     os.system(set_pin_command)
+                os.system("""nmcli con up "{0}" ifname ttyUSB2""".format(connection_name))
             else:
                 pass
         except Exception as e:

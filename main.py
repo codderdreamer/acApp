@@ -22,7 +22,7 @@ import subprocess
 class Application():
     def __init__(self,loop):
         subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
-        time.sleep(5)
+        time.sleep(10)
         self.loop = loop
         self.chargePoint = None
         
@@ -74,12 +74,6 @@ class Application():
         self.softwareSettings.set_timezoon()
         self.softwareSettings.set_bluetooth_settings()
         self.process.idle()
-        
-        # self.flaskModule = FlaskModule(self)
-        # Thread(target=self.flaskModule.run,daemon=True).start()
-        
-        
-        # self.flaskModule.start()
         
         
     @property

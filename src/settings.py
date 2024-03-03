@@ -38,16 +38,18 @@ class Settings():
             self.application.flaskModule.join()
             print("self.application.flaskModule.join()")
             self.__websocketIp = value
+            print("self.set_websocket_ip(value)")
             self.set_websocket_ip(value)
             self.application.flaskModule.host = self.__websocketIp
             self.application.flaskModule.start()
             
     def set_websocket_ip(self,ip):
         try:
+            print("ip",ip)
             data = {
                     "ip" : ip
                 }
-            print(data)
+            print("data",data)
             with open("/root/acApp/client/build/websocket.json", "w") as file:
                 json.dump(data, file)
         except Exception as e:

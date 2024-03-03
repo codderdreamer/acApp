@@ -21,7 +21,7 @@ import subprocess
 
 class Application():
     def __init__(self,loop):
-        subprocess.run(["bluetooth_set.sh"])
+        subprocess.run(["bluetooth_set.sh","exit"])
         time.sleep(5)
         self.loop = loop
         self.chargePoint = None

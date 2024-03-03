@@ -15,7 +15,7 @@ from src.process import Process
 from ocpp.v16.enums import *
 from datetime import datetime
 from src.modbusModule import ModbusModule
-from src.flaskModule import FlaskModule
+from src.flaskModule import FlaskModuleThread
 
 
 class Application():
@@ -68,36 +68,12 @@ class Application():
         self.softwareSettings.set_timezoon()
         self.process.idle()
         
-        self.flaskModule = FlaskModule(self)
-        Thread(target=self.flaskModule.run,daemon=True).start()
+        # self.flaskModule = FlaskModule(self)
+        # Thread(target=self.flaskModule.run,daemon=True).start()
         
-    def control_led(self):
-        while True:
-            x = input()
-            if x == "1":
-                self.serialPort.set_command_pid_led_control(LedState.StandBy)
-            elif x == "2":
-                self.serialPort.set_command_pid_led_control(LedState.Connecting)
-            elif x == "3":
-                self.serialPort.set_command_pid_led_control(LedState.RfidVerified)
-            elif x == "4":
-                self.serialPort.set_command_pid_led_control(LedState.Charging)
-            elif x == "5":
-                self.serialPort.set_command_pid_led_control(LedState.RfidFailed)
-            elif x == "6":
-                self.serialPort.set_command_pid_led_control(LedState.NeedReplugging)
-            elif x == "7":
-                self.serialPort.set_command_pid_led_control(LedState.Fault)
-            elif x == "8":
-                self.serialPort.set_command_pid_led_control(LedState.ChargingStopped)
-            elif x == "9":
-                self.serialPort.set_command_pid_relay_control(Relay.Off)
-            elif x == "10":
-                self.serialPort.set_command_pid_relay_control(Relay.On)
-            elif x == "11":  
-                self.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-            elif x == "12":  
-                self.serialPort.set_command_pid_locker_control(LockerState.Lock)
+        self.flaskModule = FlaskModuleThread(self)
+        self.flaskModule.start()
+        
         
     @property
     def deviceState(self):

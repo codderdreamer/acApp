@@ -2,6 +2,7 @@ import os
 import time
 from flask import Flask, render_template, request, jsonify
 from threading import Thread
+import threading
 
 class FlaskModule:
     def __init__(self,application) -> None:
@@ -47,3 +48,20 @@ class FlaskModule:
         
     def run(self):
         self.app.run(use_reloader=False, host=self.host, port=80, threaded=True)
+        
+class FlaskModuleThread(threading.Thread):
+    def __init__(self,application):
+        super().__init__()
+        self.stop_event = threading.Event()
+        self.application = application
+        self.flaskModule = FlaskModule(self.application)
+
+    def stop(self):
+        self.stop_event.set()
+
+    def run(self):
+        if not self.stop_event.is_set():
+            print("FlaskModuleThread çalıştırıldı.")
+            self.flaskModule.run()
+        print("FlaskModuleThread durduruldu.")
+        

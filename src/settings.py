@@ -31,8 +31,10 @@ class Settings():
     @websocketIp.setter
     def websocketIp(self, value):
         if self.__websocketIp != value:
+            self.application.flaskModule.stop()
             self.__websocketIp = value
             self.set_websocket_ip(value)
+            self.application.flaskModule.start()
             
     def set_websocket_ip(self,ip):
         try:

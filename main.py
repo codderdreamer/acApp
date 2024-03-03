@@ -72,7 +72,7 @@ class Application():
         # Thread(target=self.flaskModule.run,daemon=True).start()
         
         self.flaskModule = FlaskModuleThread(self)
-        self.flaskModule.start()
+        # self.flaskModule.start()
         
         
     @property

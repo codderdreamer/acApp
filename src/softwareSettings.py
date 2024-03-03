@@ -7,6 +7,7 @@ from src.enums import *
 from datetime import datetime
 import requests
 from src.bluetoothService.bluetoothService import BluetoothService
+from subprocess import Popen, PIPE, STDOUT
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
@@ -333,19 +334,17 @@ class SoftwareSettings():
             
     def set_bluetooth_settings(self):
         try:
-            if self.application.settings.bluetoothSettings.bluetooth_name != None or self.application.settings.bluetoothSettings.bluetooth_name != "":
-                #hostname
-                # os.system("""hostnamectl set-hostname {0}""".format(self.application.settings.bluetoothSettings.bluetooth_name))
-                # subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
-                process = subprocess.Popen(['bluetoothctl','system-alias',self.application.settings.bluetoothSettings.bluetooth_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-                # bluetoothctl'e 'exit' komutunu gönder
-                process.communicate(input='exit\n'.encode())
-
-                # İsteğe bağlı: Çıktıyı (stdout ve stderr) al ve yazdır
-                stdout, stderr = process.communicate()
-                print(stdout.decode())
+            bt_name = self.application.settings.bluetoothSettings.bluetooth_name
+            if bt_name:
+                process = Popen(['bluetoothctl', 'system-alias', bt_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+                # 'exit' komutunu gönder ve sürecin çıktısını al
+                stdout, stderr = process.communicate(input='exit\n'.encode())
+                
+                # Çıktıyı yazdır
+                print("STDOUT:", stdout.decode())
+                if stderr:
+                    print("STDERR:", stderr.decode())
         except Exception as e:
-            print(datetime.now(),"set_bluetooth_settings Exception:",e)
+            print(datetime.now(), "set_bluetooth_settings Exception:", e)
             
     

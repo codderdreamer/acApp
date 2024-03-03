@@ -34,7 +34,9 @@ class Settings():
         if self.__websocketIp != value:
             print("if self.__websocketIp != value:")
             self.application.flaskModule.stop()
+            print("self.application.flaskModule.stop()")
             self.application.flaskModule.join()
+            print("self.application.flaskModule.join()")
             self.__websocketIp = value
             self.set_websocket_ip(value)
             self.application.flaskModule.host = self.__websocketIp

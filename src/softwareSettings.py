@@ -6,6 +6,7 @@ import re
 from src.enums import *
 from datetime import datetime
 import requests
+from src.bluetoothService.bluetoothService import BluetoothService
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
@@ -334,4 +335,6 @@ class SoftwareSettings():
         if self.application.settings.bluetoothSettings.bluetooth_name != None or self.application.settings.bluetoothSettings.bluetooth_name != "":
             os.system("""hostnamectl set-hostname {0}""".format(self.application.settings.bluetoothSettings.bluetooth_name))
             subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
+            
+            BluetoothService(self)
     

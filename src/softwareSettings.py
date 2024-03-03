@@ -305,7 +305,7 @@ class SoftwareSettings():
          
     def set_timezoon(self):
         try:
-            subprocess.run(['sudo', 'timedatectl', 'set-timezone', self.application.settings.timezoonSettings.timezone], check=True)
+            subprocess.run(['timedatectl', 'set-timezone', self.application.settings.timezoonSettings.timezone], check=True)
             print(f"Zaman dilimi başarıyla '{self.application.settings.timezoonSettings.timezone}' olarak ayarlandı.")
         except subprocess.CalledProcessError as e:
             print(datetime.now(),"set_timezoon Exception:",e)

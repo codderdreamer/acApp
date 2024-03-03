@@ -164,7 +164,7 @@ class SoftwareSettings():
             if wifiEnable=="True":
                 print("wifi enable True girdi")
                 if mod == "AP":
-                    print("mod AP ye girdi")
+                    print("mod AP ye girdi","wifidhcpcEnable",wifidhcpcEnable)
                     if wifidhcpcEnable == "True":
                         print("wifidhcpcEnable True")
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])

@@ -143,6 +143,7 @@ class SoftwareSettings():
                 time.sleep(5)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
                 os.system(add_connection_string)
+                time.sleep(5)
                 # if pin:
                 #     set_pin_command = """nmcli modem gsm unlock sim-pin {0}""".format(pin)
                 #     os.system(set_pin_command)

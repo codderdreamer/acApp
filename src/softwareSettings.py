@@ -91,6 +91,7 @@ class SoftwareSettings():
             netmask = self.application.settings.ethernetSettings.netmask
             gateway = self.application.settings.ethernetSettings.gateway
             self.delete_connection_type("ethernet")
+            time.sleep(5)
             if ethernetEnable == "True":
                 if dhcpcEnable == "False":
                     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
@@ -134,6 +135,7 @@ class SoftwareSettings():
             pin = self.application.settings.settings4G.pin
             enableModification = self.application.settings.settings4G.enableModification
             self.delete_connection_type("gsm")
+            time.sleep(5)
             if enableModification=="True":
                 os.system("nmcli connection delete ppp0")
                 time.sleep(3)
@@ -326,5 +328,7 @@ class SoftwareSettings():
             except Exception as e:
                 print(datetime.now(),"control_device_status Exception:",e)
             time.sleep(10)
+            
+    # def set_bluetooth_settings
         
     

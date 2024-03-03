@@ -16,10 +16,13 @@ from ocpp.v16.enums import *
 from datetime import datetime
 from src.modbusModule import ModbusModule
 from src.flaskModule import FlaskModuleThread
+import subprocess
 
 
 class Application():
     def __init__(self,loop):
+        subprocess.run(["bluetooth_set.sh"])
+        time.sleep(5)
         self.loop = loop
         self.chargePoint = None
         
@@ -60,8 +63,11 @@ class Application():
         self.id_tag_list = self.databaseModule.get_local_list()
         
         self.softwareSettings.set_eth()
+        time.sleep(5)
         self.softwareSettings.set_4G()
+        time.sleep(5)
         self.softwareSettings.set_wifi()
+        time.sleep(5)
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()

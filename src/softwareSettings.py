@@ -22,7 +22,7 @@ class SoftwareSettings():
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
         except Exception as e:
-            print(datetime.now(),"get_active_ips Exception:",e)
+            print(datetime.now(),"control_websocket_ip Exception:",e)
         
     def get_active_ips(self):
         try:

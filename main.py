@@ -42,7 +42,7 @@ class Application():
         self.softwareSettings = SoftwareSettings(self)
         self.databaseModule = DatabaseModule(self)
         self.webSocketServer = WebSocketServer(self)
-        
+        self.updateModule = UpdateModule(self)
         self.ev = EV(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
@@ -76,6 +76,7 @@ class Application():
         self.process.idle()
         
         self.bluetoothService = BluetoothService(self)
+    
         
         
     @property

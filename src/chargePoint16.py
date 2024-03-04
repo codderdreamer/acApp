@@ -41,7 +41,6 @@ class ChargePoint16(cp):
         self.transaction_id = None
         self.start_transaction_result = None
         
-
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 
     # 1. AUTHORIZE
@@ -873,6 +872,8 @@ class ChargePoint16(cp):
                 retry_interval
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+       
+            
             response = call_result.UpdateFirmwarePayload()
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response

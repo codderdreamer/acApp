@@ -35,17 +35,13 @@ class Settings():
             self.__websocketIp = value
             self.set_websocket_ip(value)
             self.application.flaskModule.host = self.__websocketIp
-            self.application.flaskModule.start()
-            print("self.application.flaskModule.start()")
+            # self.application.flaskModule.start()
         elif self.__websocketIp != value:
-            print("if self.__websocketIp != value:")
-            self.application.flaskModule.stop_event.set()
-            print("self.application.flaskModule.stop_event.set()")
+            # self.application.flaskModule.stop_event.set()
             self.__websocketIp = value
-            print("self.set_websocket_ip(value)")
             self.set_websocket_ip(value)
             self.application.flaskModule.host = self.__websocketIp
-            self.application.flaskModule.start()
+            # self.application.flaskModule.start()
             
     def set_websocket_ip(self,ip):
         try:

@@ -51,7 +51,8 @@ class ModbusModule:
                 self.total_energy_export = round(self.read_input_float(register_address=75)/1000,2)
                 self.current_demand = self.read_input_float(register_address=259)
             except Exception as e:
-                print(e)
+                # print(e)
+                pass
             time.sleep(3)
 
     

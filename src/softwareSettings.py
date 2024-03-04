@@ -16,13 +16,14 @@ class SoftwareSettings():
     def control_websocket_ip(self):
         try:
             self.get_active_ips()
-            print(self.application.settings.deviceStatus.networkCard)
+            
             if self.application.settings.deviceStatus.networkCard == "Ethernet":
                 self.application.settings.websocketIp = self.application.settings.networkip.eth1
             elif self.application.settings.deviceStatus.networkCard == "Wifi":
                 self.application.settings.websocketIp = self.application.settings.networkip.wlan0
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
+            print(self.application.settings.deviceStatus.networkCard,self.application.settings.websocketIp)
         except Exception as e:
             print(datetime.now(),"control_websocket_ip Exception:",e)
         
@@ -322,7 +323,6 @@ class SoftwareSettings():
     def control_device_status(self):
         while True:
             try:
-                print("control_device_status")
                 self.ping_google()
                 self.find_network()
                 self.find_stateOfOcpp()

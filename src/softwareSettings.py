@@ -357,6 +357,7 @@ class SoftwareSettings():
             if (bluetooth_name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
                 process = Popen(['bluetoothctl', 'system-alias', new_bluetooth_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate(input='exit\n'.encode(),timeout=10)
+                os.system("reboot")
         except Exception as e:
             print(datetime.now(), "set_bluetooth_settings Exception:", e)
             

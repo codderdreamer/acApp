@@ -335,8 +335,8 @@ class SoftwareSettings():
     def set_bluetooth_settings(self):
         try:
             print("def set_bluetooth_settings(self):")
-            process = Popen(['bluetoothctl', 'show'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = process.communicate(input='exit\n'.encode())
+            process = subprocess.Popen(['bluetoothctl'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate(input='show\nexit\n'.encode())
             print("stdout",stdout)
             result = stdout.decode()
             print("result",result)

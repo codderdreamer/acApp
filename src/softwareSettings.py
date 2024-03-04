@@ -359,7 +359,7 @@ class SoftwareSettings():
                 process = Popen(['bluetoothctl', 'system-alias', new_bluetooth_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate(input='exit\n'.encode(),timeout=10)
                 print("System reboot...")
-                os.system("reboot")
+                # os.system("reboot")
         except Exception as e:
             print(datetime.now(), "set_bluetooth_settings Exception:", e)
             

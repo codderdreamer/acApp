@@ -335,19 +335,26 @@ class SoftwareSettings():
     def set_bluetooth_settings(self):
         try:
             print("def set_bluetooth_settings(self):")
-            process = subprocess.Popen(['bluetoothctl'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate(input='show\nexit\n'.encode())
-            print("stdout",stdout)
-            result = stdout.decode()
-            print("result",result)
-            data = result.split("\n")
-            bluetooth_name = data[0].split()[-2]
-            print("bluetooth_name",bluetooth_name)
-            new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
-            print("new_bluetooth_name",new_bluetooth_name)
-            if (bluetooth_name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
-                process = Popen(['bluetoothctl', 'system-alias', new_bluetooth_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate(input='exit\n'.encode())
+            try:
+                result = subprocess.run(['bluetoothctl', 'show'], capture_output=True, text=True, timeout=5)
+                print(result.stdout)
+            except subprocess.TimeoutExpired:
+                print("Komut zaman aşımına uğradı.")
+            
+            
+            # process = subprocess.Popen(['bluetoothctl'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            # stdout, stderr = process.communicate(input='show\nexit\n'.encode())
+            # print("stdout",stdout)
+            # result = stdout.decode()
+            # print("result",result)
+            # data = result.split("\n")
+            # bluetooth_name = data[0].split()[-2]
+            # print("bluetooth_name",bluetooth_name)
+            # new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
+            # print("new_bluetooth_name",new_bluetooth_name)
+            # if (bluetooth_name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
+            #     process = Popen(['bluetoothctl', 'system-alias', new_bluetooth_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            #     stdout, stderr = process.communicate(input='exit\n'.encode())
         except Exception as e:
             print(datetime.now(), "set_bluetooth_settings Exception:", e)
             

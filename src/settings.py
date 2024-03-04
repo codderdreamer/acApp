@@ -409,6 +409,14 @@ class Settings():
         except Exception as e:
             print(datetime.now(),"set_stop_transaction Exception:",e)
             
+    def set_unlock(self,sjon):
+        try:
+            if(sjon["Command"] == "UnlockConnector"):
+                self.application.deviceState = DeviceState.STOPPED_BY_USER
+        except Exception as e:
+            print(datetime.now(),"set_stop_transaction Exception:",e)
+        
+            
 
     
 class NetworkPriority():

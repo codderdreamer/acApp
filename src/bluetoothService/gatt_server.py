@@ -838,6 +838,29 @@ class ChargingCharacteristic(Characteristic):
         except Exception as e:
             print(datetime.now(),"MaxCurrentSettingsCharacteristic ReadValue Exception:",e)
             
+class UnlockConnectorCharacteristic(Characteristic):
+    
+    UnlockConnectorCharacteristic_UUID = '12345678-1234-5678-1234-56789abcab16'
+    
+    def __init__(self, bus, index, service, application):
+        self.application = application
+        Characteristic.__init__(
+                self, bus, index,
+                self.UnlockConnectorCharacteristic_UUID,
+                ['write', 'writable-auxiliaries'],
+                service)
+        self.value = None
+        
+    def WriteValue(self, value, options):
+        try:
+            byte_array = bytes([byte for byte in value])
+            json_string = byte_array.decode('utf-8')
+            json_object = json.loads(json_string)
+            print("UnlockConnectorCharacteristic WriteValue -->", json_object)
+            self.application.settings.set_unlock(json_object)
+        except Exception as e:
+            print(datetime.now(),"UnlockConnectorCharacteristic WriteValue Exception:",e)
+            
 def register_app_cb():
     print('GATT application registered')
 

@@ -133,3 +133,13 @@
                 "temperature" : "+40.4"
             }
 }
+
+{
+    "Command": "StopTransaction",
+    "Data": {}
+}
+
+{
+    "Command": "UnlockConnector",
+    "Data": {}
+}

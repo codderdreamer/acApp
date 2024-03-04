@@ -332,29 +332,18 @@ class SoftwareSettings():
                 print(datetime.now(),"control_device_status Exception:",e)
             time.sleep(10)
             
-    def get_bluetooth_name(self):
-        try:
-            process = subprocess.Popen(['bluetoothctl'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate(input='show\nexit\n'.encode(),timeout=10)
-            output = stdout.decode('utf-8')
-            print(output)
-            if stderr:
-                print("Error:", stderr.decode())
-            for line in output.split('\n'):
-                if 'Name' in line or 'Alias' in line:
-                    _, name = line.split(':')
-                    return name.strip()
-        except Exception as e:
-            print("Exception:", e)
-            return None
-            
     def set_bluetooth_settings(self):
         try:
             process = subprocess.Popen(['hostname'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             output = stdout.decode('utf-8')
-            print("output",output)
-            # os.system("hostnamectl set-hostname")
+            name = output.split("\n")[0]
+            print("bluetooth name",name)
+            new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
+            if (name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
+                os.system("hostnamectl set-hostname")
+                print("Sistem yeniden başlatılıyor...")
+                # os.system("reboot")
             
             
             # bluetooth_name = self.get_bluetooth_name()

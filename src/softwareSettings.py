@@ -337,10 +337,7 @@ class SoftwareSettings():
             bt_name = self.application.settings.bluetoothSettings.bluetooth_name
             if bt_name:
                 process = Popen(['bluetoothctl', 'system-alias', bt_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-                # 'exit' komutunu gönder ve sürecin çıktısını al
                 stdout, stderr = process.communicate(input='exit\n'.encode())
-                
-                # Çıktıyı yazdır
                 print("STDOUT:", stdout.decode())
                 if stderr:
                     print("STDERR:", stderr.decode())

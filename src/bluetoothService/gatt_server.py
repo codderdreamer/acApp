@@ -403,8 +403,7 @@ class SoftwareSettingsService(Service):
         self.add_characteristic(StartTransactionCharacteristic(bus, 12, self, application))
         self.add_characteristic(StopTransactionCharacteristic(bus, 13, self, application))
         self.add_characteristic(ChargingCharacteristic(bus, 14, self, application))
-        
-        
+        self.add_characteristic(UnlockConnectorCharacteristic(bus, 15, self, application))
         
         
 class NetworkPriorityCharacteristic(Characteristic):

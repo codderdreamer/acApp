@@ -341,6 +341,7 @@ class SoftwareSettings():
             bluetooth_name = data[0].split()[-2]
             print("bluetooth_name",bluetooth_name)
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
+            print("new_bluetooth_name",new_bluetooth_name)
             if (bluetooth_name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
                 process = Popen(['bluetoothctl', 'system-alias', new_bluetooth_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate(input='exit\n'.encode())

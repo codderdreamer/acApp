@@ -30,7 +30,6 @@ class Settings():
 
     @websocketIp.setter
     def websocketIp(self, value):
-        print("websocketIp",self.__websocketIp,value)
         if self.__websocketIp == None:
             self.__websocketIp = value
             self.set_websocket_ip(value)
@@ -45,11 +44,10 @@ class Settings():
             
     def set_websocket_ip(self,ip):
         try:
-            print("ip",ip)
             data = {
                     "ip" : ip
                 }
-            print("data",data)
+            print("websocket.json",data)
             with open("/root/acApp/client/build/websocket.json", "w") as file:
                 json.dump(data, file)
         except Exception as e:

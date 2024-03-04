@@ -334,13 +334,22 @@ class SoftwareSettings():
             
     def set_bluetooth_settings(self):
         try:
-            bt_name = self.application.settings.bluetoothSettings.bluetooth_name
-            if bt_name:
-                process = Popen(['bluetoothctl', 'system-alias', bt_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = process.communicate(input='exit\n'.encode())
-                print("STDOUT:", stdout.decode())
-                if stderr:
-                    print("STDERR:", stderr.decode())
+            process = Popen(['bluetoothctl', 'show'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate(input='exit\n'.encode())
+            result = stdout.decode()
+            data = result.split("\n")
+            print(data[0])
+            
+            
+            
+            
+            # bt_name = self.application.settings.bluetoothSettings.bluetooth_name
+            # if bt_name:
+            #     process = Popen(['bluetoothctl', 'system-alias', bt_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+            #     stdout, stderr = process.communicate(input='exit\n'.encode())
+            #     print("STDOUT:", stdout.decode())
+            #     if stderr:
+            #         print("STDERR:", stderr.decode())
         except Exception as e:
             print(datetime.now(), "set_bluetooth_settings Exception:", e)
             

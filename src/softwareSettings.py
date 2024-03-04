@@ -355,8 +355,10 @@ class SoftwareSettings():
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
             print("new_bluetooth_name",new_bluetooth_name)
             if (bluetooth_name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
+                print("Bluetooth adı değiştiriliyor...")
                 process = Popen(['bluetoothctl', 'system-alias', new_bluetooth_name], stdin=PIPE, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate(input='exit\n'.encode(),timeout=10)
+                print("System reboot...")
                 os.system("reboot")
         except Exception as e:
             print(datetime.now(), "set_bluetooth_settings Exception:", e)

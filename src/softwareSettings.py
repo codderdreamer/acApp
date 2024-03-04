@@ -339,7 +339,7 @@ class SoftwareSettings():
             result = stdout.decode()
             data = result.split("\n")
             print(data[0])
-            print(data[0].split()[-1])
+            print(data[0].split()[-2])
             
             
             

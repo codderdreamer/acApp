@@ -72,9 +72,10 @@ class Application():
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         self.softwareSettings.set_functions_enable()
         self.softwareSettings.set_timezoon()
+        print("set_bluetooth_settings")
         self.softwareSettings.set_bluetooth_settings()
         self.process.idle()
-        
+        print("BluetoothService")
         self.bluetoothService = BluetoothService(self)
     
         

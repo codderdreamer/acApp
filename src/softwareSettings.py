@@ -336,7 +336,9 @@ class SoftwareSettings():
         try:
             process = Popen(['bluetoothctl', 'show'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate(input='exit\n'.encode())
+            print("stdout",stdout)
             result = stdout.decode()
+            print("result",result)
             data = result.split("\n")
             bluetooth_name = data[0].split()[-2]
             print("bluetooth_name",bluetooth_name)

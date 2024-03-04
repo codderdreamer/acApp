@@ -99,7 +99,7 @@ class SoftwareSettings():
                 if dhcpcEnable == "False":
                     netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                     netmask_prefix_length = netmask_obj.prefixlen
-                    os.system("nmcli con delete static-eth1")
+                    # os.system("nmcli con delete static-eth1")
                     os.system("stty erase ^h")
                     set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
                     os.system(set_eth)
@@ -140,7 +140,7 @@ class SoftwareSettings():
             self.delete_connection_type("gsm")
             # time.sleep(5)
             if enableModification=="True":
-                os.system("nmcli connection delete ppp0")
+                # os.system("nmcli connection delete ppp0")
                 time.sleep(3)
                 os.system("gpio-test.64 w d 20 1")
                 time.sleep(5)

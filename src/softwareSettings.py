@@ -337,9 +337,9 @@ class SoftwareSettings():
             process = Popen(['bluetoothctl', 'show'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
             stdout, stderr = process.communicate(input='exit\n'.encode())
             result = stdout.decode()
-            data = result.split("\n")[0].split()
-            print(data)
-            
+            data = result.split("\n")
+            print(data[0])
+            print(data[0].split())
             
             
             

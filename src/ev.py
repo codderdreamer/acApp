@@ -114,9 +114,15 @@ class EV():
     def card_id(self, value):
         if (value != None) and (value != ""):
             if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
-                self.application.chargePoint.authorize = None
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
-
+                if self.charge:
+                    if self.application.process.id_tag == value:
+                        self.application.chargePoint.authorize = None
+                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
+                    else:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                else:
+                    self.application.chargePoint.authorize = None
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
             elif (self.application.cardType == CardType.StartStopCard):
                 # Local cardlarda var mı database bak...
                 finded = False
@@ -140,9 +146,6 @@ class EV():
                 if finded == False:
                     self.start_stop_authorize = False
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-                
-        
-        
         self.__card_id = value
         
     @property

@@ -263,7 +263,7 @@ class Process():
             if self.application.ev.control_pilot == ControlPlot.stateA.value or self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.IDLE
             else:
-                break
+                print("fault !!!")
             time.sleep(1)
         
     def stopped_by_evse(self):
@@ -284,6 +284,8 @@ class Process():
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        if self.application.socketType == SocketType.Type2:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
     def idle(self):
         print("****************************************************************** idle")

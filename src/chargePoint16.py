@@ -16,6 +16,7 @@ from ocpp.v16.datatypes import *
 import os
 from threading import Thread
 import time
+import requests
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
 handler = logging.StreamHandler()
@@ -874,13 +875,28 @@ class ChargePoint16(cp):
                 retry_interval
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-       
-            
+
             response = call_result.UpdateFirmwarePayload()
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
             print(datetime.now(),"on_update_firmware Exception:",e)
+            
+    @after(Action.UpdateFirmware)
+    def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
+        try :
+            print("Update firmware")
+            response = requests.get(location)
+            if response.status_code == 200:
+                filename = "indirilen_dosya.zip"
+                with open(filename, 'wb') as file:
+                    file.write(response.content)
+                print(f"'{filename}' başarıyla indirildi.")
+            else:
+                print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
+        
+        except Exception as e:
+            print(datetime.now(),"after_update_firmware Exception:",e)
 
 
 

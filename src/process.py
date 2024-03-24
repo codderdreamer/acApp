@@ -151,6 +151,11 @@ class Process():
     def charging(self):
         print("****************************************************************** charging")
         
+        if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+            self.id_tag = self.application.ev.card_id
+        if self.application.ev.id_tag != None:
+            self.id_tag = self.application.ev.id_tag
+        
         if self.application.cardType == CardType.LocalPnC:
             self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
             self.application.ev.charge = True

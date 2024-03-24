@@ -67,6 +67,7 @@ class Process():
             
             elif self.application.cardType == CardType.BillingCard:
                 if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                    self._lock_connector_set_control_pilot()
                     self.application.deviceState = DeviceState.WAITING_STATE_C
                 else:
                     self.application.deviceState = DeviceState.WAITING_AUTH

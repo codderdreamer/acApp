@@ -27,10 +27,12 @@ class Application():
         self.chargePoint = None
         
         self.availability = AvailabilityType.operative
+        self.chargingStatus = ChargePointStatus.available
+        self.__deviceState = None
         
         self.ocppActive = False
         self.cardType = CardType.BillingCard
-        self.__deviceState = None
+        
         self.socketType = SocketType.Type2
         self.max_current = 63
         

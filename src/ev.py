@@ -128,13 +128,19 @@ class EV():
                         else:
                             self.start_stop_authorize = True
                         finded = True
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                
+                        
+                        if self.charge and (self.application.process.id_tag == value):
+                            self.application.deviceState = DeviceState.STOPPED_BY_USER
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                        elif self.charge == False:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                        else:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                            
                 if finded == False:
                     self.start_stop_authorize = False
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-                if self.charge:
-                    self.application.deviceState = DeviceState.STOPPED_BY_USER
+                
         
         
         self.__card_id = value

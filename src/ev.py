@@ -3,6 +3,7 @@ from threading import Thread
 import time
 import asyncio
 from datetime import datetime
+from ocpp.v16.datatypes import *
 
 class EV():
     def __init__(self,application):
@@ -115,9 +116,7 @@ class EV():
             if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
                 self.application.chargePoint.authorize = None
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
-                if self.charge:
-                    self.application.deviceState = DeviceState.STOPPED_BY_USER
-            
+
             elif (self.application.cardType == CardType.StartStopCard):
                 # Local cardlarda var mı database bak...
                 finded = False

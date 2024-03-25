@@ -712,6 +712,7 @@ class ChargePoint16(cp):
             print("self.application.ev.control_pilot",self.application.ev.control_pilot)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
             while True:
+                print("self.application.ev.control_pilot",self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B":
                     break
                 elif time.time() - time_start > 30:

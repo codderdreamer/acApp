@@ -696,6 +696,7 @@ class ChargePoint16(cp):
                 status= RemoteStartStopStatus.accepted
             )
             self.application.chargePoint.authorize = AuthorizationStatus.accepted
+            Thread(target=self.remote_start_thread,daemon=True).start()
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
@@ -705,8 +706,10 @@ class ChargePoint16(cp):
         # Eğer kablo bağlı değilse
         # Waiting plug led yak
         # 30 saniye içinde kablo bağlanmazsa idle
+        print("remote_start_thread")
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
+            print("self.application.ev.control_pilot",self.application.ev.control_pilot)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
             while True:
                 if self.application.ev.control_pilot == "B":

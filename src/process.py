@@ -309,6 +309,8 @@ class Process():
         # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
             
     def stopped_by_user(self):
         self.application.ev.start_stop_authorize = False

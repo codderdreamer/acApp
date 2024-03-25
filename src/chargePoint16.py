@@ -770,6 +770,10 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
+            os.system("gpio-test.64 w e 10 1")
+            time.sleep(0.5)
+            os.system("gpio-test.64 w e 10 0")
+            time.sleep(0.5)
             os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)
@@ -886,15 +890,17 @@ class ChargePoint16(cp):
     def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
         try :
             print("Update firmware")
+            self.send_firmware_status_notification(FirmwareStatus.downloading)
             response = requests.get(location)
             if response.status_code == 200:
                 filename = "indirilen_dosya.zip"
                 with open(filename, 'wb') as file:
                     file.write(response.content)
                 print(f"'{filename}' başarıyla indirildi.")
+                self.send_firmware_status_notification(FirmwareStatus.downloaded)
             else:
                 print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
-        
+                self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
 

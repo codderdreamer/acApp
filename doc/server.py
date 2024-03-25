@@ -83,6 +83,12 @@ class ChargePoint(cp):
             response = await self.call(request)
         except Exception as e:
             print(e)
+            
+    async def send_update_firmware(self):
+        try:
+            request = call.UpdateFirmwarePayload()
+        except Exception as e:
+            print(e)
 
 
     @on(Action.BootNotification)

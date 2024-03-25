@@ -892,7 +892,7 @@ class ChargePoint16(cp):
         try :
             print("Update firmware")
             await self.send_firmware_status_notification(FirmwareStatus.downloading)
-            result = subprocess.run(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
             if result.returncode == 0:
                 print("git pull başarıyla tamamlandı.")

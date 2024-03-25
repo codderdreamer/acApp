@@ -17,6 +17,7 @@ import os
 from threading import Thread
 import time
 import requests
+import subprocess
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
 handler = logging.StreamHandler()
@@ -891,16 +892,30 @@ class ChargePoint16(cp):
         try :
             print("Update firmware")
             await self.send_firmware_status_notification(FirmwareStatus.downloading)
-            response = requests.get(location)
-            if response.status_code == 200:
-                filename = "indirilen_dosya.zip"
-                with open(filename, 'wb') as file:
-                    file.write(response.content)
-                print(f"'{filename}' başarıyla indirildi.")
+            result = subprocess.run(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+            if result.returncode == 0:
+                print("git pull başarıyla tamamlandı.")
+                print("Çıktı:", result.stdout)
                 await self.send_firmware_status_notification(FirmwareStatus.downloaded)
             else:
-                print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
+                print("git pull başarısız oldu.")
+                print("Hata:", result.stderr)
                 await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
+            
+            
+            # print("Update firmware")
+            # await self.send_firmware_status_notification(FirmwareStatus.downloading)
+            # response = requests.get(location)
+            # if response.status_code == 200:
+            #     filename = "indirilen_dosya.zip"
+            #     with open(filename, 'wb') as file:
+            #         file.write(response.content)
+            #     print(f"'{filename}' başarıyla indirildi.")
+            #     await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+            # else:
+            #     print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
+            #     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
 

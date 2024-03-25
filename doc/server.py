@@ -91,7 +91,7 @@ class ChargePoint(cp):
     async def send_update_firmware_func(self):
         try:
             print("send_update_firmware")
-            request = call.UpdateFirmwarePayload(location="https://drive.google.com/file/d/1MtYfAQJM1xadnSwzBlHUxl9tDFnqpQ4V/view?usp=sharing",retrieve_date="")
+            request = call.UpdateFirmwarePayload(location="https://drive.google.com/file/d/1TdwAREpDuT8Q8JYep4piayXNeeuZD2D0/view?usp=sharing",retrieve_date="")
             response = await self.call(request)
         except Exception as e:
             print(e)
@@ -150,6 +150,11 @@ class ChargePoint(cp):
         return call_result.StopTransactionPayload(
 
         )
+        
+    @on(Action.FirmwareStatusNotification)
+    def on_firmware_status(self,**kwargs):
+        print("on_firmware_status:",kwargs)
+        return call_result.FirmwareStatusNotificationPayload()
 
 
 async def on_connect(websocket, path):

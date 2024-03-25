@@ -887,20 +887,20 @@ class ChargePoint16(cp):
             print(datetime.now(),"on_update_firmware Exception:",e)
             
     @after(Action.UpdateFirmware)
-    def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
+    async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
         try :
             print("Update firmware")
-            self.send_firmware_status_notification(FirmwareStatus.downloading)
+            await self.send_firmware_status_notification(FirmwareStatus.downloading)
             response = requests.get(location)
             if response.status_code == 200:
                 filename = "indirilen_dosya.zip"
                 with open(filename, 'wb') as file:
                     file.write(response.content)
                 print(f"'{filename}' başarıyla indirildi.")
-                self.send_firmware_status_notification(FirmwareStatus.downloaded)
+                await self.send_firmware_status_notification(FirmwareStatus.downloaded)
             else:
                 print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
-                self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
+                await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
 

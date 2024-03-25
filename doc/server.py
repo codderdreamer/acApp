@@ -22,7 +22,6 @@ class ChargePoint(cp):
     def test(self):
         asyncio.set_event_loop(loop)
         while True:
-            time.sleep(1)
             x = input()
             if x=="1":
                 future = self.send_remote_start()
@@ -33,6 +32,8 @@ class ChargePoint(cp):
                 future.add_done_callback(self.send_cancel_reservation_callback)
             elif x =="4":
                future =  self.send_local_list()
+            elif x == "5":
+                future =  self.send_update_firmware()
 
     def send_cancel_reservation(self):
         return asyncio.ensure_future(self.send_cancel_reservation_func())
@@ -49,6 +50,9 @@ class ChargePoint(cp):
         
     def send_local_list(self):
         return asyncio.ensure_future(self.send_local_list_func())
+    
+    def send_update_firmware(self):
+        return asyncio.ensure_future(self.send_update_firmware_func())
 
     async def send_cancel_reservation_func(self):
         try:
@@ -84,9 +88,11 @@ class ChargePoint(cp):
         except Exception as e:
             print(e)
             
-    async def send_update_firmware(self):
+    async def send_update_firmware_func(self):
         try:
-            request = call.UpdateFirmwarePayload()
+            print("send_update_firmware")
+            request = call.UpdateFirmwarePayload(location="https://drive.google.com/file/d/1MtYfAQJM1xadnSwzBlHUxl9tDFnqpQ4V/view?usp=sharing",retrieve_date="")
+            response = await self.call(request)
         except Exception as e:
             print(e)
 

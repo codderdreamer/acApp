@@ -701,6 +701,21 @@ class ChargePoint16(cp):
         except Exception as e:
             print(datetime.now(),"on_remote_start_transaction Exception:",e)
             
+    def remote_start_thread(self):
+        # Eğer kablo bağlı değilse
+        # Waiting plug led yak
+        # 30 saniye içinde kablo bağlanmazsa idle
+        time_start = time.time()
+        if self.application.ev.control_pilot != "B":
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+            while True:
+                if self.application.ev.control_pilot == "B":
+                    break
+                elif time.time() - time_start > 30:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                    break
+                time.sleep(0.2)
+                
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :

@@ -155,6 +155,7 @@ class Application():
                     elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                         pass
         except Exception as e:
+            print("set_command_pid_led_control")
             Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
             print(datetime.now(),"ocppStart Exception:",e)
             

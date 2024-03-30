@@ -80,7 +80,7 @@ class Process():
             
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
         self.application.ev.charge = False
         if self.application.cardType == CardType.StartStopCard:
             time_start = time.time()

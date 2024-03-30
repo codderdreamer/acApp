@@ -914,7 +914,7 @@ class ChargePoint16(cp):
             print("Update firmware")
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
             await self.send_firmware_status_notification(FirmwareStatus.downloading)
-            result = subprocess.run(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            result = subprocess.run(["git", "pull"], cwd="/root/acApp" stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
             if result.returncode == 0:
                 print("git pull başarıyla tamamlandı.")

@@ -262,6 +262,7 @@ class Process():
         while True:
             if self.application.ev.control_pilot == ControlPlot.stateA.value or self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.IDLE
+                break
             else:
                 print("fault !!!")
             time.sleep(1)

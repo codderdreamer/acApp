@@ -79,6 +79,8 @@ class Application():
         self.process.idle()
         print("BluetoothService")
         self.bluetoothService = BluetoothService(self)
+        
+        self.charge_stopped = False
     
         
         
@@ -90,20 +92,25 @@ class Application():
     def deviceState(self, value):
         print("???????????????????????????????????????????????????????", value,self.__deviceState)
         if self.__deviceState != value:
+            
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
-                self.control_A_B_C = True
-                Thread(target=self.process.connected,daemon=True).start()
+                if self.charge_stopped != True:
+                    self.control_A_B_C = True
+                    Thread(target=self.process.connected,daemon=True).start()
     
             elif self.__deviceState == DeviceState.WAITING_AUTH:
-                Thread(target=self.process.waiting_auth,daemon=True).start()
+                if self.charge_stopped != True:
+                    Thread(target=self.process.waiting_auth,daemon=True).start()
             
             elif self.__deviceState == DeviceState.WAITING_STATE_C:
-                Thread(target=self.process.waiting_state_c,daemon=True).start()
+                if self.charge_stopped != True:
+                    Thread(target=self.process.waiting_state_c,daemon=True).start()
                 
             elif self.__deviceState == DeviceState.CHARGING:
-                self.control_C_B = True
-                Thread(target=self.process.charging,daemon=True).start()
+                if self.charge_stopped != True:
+                    self.control_C_B = True
+                    Thread(target=self.process.charging,daemon=True).start()
 
             elif self.__deviceState == DeviceState.FAULT:
                 self.control_A_B_C = False
@@ -111,16 +118,19 @@ class Application():
                 Thread(target=self.process.fault,daemon=True).start()
 
             elif self.__deviceState == DeviceState.IDLE:
+                self.charge_stopped = False
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.idle,daemon=True).start()
                 
             elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
+                self.charge_stopped = True
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_evse,daemon=True).start()
                 
             elif self.__deviceState == DeviceState.STOPPED_BY_USER:
+                self.charge_stopped = True
                 self.control_A_B_C = False
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()

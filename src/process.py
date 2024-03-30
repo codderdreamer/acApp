@@ -260,11 +260,18 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
         while True:
-            if self.application.ev.control_pilot == ControlPlot.stateA.value or self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
+            if self.application.ev.control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
+                break
+            elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                self.application.deviceState = DeviceState.CONNECTED
+                break
+            elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+                self.application.deviceState = DeviceState.CHARGING
                 break
             else:
                 print("fault !!!")
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
             time.sleep(1)
         
     def stopped_by_evse(self):

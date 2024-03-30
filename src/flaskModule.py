@@ -15,6 +15,7 @@ class FlaskModule:
         self.app = Flask(__name__, static_url_path='',
                          static_folder='../client/build',
                          template_folder='../client/build')
+        self.app.config['SECRET_KEY'] = 'myS3cr3tK3y_2024!@#$'
         self.setup_routes()
         
     def token_required(self, f):

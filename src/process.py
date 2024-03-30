@@ -34,6 +34,8 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
+        if self.application.ev.charge:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)

@@ -649,7 +649,7 @@ class DatabaseModule():
         try:
             self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            query = "UPDATE device_settings SET Password = ? WHERE UserName = ?"
+            query = "UPDATE user_login SET Password = ? WHERE UserName = ?"
             
             value = (password,"HCAC")
             self.cursor.execute(query,value)

@@ -65,6 +65,8 @@ class FlaskModule:
             Password = data.get('Password')
             NewPassword = data.get('NewPassword')
             
+            print(self.application.databaseModule.get_user_login())
+            
             if self.application.databaseModule.get_user_login()["Password"] == Password:
             
                 result = self.application.databaseModule.set_password(NewPassword)

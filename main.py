@@ -149,7 +149,7 @@ class Application():
                         self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                         await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId,self.settings.ocppSettings.chargePointId)
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                        Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                     elif self.ocpp_subprotocols == OcppVersion.ocpp20:
                         pass
                     elif self.ocpp_subprotocols == OcppVersion.ocpp21:

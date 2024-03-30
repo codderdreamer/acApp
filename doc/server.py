@@ -119,10 +119,16 @@ class ChargePoint(cp):
     
     @on(Action.Authorize)
     def on_authorize(self,id_tag:str):
+        if id_tag == "04E2D04A007480":
+            status = AuthorizationStatus.accepted
+        else:
+            status = AuthorizationStatus.invalid
+            
         return call_result.AuthorizePayload(
-            id_tag_info={
-                "status":"Accepted"
-            }
+            
+                id_tag_info={
+                    "status":status
+                }
         )
     
     @on(Action.MeterValues)

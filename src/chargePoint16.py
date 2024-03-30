@@ -796,7 +796,7 @@ class ChargePoint16(cp):
             time.sleep(0.5)
             os.system("gpio-test.64 w e 10 1")
             time.sleep(0.5)
-            os.system("reboot")
+            # os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)
 
@@ -921,7 +921,7 @@ class ChargePoint16(cp):
                 print("Çıktı:", result.stdout)
                 await self.send_firmware_status_notification(FirmwareStatus.downloaded)
                 time.sleep(0.5)
-                os.system("reboot")
+                # os.system("reboot")
             else:
                 print("git pull başarısız oldu.")
                 print("Hata:", result.stderr)

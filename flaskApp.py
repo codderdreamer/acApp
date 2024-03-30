@@ -40,6 +40,11 @@ def status():
 def profile():
     return render_template("index.html")
 
+@app.route("/login")
+def login():
+    return {
+        "result" : "ok"
+    }
 # @app.route('/get_flask_ip', methods=['GET'])
 # def get_flask_ip():
 #     ip_address = request.environ.get('REMOTE_ADDR')

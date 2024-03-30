@@ -4,6 +4,9 @@ from flask import Flask, render_template, request, jsonify, make_response
 from threading import Thread
 import threading
 from werkzeug.security import check_password_hash
+import jwt
+import datetime
+from functools import wraps
 
 class FlaskModule:
     def __init__(self,application) -> None:
@@ -14,12 +17,72 @@ class FlaskModule:
                          template_folder='../client/build')
         self.setup_routes()
         
+    def token_required(self, f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            token = None
+            if 'Authorization' in request.headers:
+                token = request.headers['Authorization'].split(" ")[1]
+            if not token:
+                return jsonify({'message': 'Token is missing!'}), 403
+            try:
+                data = jwt.decode(token, self.app.config['SECRET_KEY'], algorithms=["HS256"])
+            except:
+                return jsonify({'message': 'Token is invalid!'}), 403
+            return f(*args, **kwargs)
+        return decorated
+        
     def setup_routes(self):
         @self.app.route("/")
         def hera():
             return render_template("index.html")
 
+        @self.app.route("/admin/dashboard")
+        @self.token_required
+        def dashboard():
+            return render_template("index.html")
+
+        @self.app.route("/admin/quick-setup")
+        @self.token_required
+        def quick():
+            return render_template("index.html")
+
+        @self.app.route("/admin/charging")
+        @self.token_required
+        def charging():
+            return render_template("index.html")
+
+        @self.app.route("/admin/hardware")
+        @self.token_required
+        def hardware():
+            return render_template("index.html")
+
+        @self.app.route("/admin/software")
+        @self.token_required
+        def software():
+            return render_template("index.html")
+
+        @self.app.route("/admin/status")
+        @self.token_required
+        def status():
+            return render_template("index.html")
         
+        @self.app.route("/admin/profile")
+        @self.token_required
+        def profile():
+            return render_template("index.html")
+        
+        # @self.app.route('/login', methods=['POST'])
+        # def login():
+        #     data = request.get_json()
+        #     UserName = data.get('UserName')
+        #     Password = data.get('Password')
+            
+        #     login = self.application.databaseModule.get_user_login()
+        #     if login["UserName"] == UserName and login["Password"] == Password:   
+        #         return jsonify({'message': 'Login successful'})
+        #     else:
+        #         return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
         
         @self.app.route('/login', methods=['POST'])
         def login():
@@ -27,43 +90,17 @@ class FlaskModule:
             UserName = data.get('UserName')
             Password = data.get('Password')
             
+            # Kullanıcı doğrulaması...
             login = self.application.databaseModule.get_user_login()
-            if login["UserName"] == UserName and login["Password"] == Password:
+            if login["UserName"] == UserName and check_password_hash(login["Password"], Password):   
+                token = jwt.encode({
+                    'user': UserName,
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+                }, self.app.config['SECRET_KEY'], algorithm="HS256")
                 
-                
-                
-                @self.app.route("/admin/dashboard")
-                def dashboard():
-                    return render_template("index.html")
-
-                @self.app.route("/admin/quick-setup")
-                def quick():
-                    return render_template("index.html")
-
-                @self.app.route("/admin/charging")
-                def charging():
-                    return render_template("index.html")
-
-                @self.app.route("/admin/hardware")
-                def hardware():
-                    return render_template("index.html")
-
-                @self.app.route("/admin/software")
-                def software():
-                    return render_template("index.html")
-
-                @self.app.route("/admin/status")
-                def status():
-                    return render_template("index.html")
-                
-                @self.app.route("/admin/profile")
-                def profile():
-                    return render_template("index.html")
-            
-                return jsonify({'message': 'Login successful'})
+                return jsonify({'token': token})
             else:
                 return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-        
 
             
         

@@ -3,6 +3,7 @@ import time
 from threading import Thread
 from src.enums import *
 from datetime import datetime
+import os
 
 class SerialPort():
     def __init__(self,application) -> None:
@@ -36,6 +37,10 @@ class SerialPort():
         self.connector_id = "1"
         
         self.led_state = LedState.StandBy
+        
+        os.system("gpio-test.64 w e 10 0")
+        time.sleep(0.5)
+        os.system("gpio-test.64 w e 10 1")
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()

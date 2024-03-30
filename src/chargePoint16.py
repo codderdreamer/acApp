@@ -792,9 +792,9 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
-            os.system("gpio-test.64 w e 10 1")
-            time.sleep(0.5)
             os.system("gpio-test.64 w e 10 0")
+            time.sleep(0.5)
+            os.system("gpio-test.64 w e 10 1")
             time.sleep(0.5)
             os.system("reboot")
         except Exception as e:

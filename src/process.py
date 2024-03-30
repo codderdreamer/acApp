@@ -34,8 +34,6 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
-        if self.application.ev.charge:
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
@@ -51,6 +49,7 @@ class Process():
             print("Şarj C'den B'ye döndü Röle kapatıldı")
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
             time_start = time.time()
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
             while True:
                 if self.application.ev.control_pilot == ControlPlot.stateB.value:
                     if time.time() - time_start > 60*5:
@@ -62,6 +61,7 @@ class Process():
         
         else:
             self.application.ev.charge = False
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
         
             if self.application.cardType == CardType.LocalPnC:
                 self._lock_connector_set_control_pilot()
@@ -82,7 +82,6 @@ class Process():
             
     def waiting_auth(self):
         print("****************************************************************** waiting_auth")
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
         self.application.ev.charge = False
         if self.application.cardType == CardType.StartStopCard:
             time_start = time.time()
@@ -122,7 +121,6 @@ class Process():
 
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         
         self.application.ev.charge = False
         
@@ -215,7 +213,7 @@ class Process():
                             if self.application.deviceState != DeviceState.CHARGING:
                                 break
             else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
                 self.application.deviceState = DeviceState.WAITING_AUTH
         
@@ -235,7 +233,7 @@ class Process():
                     if self.application.deviceState != DeviceState.CHARGING:
                         break
             else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
                 self.application.deviceState = DeviceState.WAITING_AUTH
           
@@ -284,7 +282,7 @@ class Process():
         self.application.ev.card_id = ""
         self.application.ev.id_tag = None
         self.application.ev.charge = False
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
@@ -331,7 +329,7 @@ class Process():
         self.application.ev.card_id = ""
         self.application.ev.id_tag = None
         self.application.ev.charge = False
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False

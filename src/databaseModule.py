@@ -643,5 +643,22 @@ class DatabaseModule():
                 data_dict["Password"] = row[1]
             return data_dict
         except Exception as e:
-            print(datetime.now(),"get_bluetooth_settings Exception:",e)
+            print(datetime.now(),"get_user_login Exception:",e)
+            
+    def set_password(self,password):
+        try:
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET Password = ? WHERE UserName = HCAC"
+            
+            value = (password)
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            return True
+        except Exception as e:
+            print(datetime.now(),"set_password Exception:",e)
+            return False
         

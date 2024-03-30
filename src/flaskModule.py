@@ -59,6 +59,23 @@ class FlaskModule:
             else:
                 return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
         
+        @self.app.route('/changeProfile', methods=['POST'])
+        def changeProfile():
+            data = request.get_json()
+            Password = data.get('Password')
+            NewPassword = data.get('NewPassword')
+            
+            if self.application.databaseModule.get_user_login()["Password"] == Password:
+            
+                result = self.application.databaseModule.set_password(NewPassword)
+                
+                if result:
+                    return jsonify({'message': 'Login successful'})
+                else:
+                    return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            else:
+                return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    
     def run(self):
         self.app.run(use_reloader=False, host=self.host, port=80, threaded=True)
         

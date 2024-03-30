@@ -912,6 +912,7 @@ class ChargePoint16(cp):
     async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
         try :
             print("Update firmware")
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
             await self.send_firmware_status_notification(FirmwareStatus.downloading)
             result = subprocess.run(["git", "pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
@@ -928,7 +929,7 @@ class ChargePoint16(cp):
                 print("git pull başarısız oldu.")
                 print("Hata:", result.stderr)
                 await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
-            
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
             
             # print("Update firmware")
             # await self.send_firmware_status_notification(FirmwareStatus.downloading)
@@ -944,6 +945,7 @@ class ChargePoint16(cp):
             #     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
 
 
 

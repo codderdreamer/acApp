@@ -126,7 +126,7 @@ class SerialPort():
         data = self.get_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send set_command_pid_cp_pwm -->", send_data)
+        print("Send set_command_pid_cp_pwm -->", send_data)
         self.send_data_list.append(send_data)
         
     def get_command_pid_cp_pwm(self):

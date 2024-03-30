@@ -15,7 +15,9 @@ class FlaskModule:
         self.setup_routes()
         
     def setup_routes(self):
-
+        @self.app.route("/")
+        def hera():
+            return render_template("index.html")
 
         
         
@@ -28,9 +30,7 @@ class FlaskModule:
             login = self.application.databaseModule.get_user_login()
             if login["UserName"] == UserName and login["Password"] == Password:
                 
-                @self.app.route("/")
-                def hera():
-                    return render_template("index.html")
+                
                 
                 @self.app.route("/admin/dashboard")
                 def dashboard():

@@ -53,6 +53,9 @@ class ChargePoint(cp):
     
     def send_update_firmware(self):
         return asyncio.ensure_future(self.send_update_firmware_func())
+    
+    def send_reset(self):
+        return asyncio.ensure_future(self.send_reset_func())
 
     async def send_cancel_reservation_func(self):
         try:
@@ -95,6 +98,15 @@ class ChargePoint(cp):
             response = await self.call(request)
         except Exception as e:
             print(e)
+            
+    async def send_reset_func(self):
+        try:
+            print("send_reset_func")
+            request = call.ResetPayload(type=ResetType.hard)
+            response = await self.call(request)
+        except Exception as e:
+            print(e)
+        
 
 
     @on(Action.BootNotification)

@@ -930,7 +930,8 @@ class ChargePoint16(cp):
                 print("Hata:", result.stderr)
                 await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-            
+                time.sleep(1)
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
             # print("Update firmware")
             # await self.send_firmware_status_notification(FirmwareStatus.downloading)
             # response = requests.get(location)
@@ -946,6 +947,8 @@ class ChargePoint16(cp):
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+            time.sleep(1)
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
 
 
 

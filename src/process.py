@@ -284,7 +284,7 @@ class Process():
         self.application.ev.card_id = ""
         self.application.ev.id_tag = None
         self.application.ev.charge = False
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
@@ -331,7 +331,7 @@ class Process():
         self.application.ev.card_id = ""
         self.application.ev.id_tag = None
         self.application.ev.charge = False
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False

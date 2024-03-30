@@ -920,9 +920,9 @@ class ChargePoint16(cp):
                 print("git pull başarıyla tamamlandı.")
                 print("Çıktı:", result.stdout)
                 await self.send_firmware_status_notification(FirmwareStatus.downloaded)
-                os.system("gpio-test.64 w e 10 1")
-                time.sleep(0.5)
                 os.system("gpio-test.64 w e 10 0")
+                time.sleep(0.5)
+                os.system("gpio-test.64 w e 10 1")
                 time.sleep(0.5)
                 os.system("reboot")
             else:

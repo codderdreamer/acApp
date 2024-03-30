@@ -627,4 +627,21 @@ class DatabaseModule():
             return id_tag_list
         except Exception as e:
             print(datetime.now(),"get_bluetooth_settings Exception:",e)
+            
+    def get_user_login(self):
+        try:
+            data_dict = {}
+            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM user_login"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            # print("\n get_local_list",data)
+            for row in data:
+                data_dict["UserName"] = row[0]
+                data_dict["Password"] = row[1]
+            return data_dict
+        except Exception as e:
+            print(datetime.now(),"get_bluetooth_settings Exception:",e)
         

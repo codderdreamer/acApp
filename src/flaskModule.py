@@ -1,8 +1,9 @@
 import os
 import time
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from threading import Thread
 import threading
+from werkzeug.security import check_password_hash
 
 class FlaskModule:
     def __init__(self,application) -> None:
@@ -45,6 +46,18 @@ class FlaskModule:
         @self.app.route("/admin/profile")
         def profile():
             return render_template("index.html")
+        
+        @self.app.route('/login', methods=['POST'])
+        def login():
+            data = request.get_json()
+            UserName = data.get('UserName')
+            Password = data.get('Password')
+            
+            login = self.application.databaseModule.get_user_login()
+            if login["UserName"] == UserName and login["Password"] == Password:
+                return jsonify({'message': 'Login successful'})
+            else:
+                return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
         
     def run(self):
         self.app.run(use_reloader=False, host=self.host, port=80, threaded=True)

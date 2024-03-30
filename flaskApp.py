@@ -3,6 +3,8 @@ import os
 import time
 from flask import Flask, render_template, request, jsonify
 from threading import Thread
+from flask import Flask, request, jsonify, make_response
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__, static_url_path='',
                   static_folder='client/build',
@@ -40,11 +42,27 @@ def status():
 def profile():
     return render_template("index.html")
 
-@app.route("/login")
+@app.route('/login', methods=['POST'])
 def login():
-    return {
-        "result" : "ok"
-    }
+    data = request.get_json()
+    UserName = data.get('UserName')
+    Password = data.get('Password')
+    
+    if not auth or not auth.username or not auth.password:
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+    user = users.get(auth.username)
+    
+    # Kullanıcı adı ve parola kontrolü
+    if not user:
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    if user == auth.password:
+        # Kullanıcı adı ve parola doğru
+        return jsonify({'message': 'Login successful'})
+    else:
+        # Kullanıcı adı veya parola yanlış
+        return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+    
 # @app.route('/get_flask_ip', methods=['GET'])
 # def get_flask_ip():
 #     ip_address = request.environ.get('REMOTE_ADDR')

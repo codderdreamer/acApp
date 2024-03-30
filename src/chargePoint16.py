@@ -799,6 +799,7 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
             os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)

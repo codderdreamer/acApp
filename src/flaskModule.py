@@ -92,7 +92,7 @@ class FlaskModule:
             
             # Kullanıcı doğrulaması...
             login = self.application.databaseModule.get_user_login()
-            if login["UserName"] == UserName and check_password_hash(login["Password"], Password):   
+            if login["UserName"] == UserName and login["Password"] == Password:
                 token = jwt.encode({
                     'user': UserName,
                     'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)

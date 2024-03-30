@@ -714,11 +714,18 @@ class ChargePoint16(cp):
             print("self.application.ev.control_pilot",self.application.ev.control_pilot)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
             while True:
-                print("self.application.ev.control_pilot",self.application.ev.control_pilot)
+                print("30 sn içinde kablo bağlantısı bekleniyor ! control pilot:",self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B":
+                    print("Kablo bağlantısı sağlandı.")
                     break
                 elif time.time() - time_start > 30:
+                    print("Kablo bağlantısı sağlanamadı 30 saniye süre doldu!")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                    self.application.ev.start_stop_authorize = False
+                    self.application.chargePoint.authorize = None
+                    self.application.ev.card_id = ""
+                    self.application.ev.id_tag = None
+                    self.application.ev.charge = False
                     break
                 time.sleep(0.2)
                 

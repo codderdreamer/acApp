@@ -118,6 +118,9 @@ class EV():
                     if self.application.process.id_tag == value:
                         self.application.chargePoint.authorize = None
                         asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
+                        if self.__control_pilot != "B":
+                            print("-------------------------------------------------------------------  Araç bağlı değil")
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
                     else:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                 else:

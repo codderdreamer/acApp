@@ -24,6 +24,7 @@ class Application():
         # subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
         # time.sleep(10)
         self.loop = loop
+        self.charge_stopped = False
         self.chargePoint = None
         
         self.availability = AvailabilityType.operative
@@ -80,7 +81,7 @@ class Application():
         print("BluetoothService")
         self.bluetoothService = BluetoothService(self)
         
-        self.charge_stopped = False
+        
     
         
         

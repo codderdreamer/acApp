@@ -217,7 +217,7 @@ class ChargePoint16(cp):
         transaction_id: int | None = None
         """
         try :
-            if self.modbusModule.connection == True:
+            if self.application.modbusModule.connection == True:
                 request = call.MeterValuesPayload(
                 connector_id = 1,
                 transaction_id = self.transaction_id,

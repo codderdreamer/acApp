@@ -315,97 +315,98 @@ class ChargePoint16(cp):
                     
             else:
                 print("\n Meter bağlı değil \n")
-                request = call.MeterValuesPayload(
-                    connector_id = 1,
-                    transaction_id = self.transaction_id,
-                    meter_value = [
-                        {
-                            "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
-                            "sampledValue": [
-                                {
-                                    "value": str(self.application.ev.energy),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.energy_active_import_register,
-                                    "phase" : None,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.kwh
-                                },
-                                {
-                                    "value": str(self.application.ev.voltage_L1),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.voltage,
-                                    "phase" : Phase.l1,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.v
-                                },
-                                {
-                                    "value": str(self.application.ev.voltage_L2),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.voltage,
-                                    "phase" : Phase.l2,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.v
-                                },
-                                {
-                                    "value": str(self.application.ev.voltage_L3),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.voltage,
-                                    "phase" : Phase.l3,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.v
-                                },
-                                {
-                                    "value": str(self.application.ev.current_L1),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.current_import,
-                                    "phase" : Phase.l1,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.a
-                                },
-                                {
-                                    "value": str(self.application.ev.current_L2),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.current_import,
-                                    "phase" : Phase.l2,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.a
-                                },
-                                {
-                                    "value": str(self.application.ev.current_L3),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.current_import,
-                                    "phase" : Phase.l3,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.a
-                                },
-                                {
-                                    "value": str(self.application.ev.power),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.power_active_import,
-                                    "phase" : None,
-                                    "location": Location.cable,
-                                    "unit": UnitOfMeasure.kw
-                                },
-                                {
-                                    "value": str(self.application.ev.temperature),
-                                    "context": ReadingContext.sample_periodic,
-                                    "format": ValueFormat.raw,
-                                    "measurand": Measurand.temperature,
-                                    "phase" : None,
-                                    "location": Location.body,
-                                    "unit": UnitOfMeasure.celsius
-                                }
-                            ]
-                        }
-                    ])
+                if self.application.ev.energy != None:
+                    request = call.MeterValuesPayload(
+                        connector_id = 1,
+                        transaction_id = self.transaction_id,
+                        meter_value = [
+                            {
+                                "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                                "sampledValue": [
+                                    {
+                                        "value": str(self.application.ev.energy),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.energy_active_import_register,
+                                        "phase" : None,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.kwh
+                                    },
+                                    {
+                                        "value": str(self.application.ev.voltage_L1),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.voltage,
+                                        "phase" : Phase.l1,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.v
+                                    },
+                                    {
+                                        "value": str(self.application.ev.voltage_L2),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.voltage,
+                                        "phase" : Phase.l2,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.v
+                                    },
+                                    {
+                                        "value": str(self.application.ev.voltage_L3),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.voltage,
+                                        "phase" : Phase.l3,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.v
+                                    },
+                                    {
+                                        "value": str(self.application.ev.current_L1),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.current_import,
+                                        "phase" : Phase.l1,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.a
+                                    },
+                                    {
+                                        "value": str(self.application.ev.current_L2),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.current_import,
+                                        "phase" : Phase.l2,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.a
+                                    },
+                                    {
+                                        "value": str(self.application.ev.current_L3),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.current_import,
+                                        "phase" : Phase.l3,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.a
+                                    },
+                                    {
+                                        "value": str(self.application.ev.power),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.power_active_import,
+                                        "phase" : None,
+                                        "location": Location.cable,
+                                        "unit": UnitOfMeasure.kw
+                                    },
+                                    {
+                                        "value": str(self.application.ev.temperature),
+                                        "context": ReadingContext.sample_periodic,
+                                        "format": ValueFormat.raw,
+                                        "measurand": Measurand.temperature,
+                                        "phase" : None,
+                                        "location": Location.body,
+                                        "unit": UnitOfMeasure.celsius
+                                    }
+                                ]
+                            }
+                        ])
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)

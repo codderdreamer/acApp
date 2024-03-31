@@ -19,14 +19,14 @@ class Process():
                 self.application.serialPort.get_command_pid_locker_control()
                 time.sleep(0.3)
                 if self.application.ev.pid_locker_control == LockerState.Lock.value:
-                    print("self.application.ev.proximity_pilot:",self.application.ev.proximity_pilot)
+                    print("self.application.ev.proximity_pilot",self.application.ev.proximity_pilot)
                     print("self.application.max_current",self.application.max_current)
-                    if self.application.max_current > self.application.ev.proximity_pilot:
+                    if int(self.application.max_current) > int(self.application.ev.proximity_pilot):
                         print("set_command_pid_cp_pwm",self.application.ev.proximity_pilot)
-                        self.application.serialPort.set_command_pid_cp_pwm(self.application.ev.proximity_pilot_current)
+                        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))
                     else:
                         print("set_command_pid_cp_pwm",self.application.max_current)
-                        self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
+                        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
                     self.application.deviceState = DeviceState.WAITING_STATE_C
                     break
                 else:

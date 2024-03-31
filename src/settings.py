@@ -348,6 +348,8 @@ class Settings():
                 whether_to_open_the_qr_code_process = sjon["Data"]["whether_to_open_the_qr_code_process"]
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
+                if card_type == CardType.LocalPnC.value or card_type == CardType.StartStopCard.value:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                 self.application.databaseModule.set_functions_enable(card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data)
                 self.application.softwareSettings.set_functions_enable()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_functions_enable())

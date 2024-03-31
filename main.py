@@ -154,7 +154,7 @@ class Application():
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
                 print("********************************************************ocpp_url:",ocpp_url)
                 
-                async with asyncio.wait_for(websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value], compression=None), timeout=3) as ws:
+                async with asyncio.wait_for(websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value], compression=None,timeout=10), timeout=5) as ws:
                     self.ocppActive = True
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws)
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                 res = loop.run_until_complete(app.ocppStart())
                 app.ocppActive = False
                 # print("-----------------------------------ocpp stop--------------------------------------")
-            time.sleep(1)
+            time.sleep(3)
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)
     while True:

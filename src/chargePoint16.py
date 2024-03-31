@@ -218,6 +218,7 @@ class ChargePoint16(cp):
         """
         try :
             if self.application.modbusModule.connection == True:
+                print("\n Meter bağlı \n")
                 request = call.MeterValuesPayload(
                 connector_id = 1,
                 transaction_id = self.transaction_id,
@@ -311,6 +312,7 @@ class ChargePoint16(cp):
                 ])
                 
             else:
+                print("\n Meter bağlı değil \n")
                 request = call.MeterValuesPayload(
                     connector_id = 1,
                     transaction_id = self.transaction_id,

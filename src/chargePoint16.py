@@ -313,6 +313,11 @@ class ChargePoint16(cp):
                         }
                     ])
                     
+                    LOGGER_CHARGE_POINT.info("Request:%s", request)
+                    response = await self.call(request)
+                    LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                    return response
+                    
             else:
                 print("\n Meter bağlı değil \n")
                 if self.application.ev.energy != None:
@@ -407,10 +412,11 @@ class ChargePoint16(cp):
                                 ]
                             }
                         ])
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
-            response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            return response
+                    LOGGER_CHARGE_POINT.info("Request:%s", request)
+                    response = await self.call(request)
+                    LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                    return response
+            
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
 

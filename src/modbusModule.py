@@ -24,6 +24,8 @@ class ModbusModule:
         self.total_energy_export = None
         self.current_demand = None
         
+        self.connection = False
+        
         Thread(target=self.read_all_data,daemon=True).start()
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
@@ -50,8 +52,10 @@ class ModbusModule:
                 self.total_energy_import = round(self.read_input_float(register_address=73)/1000,2)
                 self.total_energy_export = round(self.read_input_float(register_address=75)/1000,2)
                 self.current_demand = self.read_input_float(register_address=259)
+                self.connection = True
             except Exception as e:
                 # print(e)
+                self.connection = False
                 pass
             time.sleep(3)
 

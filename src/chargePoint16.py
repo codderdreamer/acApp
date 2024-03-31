@@ -217,7 +217,8 @@ class ChargePoint16(cp):
         transaction_id: int | None = None
         """
         try :
-            request = call.MeterValuesPayload(
+            if self.modbusModule.connection == True:
+                request = call.MeterValuesPayload(
                 connector_id = 1,
                 transaction_id = self.transaction_id,
                 meter_value = [
@@ -225,7 +226,7 @@ class ChargePoint16(cp):
                         "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
                         "sampledValue": [
                             {
-                                "value": str(self.application.ev.energy),
+                                "value": str(self.application.modbusModule.total_energy_import),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.energy_active_import_register,
@@ -234,7 +235,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.kwh
                             },
                             {
-                                "value": str(self.application.ev.voltage_L1),
+                                "value": str(self.application.modbusModule.volt_l1),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.voltage,
@@ -243,7 +244,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.v
                             },
                             {
-                                "value": str(self.application.ev.voltage_L2),
+                                "value": str(self.application.modbusModule.volt_l2),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.voltage,
@@ -252,7 +253,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.v
                             },
                             {
-                                "value": str(self.application.ev.voltage_L3),
+                                "value": str(self.application.modbusModule.volt_l3),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.voltage,
@@ -261,7 +262,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.v
                             },
                             {
-                                "value": str(self.application.ev.current_L1),
+                                "value": str(self.application.modbusModule.current_l1),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.current_import,
@@ -270,7 +271,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.a
                             },
                             {
-                                "value": str(self.application.ev.current_L2),
+                                "value": str(self.application.modbusModule.current_l2),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.current_import,
@@ -279,7 +280,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.a
                             },
                             {
-                                "value": str(self.application.ev.current_L3),
+                                "value": str(self.application.modbusModule.current_l3),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.current_import,
@@ -288,7 +289,7 @@ class ChargePoint16(cp):
                                 "unit": UnitOfMeasure.a
                             },
                             {
-                                "value": str(self.application.ev.power),
+                                "value": str(self.application.modbusModule.power),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.power_active_import,
@@ -304,84 +305,103 @@ class ChargePoint16(cp):
                                 "phase" : None,
                                 "location": Location.body,
                                 "unit": UnitOfMeasure.celsius
-                            },
-                            {
-                                "value": str(self.application.modbusModule.total_energy_import),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.energy_active_import_register,
-                                "phase" : None,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.kwh
-                            },
-                            {
-                                "value": str(self.application.modbusModule.volt_l1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l1,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.modbusModule.volt_l2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l2,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.modbusModule.volt_l3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l3,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.modbusModule.current_l1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l1,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.modbusModule.current_l2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l2,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.modbusModule.current_l3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l3,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.modbusModule.power),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.power_active_import,
-                                "phase" : None,
-                                "location": Location.ev,
-                                "unit": UnitOfMeasure.kw
                             }
-                            
                         ]
                     }
-                ]
-            )
+                ])
+                
+            else:
+                request = call.MeterValuesPayload(
+                    connector_id = 1,
+                    transaction_id = self.transaction_id,
+                    meter_value = [
+                        {
+                            "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                            "sampledValue": [
+                                {
+                                    "value": str(self.application.ev.energy),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.energy_active_import_register,
+                                    "phase" : None,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.kwh
+                                },
+                                {
+                                    "value": str(self.application.ev.voltage_L1),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.voltage,
+                                    "phase" : Phase.l1,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.v
+                                },
+                                {
+                                    "value": str(self.application.ev.voltage_L2),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.voltage,
+                                    "phase" : Phase.l2,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.v
+                                },
+                                {
+                                    "value": str(self.application.ev.voltage_L3),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.voltage,
+                                    "phase" : Phase.l3,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.v
+                                },
+                                {
+                                    "value": str(self.application.ev.current_L1),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.current_import,
+                                    "phase" : Phase.l1,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.a
+                                },
+                                {
+                                    "value": str(self.application.ev.current_L2),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.current_import,
+                                    "phase" : Phase.l2,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.a
+                                },
+                                {
+                                    "value": str(self.application.ev.current_L3),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.current_import,
+                                    "phase" : Phase.l3,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.a
+                                },
+                                {
+                                    "value": str(self.application.ev.power),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.power_active_import,
+                                    "phase" : None,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.kw
+                                },
+                                {
+                                    "value": str(self.application.ev.temperature),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.temperature,
+                                    "phase" : None,
+                                    "location": Location.body,
+                                    "unit": UnitOfMeasure.celsius
+                                }
+                            ]
+                        }
+                    ])
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)

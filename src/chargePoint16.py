@@ -205,7 +205,7 @@ class ChargePoint16(cp):
                 await asyncio.sleep(interval)
         except Exception as e:
             print(datetime.now(),"send_heartbeat Exception:",e)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
 
     # 7. METER VALUES
     async def send_meter_values(

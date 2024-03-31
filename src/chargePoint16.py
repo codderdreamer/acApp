@@ -219,6 +219,7 @@ class ChargePoint16(cp):
         try :
             if self.application.modbusModule.connection == True:
                 print("\n Meter bağlı \n")
+                print(self.application.modbusModule.total_energy_import,self.application.modbusModule.firstEnergy)
                 request = call.MeterValuesPayload(
                 connector_id = 1,
                 transaction_id = self.transaction_id,
@@ -227,7 +228,7 @@ class ChargePoint16(cp):
                         "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
                         "sampledValue": [
                             {
-                                "value": str(self.application.modbusModule.total_energy_import),
+                                "value": str(self.application.modbusModule.total_energy_import - self.application.modbusModule.firstEnergy),
                                 "context": ReadingContext.sample_periodic,
                                 "format": ValueFormat.raw,
                                 "measurand": Measurand.energy_active_import_register,

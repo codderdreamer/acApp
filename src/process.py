@@ -209,6 +209,10 @@ class Process():
                         asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
                         time.sleep(1)
                         self.application.meter_values_on = True
+                        self.application.serialPort.get_command_pid_current()
+                        self.application.serialPort.get_command_pid_voltage()
+                        self.application.serialPort.get_command_pid_power(PowerType.kw)
+                        self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                         Thread(target=self.meter_values_thread,daemon=True).start()
                         
                         while True:

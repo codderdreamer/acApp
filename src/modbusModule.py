@@ -24,9 +24,22 @@ class ModbusModule:
         self.total_energy_export = None
         self.current_demand = None
         
-        self.connection = False
+        self.__connection = False
+        self.firstEnergy = None
         
         Thread(target=self.read_all_data,daemon=True).start()
+        
+    @property
+    def connection(self):
+        return self.__connection
+
+    @connection.setter
+    def connection(self, value):
+        if self.__connection != value:
+            self.__connection = value
+            if value == True:
+                self.firstEnergy = round(self.read_input_float(register_address=73)/1000,2)
+       
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
         return self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)

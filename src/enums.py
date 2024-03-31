@@ -62,6 +62,7 @@ class LedState(Enum):
     Fault = "7"
     ChargingStopped = "8"
     WaitingPluging = ";"
+    DeviceOffline = "="
 
 class LockerState(Enum):
     Lock = "1"

@@ -70,7 +70,7 @@ class ModbusModule:
                 print("self.volt_l3",self.volt_l3)
                 print("self.current_l1",self.volt_l3)
                 print("self.current_l2",self.volt_l3)
-                print("self.current_l3",self.volt_l3)
+                print("self.volt_l3",self.volt_l3)
                 self.connection = True
             except Exception as e:
                 # print(e)

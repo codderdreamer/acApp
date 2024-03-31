@@ -219,99 +219,100 @@ class ChargePoint16(cp):
         try :
             if self.application.modbusModule.connection == True:
                 print("\n Meter bağlı \n")
-                print(self.application.modbusModule.total_energy_import,self.application.modbusModule.firstEnergy)
-                request = call.MeterValuesPayload(
-                connector_id = 1,
-                transaction_id = self.transaction_id,
-                meter_value = [
-                    {
-                        "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
-                        "sampledValue": [
-                            {
-                                "value": str(self.application.modbusModule.total_energy_import - self.application.modbusModule.firstEnergy),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.energy_active_import_register,
-                                "phase" : None,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.kwh
-                            },
-                            {
-                                "value": str(self.application.modbusModule.volt_l1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l1,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.modbusModule.volt_l2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l2,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.modbusModule.volt_l3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l3,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.modbusModule.current_l1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l1,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.modbusModule.current_l2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l2,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.modbusModule.current_l3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l3,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.modbusModule.power),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.power_active_import,
-                                "phase" : None,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.kw
-                            },
-                            {
-                                "value": str(self.application.ev.temperature),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.temperature,
-                                "phase" : None,
-                                "location": Location.body,
-                                "unit": UnitOfMeasure.celsius
-                            }
-                        ]
-                    }
-                ])
-                
+                if self.application.modbusModule.firstEnergy != None:
+                    print(self.application.modbusModule.total_energy_import,self.application.modbusModule.firstEnergy)
+                    request = call.MeterValuesPayload(
+                    connector_id = 1,
+                    transaction_id = self.transaction_id,
+                    meter_value = [
+                        {
+                            "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                            "sampledValue": [
+                                {
+                                    "value": str(self.application.modbusModule.total_energy_import - self.application.modbusModule.firstEnergy),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.energy_active_import_register,
+                                    "phase" : None,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.kwh
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.volt_l1),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.voltage,
+                                    "phase" : Phase.l1,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.v
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.volt_l2),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.voltage,
+                                    "phase" : Phase.l2,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.v
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.volt_l3),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.voltage,
+                                    "phase" : Phase.l3,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.v
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.current_l1),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.current_import,
+                                    "phase" : Phase.l1,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.a
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.current_l2),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.current_import,
+                                    "phase" : Phase.l2,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.a
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.current_l3),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.current_import,
+                                    "phase" : Phase.l3,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.a
+                                },
+                                {
+                                    "value": str(self.application.modbusModule.power),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.power_active_import,
+                                    "phase" : None,
+                                    "location": Location.cable,
+                                    "unit": UnitOfMeasure.kw
+                                },
+                                {
+                                    "value": str(self.application.ev.temperature),
+                                    "context": ReadingContext.sample_periodic,
+                                    "format": ValueFormat.raw,
+                                    "measurand": Measurand.temperature,
+                                    "phase" : None,
+                                    "location": Location.body,
+                                    "unit": UnitOfMeasure.celsius
+                                }
+                            ]
+                        }
+                    ])
+                    
             else:
                 print("\n Meter bağlı değil \n")
                 request = call.MeterValuesPayload(

@@ -112,7 +112,7 @@ class SerialPort():
         data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_proximity_pilot -->", send_data)
+        print("Send get_command_pid_proximity_pilot -->", send_data)
         self.send_data_list.append(send_data)
             
     def set_command_pid_cp_pwm(self,max_current):
@@ -300,7 +300,7 @@ class SerialPort():
     def get_response_pid_proximity_pilot(self,data):
         if data[2] == self.pid_proximity_pilot:
             self.application.ev.proximity_pilot = data[7]
-            # print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
+            print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
       
     def set_response_pid_cp_pwm(self,data):
         if data[2] == self.pid_cp_pwm_control:

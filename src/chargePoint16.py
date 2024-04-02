@@ -980,6 +980,8 @@ class ChargePoint16(cp):
                 
                 with zipfile.ZipFile(filename, 'r') as zip_ref:
                     zip_ref.extractall('/root')
+                    
+                subprocess.run(["/bin/bash", "/root/update.sh"])
     
                 await self.send_firmware_status_notification(FirmwareStatus.downloaded)
             else:

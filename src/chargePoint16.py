@@ -970,24 +970,41 @@ class ChargePoint16(cp):
                 
             # print("Update firmware")
             await self.send_firmware_status_notification(FirmwareStatus.downloading)
-            response = requests.get(location)
-            if response.status_code == 200:
-                print("Doya indiriliyor")
-                filename = "/root/new_firmware.zip"
-                with open(filename, 'wb') as file:
-                    file.write(response.content)
-                print(f"'{filename}' başarıyla indirildi.")
-                
+            filename = "/root/new_firmware.zip"
+            exit_status = os.system(f"curl {location} --output {filename}")
+            if exit_status == 0:
+                print("Dosya başarıyla indirildi.")
                 
                 with zipfile.ZipFile(filename, 'r') as zip_ref:
                     zip_ref.extractall('/root')
                     
+                print("Dosya başarıyla unzip yapıldı.")
+                    
                 subprocess.run(["/bin/bash", "/root/update.sh"])
-    
+                
                 await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+                
             else:
-                print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
-                await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
+                print("Hata: Dosya indirilirken bir sorun oluştu.")
+            
+            # response = requests.get(location)
+            # if response.status_code == 200:
+            #     filename = "/root/new_firmware.zip"
+            #     with open(filename, 'wb') as file:
+            #         file.write(response.content)
+            #     print(f"'{filename}' başarıyla indirildi.")
+                
+                
+            #     with zipfile.ZipFile(filename, 'r') as zip_ref:
+            #         zip_ref.extractall('/root')
+                    
+            #     subprocess.run(["/bin/bash", "/root/update.sh"])
+    
+            #     await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+            # else:
+            #     print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")
+            #     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
+        
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()

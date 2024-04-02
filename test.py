@@ -1,4 +1,7 @@
 import requests
+import os
+
+os.system("curl https://api.heracharge.com/firmware/uploads/1712068754156-312214834-firmware.zip -O newsoftware.zip")
 
 response = requests.get("https://api.heracharge.com/firmware/uploads/1712068754156-312214834-firmware.zip")
 if response.status_code == 200:

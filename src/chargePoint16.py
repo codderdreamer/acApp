@@ -972,6 +972,7 @@ class ChargePoint16(cp):
             await self.send_firmware_status_notification(FirmwareStatus.downloading)
             response = requests.get(location)
             if response.status_code == 200:
+                print("Doya indiriliyor")
                 filename = "/root/new_firmware.zip"
                 with open(filename, 'wb') as file:
                     file.write(response.content)

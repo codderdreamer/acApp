@@ -1,9 +1,10 @@
 
-NEW_SOFTWARE_DIR = "/root/firmware"
+NEW_SOFTWARE_DIR="/root/firmware"
 SOFTWARE_DIR="/root/acApp"
 BACKUP_DIR="/root/acApp_backup"
 
 cp -r $SOFTWARE_DIR $BACKUP_DIR
+rm -r $SOFTWARE_DIR
 cp -r $NEW_SOFTWARE_DIR $SOFTWARE_DIR
 
 if systemctl restart acapp.service; then
@@ -23,4 +24,5 @@ else
 fi
 
 # Artık gerekli olmayan dosyaları temizle
-rm /root/new_firmware.zip
+rm -r /root/new_firmware.zip
+rm -r $NEW_SOFTWARE_DIR

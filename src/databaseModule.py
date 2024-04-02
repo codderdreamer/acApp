@@ -10,7 +10,7 @@ class DatabaseModule():
     def get_dns_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM dns_settings"
             self.cursor.execute(query)
@@ -29,7 +29,7 @@ class DatabaseModule():
     def get_ethernet_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM ethernet_settings"
             self.cursor.execute(query)
@@ -50,7 +50,7 @@ class DatabaseModule():
     def get_network_priority(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM network_priority"
             self.cursor.execute(query)
@@ -70,7 +70,7 @@ class DatabaseModule():
     def get_settings_4g(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM settings_4g"
             self.cursor.execute(query)
@@ -91,7 +91,7 @@ class DatabaseModule():
     def get_wifi_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM wifi_settings"
             self.cursor.execute(query)
@@ -116,7 +116,7 @@ class DatabaseModule():
     def get_ocpp_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM ocpp_settings"
             self.cursor.execute(query)
@@ -138,7 +138,7 @@ class DatabaseModule():
     def get_functions_enable(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM functions_enable"
             self.cursor.execute(query)
@@ -158,7 +158,7 @@ class DatabaseModule():
     def get_bluetooth_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM bluetooth_settings"
             self.cursor.execute(query)
@@ -177,7 +177,7 @@ class DatabaseModule():
     def get_timezoon_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM timezoon_settings"
             self.cursor.execute(query)
@@ -194,7 +194,7 @@ class DatabaseModule():
     def get_firmware_version(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM firmware_version"
             self.cursor.execute(query)
@@ -211,7 +211,7 @@ class DatabaseModule():
     def get_availability(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM device_settings"
@@ -234,7 +234,7 @@ class DatabaseModule():
     def get_max_current(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM device_settings"
             self.cursor.execute(query)
@@ -249,7 +249,7 @@ class DatabaseModule():
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
             
@@ -275,7 +275,7 @@ class DatabaseModule():
 
     def set_ethernet_settings(self,ethernetEnable,dhcpcEnable,ip,netmask,gateway):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
             
@@ -311,7 +311,7 @@ class DatabaseModule():
 
     def set_network_priority(self,enableWorkmode,first,second,third):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE network_priority SET key = ? WHERE value = ?"
             
@@ -342,7 +342,7 @@ class DatabaseModule():
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
@@ -378,7 +378,7 @@ class DatabaseModule():
     
     def set_wifi_settings(self,wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE wifi_settings SET key = ? WHERE value = ?"
             
@@ -434,7 +434,7 @@ class DatabaseModule():
             
     def set_ocpp_settings(self,domainName,port,sslEnable,authorizationKey,path,chargePointId):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
             
@@ -475,7 +475,7 @@ class DatabaseModule():
             
     def set_functions_enable(self,card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE functions_enable SET key = ? WHERE value = ?"
             
@@ -506,7 +506,7 @@ class DatabaseModule():
             
     def set_bluetooth_settings(self,bluetooth_enable,pin,bluetooth_name):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE bluetooth_settings SET key = ? WHERE value = ?"
             
@@ -532,7 +532,7 @@ class DatabaseModule():
             
     def set_timezone_settings(self,timezone):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE timezoon_settings SET key = ? WHERE value = ?"
             
@@ -548,7 +548,7 @@ class DatabaseModule():
             
     def set_firmware_version(self,version):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE firmware_version SET key = ? WHERE value = ?"
             
@@ -564,7 +564,7 @@ class DatabaseModule():
             
     def set_availability(self,availability):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -583,7 +583,7 @@ class DatabaseModule():
             
     def set_max_current(self,maxcurrent):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -600,7 +600,7 @@ class DatabaseModule():
     
     def set_local_list(self,local_list:list):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             self.cursor.execute('DELETE FROM local_list;')
             self.settings_database.commit()
@@ -615,7 +615,7 @@ class DatabaseModule():
     def get_local_list(self):
         id_tag_list = []
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM local_list"
             self.cursor.execute(query)
@@ -631,7 +631,7 @@ class DatabaseModule():
     def get_user_login(self):
         try:
             data_dict = {}
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM user_login"
             self.cursor.execute(query)
@@ -647,7 +647,7 @@ class DatabaseModule():
             
     def set_password(self,password):
         try:
-            self.settings_database = sqlite3.connect('/root/acApp/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE user_login SET Password = ? WHERE UserName = ?"
             

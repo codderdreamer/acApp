@@ -18,6 +18,7 @@ from threading import Thread
 import time
 import requests
 import subprocess
+import zipfile
 
 LOGGER_CHARGE_POINT = logging.getLogger('charge_point')
 handler = logging.StreamHandler()
@@ -975,6 +976,11 @@ class ChargePoint16(cp):
                 with open(filename, 'wb') as file:
                     file.write(response.content)
                 print(f"'{filename}' başarıyla indirildi.")
+                
+                
+                with zipfile.ZipFile(filename, 'r') as zip_ref:
+                    zip_ref.extractall('/root')
+    
                 await self.send_firmware_status_notification(FirmwareStatus.downloaded)
             else:
                 print(f"Dosya indirilirken hata oluştu. HTTP durum kodu: {response.status_code}")

@@ -65,12 +65,18 @@ class ModbusModule:
                 self.total_energy_import = round(self.read_input_float(register_address=73)/1000,2)
                 self.total_energy_export = round(self.read_input_float(register_address=75)/1000,2)
                 self.current_demand = self.read_input_float(register_address=259)
+                print("----------------------------")
                 print("self.volt_l1",self.volt_l1)
                 print("self.volt_l2",self.volt_l2)
                 print("self.volt_l3",self.volt_l3)
-                print("self.current_l1",self.volt_l3)
-                print("self.current_l2",self.volt_l3)
-                print("self.volt_l3",self.volt_l3)
+                
+                print("self.current_l1",self.current_l1)
+                print("self.current_l2",self.current_l2)
+                print("self.current_l3",self.current_l3)
+                
+                print("self.power",self.power)
+                
+                print("self.total_energy_import",self.total_energy_import)
                 self.connection = True
             except Exception as e:
                 # print(e)

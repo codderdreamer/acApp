@@ -162,6 +162,8 @@ class Process():
             self.id_tag = self.application.ev.card_id
         if self.application.ev.id_tag != None:
             self.id_tag = self.application.ev.id_tag
+            
+        print("self.application.cardType",self.application.cardType)
         
         if self.application.cardType == CardType.LocalPnC:
             self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")

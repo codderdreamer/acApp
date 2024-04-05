@@ -81,6 +81,7 @@ class Application():
         self.process.idle()
         print("BluetoothService")
         self.bluetoothService = BluetoothService(self)
+        Thread(target=self.read_charge_values_thred,daemon=True).start()
         
         
     @property

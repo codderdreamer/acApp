@@ -58,6 +58,7 @@ class SerialPort():
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
+        Thread(target=self.read_meter,daemon=True).start()
         
     def read_meter(self):
         print("------------------ MCU ----------------")

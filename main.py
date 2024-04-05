@@ -39,6 +39,7 @@ class Application():
         
         self.control_A_B_C = False
         self.control_C_B = False
+        self.control_A_C = False
         self.meter_values_on = False
         self.flaskModule = FlaskModuleThread(self)
         self.settings = Settings(self)

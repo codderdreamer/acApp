@@ -42,18 +42,7 @@ class Application():
         self.control_C_B = False
         self.control_A_C = False
         self.meter_values_on = False
-        self.flaskModule = FlaskModuleThread(self)
-        self.settings = Settings(self)
-        self.softwareSettings = SoftwareSettings(self)
         self.databaseModule = DatabaseModule(self)
-        self.webSocketServer = WebSocketServer(self)
-        # self.updateModule = UpdateModule(self)
-        self.ev = EV(self)
-        self.ocpp_subprotocols = OcppVersion.ocpp16
-        self.serialPort = SerialPort(self)
-        self.process = Process(self)
-        self.process.idle()
-        self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=1)
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
         self.databaseModule.get_ethernet_settings()
@@ -68,6 +57,21 @@ class Application():
         self.databaseModule.get_max_current()
         self.mid_meter = self.databaseModule.get_mid_meter()
         self.id_tag_list = self.databaseModule.get_local_list()
+        
+        
+        self.flaskModule = FlaskModuleThread(self)
+        self.settings = Settings(self)
+        self.softwareSettings = SoftwareSettings(self)
+        
+        self.webSocketServer = WebSocketServer(self)
+        # self.updateModule = UpdateModule(self)
+        self.ev = EV(self)
+        self.ocpp_subprotocols = OcppVersion.ocpp16
+        self.serialPort = SerialPort(self)
+        self.process = Process(self)
+        self.process.idle()
+        self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=1)
+
         
         self.softwareSettings.set_eth()
         # time.sleep(5)

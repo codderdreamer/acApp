@@ -286,7 +286,12 @@ class Process():
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
-        # while True:
+        while True:
+            if self.application.ev.control_pilot != ControlPlot.stateA.value:
+                time.sleep(1)
+            else:
+                break
+                
         #     if self.application.ev.control_pilot == ControlPlot.stateA.value:
         #         self.application.deviceState = DeviceState.IDLE
         #         break

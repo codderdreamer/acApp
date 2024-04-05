@@ -61,12 +61,8 @@ class Application():
         self.id_tag_list = self.databaseModule.get_local_list()
         self.softwareSettings = SoftwareSettings(self)
         self.softwareSettings.set_functions_enable()
-        
-        
+    
         self.flaskModule = FlaskModuleThread(self)
-        
-        
-        
         self.webSocketServer = WebSocketServer(self)
         # self.updateModule = UpdateModule(self)
         self.ev = EV(self)
@@ -148,8 +144,8 @@ class Application():
     def read_charge_values_thred(self):
         while True:
             try:
-                print("-------------CHARGE VALUES------------")
-                print("self.mid_meter",self.mid_meter,"self.modbusModule.connection",self.modbusModule.connection)
+                # print("-------------CHARGE VALUES------------")
+                # print("self.mid_meter",self.mid_meter,"self.modbusModule.connection",self.modbusModule.connection)
                 if self.mid_meter == True and self.modbusModule.connection == True:
                     print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1
@@ -180,14 +176,14 @@ class Application():
                     self.ev.energy = 0
                     self.ev.power =  0
                     
-                print("self.ev.current_L1",self.ev.current_L1)
-                print("self.ev.current_L2",self.ev.current_L2)
-                print("self.ev.current_L3",self.ev.current_L3)
-                print("self.ev.voltage_L1",self.ev.voltage_L1)
-                print("self.ev.voltage_L2",self.ev.voltage_L2)
-                print("self.ev.voltage_L3",self.ev.voltage_L3)
-                print("self.ev.energy",self.ev.energy)
-                print("self.ev.power",self.ev.power)
+                # print("self.ev.current_L1",self.ev.current_L1)
+                # print("self.ev.current_L2",self.ev.current_L2)
+                # print("self.ev.current_L3",self.ev.current_L3)
+                # print("self.ev.voltage_L1",self.ev.voltage_L1)
+                # print("self.ev.voltage_L2",self.ev.voltage_L2)
+                # print("self.ev.voltage_L3",self.ev.voltage_L3)
+                # print("self.ev.energy",self.ev.energy)
+                # print("self.ev.power",self.ev.power)
                 time.sleep(1)
                 
             except Exception as e:

@@ -304,8 +304,6 @@ class SoftwareSettings():
             enableModification = self.application.settings.settings4G.enableModification
             if enableModification=="True":
                 result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                print(result.split("/")[5])
-                print(result.split("/")[5].split())
                 modem_id = result.split("/")[5].split()[0]
                 result = subprocess.check_output(f"mmcli -m {modem_id}", shell=True).decode('utf-8')
                 result_list = result.split("\n")

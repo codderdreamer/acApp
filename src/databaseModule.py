@@ -258,10 +258,9 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             print("data_dict",data_dict)
-            self.application.mid_meter = bool(data_dict["midMeter"])
+            return bool(data_dict["midMeter"])
         except Exception as e:
-            print(datetime.now(),"get_max_current Exception:",e)
-        return data_dict
+            print(datetime.now(),"get_mid_meter Exception:",e)
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:

@@ -53,14 +53,15 @@ class ModbusModule:
     def read_all_data(self):
         while True:
             try:
-                self.volt_l1 = self.read_input_float(register_address=1)
-                self.volt_l2 = self.read_input_float(register_address=3)
-                self.volt_l3 = self.read_input_float(register_address=5)
-                self.current_l1 = self.read_input_float(register_address=7)
-                self.current_l2 = self.read_input_float(register_address=9)
-                self.current_l3 = self.read_input_float(register_address=11)
+                self.voltage_L1 = self.read_input_float(register_address=1)
+                self.voltage_L2 = self.read_input_float(register_address=3)
+                self.voltage_L3 = self.read_input_float(register_address=5)
+                self.current_L1 = self.read_input_float(register_address=7)
+                self.current_L2 = self.read_input_float(register_address=9)
+                self.current_L3 = self.read_input_float(register_address=11)
                 self.power = round(self.read_input_float(register_address=13)/1000,2)
                 self.energy = round(self.read_input_float(register_address=73)/1000,2)
+                
                 # print("-----------MID METER-----------------")
                 # print("MID METER self.volt_l1",self.volt_l1)
                 # print("MID METER self.volt_l2",self.volt_l2)

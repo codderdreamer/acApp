@@ -50,10 +50,13 @@ class SerialPort():
         self.set_command_pid_rfid()
 
     def write(self):
+        counter = 0
         while True:
             try:
                 if len(self.send_data_list)>0:
                     self.serial.write(self.send_data_list[0])
+                    print("Gönderilen",self.send_data_list[0],"counter:",counter)
+                    counter +=1
                     self.send_data_list.pop(0)
             except Exception as e:
                 print(datetime.now(),"write Exception:",e)
@@ -453,12 +456,14 @@ class SerialPort():
             # print("temp:", self.application.ev.temperature)
 
     def read(self):
+        counter = 0
         while True:
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    # print("incoming data",incoming)
+                    print("incoming data",incoming,"counter:", counter)
+                    counter +=1
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)
@@ -478,6 +483,7 @@ class SerialPort():
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
                         self.set_response_pid_rfid(incoming)
+                    
                         
                     
             except Exception as e:

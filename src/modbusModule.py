@@ -75,7 +75,7 @@ class ModbusModule:
                 # print(e)
                 self.connection = False
                 pass
-            time.sleep(3)
+            time.sleep(1)
 
     
     

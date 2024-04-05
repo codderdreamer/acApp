@@ -167,6 +167,7 @@ class Application():
             print("self.ev.voltage_L3",self.ev.voltage_L3)
             print("self.ev.energy",self.ev.energy)
             print("self.ev.power",self.ev.power)
+            time.sleep(1)
         
     async def ocppStart(self):
         try:

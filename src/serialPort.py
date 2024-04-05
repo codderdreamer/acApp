@@ -71,6 +71,7 @@ class SerialPort():
             print("self.voltage_L3",self.voltage_L3)
             print("self.power",self.power)
             print("self.energy",self.energy)
+            time.sleep(1)
 
     def write(self):
         # counter = 0

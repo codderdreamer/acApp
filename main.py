@@ -137,6 +137,7 @@ class Application():
     def read_charge_values_thred(self):
         print("-------------CHARGE VALUES------------")
         if self.modbusModule.connection == True:
+            print("mid meter bağlı...")
             self.ev.current_L1 = self.modbusModule.current_L1
             self.ev.current_L2 = self.modbusModule.current_L2
             self.ev.current_L3 = self.modbusModule.current_L3
@@ -146,6 +147,7 @@ class Application():
             self.ev.energy = self.modbusModule.energy
             self.ev.power =  self.modbusModule.power
         else:
+            print("mcu bağlı...")
             self.ev.current_L1 = self.serialPort.current_L1
             self.ev.current_L2 = self.serialPort.current_L2
             self.ev.current_L3 = self.modbusModule.current_L3

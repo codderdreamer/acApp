@@ -146,7 +146,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print("get_functions_enable",data_dict,"\n")
+            # print("get_functions_enable",data_dict,"\n")
             self.application.settings.functionsEnable.card_type = data_dict["card_type"]
             self.application.settings.functionsEnable.whether_to_open_the_qr_code_process = data_dict["whether_to_open_the_qr_code_process"]
             self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background = data_dict["local_startup_whether_to_go_ocpp_background"]

@@ -32,7 +32,7 @@ class Application():
         self.__deviceState = None
         
         self.ocppActive = False
-        self.cardType = CardType.BillingCard
+        self.cardType = None
         
         self.socketType = SocketType.Type2
         self.max_current = 63

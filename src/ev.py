@@ -80,6 +80,7 @@ class EV():
     @control_pilot.setter
     def control_pilot(self, value):
         if self.__control_pilot != value:
+            print("************************************************************  control_pilot",value)
             self.__control_pilot = value
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE

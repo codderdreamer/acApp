@@ -137,37 +137,40 @@ class Application():
                 
     def read_charge_values_thred(self):
         while True:
-            print("-------------CHARGE VALUES------------")
-            if self.modbusModule.connection == True:
-                print("mid meter bağlı...")
-                self.ev.current_L1 = self.modbusModule.current_L1
-                self.ev.current_L2 = self.modbusModule.current_L2
-                self.ev.current_L3 = self.modbusModule.current_L3
-                self.ev.voltage_L1 = self.modbusModule.voltage_L1
-                self.ev.voltage_L2 = self.modbusModule.voltage_L2
-                self.ev.voltage_L3 = self.modbusModule.voltage_L3
-                self.ev.energy = self.modbusModule.energy
-                self.ev.power =  self.modbusModule.power
-            else:
-                print("mcu bağlı...")
-                self.ev.current_L1 = self.serialPort.current_L1
-                self.ev.current_L2 = self.serialPort.current_L2
-                self.ev.current_L3 = self.serialPort.current_L3
-                self.ev.voltage_L1 = self.serialPort.voltage_L1
-                self.ev.voltage_L2 = self.serialPort.voltage_L2
-                self.ev.voltage_L3 = self.serialPort.voltage_L3
-                self.ev.energy = self.serialPort.energy
-                self.ev.power =  self.serialPort.power
-                
-            print("self.ev.current_L1",self.ev.current_L1)
-            print("self.ev.current_L2",self.ev.current_L2)
-            print("self.ev.current_L3",self.ev.current_L3)
-            print("self.ev.voltage_L1",self.ev.voltage_L1)
-            print("self.ev.voltage_L2",self.ev.voltage_L2)
-            print("self.ev.voltage_L3",self.ev.voltage_L3)
-            print("self.ev.energy",self.ev.energy)
-            print("self.ev.power",self.ev.power)
-            time.sleep(1)
+            try:
+                print("-------------CHARGE VALUES------------")
+                if self.modbusModule.connection == True:
+                    print("mid meter bağlı...")
+                    self.ev.current_L1 = self.modbusModule.current_L1
+                    self.ev.current_L2 = self.modbusModule.current_L2
+                    self.ev.current_L3 = self.modbusModule.current_L3
+                    self.ev.voltage_L1 = self.modbusModule.voltage_L1
+                    self.ev.voltage_L2 = self.modbusModule.voltage_L2
+                    self.ev.voltage_L3 = self.modbusModule.voltage_L3
+                    self.ev.energy = self.modbusModule.energy
+                    self.ev.power =  self.modbusModule.power
+                else:
+                    print("mcu bağlı...")
+                    self.ev.current_L1 = self.serialPort.current_L1
+                    self.ev.current_L2 = self.serialPort.current_L2
+                    self.ev.current_L3 = self.serialPort.current_L3
+                    self.ev.voltage_L1 = self.serialPort.voltage_L1
+                    self.ev.voltage_L2 = self.serialPort.voltage_L2
+                    self.ev.voltage_L3 = self.serialPort.voltage_L3
+                    self.ev.energy = self.serialPort.energy
+                    self.ev.power =  self.modbusModule.power
+                    
+                print("self.ev.current_L1",self.ev.current_L1)
+                print("self.ev.current_L2",self.ev.current_L2)
+                print("self.ev.current_L3",self.ev.current_L3)
+                print("self.ev.voltage_L1",self.ev.voltage_L1)
+                print("self.ev.voltage_L2",self.ev.voltage_L2)
+                print("self.ev.voltage_L3",self.ev.voltage_L3)
+                print("self.ev.energy",self.ev.energy)
+                print("self.ev.power",self.ev.power)
+                time.sleep(1)
+            except Exception as e:
+                print("read_charge_values_thred",e)
         
     async def ocppStart(self):
         try:

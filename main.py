@@ -162,6 +162,15 @@ class Application():
                     self.ev.voltage_L3 = self.serialPort.voltage_L3
                     self.ev.energy = self.serialPort.energy
                     self.ev.power =  self.modbusModule.power
+                else:
+                    self.ev.current_L1 = 0
+                    self.ev.current_L2 = 0
+                    self.ev.current_L3 = 0
+                    self.ev.voltage_L1 = 0
+                    self.ev.voltage_L2 = 0
+                    self.ev.voltage_L3 = 0
+                    self.ev.energy = 0
+                    self.ev.power =  0
                     
                 print("self.ev.current_L1",self.ev.current_L1)
                 print("self.ev.current_L2",self.ev.current_L2)

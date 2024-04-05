@@ -61,15 +61,16 @@ class SerialPort():
         Thread(target=self.read_meter,daemon=True).start()
         
     def read_meter(self):
-        print("------------------ MCU ----------------")
-        print("self.current_L1",self.current_L1)
-        print("self.current_L2",self.current_L2)
-        print("self.current_L3",self.current_L3)
-        print("self.voltage_L1",self.voltage_L1)
-        print("self.voltage_L2",self.voltage_L2)
-        print("self.voltage_L3",self.voltage_L3)
-        print("self.power",self.power)
-        print("self.energy",self.energy)
+        while True:
+            print("------------------ MCU ----------------")
+            print("self.current_L1",self.current_L1)
+            print("self.current_L2",self.current_L2)
+            print("self.current_L3",self.current_L3)
+            print("self.voltage_L1",self.voltage_L1)
+            print("self.voltage_L2",self.voltage_L2)
+            print("self.voltage_L3",self.voltage_L3)
+            print("self.power",self.power)
+            print("self.energy",self.energy)
 
     def write(self):
         # counter = 0

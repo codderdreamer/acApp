@@ -52,6 +52,7 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
+        self.process.idle()
         self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=1)
         self.databaseModule.get_network_priority()
         self.databaseModule.get_settings_4g()
@@ -80,7 +81,6 @@ class Application():
         self.softwareSettings.set_timezoon()
         print("set_bluetooth_settings")
         self.softwareSettings.set_bluetooth_settings()
-        self.process.idle()
         print("BluetoothService")
         self.bluetoothService = BluetoothService(self)
         Thread(target=self.read_charge_values_thred,daemon=True).start()

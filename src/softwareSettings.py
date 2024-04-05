@@ -305,7 +305,6 @@ class SoftwareSettings():
             if enableModification=="True":
                 result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                 modem_id = result.split("/")[5].split()[0]
-                print(result_list)
                 result = subprocess.check_output(f"mmcli -m {modem_id}", shell=True).decode('utf-8')
                 result_list = result.split("\n")
                 for data in result_list:

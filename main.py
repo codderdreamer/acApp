@@ -150,7 +150,7 @@ class Application():
                     self.ev.voltage_L1 = self.modbusModule.voltage_L1
                     self.ev.voltage_L2 = self.modbusModule.voltage_L2
                     self.ev.voltage_L3 = self.modbusModule.voltage_L3
-                    self.ev.energy = self.modbusModule.energy
+                    self.ev.energy = self.modbusModule.energy - self.modbusModule.firstEnergy
                     self.ev.power =  self.modbusModule.power
                 elif self.mid_meter == False:
                     print("Veriler MCU'dan alınıyor...")

@@ -10,31 +10,44 @@ class Process():
         self.application = application
         self.id_tag = None
         
+    def lock_control(self):
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        time.sleep(0.7)
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+        time_start = time.time()
+        while True:
+            self.application.serialPort.get_command_pid_locker_control()
+            time.sleep(0.3)
+            if self.application.ev.pid_locker_control == LockerState.Lock.value:
+                print("self.application.ev.proximity_pilot",self.application.ev.proximity_pilot_current)
+                print("self.application.max_current",self.application.ev.proximity_pilot_current)
+                if int(self.application.max_current) > int(self.application.ev.proximity_pilot_current):
+                    print("set_command_pid_cp_pwm",self.application.ev.proximity_pilot_current)
+                    self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))
+                else:
+                    print("set_command_pid_cp_pwm",self.application.max_current)
+                    self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
+                self.application.deviceState = DeviceState.WAITING_STATE_C
+                return True
+            else:
+                print("Lock connector bekleniyor...")
+                if time.time() - time_start > 2:
+                    print("Lock 2 saniyeyi geçti...")
+                    return False
+        
     def _lock_connector_set_control_pilot(self):
         print("************************************************ _lock_connector_set_control_pilot")
         if self.application.socketType == SocketType.Type2:
-            self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-            time_start = time.time()
-            while True:
-                self.application.serialPort.get_command_pid_locker_control()
-                time.sleep(0.3)
-                if self.application.ev.pid_locker_control == LockerState.Lock.value:
-                    print("self.application.ev.proximity_pilot",self.application.ev.proximity_pilot_current)
-                    print("self.application.max_current",self.application.ev.proximity_pilot_current)
-                    if int(self.application.max_current) > int(self.application.ev.proximity_pilot_current):
-                        print("set_command_pid_cp_pwm",self.application.ev.proximity_pilot_current)
-                        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))
-                    else:
-                        print("set_command_pid_cp_pwm",self.application.max_current)
-                        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
-                    self.application.deviceState = DeviceState.WAITING_STATE_C
-                    break
-                else:
-                    print("Lock connector bekleniyor...")
-                    pass
-                if time.time() - time_start > 10:
-                    self.application.deviceState = DeviceState.FAULT
-                    break
+                result = self.lock_control()
+                control_counter = 0
+                if result == False:
+                    while control_counter < 2 and result == False:
+                        print(f"Lock Hatalı Tekrar Deneniyor {control_counter}...")
+                        result = self.lock_control()
+                        control_counter += 1
+                    if result == False:
+                        print("Deneme bitti Lock Çalışmadı.")
+                        self.application.deviceState = DeviceState.FAULT
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
             self.application.deviceState = DeviceState.WAITING_STATE_C

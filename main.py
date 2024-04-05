@@ -59,12 +59,13 @@ class Application():
         self.databaseModule.get_max_current()
         self.mid_meter = self.databaseModule.get_mid_meter()
         self.id_tag_list = self.databaseModule.get_local_list()
+        self.softwareSettings = SoftwareSettings(self)
         self.softwareSettings.set_functions_enable()
         
         
         self.flaskModule = FlaskModuleThread(self)
         
-        self.softwareSettings = SoftwareSettings(self)
+        
         
         self.webSocketServer = WebSocketServer(self)
         # self.updateModule = UpdateModule(self)

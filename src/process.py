@@ -227,8 +227,6 @@ class Process():
                     self.application.serialPort.get_command_pid_voltage()
                     self.application.serialPort.get_command_pid_power(PowerType.kw)
                     self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                else:
-                    break
                 time.sleep(3)
                 
                 
@@ -286,8 +284,6 @@ class Process():
                                 self.application.meter_values_on = True
                                 Thread(target=self.meter_values_thread,daemon=True).start()
                                 break
-                            else:
-                                break
                             time.sleep(3)
             else:
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
@@ -317,8 +313,6 @@ class Process():
                         self.application.serialPort.get_command_pid_voltage()
                         self.application.serialPort.get_command_pid_power(PowerType.kw)
                         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                    else:
-                        break
                     time.sleep(3)
             else:
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()

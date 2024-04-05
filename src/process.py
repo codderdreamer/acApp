@@ -198,12 +198,10 @@ class Process():
         if self.application.control_A_B_C != True: # A'dan C'ye geçmiş ise
             self.application.deviceState = DeviceState.CONNECTED
             return
-        
         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
             self.id_tag = self.application.ev.card_id
         if self.application.ev.id_tag != None:
             self.id_tag = self.application.ev.id_tag
-            
         print("self.application.cardType",self.application.cardType)
         
         if self.application.cardType == CardType.LocalPnC:
@@ -212,18 +210,30 @@ class Process():
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             print("Authorize edilmesine gerek yok şarj başlangıcı...")
             self.application.serialPort.set_command_pid_relay_control(Relay.On)
+            time_start = time.time()
             while True:
-                self.application.serialPort.get_command_pid_current()
-                self.application.serialPort.get_command_pid_voltage()
-                self.application.serialPort.get_command_pid_power(PowerType.kw)
-                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                time.sleep(3)
                 if self.application.deviceState != DeviceState.CHARGING:
+                    return
+                if self.application.mid_meter == True and self.application.modbusModule.connection == False:
+                    print("Mid meter bağlantısı bekleniyor...")
+                    time.sleep(1)
+                    if time.time() - time_start > 3:
+                        print("Mid meter bağlanamadı")
+                        self.application.deviceState = DeviceState.FAULT
+                        break
+                elif self.application.mid_meter == False:
+                    self.application.meter_values_on = True
+                    self.application.serialPort.get_command_pid_current()
+                    self.application.serialPort.get_command_pid_voltage()
+                    self.application.serialPort.get_command_pid_power(PowerType.kw)
+                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                else:
                     break
-            
+                time.sleep(3)
+                
+                
         elif self.application.cardType == CardType.BillingCard:
             if self.application.ocppActive:
-                
                 if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                     self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
                     self.application.ev.charge = True
@@ -250,22 +260,35 @@ class Process():
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         self.application.serialPort.set_command_pid_relay_control(Relay.On)
                         asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
-                        time.sleep(1)
-                        self.application.meter_values_on = True
-                        self.application.serialPort.get_command_pid_current()
-                        self.application.serialPort.get_command_pid_voltage()
-                        self.application.serialPort.get_command_pid_power(PowerType.kw)
-                        self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                        Thread(target=self.meter_values_thread,daemon=True).start()
-                        
-                        while True:
+                        if self.application.mid_meter == False:
+                            self.application.meter_values_on = True
                             self.application.serialPort.get_command_pid_current()
                             self.application.serialPort.get_command_pid_voltage()
                             self.application.serialPort.get_command_pid_power(PowerType.kw)
                             self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                            time.sleep(3)
+                            Thread(target=self.meter_values_thread,daemon=True).start()
+                        while True:
                             if self.application.deviceState != DeviceState.CHARGING:
+                                return
+                            if self.application.mid_meter == True and self.application.modbusModule.connection == False:
+                                print("Mid meter bağlantısı bekleniyor...")
+                                time.sleep(1)
+                                if time.time() - time_start > 3:
+                                    print("Mid meter bağlanamadı")
+                                    self.application.deviceState = DeviceState.FAULT
+                                    break
+                            elif self.application.mid_meter == False:
+                                self.application.serialPort.get_command_pid_current()
+                                self.application.serialPort.get_command_pid_voltage()
+                                self.application.serialPort.get_command_pid_power(PowerType.kw)
+                                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                            elif self.application.mid_meter == True and self.application.modbusModule.connection == True:
+                                self.application.meter_values_on = True
+                                Thread(target=self.meter_values_thread,daemon=True).start()
                                 break
+                            else:
+                                break
+                            time.sleep(3)
             else:
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
@@ -279,13 +302,24 @@ class Process():
                 print("rfid kart ile authorize edilmiş.")
                 self.application.serialPort.set_command_pid_relay_control(Relay.On)
                 while True:
-                    self.application.serialPort.get_command_pid_current()
-                    self.application.serialPort.get_command_pid_voltage()
-                    self.application.serialPort.get_command_pid_power(PowerType.kw)
-                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                    time.sleep(3)
                     if self.application.deviceState != DeviceState.CHARGING:
+                        return
+                    if self.application.mid_meter == True and self.application.modbusModule.connection == False:
+                        print("Mid meter bağlantısı bekleniyor...")
+                        time.sleep(1)
+                        if time.time() - time_start > 3:
+                            print("Mid meter bağlanamadı")
+                            self.application.deviceState = DeviceState.FAULT
+                            break
+                    elif self.application.mid_meter == False:
+                        self.application.meter_values_on = True
+                        self.application.serialPort.get_command_pid_current()
+                        self.application.serialPort.get_command_pid_voltage()
+                        self.application.serialPort.get_command_pid_power(PowerType.kw)
+                        self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                    else:
                         break
+                    time.sleep(3)
             else:
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")

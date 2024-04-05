@@ -220,7 +220,6 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            # print("device_settings",data_dict,"\n")
             if data_dict["availability"] == AvailabilityType.operative.value:
                 self.application.availability = AvailabilityType.operative
             elif data_dict["availability"] == AvailabilityType.inoperative.value:
@@ -243,6 +242,22 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             self.application.max_current = int(data_dict["maxcurrent"])
+        except Exception as e:
+            print(datetime.now(),"get_max_current Exception:",e)
+        return data_dict
+    
+    def get_mid_meter(self):
+        data_dict = {}
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM device_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            self.application.mid_meter = bool(data_dict["midMeter"])
         except Exception as e:
             print(datetime.now(),"get_max_current Exception:",e)
         return data_dict

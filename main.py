@@ -26,7 +26,7 @@ class Application():
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None
-        
+  
         self.availability = AvailabilityType.operative
         self.chargingStatus = ChargePointStatus.available
         self.__deviceState = None
@@ -64,6 +64,7 @@ class Application():
         self.databaseModule.get_functions_enable()
         self.databaseModule.get_availability()
         self.databaseModule.get_max_current()
+        self.mid_meter = self.databaseModule.get_mid_meter()
         self.id_tag_list = self.databaseModule.get_local_list()
         
         self.softwareSettings.set_eth()
@@ -139,8 +140,8 @@ class Application():
         while True:
             try:
                 print("-------------CHARGE VALUES------------")
-                if self.modbusModule.connection == True:
-                    print("mid meter bağlı...")
+                if self.mid_meter == True and self.modbusModule.connection == True:
+                    print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1
                     self.ev.current_L2 = self.modbusModule.current_L2
                     self.ev.current_L3 = self.modbusModule.current_L3
@@ -149,8 +150,8 @@ class Application():
                     self.ev.voltage_L3 = self.modbusModule.voltage_L3
                     self.ev.energy = self.modbusModule.energy
                     self.ev.power =  self.modbusModule.power
-                else:
-                    print("mcu bağlı...")
+                elif self.mid_meter == False:
+                    print("Veriler MCU'dan alınıyor...")
                     self.ev.current_L1 = self.serialPort.current_L1
                     self.ev.current_L2 = self.serialPort.current_L2
                     self.ev.current_L3 = self.serialPort.current_L3
@@ -169,6 +170,7 @@ class Application():
                 print("self.ev.energy",self.ev.energy)
                 print("self.ev.power",self.ev.power)
                 time.sleep(1)
+                
             except Exception as e:
                 print("read_charge_values_thred",e)
         

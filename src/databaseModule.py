@@ -257,6 +257,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
+            print("data_dict",data_dict)
             self.application.mid_meter = bool(data_dict["midMeter"])
         except Exception as e:
             print(datetime.now(),"get_max_current Exception:",e)

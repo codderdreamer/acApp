@@ -65,6 +65,28 @@ class Process():
                 self.application.deviceState = DeviceState.FAULT
                 return 
             
+        if self.application.ev.control_pilot == ControlPlot.stateC.value:
+            self.application.ev.charge = False
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+        
+            if self.application.cardType == CardType.LocalPnC:
+                self._lock_connector_set_control_pilot()
+                self.application.deviceState = DeviceState.WAITING_STATE_C
+            
+            elif self.application.cardType == CardType.BillingCard:
+                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                    self._lock_connector_set_control_pilot()
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
+                else:
+                    self.application.deviceState = DeviceState.WAITING_AUTH
+            
+            elif self.application.cardType == CardType.StartStopCard:
+                if self.application.ev.start_stop_authorize:
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
+                else:
+                    self.application.deviceState = DeviceState.WAITING_AUTH
+            return
+            
         if self.application.control_C_B:
             print("Şarj C'den B'ye döndü Röle kapatıldı")
             self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -170,9 +192,8 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
-        if self.application.control_A_B_C != True: # A'dan B'ye geçmiş ise
-            self.application.deviceState = DeviceState.CONNECTED
-            return
+        if self.application.control_A_B_C != True: # A'dan C'ye geçmiş ise
+            
             
         
         if self.application.ev.card_id != "" and self.application.ev.card_id != None:

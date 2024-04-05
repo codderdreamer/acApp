@@ -303,6 +303,9 @@ class SoftwareSettings():
         try:
             enableModification = self.application.settings.settings4G.enableModification
             if enableModification=="True":
+                result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                result_list = result.split("/")
+                print(result_list)
                 result = subprocess.check_output("mmcli -m 0", shell=True).decode('utf-8')
                 result_list = result.split("\n")
                 for data in result_list:

@@ -170,7 +170,7 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
-        if self.control_A_B_C != True: # A'dan B'ye geçmiş ise
+        if self.application.control_A_B_C != True: # A'dan B'ye geçmiş ise
             self.application.deviceState = DeviceState.CONNECTED
             return
             

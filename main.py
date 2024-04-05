@@ -140,6 +140,7 @@ class Application():
         while True:
             try:
                 print("-------------CHARGE VALUES------------")
+                print("self.mid_meter",self.mid_meter,"self.modbusModule.connection",self.modbusModule.connection)
                 if self.mid_meter == True and self.modbusModule.connection == True:
                     print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1

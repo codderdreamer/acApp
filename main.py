@@ -59,6 +59,7 @@ class Application():
         self.databaseModule.get_max_current()
         self.mid_meter = self.databaseModule.get_mid_meter()
         self.id_tag_list = self.databaseModule.get_local_list()
+        self.softwareSettings.set_functions_enable()
         
         
         self.flaskModule = FlaskModuleThread(self)
@@ -83,7 +84,7 @@ class Application():
         # time.sleep(5)
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
-        self.softwareSettings.set_functions_enable()
+        
         self.softwareSettings.set_timezoon()
         print("set_bluetooth_settings")
         self.softwareSettings.set_bluetooth_settings()

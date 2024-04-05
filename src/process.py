@@ -270,7 +270,7 @@ class Process():
                             
                         self.application.meter_values_on = True
                         Thread(target=self.meter_values_thread,daemon=True).start()
-                            
+                        time_start = time.time() 
                         while True:
                             if self.application.deviceState != DeviceState.CHARGING:
                                 return
@@ -299,6 +299,7 @@ class Process():
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
                 print("rfid kart ile authorize edilmiş.")
                 self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                time_start = time.time()
                 while True:
                     if self.application.deviceState != DeviceState.CHARGING:
                         return

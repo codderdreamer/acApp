@@ -265,6 +265,7 @@ class Process():
           
     def fault(self):
         print("****************************************************************** fault")
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
@@ -285,20 +286,20 @@ class Process():
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
-        while True:
-            if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                self.application.deviceState = DeviceState.IDLE
-                break
-            elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                self.application.deviceState = DeviceState.CONNECTED
-                break
-            elif self.application.ev.control_pilot == ControlPlot.stateC.value:
-                self.application.deviceState = DeviceState.CHARGING
-                break
-            else:
-                print("fault !!!")
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-            time.sleep(1)
+        # while True:
+        #     if self.application.ev.control_pilot == ControlPlot.stateA.value:
+        #         self.application.deviceState = DeviceState.IDLE
+        #         break
+        #     elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+        #         self.application.deviceState = DeviceState.CONNECTED
+        #         break
+        #     elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+        #         self.application.deviceState = DeviceState.CHARGING
+        #         break
+        #     else:
+        #         print("fault !!!")
+        #         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+        #     time.sleep(1)
         
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")

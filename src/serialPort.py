@@ -204,7 +204,7 @@ class SerialPort():
             print("********** önceki led setlendi",self.led_state)
             self.led_state = led_state
         else:
-            time.sleep(1)
+            time.sleep(2)
             self.parameter_data = "002"
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)

@@ -83,9 +83,6 @@ class Application():
         self.bluetoothService = BluetoothService(self)
         
         
-    
-        
-        
     @property
     def deviceState(self):
         return self.__deviceState
@@ -137,7 +134,35 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
                 
-
+    def read_charge_values_thred(self):
+        print("-------------CHARGE VALUES------------")
+        if self.modbusModule.connection == True:
+            self.ev.current_L1 = self.modbusModule.current_L1
+            self.ev.current_L2 = self.modbusModule.current_L2
+            self.ev.current_L3 = self.modbusModule.current_L3
+            self.ev.voltage_L1 = self.modbusModule.voltage_L1
+            self.ev.voltage_L2 = self.modbusModule.voltage_L2
+            self.ev.voltage_L3 = self.modbusModule.voltage_L3
+            self.ev.energy = self.modbusModule.energy
+            self.ev.power =  self.modbusModule.power
+        else:
+            self.ev.current_L1 = self.serialPort.current_L1
+            self.ev.current_L2 = self.serialPort.current_L2
+            self.ev.current_L3 = self.modbusModule.current_L3
+            self.ev.voltage_L1 = self.modbusModule.voltage_L1
+            self.ev.voltage_L2 = self.modbusModule.voltage_L2
+            self.ev.voltage_L3 = self.modbusModule.voltage_L3
+            self.ev.energy = self.modbusModule.energy
+            self.ev.power =  self.modbusModule.power
+            
+        print("self.ev.current_L1",self.ev.current_L1)
+        print("self.ev.current_L2",self.ev.current_L2)
+        print("self.ev.current_L3",self.ev.current_L3)
+        print("self.ev.voltage_L1",self.ev.voltage_L1)
+        print("self.ev.voltage_L2",self.ev.voltage_L2)
+        print("self.ev.voltage_L3",self.ev.voltage_L3)
+        print("self.ev.energy",self.ev.energy)
+        print("self.ev.power",self.ev.power)
         
     async def ocppStart(self):
         try:

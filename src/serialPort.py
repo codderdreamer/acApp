@@ -33,6 +33,16 @@ class SerialPort():
         self.pid_evse_temp          = "T"   # PID_EVSE_TEMP		    ('T')
         self.pid_rfid               = "N"   # PID_RFID              ('N')
         
+        
+        self.current_L1 = 0
+        self.current_L2 = 0
+        self.current_L3 = 0
+        self.voltage_L1 = 0
+        self.voltage_L2 = 0
+        self.voltage_L3 = 0
+        self.power = 0
+        self.energy = 0
+        
         self.parameter_data = "001"
         self.connector_id = "1"
         
@@ -48,6 +58,17 @@ class SerialPort():
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
+        
+    def read_meter(self):
+        print("------------------ MCU ----------------")
+        print("self.current_L1",self.current_L1)
+        print("self.current_L2",self.current_L2)
+        print("self.current_L3",self.current_L3)
+        print("self.voltage_L1",self.voltage_L1)
+        print("self.voltage_L2",self.voltage_L2)
+        print("self.voltage_L3",self.voltage_L3)
+        print("self.power",self.power)
+        print("self.energy",self.energy)
 
     def write(self):
         # counter = 0
@@ -397,39 +418,24 @@ class SerialPort():
 
     def get_response_pid_current(self,data):
         if data[2] == self.pid_current:
-            current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
-            self.application.ev.current_L1 = current_L1
-            # print("current_L1",self.application.ev.current_L1)
-            current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
-            self.application.ev.current_L2 = current_L2
-            # print("current_L2",self.application.ev.current_L2)
-            current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
-            self.application.ev.current_L3 = current_L3
-            # print("current_L3",self.application.ev.current_L3)
+            self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
+            self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
+            self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
+
             
     def get_response_pid_voltage(self,data):
         if data[2] == self.pid_voltage:
-            voltage_L1 = round(int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01 , 3)
-            self.application.ev.voltage_L1 = voltage_L1
-            # print("voltage_L1",self.application.ev.voltage_L1)
-            voltage_L2 = round(int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01 , 3)
-            self.application.ev.voltage_L2 = voltage_L2
-            # print("voltage_L2",self.application.ev.voltage_L2)
-            voltage_L3 = round(int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01 , 3)
-            self.application.ev.voltage_L3 = voltage_L3
-            # print("voltage_L3",self.application.ev.voltage_L3)
+            self.voltage_L1 = round(int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01 , 3)
+            self.voltage_L2 = round(int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01 , 3)
+            self.voltage_L3 = round(int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01 , 3)
             
     def get_response_pid_power(self,data):
         if data[2] == self.pid_power:
-            power = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
-            self.application.ev.power = power
-            # print("power",self.application.ev.power)
+            self.power = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
 
     def get_response_pid_energy(self,data):
         if data[2] == self.pid_energy:
-            energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
-            self.application.ev.energy = energy
-            # print("energy",self.application.ev.energy)
+            self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
 
     def set_response_pid_rfid(self,data):
         if data[2] == self.pid_rfid:
@@ -483,9 +489,6 @@ class SerialPort():
                         self.set_response_pid_led_control(incoming)
                         self.set_response_pid_locker_control(incoming)
                         self.set_response_pid_rfid(incoming)
-                    
-                        
-                    
             except Exception as e:
                 print(datetime.now(),"read Exception:",e)
             time.sleep(0.1)

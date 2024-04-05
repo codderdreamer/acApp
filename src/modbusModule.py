@@ -13,16 +13,14 @@ class ModbusModule:
         self.instrument.mode = minimalmodbus.MODE_RTU
         self.instrument.serial.timeout = 1 
         
-        self.volt_l1 = None
-        self.volt_l2 = None
-        self.volt_l3 = None
-        self.current_l1 = None
-        self.current_l2 = None
-        self.current_l3 = None
+        self.voltage_L1 = None
+        self.voltage_L2 = None
+        self.voltage_L3 = None
+        self.current_L1 = None
+        self.current_L2 = None
+        self.current_L3 = None
         self.power = None
-        self.total_energy_import = None
-        self.total_energy_export = None
-        self.current_demand = None
+        self.energy = None
         
         self.__connection = False
         self.firstEnergy = None
@@ -62,21 +60,16 @@ class ModbusModule:
                 self.current_l2 = self.read_input_float(register_address=9)
                 self.current_l3 = self.read_input_float(register_address=11)
                 self.power = round(self.read_input_float(register_address=13)/1000,2)
-                self.total_energy_import = round(self.read_input_float(register_address=73)/1000,2)
-                self.total_energy_export = round(self.read_input_float(register_address=75)/1000,2)
-                self.current_demand = self.read_input_float(register_address=259)
-                print("----------------------------")
-                print("self.volt_l1",self.volt_l1)
-                print("self.volt_l2",self.volt_l2)
-                print("self.volt_l3",self.volt_l3)
-                
-                print("self.current_l1",self.current_l1)
-                print("self.current_l2",self.current_l2)
-                print("self.current_l3",self.current_l3)
-                
-                print("self.power",self.power)
-                
-                print("self.total_energy_import",self.total_energy_import)
+                self.energy = round(self.read_input_float(register_address=73)/1000,2)
+                print("-----------MID METER-----------------")
+                print("MID METER self.volt_l1",self.volt_l1)
+                print("MID METER self.volt_l2",self.volt_l2)
+                print("MID METER self.volt_l3",self.volt_l3)
+                print("MID METER self.current_l1",self.current_l1)
+                print("MID METER self.current_l2",self.current_l2)
+                print("MID METER self.current_l3",self.current_l3)
+                print("MID METER self.power",self.power)
+                print("MID METER self.energy",self.energy)
                 self.connection = True
             except Exception as e:
                 # print(e)

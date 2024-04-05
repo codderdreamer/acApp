@@ -64,11 +64,12 @@ class Process():
             if self.application.ev.proximity_pilot_current == 0:
                 self.application.deviceState = DeviceState.FAULT
                 return 
-            
+        print("self.application.ev.control_pilot",self.application.ev.control_pilot)
         if self.application.ev.control_pilot == ControlPlot.stateC.value:
             self.application.ev.charge = False
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
         
+            print("self.application.cardType",self.application.cardType)
             if self.application.cardType == CardType.LocalPnC:
                 self._lock_connector_set_control_pilot()
                 self.application.deviceState = DeviceState.WAITING_STATE_C

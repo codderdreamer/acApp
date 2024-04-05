@@ -152,12 +152,12 @@ class Application():
                 print("mcu bağlı...")
                 self.ev.current_L1 = self.serialPort.current_L1
                 self.ev.current_L2 = self.serialPort.current_L2
-                self.ev.current_L3 = self.modbusModule.current_L3
-                self.ev.voltage_L1 = self.modbusModule.voltage_L1
-                self.ev.voltage_L2 = self.modbusModule.voltage_L2
-                self.ev.voltage_L3 = self.modbusModule.voltage_L3
-                self.ev.energy = self.modbusModule.energy
-                self.ev.power =  self.modbusModule.power
+                self.ev.current_L3 = self.serialPort.current_L3
+                self.ev.voltage_L1 = self.serialPort.voltage_L1
+                self.ev.voltage_L2 = self.serialPort.voltage_L2
+                self.ev.voltage_L3 = self.serialPort.voltage_L3
+                self.ev.energy = self.serialPort.energy
+                self.ev.power =  self.serialPort.power
                 
             print("self.ev.current_L1",self.ev.current_L1)
             print("self.ev.current_L2",self.ev.current_L2)

@@ -193,8 +193,8 @@ class Process():
     def charging(self):
         print("****************************************************************** charging")
         if self.application.control_A_B_C != True: # A'dan C'ye geçmiş ise
-            
-            
+            self.application.deviceState = DeviceState.CONNECTED
+            return
         
         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
             self.id_tag = self.application.ev.card_id

@@ -18,16 +18,14 @@ class EV():
         self.pid_led_control = None
         self.pid_locker_control = None
         
-        self.current_L1 = None
-        self.current_L2 = None
-        self.current_L3 = None
-        
-        self.voltage_L1 = None
-        self.voltage_L2 = None
-        self.voltage_L3 = None
-        
-        self.power = None
-        self.energy = None
+        self.current_L1 = 0
+        self.current_L2 = 0
+        self.current_L3 = 0
+        self.voltage_L1 = 0
+        self.voltage_L2 = 0
+        self.voltage_L3 = 0
+        self.power = 0
+        self.energy = 0
         
         self.temperature = None
         

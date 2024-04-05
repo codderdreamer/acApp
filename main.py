@@ -17,12 +17,13 @@ from datetime import datetime
 from src.modbusModule import ModbusModule
 from src.flaskModule import FlaskModuleThread
 import subprocess
-
+import os
 
 class Application():
     def __init__(self,loop):
         # subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
         # time.sleep(10)
+        os.system("gpio-test.64 w d 20 0")
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None

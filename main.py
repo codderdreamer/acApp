@@ -147,7 +147,7 @@ class Application():
                 # print("-------------CHARGE VALUES------------")
                 # print("self.mid_meter",self.mid_meter,"self.modbusModule.connection",self.modbusModule.connection)
                 if self.mid_meter == True and self.modbusModule.connection == True:
-                    print("Veriler MID'den alınıyor...")
+                    # print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1
                     self.ev.current_L2 = self.modbusModule.current_L2
                     self.ev.current_L3 = self.modbusModule.current_L3
@@ -157,7 +157,7 @@ class Application():
                     self.ev.energy = self.modbusModule.energy - self.modbusModule.firstEnergy
                     self.ev.power =  self.modbusModule.power
                 elif self.mid_meter == False:
-                    print("Veriler MCU'dan alınıyor...")
+                    # print("Veriler MCU'dan alınıyor...")
                     self.ev.current_L1 = self.serialPort.current_L1
                     self.ev.current_L2 = self.serialPort.current_L2
                     self.ev.current_L3 = self.serialPort.current_L3

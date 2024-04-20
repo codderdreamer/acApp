@@ -321,7 +321,7 @@ class SerialPort():
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
-        time.sleep(2)
+        time.sleep(4)
         print("Başlangıçta error durumu kontrol ediliyor..")
         print("pid_error_list",self.error_list)
         if len(self.error_list)>0:

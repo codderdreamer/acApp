@@ -851,7 +851,7 @@ class ChargePoint16(cp):
         except Exception as e:
             print(datetime.now(),"on_update_firmware Exception:",e)
             
-    async def update_firmware(self,location):
+    async def download_firmware(self,location):
         print("Update firmware")
         await self.send_firmware_status_notification(FirmwareStatus.downloading)
         filename = "/root/new_firmware.zip"
@@ -869,13 +869,12 @@ class ChargePoint16(cp):
             print("Hata: Dosya indirilirken bir sorun oluştu.")
             await self.send_firmware_status_notification(FirmwareStatus.download_failed)
             
-    @after(Action.UpdateFirmware)
-    async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
+    async def update_firmware(self,location):
         try :
             if self.application.ev.charge == False:
-                await self.update_firmware(location)
+                await self.download_firmware(location)
             else:
-                await self.send_firmware_status_notification(FirmwareStatus.download_scheduled)
+                await self.send_firmware_status_notification(FirmwareStatus.downloading)
                 while True:
                     print("Firmware güncelleme için bekleniyor..............................................................")
                     if self.application.ev.charge == False:
@@ -884,8 +883,16 @@ class ChargePoint16(cp):
                     else:
                         time.sleep(1)
         except Exception as e:
-            print(datetime.now(),"after_update_firmware Exception:",e)
+            print(datetime.now(),"update_firmware Exception:",e)
             await self.send_firmware_status_notification(FirmwareStatus.download_failed)
+            
+    @after(Action.UpdateFirmware)
+    async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
+        try :
+            Thread(target=self.update_firmware,args=(location,),daemon=True).start()
+        except Exception as e:
+            print(datetime.now(),"after_update_firmware Exception:",e)
+        
 
 
 

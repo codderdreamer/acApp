@@ -125,7 +125,7 @@ class ChargePoint16(cp):
                 for value in self.application.serialPort.error_list:
                     if value == PidErrorList.LockerInitializeError:
                         await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted)
-                    elif value == PidErrorList.RcdInitializeError:
+                    if value == PidErrorList.RcdInitializeError:
                         await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted)
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                 await self.send_heartbeat(response.interval)
@@ -630,11 +630,30 @@ class ChargePoint16(cp):
             )
             self.application.ev.id_tag = id_tag
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.RemoteStartTransactionPayload(
-                status= RemoteStartStopStatus.accepted
-            )
-            self.application.chargePoint.authorize = AuthorizationStatus.accepted
-            Thread(target=self.remote_start_thread,daemon=True).start()
+            
+            # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
+            error = False
+            if len(self.application.serialPort.error_list) > 0:
+                for value in self.application.serialPort.error_list:
+                    if value == PidErrorList.LockerInitializeError:
+                        print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
+                        response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.rejected
+                        )
+                        error = True
+                    if value == PidErrorList.RcdInitializeError:
+                        print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
+                        response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.rejected
+                        )
+                        error = True
+                        
+            if error == False:
+                response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.accepted
+                )
+                self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                Thread(target=self.remote_start_thread,daemon=True).start()
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

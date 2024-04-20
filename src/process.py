@@ -71,6 +71,16 @@ class Process():
     def connected(self):
         print("****************************************************************** connected")
         
+        # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
+        if len(self.application.serialPort.error_list) > 0:
+            for value in self.application.serialPort.error_list:
+                if value == PidErrorList.LockerInitializeError:
+                    print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
+                    return
+                if value == PidErrorList.RcdInitializeError:
+                    print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
+                    return
+        
         if self.application.ocppActive:
             if self.application.control_C_B:
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspended_ev),self.application.loop)
@@ -217,6 +227,16 @@ class Process():
             
     def charging(self):
         print("****************************************************************** charging")
+        # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
+        if len(self.application.serialPort.error_list) > 0:
+            for value in self.application.serialPort.error_list:
+                if value == PidErrorList.LockerInitializeError:
+                    print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
+                    return
+                if value == PidErrorList.RcdInitializeError:
+                    print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
+                    return
+                
         if self.application.control_A_B_C != True: # A'dan C'ye geçmiş ise
             self.application.deviceState = DeviceState.CONNECTED
             return

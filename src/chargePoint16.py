@@ -36,9 +36,11 @@ LOGGER_CENTRAL_SYSTEM.setLevel(logging.INFO)
 
 
 class ChargePoint16(cp):
-    def __init__(self, application, id, connection, response_timeout=30):
+    def __init__(self, application, id, connection, loop, response_timeout=30):
         super().__init__(id, connection, response_timeout)
         self.application = application
+        
+        self.loop = loop
         
         self.authorize = None
         self.transaction_id = None
@@ -851,9 +853,10 @@ class ChargePoint16(cp):
         except Exception as e:
             print(datetime.now(),"on_update_firmware Exception:",e)
             
-    async def download_firmware(self,location):
+    def download_firmware(self,location):
         print("Update firmware")
-        await self.send_firmware_status_notification(FirmwareStatus.downloading)
+        asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading),self.application.loop)
+        # await self.send_firmware_status_notification(FirmwareStatus.downloading)
         filename = "/root/new_firmware.zip"
         exit_status = os.system(f"curl {location} --output {filename}")
         if exit_status == 0:
@@ -864,27 +867,31 @@ class ChargePoint16(cp):
                 zip_ref.extractall('/root')
             print("Dosya başarıyla unzip yapıldı.")
             subprocess.run(["/bin/bash", "/root/update.sh"])
-            await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloaded),self.application.loop)
+            # await self.send_firmware_status_notification(FirmwareStatus.downloaded)
         else:
             print("Hata: Dosya indirilirken bir sorun oluştu.")
-            await self.send_firmware_status_notification(FirmwareStatus.download_failed)
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed),self.application.loop)
+            # await self.send_firmware_status_notification(FirmwareStatus.download_failed)
             
-    async def update_firmware(self,location):
+    def update_firmware(self,location):
         try :
             if self.application.ev.charge == False:
-                await self.download_firmware(location)
+                self.download_firmware(location)
             else:
-                await self.send_firmware_status_notification(FirmwareStatus.downloading)
+                asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading),self.application.loop)
+                # await self.send_firmware_status_notification(FirmwareStatus.downloading)
                 while True:
                     print("Firmware güncelleme için bekleniyor..............................................................")
                     if self.application.ev.charge == False:
-                        await self.update_firmware(location)
+                        self.download_firmware(location)
                         return
                     else:
                         time.sleep(1)
         except Exception as e:
             print(datetime.now(),"update_firmware Exception:",e)
-            await self.send_firmware_status_notification(FirmwareStatus.download_failed)
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed),self.application.loop)
+            # await self.send_firmware_status_notification(FirmwareStatus.download_failed)
             
     @after(Action.UpdateFirmware)
     async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):

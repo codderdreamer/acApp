@@ -208,7 +208,7 @@ class Application():
                 async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
                     self.ocppActive = True
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
-                        self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws)
+                        self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws, self.loop)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                         await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId,self.settings.ocppSettings.chargePointId)
                         

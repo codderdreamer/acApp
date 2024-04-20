@@ -63,7 +63,7 @@ class SerialPort():
         Thread(target=self.get_command_pid_error_list,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
-        time.sleep(1)
+        time.sleep(2)
         if len(self.error_list)>0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:

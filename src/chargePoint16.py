@@ -854,43 +854,46 @@ class ChargePoint16(cp):
     @after(Action.UpdateFirmware)
     async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
         try :
-            print("Update firmware")
-            # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-            # await self.send_firmware_status_notification(FirmwareStatus.downloading)
-            # result = subprocess.run(["git", "pull"], cwd="/root/acApp", stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            if self.application.ev.charge == False:
+                print("Update firmware")
+                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
+                # await self.send_firmware_status_notification(FirmwareStatus.downloading)
+                # result = subprocess.run(["git", "pull"], cwd="/root/acApp", stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
-            # if result.returncode == 0:
-            #     print("git pull başarıyla tamamlandı.")
-            #     print("Çıktı:", result.stdout)
-            #     await self.send_firmware_status_notification(FirmwareStatus.downloaded)
-            #     time.sleep(0.5)
-            #     os.system("reboot")
-            # else:
-            #     print("git pull başarısız oldu.")
-            #     print("Hata:", result.stderr)
-            #     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
-            #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-            #     time.sleep(1)
-            #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                
-            # print("Update firmware")
-            await self.send_firmware_status_notification(FirmwareStatus.downloading)
-            filename = "/root/new_firmware.zip"
-            exit_status = os.system(f"curl {location} --output {filename}")
-            if exit_status == 0:
-                print("Dosya başarıyla indirildi.")
-                
-                with zipfile.ZipFile(filename, 'r') as zip_ref:
-                    zip_ref.extractall('/root')
+                # if result.returncode == 0:
+                #     print("git pull başarıyla tamamlandı.")
+                #     print("Çıktı:", result.stdout)
+                #     await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+                #     time.sleep(0.5)
+                #     os.system("reboot")
+                # else:
+                #     print("git pull başarısız oldu.")
+                #     print("Hata:", result.stderr)
+                #     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
+                #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                #     time.sleep(1)
+                #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                     
-                print("Dosya başarıyla unzip yapıldı.")
+                # print("Update firmware")
+                await self.send_firmware_status_notification(FirmwareStatus.downloading)
+                filename = "/root/new_firmware.zip"
+                exit_status = os.system(f"curl {location} --output {filename}")
+                if exit_status == 0:
+                    print("Dosya başarıyla indirildi.")
                     
-                subprocess.run(["/bin/bash", "/root/update.sh"])
-                
-                await self.send_firmware_status_notification(FirmwareStatus.downloaded)
-                
+                    with zipfile.ZipFile(filename, 'r') as zip_ref:
+                        zip_ref.extractall('/root')
+                        
+                    print("Dosya başarıyla unzip yapıldı.")
+                        
+                    subprocess.run(["/bin/bash", "/root/update.sh"])
+                    
+                    await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+                    
+                else:
+                    print("Hata: Dosya indirilirken bir sorun oluştu.")
             else:
-                print("Hata: Dosya indirilirken bir sorun oluştu.")
+                await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
             
             # response = requests.get(location)
             # if response.status_code == 200:
@@ -912,9 +915,9 @@ class ChargePoint16(cp):
         
         except Exception as e:
             print(datetime.now(),"after_update_firmware Exception:",e)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-            time.sleep(1)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+            # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+            # time.sleep(2)
+            # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
 
 
 

@@ -4,6 +4,8 @@ from threading import Thread
 from src.enums import *
 from datetime import datetime
 import os
+import asyncio
+from ocpp.v16.enums import *
 
 class SerialPort():
     def __init__(self,application) -> None:
@@ -483,12 +485,16 @@ class SerialPort():
             print("data:", data)
             if (int(data[7]) == 1):
                 error_list.append(PidErrorList.LockerInitializeError)
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted),self.application.loop)
             if (int(data[8]) == 1):
                 error_list.append(PidErrorList.EVCommunicationPortError)
             if (int(data[9]) == 1):
                 error_list.append(PidErrorList.EarthDisconnectFailure)
             if (int(data[10]) == 1):
                 error_list.append(PidErrorList.RcdInitializeError)
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted),self.application.loop)
             if (int(data[11]) == 1):
                 error_list.append(PidErrorList.RcdTripError)
             if (int(data[12]) == 1):

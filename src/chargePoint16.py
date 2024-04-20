@@ -814,10 +814,20 @@ class ChargePoint16(cp):
                 connector_id = connector_id
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            self.application.deviceState = DeviceState.STOPPED_BY_USER
-            response = call_result.UnlockConnectorPayload(
-                status = UnlockStatus.unlocked
-            )
+            if self.application.ev.charge:
+                self.application.deviceState = DeviceState.STOPPED_BY_USER
+                response = call_result.UnlockConnectorPayload(
+                    status = UnlockStatus.unlocked
+                )
+            else:
+                if self.application.process.unlock_connector():
+                    response = call_result.UnlockConnectorPayload(
+                        status = UnlockStatus.unlocked
+                    )
+                else:
+                    response = call_result.UnlockConnectorPayload(
+                        status = UnlockStatus.unlock_failed
+                    )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

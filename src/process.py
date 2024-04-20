@@ -10,6 +10,22 @@ class Process():
         self.application = application
         self.id_tag = None
         
+    def unlock_connector(self):
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        time.sleep(0.7)
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+        time_start = time.time()
+        while True:
+            self.application.serialPort.get_command_pid_locker_control()
+            time.sleep(0.3)
+            if self.application.ev.pid_locker_control == LockerState.Lock.value:
+                return True
+            else:
+                print("Lock connector bekleniyor...")
+                if time.time() - time_start > 2:
+                    print("Lock 2 saniyeyi geçti...")
+                    return False
+        
     def lock_control(self):
         self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         time.sleep(0.7)

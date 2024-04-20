@@ -11,14 +11,14 @@ class Process():
         self.id_tag = None
         
     def unlock_connector(self):
-        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-        time.sleep(0.7)
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+        time.sleep(0.7)
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         time_start = time.time()
         while True:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
-            if self.application.ev.pid_locker_control == LockerState.Lock.value:
+            if self.application.ev.pid_locker_control == LockerState.Unlock.value:
                 return True
             else:
                 print("Lock connector bekleniyor...")

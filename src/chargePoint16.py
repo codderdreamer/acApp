@@ -64,7 +64,7 @@ class ChargePoint16(cp):
             self.authorize = response.id_tag_info['status']
             if self.authorize == AuthorizationStatus.accepted:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                if self.application.ev.control_pilot != "B" and self.application.ev.charge == False:
+                if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                     print("-------------------------------------------------------------------  Araç bağlı değil")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
                 if  self.application.ev.charge:

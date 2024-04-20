@@ -315,7 +315,7 @@ class SerialPort():
             time.sleep(15)
             
     def get_command_pid_error_list(self):
-        time.sleep(10)
+        time.sleep(20)
         self.parameter_data = "001"
         data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)

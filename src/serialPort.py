@@ -323,6 +323,7 @@ class SerialPort():
         self.send_data_list.append(send_data)
         time.sleep(2)
         print("Başlangıçta error durumu kontrol ediliyor..")
+        print("pid_error_list",self.error_list)
         if len(self.error_list)>0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:

@@ -61,7 +61,9 @@ class SerialPort():
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
         Thread(target=self.get_command_pid_error_list,daemon=True).start()
+        Thread(target=self.get_command_pid_error_list_init,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
+        
         self.set_command_pid_rfid()
         
         # Thread(target=self.read_meter,daemon=True).start()
@@ -314,14 +316,8 @@ class SerialPort():
             self.send_data_list.append(send_data)
             time.sleep(15)
             
-    def get_command_pid_error_list(self):
-        time.sleep(10)
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
-        time.sleep(4)
+    def get_command_pid_error_list_init(self):
+        time.sleep(15)
         print("Başlangıçta error durumu kontrol ediliyor..")
         print("pid_error_list",self.error_list)
         if len(self.error_list)>0:
@@ -332,6 +328,9 @@ class SerialPort():
                 elif value == PidErrorList.RcdInitializeError:
                     print("RcdInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+            
+    def get_command_pid_error_list(self):
+        time.sleep(10)
         while True:
             self.parameter_data = "001"
             data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id

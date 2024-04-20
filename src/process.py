@@ -235,11 +235,14 @@ class Process():
                     return
                 if self.application.mid_meter == True and self.application.modbusModule.connection == False:
                     print("Mid meter bağlantısı bekleniyor...")
-                    time.sleep(1)
-                    if time.time() - time_start > 3:
-                        print("Mid meter bağlanamadı")
-                        self.application.deviceState = DeviceState.FAULT
-                        break
+                    if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                        time.sleep(1)
+                        if time.time() - time_start > 3:
+                            print("Mid meter bağlanamadı")
+                            self.application.deviceState = DeviceState.FAULT
+                            break
+                    else:
+                        return
                 elif self.application.mid_meter == False:
                     self.application.meter_values_on = True
                     self.application.serialPort.get_command_pid_current()

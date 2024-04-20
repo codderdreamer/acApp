@@ -63,6 +63,10 @@ class LedState(Enum):
     ChargingStopped = "8"
     WaitingPluging = ";"
     DeviceOffline = "="
+    FirmwareUpdate = ">"
+    RcdError = "?"
+    LockerError = "@"
+
 
 class LockerState(Enum):
     Lock = "1"
@@ -97,6 +101,24 @@ class CardType(Enum):
 class SSLEnable(Enum):
     Enable = "Enable"
     Disable = "Disable"
+    
+class PidErrorList(Enum):
+    LockerInitializeError = 1
+    EVCommunicationPortError = 2
+    EarthDisconnectFailure = 3
+    RcdInitializeError = 4
+    RcdTripError = 5
+    HighTemperatureFailure = 6
+    OverCurrentFailure = 7
+    OverVoltageFailure = 8
+    InternalEnergyMeterFailure = 9
+    PowerSwitchFailure = 10
+    RFIDReaderFailure = 11
+    UnderVoltageFailure = 12
+    FrequencyFailure = 13
+    PhaseSequenceFailure = 14
+    OverPowerFailure = 15
+
 
 
 

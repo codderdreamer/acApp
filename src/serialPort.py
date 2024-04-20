@@ -11,6 +11,8 @@ class SerialPort():
         self.serial = serial.Serial("/dev/ttyS2",115200 ,timeout=1)
         # print("Serial connection...")
         self.send_data_list = []
+        
+        self.error_list = []
 
         self.stx = b'\x02'
         self.lf = b'\n'
@@ -32,7 +34,7 @@ class SerialPort():
         self.pid_energy             = "E"   # PID_ENERGY		    ('E')
         self.pid_evse_temp          = "T"   # PID_EVSE_TEMP		    ('T')
         self.pid_rfid               = "N"   # PID_RFID              ('N')
-        
+        self.pid_error_list          = "H"   # PID_ERROR_LİST        ('H')
         
         self.current_L1 = 0
         self.current_L2 = 0
@@ -56,6 +58,7 @@ class SerialPort():
         Thread(target=self.write,daemon=True).start()
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
+        Thread(target=self.get_command_pid_error_list,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
         # Thread(target=self.read_meter,daemon=True).start()
@@ -307,6 +310,16 @@ class SerialPort():
             # print("Send get_command_pid_evse_temp -->", send_data)
             self.send_data_list.append(send_data)
             time.sleep(15)
+            
+    def get_command_pid_error_list(self):
+        time.sleep(10)
+        while True:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+            time.sleep(1)
         
 
     #   ************************ RESPONSE  *****************************************************
@@ -463,6 +476,42 @@ class SerialPort():
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)
             # print("temp:", self.application.ev.temperature)
+            
+    def get_response_pid_error_list(self,data):
+        error_list = []
+        if data[2] == self.pid_error_list:
+            if (int(data[7]) == 1):
+                error_list.append(PidErrorList.LockerInitializeError)
+            if (int(data[8]) == 1):
+                error_list.append(PidErrorList.EVCommunicationPortError)
+            if (int(data[9]) == 1):
+                error_list.append(PidErrorList.EarthDisconnectFailure)
+            if (int(data[10]) == 1):
+                error_list.append(PidErrorList.RcdInitializeError)
+            if (int(data[11]) == 1):
+                error_list.append(PidErrorList.RcdTripError)
+            if (int(data[12]) == 1):
+                error_list.append(PidErrorList.HighTemperatureFailure)
+            if (int(data[13]) == 1):
+                error_list.append(PidErrorList.OverCurrentFailure)
+            if (int(data[14]) == 1):
+                error_list.append(PidErrorList.OverVoltageFailure)
+            if (int(data[15]) == 1):
+                error_list.append(PidErrorList.InternalEnergyMeterFailure)
+            if (int(data[16]) == 1):
+                error_list.append(PidErrorList.PowerSwitchFailure)
+            if (int(data[17]) == 1):
+                error_list.append(PidErrorList.RFIDReaderFailure)
+            if (int(data[18]) == 1):
+                error_list.append(PidErrorList.UnderVoltageFailure)
+            if (int(data[19]) == 1):
+                error_list.append(PidErrorList.FrequencyFailure)
+            if (int(data[20]) == 1):
+                error_list.append(PidErrorList.PhaseSequenceFailure)
+            if (int(data[21]) == 1):
+                error_list.append(PidErrorList.OverPowerFailure)
+        self.error_list = error_list
+        print("self.error_list",self.error_list)
 
     def read(self):
         # counter = 0
@@ -486,6 +535,7 @@ class SerialPort():
                         self.get_response_pid_energy(incoming)
                         self.get_response_pid_rfid(incoming)
                         self.get_response_pid_evse_temp(incoming)
+                        self.get_response_pid_error_list(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_pid_cp_pwm(incoming)
                         self.set_response_pid_relay_control(incoming)

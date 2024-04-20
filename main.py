@@ -89,7 +89,6 @@ class Application():
         self.bluetoothService = BluetoothService(self)
         Thread(target=self.read_charge_values_thred,daemon=True).start()
         
-        
     @property
     def deviceState(self):
         return self.__deviceState

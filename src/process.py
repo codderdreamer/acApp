@@ -162,7 +162,7 @@ class Process():
                 print("\nAuthorization edilmesi bekleniyor...\n")
                 
                 while True:
-                    if self.application.chargePoint.authorize != None:
+                    if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                             self.id_tag = self.application.ev.card_id
                             self._lock_connector_set_control_pilot()

@@ -33,6 +33,7 @@ class SoftwareSettings():
             process = subprocess.Popen(['ifconfig'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             result = stdout.decode()
+            print("\n",result,"\n")
             data = result.split("\n")
             counter = 0
             for net in data:

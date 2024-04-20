@@ -63,15 +63,7 @@ class SerialPort():
         Thread(target=self.get_command_pid_error_list,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         self.set_command_pid_rfid()
-        time.sleep(2)
-        if len(self.error_list)>0:
-            for value in self.error_list:
-                if value == PidErrorList.LockerInitializeError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted),self.application.loop)
-                elif value == PidErrorList.RcdInitializeError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted),self.application.loop)
+        
         # Thread(target=self.read_meter,daemon=True).start()
         
     def read_meter(self):
@@ -324,6 +316,20 @@ class SerialPort():
             
     def get_command_pid_error_list(self):
         time.sleep(10)
+        self.parameter_data = "001"
+        data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        self.send_data_list.append(send_data)
+        time.sleep(2)
+        if len(self.error_list)>0:
+            for value in self.error_list:
+                if value == PidErrorList.LockerInitializeError:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted),self.application.loop)
+                elif value == PidErrorList.RcdInitializeError:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted),self.application.loop)
         while True:
             self.parameter_data = "001"
             data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id

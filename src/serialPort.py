@@ -322,11 +322,14 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
         time.sleep(2)
+        print("Başlangıçta error durumu kontrol ediliyor..")
         if len(self.error_list)>0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:
+                    print("LockerInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                 elif value == PidErrorList.RcdInitializeError:
+                    print("RcdInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
         while True:
             self.parameter_data = "001"

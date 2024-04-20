@@ -480,6 +480,7 @@ class SerialPort():
     def get_response_pid_error_list(self,data):
         error_list = []
         if data[2] == self.pid_error_list:
+            print("data:", data)
             if (int(data[7]) == 1):
                 error_list.append(PidErrorList.LockerInitializeError)
             if (int(data[8]) == 1):

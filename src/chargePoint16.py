@@ -652,6 +652,7 @@ class ChargePoint16(cp):
                 response = call_result.RemoteStartTransactionPayload(
                             status= RemoteStartStopStatus.accepted
                 )
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
                 self.application.chargePoint.authorize = AuthorizationStatus.accepted
                 Thread(target=self.remote_start_thread,daemon=True).start()
             LOGGER_CHARGE_POINT.info("Response:%s", response)
@@ -687,7 +688,7 @@ class ChargePoint16(cp):
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+            pass
         except Exception as e:
             print(datetime.now(),"after_remote_start_transaction Exception:",e)
             

@@ -122,7 +122,12 @@ class ChargePoint16(cp):
                     await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
                 else:
                     await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable)
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                for value in self.application.serialPort.error_list:
+                    if value == PidErrorList.LockerInitializeError:
+                        await self.send_status_notification(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted),self.application.loop)
+                    elif value == PidErrorList.RcdInitializeError:
+                        await self.send_status_notification(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted),self.application.loop)
+                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                 await self.send_heartbeat(response.interval)
             return response
         except Exception as e:

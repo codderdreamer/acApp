@@ -498,7 +498,7 @@ class SerialPort():
     def get_response_pid_error_list(self,data):
         error_list = []
         if data[2] == self.pid_error_list:
-            print("data:", data)
+            # print("data:", data)
             if (int(data[7]) == 1):
                 error_list.append(PidErrorList.LockerInitializeError)
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
@@ -534,7 +534,7 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
             self.error_list = error_list
-            print("self.error_list",self.error_list)
+            # print("self.error_list",self.error_list)
 
     def read(self):
         # counter = 0

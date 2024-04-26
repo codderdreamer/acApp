@@ -1,13 +1,14 @@
 
 from src.modbusModule import ModbusModule
+from src.enums import *
 
 class MidMeterModule():
     def __init__(self,application) -> None:
-        print("MidMeterModule Init Start")
         from src.application import Application
         self.application : Application = application
+        self.application.write_log("MidMeterModule Init Start",Color.Blue)
         self.start_mid_meter()
-        print("MidMeterModule Init Finish")
+        self.application.write_log("MidMeterModule Init Finish",Color.Blue)
         
     def start_mid_meter(self):
         if self.application.settings.deviceSettings.mid_meter:

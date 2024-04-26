@@ -2,11 +2,13 @@ import sqlite3
 import time
 from ocpp.v16.enums import *
 from datetime import datetime
+from src.enums import *
 
 class DatabaseModule():
     def __init__(self,application) -> None:
-        print("DatabaseModule Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("DatabaseModule Init Start",Color.Blue)
         self.get_network_priority()
         self.get_settings_4g()
         self.get_ethernet_settings()
@@ -23,7 +25,7 @@ class DatabaseModule():
         self.get_local_list()
         self.get_user_login()
         self.show_init_database()
-        print("DatabaseModule Init Finish")
+        self.application.write_log("DatabaseModule Init Finish",Color.Blue)
         
     def show_init_database(self):
         print("----------------------------> Network Priority")

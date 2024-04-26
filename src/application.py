@@ -32,3 +32,14 @@ class Application():
         self.serialPort = SerialPort(self)
         self.process = Process(self)
         self.midMeterModule = MidMeterModule(self)
+        
+    def write_log(self, text, color : Color = None):
+        if color == Color.Green:
+            print("\033[32m" + text + "\033[0m")
+        elif color == Color.Red:
+            print("\033[31m" + text + "\033[0m")
+        elif color == Color.Blue:
+            print("\033[34m" + text + "\033[0m")
+        else:
+            print(text)
+        

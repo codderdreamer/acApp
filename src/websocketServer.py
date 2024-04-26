@@ -8,15 +8,16 @@ from datetime import datetime
 
 class WebSocketServer():
     def __init__(self,application) -> None:
-        print("WebSocketServer Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("WebSocketServer Init Start",Color.Blue)
         self.websocketServer = websocket_server.WebsocketServer('0.0.0.0',8000)
         self.websocketServer.set_fn_new_client(self.NewClientws)
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         print("Web Socket started... 0.0.0.0  8000")
-        print("WebSocketServer Init Finish")
+        self.application.write_log("WebSocketServer Init Finish",Color.Blue)
         
     def NewClientws(self, client, server):
         if client:

@@ -7,6 +7,7 @@ from werkzeug.security import check_password_hash
 import jwt
 import datetime
 from functools import wraps
+from src.enums import *
 
 class FlaskModule:
     def __init__(self,application) -> None:
@@ -130,12 +131,13 @@ class FlaskModule:
         
 class FlaskModuleThread(threading.Thread):
     def __init__(self,application):
-        print("FlaskModuleThread Init Start")
         super().__init__()
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("FlaskModuleThread Init Start",Color.Blue)
         self.stop_event = threading.Event()
-        self.application = application
         self.flaskModule = FlaskModule(self.application)
-        print("FlaskModuleThread Init Finish")
+        self.application.write_log("FlaskModuleThread Init Finish",Color.Blue)
 
     def stop(self):
         self.stop_event.set()

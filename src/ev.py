@@ -7,8 +7,9 @@ from ocpp.v16.datatypes import *
 
 class EV():
     def __init__(self,application):
-        print("EV Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("EV Init Start",Color.Blue)
         
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F 
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6
@@ -41,7 +42,7 @@ class EV():
         self.send_message_thread_start = False
         
         self.start_stop_authorize = False
-        print("EV Init Finish")
+        self.application.write_log("EV Init Finish",Color.Blue)
         
     def send_message(self):
         self.send_message_thread_start = True

@@ -6,8 +6,9 @@ from src.enums import *
 
 class Settings():
     def __init__(self,application) -> None:
-        print("Settings Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("Settings Init Start",Color.Blue)
         self.networkPriority = NetworkPriority()
         self.settings4G = Settings4G()
         self.ethernetSettings = EthernetSettings()
@@ -25,7 +26,7 @@ class Settings():
         
         self.change_ocpp = False
         self.__websocketIp = None
-        print("Settings Init Finish")
+        self.application.write_log("Settings Init Finish",Color.Blue)
         
     @property
     def websocketIp(self):

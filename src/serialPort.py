@@ -9,8 +9,9 @@ from ocpp.v16.enums import *
 
 class SerialPort():
     def __init__(self,application) -> None:
-        print("SerialPort Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("SerialPort Init Start",Color.Blue)
         self.serial = serial.Serial("/dev/ttyS2",115200 ,timeout=1)
         # print("Serial connection...")
         self.send_data_list = []
@@ -66,7 +67,7 @@ class SerialPort():
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         
         self.set_command_pid_rfid()
-        print("SerialPort Init Finish")
+        self.application.write_log("SerialPort Init Finish",Color.Blue)
         # Thread(target=self.read_meter,daemon=True).start()
         
     def read_meter(self):

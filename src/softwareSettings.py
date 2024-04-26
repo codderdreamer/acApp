@@ -11,10 +11,12 @@ from subprocess import Popen, PIPE, STDOUT
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
-        print("SoftwareSettings Init Start")
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("SoftwareSettings Init Start",Color.Blue)
         self.application = application
         self.set_eth()
-        print("SoftwareSettings Init Finish")
+        self.application.write_log("SoftwareSettings Init Finish",Color.Blue)
         
     def control_websocket_ip(self):
         try:
@@ -92,7 +94,6 @@ class SoftwareSettings():
         
     def set_eth(self):
         try:
-            print("\033[31m" + "Bu metin kırmızı olacak." + "\033[0m")
             print("Ethernet set ediliyor...")
             ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
             dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable

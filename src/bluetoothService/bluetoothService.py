@@ -15,18 +15,20 @@ from src.bluetoothService import advertising
 from src.bluetoothService import gatt_server
 import time
 from datetime import datetime
+from src.enums import *
 
 class BluetoothService():
     def __init__(self,application) -> None:
-        print("BluetoothService Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("WebSocketServer Init Start",Color.Blue)
         self.parser = None
         self.args = None
         self.adapter_name = None
         self.bus = None
         self.mainloop = None
         Thread(target=self.run,daemon=True).start()
-        print("BluetoothService Init Finish")
+        self.application.write_log("WebSocketServer Init Finish",Color.Blue)
         
     def run(self):
         try:

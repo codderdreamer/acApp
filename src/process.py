@@ -7,10 +7,11 @@ from datetime import datetime
 
 class Process():
     def __init__(self,application) -> None:
-        print("Process Init Start")
-        self.application = application
+        from src.application import Application
+        self.application : Application = application
+        self.application.write_log("Process Init Start",Color.Blue)
         self.id_tag = None
-        print("Process Init Finish")
+        self.application.write_log("Process Init Finish",Color.Blue)
         
     def unlock_connector(self):
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)

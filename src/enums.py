@@ -118,6 +118,12 @@ class PidErrorList(Enum):
     FrequencyFailure = 13
     PhaseSequenceFailure = 14
     OverPowerFailure = 15
+    
+class Color(Enum):
+    Red = "Red"
+    Green = "Green"
+    Blue = "Blue"
+    
 
 
 

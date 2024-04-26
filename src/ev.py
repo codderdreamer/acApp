@@ -48,6 +48,7 @@ class EV():
         error = False
         while True:
             if self.charge:
+                print("Şarj oluyor",self.application.serialPort.error_list)
                 if len(self.application.serialPort.error_list) > 0:
                     for value in self.application.serialPort.error_list:
                         if value != PidErrorList.RcdTripError:

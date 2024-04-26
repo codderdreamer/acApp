@@ -20,6 +20,7 @@ class DatabaseModule():
         self.get_max_current()
         self.get_mid_meter()
         self.get_local_list()
+        self.get_user_login()
         self.show_init_database()
         
     def show_init_database(self):
@@ -317,7 +318,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            self.application.deviceSettings.max_current = int(data_dict["maxcurrent"])
+            self.application.settings.deviceSettings.max_current = int(data_dict["maxcurrent"])
         except Exception as e:
             print(datetime.now(),"get_max_current Exception:",e)
         return data_dict
@@ -333,7 +334,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            self.application.deviceSettings.mid_meter = bool(data_dict["midMeter"])
+            self.application.settings.deviceSettings.mid_meter = bool(data_dict["midMeter"])
             return bool(data_dict["midMeter"])
         except Exception as e:
             print(datetime.now(),"get_mid_meter Exception:",e)
@@ -351,8 +352,8 @@ class DatabaseModule():
             for row in data:
                 data_dict["UserName"] = row[0]
                 data_dict["Password"] = row[1]
-            self.application.deviceSettings.username = data_dict["UserName"]
-            self.application.deviceSettings.password = data_dict["Password"]
+            self.application.settings.deviceSettings.username = data_dict["UserName"]
+            self.application.settings.deviceSettings.password = data_dict["Password"]
             return data_dict
         except Exception as e:
             print(datetime.now(),"get_user_login Exception:",e)

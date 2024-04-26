@@ -8,6 +8,7 @@ from datetime import datetime
 import requests
 from src.bluetoothService.bluetoothService import BluetoothService
 from subprocess import Popen, PIPE, STDOUT
+from threading import Thread
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
@@ -15,9 +16,12 @@ class SoftwareSettings():
         self.application : Application = application
         self.application.write_log("SoftwareSettings Init Start",Color.Blue)
         self.application = application
-        self.set_eth()
-        self.set_4G()
-        self.set_wifi()
+        Thread(target=self.set_eth,daemon=True).start()
+        Thread(target=self.set_4G,daemon=True).start()
+        Thread(target=self.set_wifi,daemon=True).start()
+        # self.set_eth()
+        # self.set_4G()
+        # self.set_wifi()
         self.application.write_log("SoftwareSettings Init Finish",Color.Blue)
         
     def control_websocket_ip(self):

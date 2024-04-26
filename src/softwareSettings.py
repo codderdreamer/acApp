@@ -21,15 +21,11 @@ class SoftwareSettings():
         Thread(target=self.set_4G,daemon=True).start()
         Thread(target=self.set_wifi,daemon=True).start()
         Thread(target=self.set_network_priority,daemon=True).start()
-        Thread(target=self.control_websocket_ip_thread,daemon=True).start()
+        Thread(target=self.control_device_status,daemon=True).start()
         # self.set_eth()
         # self.set_4G()
         # self.set_wifi()
         self.application.write_log("SoftwareSettings Init Finish",Color.Blue)
-        
-    def control_websocket_ip_thread(self):
-        time.sleep(15)
-        self.control_websocket_ip()
         
     def control_websocket_ip(self):
         try:
@@ -353,7 +349,7 @@ class SoftwareSettings():
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_device_status()) 
             except Exception as e:
                 print(datetime.now(),"control_device_status Exception:",e)
-            time.sleep(10)
+            time.sleep(5)
             
     def set_bluetooth_settings(self):
         try:

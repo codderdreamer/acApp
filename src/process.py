@@ -434,6 +434,15 @@ class Process():
             
     def idle(self):
         print("****************************************************************** idle")
+        if len(self.application.serialPort.error_list) > 0:
+            for value in self.application.serialPort.error_list:
+                if value == PidErrorList.LockerInitializeError:
+                    print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
+                    return
+                if value == PidErrorList.RcdInitializeError:
+                    print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
+                    return
+                
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None

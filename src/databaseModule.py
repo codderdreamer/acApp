@@ -81,6 +81,8 @@ class DatabaseModule():
         print("mid_meter:",self.application.settings.deviceSettings.mid_meter)
         print("username:",self.application.settings.deviceSettings.username)
         print("password:",self.application.settings.deviceSettings.password)
+        print("----------------------------> Local List")
+        print("localList:",self.application.settings.localList)
         
         
         
@@ -370,6 +372,7 @@ class DatabaseModule():
             # print("\n get_local_list",data)
             for id in data:
                 id_tag_list.append(id[0])
+            self.application.settings.localList = id_tag_list
             return id_tag_list
         except Exception as e:
             print(datetime.now(),"get_bluetooth_settings Exception:",e)

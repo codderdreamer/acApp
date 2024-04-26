@@ -20,6 +20,7 @@ class Settings():
         self.deviceSettings = DeviceSettings()
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
+        self.localList = []
         
         self.change_ocpp = False
         

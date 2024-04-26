@@ -15,6 +15,8 @@ class SoftwareSettings():
         from src.application import Application
         self.application : Application = application
         self.application.write_log("SoftwareSettings Init Start",Color.Blue)
+        self.set_timezoon()
+        self.set_bluetooth_settings()
         Thread(target=self.set_eth,daemon=True).start()
         Thread(target=self.set_4G,daemon=True).start()
         Thread(target=self.set_wifi,daemon=True).start()

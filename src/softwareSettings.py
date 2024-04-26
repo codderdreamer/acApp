@@ -21,15 +21,18 @@ class SoftwareSettings():
         Thread(target=self.set_4G,daemon=True).start()
         Thread(target=self.set_wifi,daemon=True).start()
         Thread(target=self.set_network_priority,daemon=True).start()
-        Thread(target=self.control_websocket_ip,daemon=True).start()
+        Thread(target=self.control_websocket_ip_thread,daemon=True).start()
         # self.set_eth()
         # self.set_4G()
         # self.set_wifi()
         self.application.write_log("SoftwareSettings Init Finish",Color.Blue)
         
+    def control_websocket_ip_thread(self):
+        time.sleep(15)
+        self.control_websocket_ip()
+        
     def control_websocket_ip(self):
         try:
-            print("control_websocket_ip")
             self.get_active_ips()
             if self.application.settings.deviceStatus.networkCard == "Ethernet":
                 self.application.settings.websocketIp = self.application.settings.networkip.eth1

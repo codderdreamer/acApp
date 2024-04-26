@@ -14,8 +14,9 @@ class EV():
         
         self.availability : AvailabilityType = AvailabilityType.operative
         self.chargingStatus : ChargePointStatus = ChargePointStatus.available
+        
         self.ocppActive = False
-        self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F 
+        self.__control_pilot = None             # A,B,C,D,E, F 
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6
         self.proximity_pilot_current = None
         
@@ -89,16 +90,16 @@ class EV():
         if self.__control_pilot != value:
             print("************************************************************  control_pilot",value)
             self.__control_pilot = value
-            if self.__control_pilot == ControlPlot.stateA.value:
-                self.application.deviceState = DeviceState.IDLE
-            elif self.__control_pilot == ControlPlot.stateB.value:
-                self.application.deviceState = DeviceState.CONNECTED
-            elif self.__control_pilot == ControlPlot.stateC.value:
-                self.application.deviceState = DeviceState.CHARGING
-            elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
-                self.application.deviceState = DeviceState.FAULT
-            else:
-                self.application.deviceState = DeviceState.FAULT
+            # if self.__control_pilot == ControlPlot.stateA.value:
+            #     self.application.deviceState = DeviceState.IDLE
+            # elif self.__control_pilot == ControlPlot.stateB.value:
+            #     self.application.deviceState = DeviceState.CONNECTED
+            # elif self.__control_pilot == ControlPlot.stateC.value:
+            #     self.application.deviceState = DeviceState.CHARGING
+            # elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
+            #     self.application.deviceState = DeviceState.FAULT
+            # else:
+            #     self.application.deviceState = DeviceState.FAULT
                 
     @property
     def charge(self):

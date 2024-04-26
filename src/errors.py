@@ -13,6 +13,7 @@ class Errors():
         
     def control_errors(self):
         while True:
+            print("------------------------------------------")
             print("self.connected_database",self.connected_database)
             print("self.connected_bluetooth",self.connected_bluetooth)
             print("self.network_connected",self.network_connected)

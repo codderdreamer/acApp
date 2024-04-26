@@ -58,6 +58,9 @@ class EV():
                             rcdTripError = True
                         else:
                             othererror = True
+                        
+                        if counter == 1:
+                            othererror = False
                     
                 if rcdTripError:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
@@ -67,7 +70,6 @@ class EV():
                     counter += 1
                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     time.sleep(30)
-                    othererror = False #test
                 elif othererror and counter == 3:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT

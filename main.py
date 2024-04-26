@@ -21,8 +21,10 @@ import os
 
 class Application():
     def __init__(self,loop):
-       self.bluetoothService = BluetoothService(self)
-       print("test")
+        self.settings = Settings(self)
+        self.databaseModule = DatabaseModule(self)
+        # self.bluetoothService = BluetoothService(self)
+        
 
     
 if __name__ == "__main__":

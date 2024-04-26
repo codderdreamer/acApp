@@ -6,6 +6,29 @@ from datetime import datetime
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
+        self.get_network_priority()
+        self.get_settings_4g()
+        self.get_ethernet_settings()
+        self.get_dns_settings()
+        self.get_wifi_settings()
+        self.get_ocpp_settings()
+        self.get_bluetooth_settings()
+        self.get_timezoon_settings()
+        self.get_firmware_version()
+        self.get_functions_enable()
+        self.get_availability()
+        self.get_max_current()
+        self.get_mid_meter()
+        self.get_local_list()
+        self.show_init_database()
+        
+    def show_init_database(self):
+        print("--> Network Priority")
+        print("enableWorkmode:",self.application.settings.networkPriority.enableWorkmode)
+        print("first:", self.application.settings.networkPriority.first)
+        print("second:", self.application.settings.networkPriority.second)
+        print("third:", self.application.settings.networkPriority.third)
+        
         
     def get_dns_settings(self):
         data_dict = {}

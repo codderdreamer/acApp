@@ -21,6 +21,7 @@ import os
 
 class Application():
     def __init__(self,loop):
+        self.loop = loop
         self.midMeter : ModbusModule = None
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)

@@ -4,12 +4,16 @@ import time
 import asyncio
 from datetime import datetime
 from ocpp.v16.datatypes import *
+from ocpp.v16.enums import *
 
 class EV():
     def __init__(self,application):
         from src.application import Application
         self.application : Application = application
         self.application.write_log("EV Init Start",Color.Blue)
+        
+        self.availability = AvailabilityType.operative
+        self.chargingStatus = ChargePointStatus.available
         
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F 
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6

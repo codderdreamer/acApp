@@ -22,6 +22,7 @@ import os
 class Application():
     def __init__(self,loop):
        self.bluetoothService = BluetoothService(self)
+       print("test")
 
     
 if __name__ == "__main__":

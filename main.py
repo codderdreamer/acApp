@@ -108,6 +108,9 @@ class Application():
                 self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
                 
+            elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
+                Thread(target=self.process.suspended_evse,daemon=True).start()
+                
     def read_charge_values_thred(self):
         while True:
             try:

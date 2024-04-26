@@ -45,20 +45,26 @@ class EV():
         
     def control_error_list(self):
         counter = 0
-        error = False
+        othererror = False
+        rcdTripError = False
         while True:
             if self.charge:
                 print("***************************** Şarj oluyor",self.application.serialPort.error_list)
                 if len(self.application.serialPort.error_list) > 0:
                     for value in self.application.serialPort.error_list:
-                        if value != PidErrorList.RcdTripError:
-                            error = True
-                if error and counter != 3:
+                        if value == PidErrorList.RcdTripError:
+                            rcdTripError = True
+                        else:
+                            othererror = True
+                if rcdTripError:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                    self.application.deviceState = DeviceState.FAULT
+                elif othererror and counter != 3:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                     counter += 1
+                    self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     time.sleep(30)
-                    self.application.deviceState = DeviceState.CONNECTED
-                elif error and counter == 3:
+                elif othererror and counter == 3:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT
                 else:

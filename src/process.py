@@ -63,7 +63,7 @@ class Process():
                         control_counter += 1
                     if result == False:
                         print("Deneme bitti Lock Çalışmadı.")
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
@@ -397,6 +397,19 @@ class Process():
                 time.sleep(1)
             else:
                 break
+            
+    def suspended_evse(self):
+        print("****************************************************************** suspended_evse")
+        self.application.ev.charge = False
+        if self.application.ocppActive:
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspended_evse),self.application.loop)
+        self.application.serialPort.set_command_pid_cp_pwm(0)
+        time.sleep(0.3)
+        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        # time.sleep(4)
+        if self.application.socketType == SocketType.Type2:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+            
                 
         
     def stopped_by_evse(self):

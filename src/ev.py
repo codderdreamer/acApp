@@ -12,9 +12,9 @@ class EV():
         self.application : Application = application
         self.application.write_log("EV Init Start",Color.Blue)
         
-        self.availability = AvailabilityType.operative
-        self.chargingStatus = ChargePointStatus.available
-        
+        self.availability : AvailabilityType = AvailabilityType.operative
+        self.chargingStatus : ChargePointStatus = ChargePointStatus.available
+        self.ocppActive = False
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F 
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6
         self.proximity_pilot_current = None
@@ -47,6 +47,7 @@ class EV():
         
         self.start_stop_authorize = False
         self.application.write_log("EV Init Finish",Color.Blue)
+        
         
     def send_message(self):
         self.send_message_thread_start = True
@@ -120,7 +121,7 @@ class EV():
     @card_id.setter
     def card_id(self, value):
         if (value != None) and (value != ""):
-            if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+            if (self.application.cardType == CardType.BillingCard) and (self.ocppActive):
                 if self.charge:
                     if self.application.process.id_tag == value:
                         self.application.chargePoint.authorize = None

@@ -308,7 +308,7 @@ class SoftwareSettings():
             
     def find_stateOfOcpp(self):
         try:
-            if self.application.ocppActive:
+            if self.application.ev.ocppActive:
                 self.application.settings.deviceStatus.stateOfOcpp = "Online"
             else:
                 self.application.settings.deviceStatus.stateOfOcpp = "Offline"

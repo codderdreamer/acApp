@@ -860,8 +860,11 @@ class UnlockConnectorCharacteristic(Characteristic):
         except Exception as e:
             print(datetime.now(),"UnlockConnectorCharacteristic WriteValue Exception:",e)
             
-def register_app_cb():
+def register_app_cb(application):
     print('GATT application registered')
+    application.errors.connected_bluetooth = True
+    print("application.errors.connected_bluetooth = True")
+    
 
 def register_app_error_cb(mainloop, error):
     try:
@@ -881,7 +884,7 @@ def gatt_server_main(application, mainloop, bus, adapter_name):
         app = ApplicationBluetooth(bus,application)
         print('Registering GATT application...')
         service_manager.RegisterApplication(app.get_path(), {},
-                                        reply_handler=register_app_cb,
+                                        reply_handler=functools.partial(register_app_cb, application),
                                         error_handler=functools.partial(register_app_error_cb, mainloop))
     except Exception as e:
         print(datetime.now(),"gatt_server_main Exception:",e)

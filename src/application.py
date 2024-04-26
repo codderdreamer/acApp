@@ -18,10 +18,12 @@ from src.flaskModule import FlaskModuleThread
 from src.midMeterModule import MidMeterModule
 import subprocess
 import os
+from src.errors import Errors
 
 class Application():
     def __init__(self,loop):
         self.loop = loop
+        self.errors = Errors(self)
         self.midMeter : ModbusModule = None
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
@@ -33,6 +35,7 @@ class Application():
         self.serialPort = SerialPort(self)
         self.process = Process(self)
         self.midMeterModule = MidMeterModule(self)
+        
         
     def error_exceptions(self):
         pass

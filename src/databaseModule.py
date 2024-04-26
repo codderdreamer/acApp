@@ -4,6 +4,7 @@ from ocpp.v16.enums import *
 from datetime import datetime
 from src.enums import *
 
+
 class DatabaseModule():
     def __init__(self,application) -> None:
         from src.application import Application
@@ -108,6 +109,7 @@ class DatabaseModule():
             self.application.settings.dnsSettings.DNS2 = data_dict["dns2"]
         except Exception as e:
             print(datetime.now(),"get_dns_settings Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_ethernet_settings(self):
@@ -129,6 +131,7 @@ class DatabaseModule():
             self.application.settings.ethernetSettings.gateway = data_dict["gateway"]
         except Exception as e:
             print(datetime.now(),"get_ethernet_settings Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_network_priority(self):
@@ -149,6 +152,7 @@ class DatabaseModule():
             self.application.settings.networkPriority.third = data_dict["third"]
         except Exception as e:
             print(datetime.now(),"get_network_priority Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_settings_4g(self):
@@ -170,6 +174,7 @@ class DatabaseModule():
             self.application.settings.settings4G.enableModification = data_dict["enableModification"]
         except Exception as e:
             print(datetime.now(),"get_settings_4g Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_wifi_settings(self):
@@ -195,6 +200,7 @@ class DatabaseModule():
             self.application.settings.wifiSettings.gateway = data_dict["gateway"]
         except Exception as e:
             print(datetime.now(),"get_wifi_settings Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_ocpp_settings(self):
@@ -217,6 +223,7 @@ class DatabaseModule():
             self.application.settings.ocppSettings.chargePointId = data_dict["chargePointId"]
         except Exception as e:
             print(datetime.now(),"get_ocpp_settings Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
         
     def get_functions_enable(self):
@@ -237,6 +244,7 @@ class DatabaseModule():
             self.application.settings.functionsEnable.whether_to_transfer_private_data = data_dict["whether_to_transfer_private_data"]
         except Exception as e:
             print(datetime.now(),"get_functions_enable Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_bluetooth_settings(self):
@@ -256,6 +264,7 @@ class DatabaseModule():
             self.application.settings.bluetoothSettings.bluetooth_name = data_dict["bluetooth_name"]
         except Exception as e:
             print(datetime.now(),"get_bluetooth_settings Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
         
     def get_timezoon_settings(self):
@@ -273,6 +282,7 @@ class DatabaseModule():
             self.application.settings.timezoonSettings.timezone = data_dict["timezone"]
         except Exception as e:
             print(datetime.now(),"get_timezoon_settings Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
         
     def get_firmware_version(self):
@@ -290,6 +300,7 @@ class DatabaseModule():
             self.application.settings.firmwareVersion.version = data_dict["version"]
         except Exception as e:
             print(datetime.now(),"get_firmware_version Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
         
     def get_availability(self):
@@ -312,6 +323,7 @@ class DatabaseModule():
                 self.application.settings.deviceSettings.availability = AvailabilityType.operative
         except Exception as e:
             print(datetime.now(),"get_availability Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
      
     def get_max_current(self):
@@ -328,6 +340,7 @@ class DatabaseModule():
             self.application.settings.deviceSettings.max_current = int(data_dict["maxcurrent"])
         except Exception as e:
             print(datetime.now(),"get_max_current Exception:",e)
+            self.application.errors.connected_database = False
         return data_dict
     
     def get_device_settings(self):
@@ -348,6 +361,7 @@ class DatabaseModule():
             return bool(data_dict["midMeter"])
         except Exception as e:
             print(datetime.now(),"get_device_settings Exception:",e)
+            self.application.errors.connected_database = False
     
     def get_user_login(self):
         try:
@@ -367,6 +381,7 @@ class DatabaseModule():
             return data_dict
         except Exception as e:
             print(datetime.now(),"get_user_login Exception:",e)
+            self.application.errors.connected_database = False
             
     def get_local_list(self):
         id_tag_list = []
@@ -384,6 +399,7 @@ class DatabaseModule():
             return id_tag_list
         except Exception as e:
             print(datetime.now(),"get_bluetooth_settings Exception:",e)
+            self.application.errors.connected_database = False
              
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
@@ -410,6 +426,7 @@ class DatabaseModule():
             self.application.settings.dnsSettings.DNS2 = dns2
         except Exception as e:
             print(datetime.now(),"set_dns_settings Exception:",e)
+            self.application.errors.connected_database = False
 
     def set_ethernet_settings(self,ethernetEnable,dhcpcEnable,ip,netmask,gateway):
         try:
@@ -446,6 +463,7 @@ class DatabaseModule():
             self.application.settings.ethernetSettings.gateway = gateway
         except Exception as e:
             print(datetime.now(),"set_ethernet_settings Exception:",e)
+            self.application.errors.connected_database = False
 
     def set_network_priority(self,enableWorkmode,first,second,third):
         try:
@@ -477,6 +495,7 @@ class DatabaseModule():
             self.application.settings.networkPriority.third = third
         except Exception as e:
             print(datetime.now(),"set_network_priority Exception:",e)
+            self.application.errors.connected_database = False
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:
@@ -513,6 +532,7 @@ class DatabaseModule():
             self.application.settings.settings4G.pin = pin
         except Exception as e:
             print(datetime.now(),"set_settings_4g Exception:",e)
+            self.application.errors.connected_database = False
     
     def set_wifi_settings(self,wifiEnable,mod,ssid,password,encryptionType,wifidhcpcEnable,ip,netmask,gateway):
         try:
@@ -569,6 +589,7 @@ class DatabaseModule():
             self.application.settings.wifiSettings.gateway = gateway
         except Exception as e:
             print(datetime.now(),"set_wifi_settings Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_ocpp_settings(self,domainName,port,sslEnable,authorizationKey,path,chargePointId):
         try:
@@ -610,6 +631,7 @@ class DatabaseModule():
             self.application.settings.ocppSettings.chargePointId = chargePointId
         except Exception as e:
             print(datetime.now(),"set_ocpp_settings Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_functions_enable(self,card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data):
         try:
@@ -641,6 +663,7 @@ class DatabaseModule():
             self.application.settings.functionsEnable.whether_to_transfer_private_data = whether_to_transfer_private_data
         except Exception as e:
             print(datetime.now(),"set_functions_enable Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_bluetooth_settings(self,bluetooth_enable,pin,bluetooth_name):
         try:
@@ -667,6 +690,7 @@ class DatabaseModule():
             self.application.settings.bluetoothSettings.bluetooth_name = bluetooth_name
         except Exception as e:
             print(datetime.now(),"set_bluetooth_settings Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_timezone_settings(self,timezone):
         try:
@@ -683,6 +707,7 @@ class DatabaseModule():
             self.application.settings.timezoonSettings.timezone = timezone
         except Exception as e:
             print(datetime.now(),"set_timezone_settings Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_firmware_version(self,version):
         try:
@@ -699,6 +724,7 @@ class DatabaseModule():
             self.application.settings.firmwareVersion.version = version
         except Exception as e:
             print(datetime.now(),"set_firmware_version Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_availability(self,availability):
         try:
@@ -718,6 +744,7 @@ class DatabaseModule():
                 self.application.availability = AvailabilityType.inoperative
         except Exception as e:
             print(datetime.now(),"set_availability Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_max_current(self,maxcurrent):
         try:
@@ -735,6 +762,7 @@ class DatabaseModule():
             
         except Exception as e:
             print(datetime.now(),"set_max_current Exception:",e)
+            self.application.errors.connected_database = False
     
     def set_local_list(self,local_list:list):
         try:
@@ -749,6 +777,7 @@ class DatabaseModule():
             self.settings_database.close()
         except Exception as e:
             print(datetime.now(),"set_local_list Exception:",e)
+            self.application.errors.connected_database = False
             
     def set_password(self,password):
         try:
@@ -765,5 +794,6 @@ class DatabaseModule():
             return True
         except Exception as e:
             print(datetime.now(),"set_password Exception:",e)
+            self.application.errors.connected_database = False
             return False
         

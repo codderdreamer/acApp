@@ -1,4 +1,4 @@
-import src.application as app_module
+import application as app_module
 from src.modbusModule import ModbusModule
 
 class MidMeterModule():

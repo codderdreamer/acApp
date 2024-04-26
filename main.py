@@ -45,19 +45,6 @@ class Application():
         
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
-        self.databaseModule.get_network_priority()
-        self.databaseModule.get_settings_4g()
-        self.databaseModule.get_ethernet_settings()
-        self.databaseModule.get_dns_settings()
-        self.databaseModule.get_wifi_settings()
-        self.databaseModule.get_ocpp_settings()
-        self.databaseModule.get_bluetooth_settings()
-        self.databaseModule.get_timezoon_settings()
-        self.databaseModule.get_firmware_version()
-        self.databaseModule.get_functions_enable()
-        self.databaseModule.get_availability()
-        self.databaseModule.get_max_current()
-        self.mid_meter = self.databaseModule.get_mid_meter()
         self.id_tag_list = self.databaseModule.get_local_list()
         self.softwareSettings = SoftwareSettings(self)
         self.softwareSettings.set_functions_enable()
@@ -70,9 +57,12 @@ class Application():
         self.serialPort = SerialPort(self)
         self.process = Process(self)
         self.process.idle()
-        self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=1)
-
         
+        if self.settings.deviceSettings.mid_meter == True:
+            self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
+        elif self.settings.deviceSettings.externalMidMeter == True:
+            self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
+
         self.softwareSettings.set_eth()
         # time.sleep(5)
         self.softwareSettings.set_4G()
@@ -144,8 +134,7 @@ class Application():
         while True:
             try:
                 # print("-------------CHARGE VALUES------------")
-                # print("self.mid_meter",self.mid_meter,"self.modbusModule.connection",self.modbusModule.connection)
-                if self.mid_meter == True and self.modbusModule.connection == True:
+                if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
                     # print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1
                     self.ev.current_L2 = self.modbusModule.current_L2
@@ -155,7 +144,7 @@ class Application():
                     self.ev.voltage_L3 = self.modbusModule.voltage_L3
                     self.ev.energy = self.modbusModule.energy - self.modbusModule.firstEnergy
                     self.ev.power =  self.modbusModule.power
-                elif self.mid_meter == False:
+                elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
                     # print("Veriler MCU'dan alınıyor...")
                     self.ev.current_L1 = self.serialPort.current_L1
                     self.ev.current_L2 = self.serialPort.current_L2

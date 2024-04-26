@@ -6,6 +6,19 @@ from datetime import datetime
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
+        self.get_network_priority()
+        self.get_settings_4g()
+        self.get_ethernet_settings()
+        self.get_dns_settings()
+        self.get_wifi_settings()
+        self.get_ocpp_settings()
+        self.get_bluetooth_settings()
+        self.get_timezoon_settings()
+        self.get_firmware_version()
+        self.get_functions_enable()
+        self.get_availability()
+        self.get_max_current()
+        self.get_device_settings()
         
     def get_dns_settings(self):
         data_dict = {}
@@ -246,7 +259,7 @@ class DatabaseModule():
             print(datetime.now(),"get_max_current Exception:",e)
         return data_dict
     
-    def get_mid_meter(self):
+    def get_device_settings(self):
         data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
@@ -257,9 +270,13 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
+            self.application.settings.deviceSettings.mid_meter = bool(data_dict["midMeter"])
+            self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
+            self.application.settings.deviceSettings.externalMidMeter = bool(data_dict["externalMidMeter"])
+            self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(data_dict["externalMidMeterSlaveAddress"])
             return bool(data_dict["midMeter"])
         except Exception as e:
-            print(datetime.now(),"get_mid_meter Exception:",e)
+            print(datetime.now(),"get_device_settings Exception:",e)
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:

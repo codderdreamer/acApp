@@ -256,7 +256,7 @@ class Process():
             while True:
                 if self.application.deviceState != DeviceState.CHARGING:
                     return
-                if self.application.mid_meter == True and self.application.modbusModule.connection == False:
+                if self.application.settings.deviceSettings.mid_meter == True and self.application.modbusModule.connection == False:
                     print("Mid meter bağlantısı bekleniyor...")
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         time.sleep(1)
@@ -266,7 +266,7 @@ class Process():
                             break
                     else:
                         return
-                elif self.application.mid_meter == False:
+                elif self.application.settings.deviceSettings.mid_meter == False:
                     self.application.meter_values_on = True
                     self.application.serialPort.get_command_pid_current()
                     self.application.serialPort.get_command_pid_voltage()
@@ -303,7 +303,7 @@ class Process():
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         self.application.serialPort.set_command_pid_relay_control(Relay.On)
                         asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
-                        if self.application.mid_meter == False:
+                        if self.application.settings.deviceSettings.mid_meter == False:
                             self.application.serialPort.get_command_pid_current()
                             self.application.serialPort.get_command_pid_voltage()
                             self.application.serialPort.get_command_pid_power(PowerType.kw)
@@ -316,14 +316,14 @@ class Process():
                         while True:
                             if self.application.deviceState != DeviceState.CHARGING:
                                 return
-                            if self.application.mid_meter == True and self.application.modbusModule.connection == False:
+                            if self.application.settings.deviceSettings.mid_meter == True and self.application.modbusModule.connection == False:
                                 print("Mid meter bağlantısı bekleniyor...")
                                 time.sleep(1)
                                 if time.time() - time_start > 3:
                                     print("Mid meter bağlanamadı")
                                     self.application.deviceState = DeviceState.FAULT
                                     break
-                            elif self.application.mid_meter == False:
+                            elif self.application.settings.deviceSettings.mid_meter == False:
                                 self.application.serialPort.get_command_pid_current()
                                 self.application.serialPort.get_command_pid_voltage()
                                 self.application.serialPort.get_command_pid_power(PowerType.kw)
@@ -345,14 +345,14 @@ class Process():
                 while True:
                     if self.application.deviceState != DeviceState.CHARGING:
                         return
-                    if self.application.mid_meter == True and self.application.modbusModule.connection == False:
+                    if self.application.settings.deviceSettings.mid_meter == True and self.application.modbusModule.connection == False:
                         print("Mid meter bağlantısı bekleniyor...")
                         time.sleep(1)
                         if time.time() - time_start > 3:
                             print("Mid meter bağlanamadı")
                             self.application.deviceState = DeviceState.FAULT
                             break
-                    elif self.application.mid_meter == False:
+                    elif self.application.settings.deviceSettings.mid_meter == False:
                         self.application.meter_values_on = True
                         self.application.serialPort.get_command_pid_current()
                         self.application.serialPort.get_command_pid_voltage()

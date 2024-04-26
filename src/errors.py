@@ -12,6 +12,7 @@ class Errors():
         Thread(target=self.control_errors,daemon=True).start()
         
     def control_errors(self):
+        time.sleep(5)
         while True:
             print("------------------------------------------")
             print("self.connected_database",self.connected_database)

@@ -16,6 +16,8 @@ class SoftwareSettings():
         self.application.write_log("SoftwareSettings Init Start",Color.Blue)
         self.application = application
         self.set_eth()
+        self.set_4G()
+        self.set_wifi()
         self.application.write_log("SoftwareSettings Init Finish",Color.Blue)
         
     def control_websocket_ip(self):

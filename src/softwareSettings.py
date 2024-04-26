@@ -17,7 +17,10 @@ class SoftwareSettings():
         Thread(target=self.set_eth,daemon=True).start()
         Thread(target=self.set_4G,daemon=True).start()
         Thread(target=self.set_wifi,daemon=True).start()
-        
+        Thread(target=self.set_network_priority,daemon=True).start()
+        Thread(target=self.control_device_status,daemon=True).start()
+        self.set_timezoon()
+        self.set_bluetooth_settings()
         
     def control_websocket_ip(self):
         try:

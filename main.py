@@ -39,6 +39,7 @@ class Application():
         
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
+        self.bluetoothService = BluetoothService(self)
         self.id_tag_list = self.databaseModule.get_local_list()
         self.softwareSettings = SoftwareSettings(self)
         self.flaskModule = FlaskModuleThread(self)
@@ -53,19 +54,7 @@ class Application():
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         
         # self.process.idle()
-        
-        
 
-        
-        
-        Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
-        Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
-        
-        self.softwareSettings.set_timezoon()
-        print("set_bluetooth_settings")
-        self.softwareSettings.set_bluetooth_settings()
-        print("BluetoothService")
-        self.bluetoothService = BluetoothService(self)
         Thread(target=self.read_charge_values_thred,daemon=True).start()
         
     @property

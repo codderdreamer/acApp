@@ -63,6 +63,7 @@ class Process():
                         control_counter += 1
                     if result == False:
                         print("Deneme bitti Lock Çalışmadı.")
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
@@ -91,6 +92,7 @@ class Process():
             self.application.serialPort.get_command_pid_proximity_pilot()
             time.sleep(0.5)
             if self.application.ev.proximity_pilot_current == 0:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 self.application.deviceState = DeviceState.FAULT
                 return 
         print("self.application.ev.control_pilot",self.application.ev.control_pilot)
@@ -190,6 +192,7 @@ class Process():
             
             else:
                 print("Ocpp Aktif değil Hata !!!")
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 self.application.deviceState = DeviceState.FAULT
         
 
@@ -256,17 +259,18 @@ class Process():
             while True:
                 if self.application.deviceState != DeviceState.CHARGING:
                     return
-                if self.application.settings.deviceSettings.mid_meter == True and self.application.modbusModule.connection == False:
+                if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
                     print("Mid meter bağlantısı bekleniyor...")
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         time.sleep(1)
                         if time.time() - time_start > 3:
                             print("Mid meter bağlanamadı")
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                             self.application.deviceState = DeviceState.FAULT
                             break
                     else:
                         return
-                elif self.application.settings.deviceSettings.mid_meter == False:
+                elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                     self.application.meter_values_on = True
                     self.application.serialPort.get_command_pid_current()
                     self.application.serialPort.get_command_pid_voltage()
@@ -297,13 +301,14 @@ class Process():
                         pass
                     else:
                         # print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
                         return
                     
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         self.application.serialPort.set_command_pid_relay_control(Relay.On)
                         asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
-                        if self.application.settings.deviceSettings.mid_meter == False:
+                        if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                             self.application.serialPort.get_command_pid_current()
                             self.application.serialPort.get_command_pid_voltage()
                             self.application.serialPort.get_command_pid_power(PowerType.kw)
@@ -316,14 +321,15 @@ class Process():
                         while True:
                             if self.application.deviceState != DeviceState.CHARGING:
                                 return
-                            if self.application.settings.deviceSettings.mid_meter == True and self.application.modbusModule.connection == False:
+                            if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
                                 print("Mid meter bağlantısı bekleniyor...")
                                 time.sleep(1)
                                 if time.time() - time_start > 3:
                                     print("Mid meter bağlanamadı")
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                                     self.application.deviceState = DeviceState.FAULT
                                     break
-                            elif self.application.settings.deviceSettings.mid_meter == False:
+                            elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                                 self.application.serialPort.get_command_pid_current()
                                 self.application.serialPort.get_command_pid_voltage()
                                 self.application.serialPort.get_command_pid_power(PowerType.kw)
@@ -345,14 +351,15 @@ class Process():
                 while True:
                     if self.application.deviceState != DeviceState.CHARGING:
                         return
-                    if self.application.settings.deviceSettings.mid_meter == True and self.application.modbusModule.connection == False:
+                    if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
                         print("Mid meter bağlantısı bekleniyor...")
                         time.sleep(1)
                         if time.time() - time_start > 3:
                             print("Mid meter bağlanamadı")
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                             self.application.deviceState = DeviceState.FAULT
                             break
-                    elif self.application.settings.deviceSettings.mid_meter == False:
+                    elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                         self.application.meter_values_on = True
                         self.application.serialPort.get_command_pid_current()
                         self.application.serialPort.get_command_pid_voltage()
@@ -366,14 +373,12 @@ class Process():
           
     def fault(self):
         print("****************************************************************** fault")
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
         self.application.ev.card_id = ""
         self.application.ev.id_tag = None
         self.application.ev.charge = False
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.faulted),self.application.loop)
             if self.application.meter_values_on:

@@ -41,6 +41,29 @@ class EV():
         
         self.start_stop_authorize = False
         
+        Thread(target=self.control_error_list,daemon=True).start()
+        
+    def control_error_list(self):
+        counter = 0
+        error = False
+        while True:
+            if self.charge:
+                if len(self.application.serialPort.error_list) > 0:
+                    for value in self.application.serialPort.error_list:
+                        if value != PidErrorList.RcdTripError:
+                            error = True
+                if error and counter != 3:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                    counter += 1
+                    time.sleep(30)
+                    self.application.deviceState = DeviceState.CONNECTED
+                elif error and counter == 3:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
+                    self.application.deviceState = DeviceState.FAULT
+                else:
+                    counter = 0
+                    
+        
     def send_message(self):
         self.send_message_thread_start = True
         while self.send_message_thread_start:
@@ -88,8 +111,10 @@ class EV():
             elif self.__control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 self.application.deviceState = DeviceState.FAULT
             else:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 self.application.deviceState = DeviceState.FAULT
                 
     @property

@@ -782,6 +782,10 @@ class ChargePoint16(cp):
                 response = call_result.ResetPayload(
                     status = ResetStatus.accepted
                 )
+            else:
+                response = call_result.ResetPayload(
+                    status = ResetStatus.rejected
+                )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
@@ -790,7 +794,7 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
-            if self.application.ev.charge == False:
+            if self.application.ev.charge == False or self.application.ev.reservation_id == None:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                 os.system("reboot")
         except Exception as e:

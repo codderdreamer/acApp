@@ -118,6 +118,9 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
+                if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                
                 if self.application.availability == AvailabilityType.operative:
                     await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
                 else:

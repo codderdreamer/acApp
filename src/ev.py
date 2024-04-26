@@ -48,6 +48,9 @@ class EV():
         othererror = False
         rcdTripError = False
         while True:
+            othererror = False
+            rcdTripError = False
+            
             if self.charge:
                 if len(self.application.serialPort.error_list) > 0:
                     for value in self.application.serialPort.error_list:
@@ -55,6 +58,7 @@ class EV():
                             rcdTripError = True
                         else:
                             othererror = True
+                    
                 if rcdTripError:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT
@@ -63,9 +67,12 @@ class EV():
                     counter += 1
                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     time.sleep(30)
+                    othererror = False #test
                 elif othererror and counter == 3:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT
+                elif othererror == False:
+                    self.application.deviceState = DeviceState.CHARGING
                 else:
                     counter = 0
                     

@@ -7,6 +7,7 @@ from ocpp.v16.datatypes import *
 
 class EV():
     def __init__(self,application):
+        print("EV Init Start")
         self.application = application
         
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F 
@@ -40,6 +41,7 @@ class EV():
         self.send_message_thread_start = False
         
         self.start_stop_authorize = False
+        print("EV Init Finish")
         
     def send_message(self):
         self.send_message_thread_start = True

@@ -26,6 +26,9 @@ class Application():
         self.bluetoothService = BluetoothService(self)
         self.softwareSettings = SoftwareSettings(self)
         self.flaskModule = FlaskModuleThread(self)
+        self.webSocketServer = WebSocketServer(self)
+        self.ev = EV(self)
+        self.serialPort = SerialPort(self)
 
     
 if __name__ == "__main__":

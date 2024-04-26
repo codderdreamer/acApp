@@ -534,7 +534,7 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
             self.error_list = error_list.append(PidErrorList.PhaseSequenceFailure)
-            # print("self.error_list",self.error_list)
+            print("self.error_list get_response_pid_error_list",self.error_list)
 
     def read(self):
         # counter = 0

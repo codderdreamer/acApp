@@ -120,18 +120,9 @@ class ChargePoint16(cp):
                 print("Connected to central system.")
                 
                 if self.application.availability == AvailabilityType.operative:
-                    # await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
-                    # await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable)
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
-                
-                # for value in self.application.serialPort.error_list:
-                #     if value == PidErrorList.LockerInitializeError:
-                #         await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted)
-                #     if value == PidErrorList.RcdInitializeError:
-                #         await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted)
-                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                 await self.send_heartbeat(response.interval)
             return response
         except Exception as e:
@@ -474,10 +465,10 @@ class ChargePoint16(cp):
     def after_change_availability(self,connector_id: int, type: AvailabilityType):
         try :
             if type == AvailabilityType.operative:
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 self.application.databaseModule.set_availability(AvailabilityType.operative.value)
             elif type == AvailabilityType.inoperative:
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
             print(datetime.now(),"after_change_availability Exception:",e)
@@ -656,7 +647,7 @@ class ChargePoint16(cp):
                 response = call_result.RemoteStartTransactionPayload(
                             status= RemoteStartStopStatus.accepted
                 )
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                 self.application.chargePoint.authorize = AuthorizationStatus.accepted
                 Thread(target=self.remote_start_thread,daemon=True).start()
             LOGGER_CHARGE_POINT.info("Response:%s", response)

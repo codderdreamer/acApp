@@ -84,9 +84,9 @@ class Process():
         
         if self.application.ocppActive:
             if self.application.control_C_B:
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspended_ev),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.suspended_ev)
             else:
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
         
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -202,7 +202,7 @@ class Process():
         self.application.ev.charge = False
         
         if self.application.ocppActive:
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
         time.sleep(1)
         
         time_start = time.time()
@@ -307,7 +307,7 @@ class Process():
                     
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         self.application.serialPort.set_command_pid_relay_control(Relay.On)
-                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.charging),self.application.loop)
+                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
                         if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                             self.application.serialPort.get_command_pid_current()
                             self.application.serialPort.get_command_pid_voltage()
@@ -380,11 +380,10 @@ class Process():
         self.application.ev.id_tag = None
         self.application.ev.charge = False
         if self.application.ocppActive:
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.faulted),self.application.loop)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -401,7 +400,7 @@ class Process():
     def suspended_evse(self):
         print("****************************************************************** suspended_evse")
         if self.application.ocppActive:
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspended_evse),self.application.loop)
+           self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.suspended_evse)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -423,9 +422,8 @@ class Process():
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.finishing),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -452,11 +450,11 @@ class Process():
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
         if self.application.ocppActive:
             if self.application.chargePoint:
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -464,7 +462,7 @@ class Process():
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         if self.application.ocppActive:
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available),self.application.loop)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
             
     def stopped_by_user(self):
         self.application.ev.start_stop_authorize = False
@@ -479,9 +477,8 @@ class Process():
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.finishing),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.preparing),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)

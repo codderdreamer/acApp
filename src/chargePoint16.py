@@ -727,11 +727,49 @@ class ChargePoint16(cp):
                 reservation_id,
                 parent_id_tag
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.ReserveNowPayload(
-                status = ReservationStatus.accepted
-            )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargingStatus == ChargePointStatus.available:
+                self.application.ev.id_tag = id_tag
+                self.application.ev.expiry_date = expiry_date
+                self.application.ev.reservation_id = reservation_id
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                response = call_result.ReserveNowPayload(
+                    status = ReservationStatus.accepted
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+            # Şarj Noktası rezervasyon kimliği ile eşleşiyorsa talepteki yeni rezervasyonla değiştirecektir.
+            elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
+                self.application.ev.id_tag = id_tag
+                self.application.ev.expiry_date = expiry_date
+                self.application.ev.reservation_id = reservation_id
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                response = call_result.ReserveNowPayload(
+                    status = ReservationStatus.accepted
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+            elif self.application.ev.reservation_id != None and self.application.availability == AvailabilityType.operative:
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                response = call_result.ReserveNowPayload(
+                    status = ReservationStatus.occupied
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+            elif self.application.availability == AvailabilityType.inoperative:
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                response = call_result.ReserveNowPayload(
+                    status = ReservationStatus.rejected
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+            elif self.application.chargingStatus == ChargePointStatus.faulted:
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                response = call_result.ReserveNowPayload(
+                    status = ReservationStatus.faulted
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+            elif self.application.chargingStatus != ChargePointStatus.available:
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                response = call_result.ReserveNowPayload(
+                    status = ReservationStatus.rejected
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
             print(datetime.now(),"on_reserve_now Exception:",e)
@@ -744,9 +782,11 @@ class ChargePoint16(cp):
                 type
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.ResetPayload(
-                status = ResetStatus.accepted
-            )
+            # Şarj Noktasında bir reservasyon yok ise ve bir şarj yok ise resetlenebilir
+            if self.application.ev.charge == False or self.application.ev.reservation_id == None:
+                response = call_result.ResetPayload(
+                    status = ResetStatus.accepted
+                )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
@@ -755,8 +795,9 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-            os.system("reboot")
+            if self.application.ev.charge == False:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
+                os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)
 

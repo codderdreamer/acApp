@@ -22,9 +22,6 @@ class SoftwareSettings():
         Thread(target=self.set_wifi,daemon=True).start()
         Thread(target=self.set_network_priority,daemon=True).start()
         Thread(target=self.control_device_status,daemon=True).start()
-        # self.set_eth()
-        # self.set_4G()
-        # self.set_wifi()
         self.application.write_log("SoftwareSettings Init Finish",Color.Blue)
         
     def control_websocket_ip(self):
@@ -36,8 +33,8 @@ class SoftwareSettings():
                 self.application.settings.websocketIp = self.application.settings.networkip.wlan0
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
-            text = "networkCard: " + str(self.application.settings.deviceStatus.networkCard) + " websocketIp: " + str(self.application.settings.websocketIp)
-            self.application.write_log(text,Color.Green)
+            # text = "networkCard: " + str(self.application.settings.deviceStatus.networkCard) + " websocketIp: " + str(self.application.settings.websocketIp)
+            # self.application.write_log(text,Color.Green)
         except Exception as e:
             self.application.write_log("control_websocket_ip Exception: " + e, Color.Red)
         

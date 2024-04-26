@@ -34,6 +34,9 @@ class Application():
         self.process = Process(self)
         self.midMeterModule = MidMeterModule(self)
         
+    def error_exceptions(self):
+        pass
+        
     def write_log(self, text, color : Color = None):
         if color == Color.Green:
             print("\033[32m" + text + "\033[0m")

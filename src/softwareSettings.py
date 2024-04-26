@@ -15,10 +15,11 @@ class SoftwareSettings():
         from src.application import Application
         self.application : Application = application
         self.application.write_log("SoftwareSettings Init Start",Color.Blue)
-        self.application = application
         Thread(target=self.set_eth,daemon=True).start()
         Thread(target=self.set_4G,daemon=True).start()
         Thread(target=self.set_wifi,daemon=True).start()
+        Thread(target=self.set_network_priority,daemon=True).start()
+        Thread(target=self.control_websocket_ip,daemon=True).start()
         # self.set_eth()
         # self.set_4G()
         # self.set_wifi()

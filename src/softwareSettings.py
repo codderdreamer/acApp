@@ -47,11 +47,20 @@ class SoftwareSettings():
             counter = 0
             for net in data:
                 if "eth1" in net:
-                    eth1 = data[counter + 1].split()[1]
+                    if ":" in data[counter + 1].split()[1]:
+                        eth1 = None
+                    else:
+                        eth1 = data[counter + 1].split()[1]
                 if "ppp0" in net:
-                    ppp0 = data[counter + 1].split()[1]
+                    if ":" in data[counter + 1].split()[1]:
+                        ppp0 = None
+                    else:
+                        ppp0 = data[counter + 1].split()[1]
                 if "wlan0" in net:
-                    wlan0 = data[counter + 1].split()[1]
+                    if ":" in data[counter + 1].split()[1]:
+                        wlan0 = None
+                    else:
+                        wlan0 = data[counter + 1].split()[1]
                 counter+=1
             self.application.settings.networkip.eth1 = eth1
             self.application.settings.networkip.ppp0 = ppp0

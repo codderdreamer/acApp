@@ -13,6 +13,7 @@ class SoftwareSettings():
     def __init__(self,application) -> None:
         print("SoftwareSettings Init Start")
         self.application = application
+        self.set_eth()
         print("SoftwareSettings Init Finish")
         
     def control_websocket_ip(self):
@@ -91,6 +92,7 @@ class SoftwareSettings():
         
     def set_eth(self):
         try:
+            print("Ethernet set ediliyor...")
             ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
             dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
             ip = self.application.settings.ethernetSettings.ip
@@ -115,6 +117,7 @@ class SoftwareSettings():
                     os.system('nmcli con up "wire" ifname eth1')
             else:
                 self.delete_connection_type("ethernet")
+            print("Ethernet set edildi.")
         except Exception as e:
             print(datetime.now(),"set_eth Exception:",e)
          

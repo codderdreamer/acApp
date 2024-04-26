@@ -74,7 +74,11 @@ class EV():
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT
                 elif othererror == False:
-                    self.application.deviceState = DeviceState.CHARGING
+                    if self.control_pilot == ControlPlot.stateC.value:
+                        self.application.deviceState = DeviceState.CHARGING
+                    elif self.control_pilot == ControlPlot.stateB.value:
+                        self.application.deviceState = DeviceState.CONNECTED
+                    
                 else:
                     counter = 0
                     

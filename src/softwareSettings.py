@@ -37,7 +37,7 @@ class SoftwareSettings():
                 self.application.settings.websocketIp = self.application.settings.networkip.wlan0
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
-            text = "networkCard: " + self.application.settings.deviceStatus.networkCard + " websocketIp: " + self.application.settings.websocketIp
+            text = "networkCard: " + str(self.application.settings.deviceStatus.networkCard) + " websocketIp: " + str(self.application.settings.websocketIp)
             self.application.write_log(text,Color.Green)
         except Exception as e:
             self.application.write_log("control_websocket_ip Exception: " + e, Color.Red)

@@ -298,11 +298,11 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             if data_dict["availability"] == AvailabilityType.operative.value:
-                self.application.availability = AvailabilityType.operative
+                self.application.settings.deviceSettings.availability = AvailabilityType.operative
             elif data_dict["availability"] == AvailabilityType.inoperative.value:
-                self.application.availability = AvailabilityType.inoperative
+                self.application.settings.deviceSettings.availability = AvailabilityType.inoperative
             else:
-                self.application.availability = AvailabilityType.operative
+                self.application.settings.deviceSettings.availability = AvailabilityType.operative
         except Exception as e:
             print(datetime.now(),"get_availability Exception:",e)
         return data_dict

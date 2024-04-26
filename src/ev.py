@@ -49,7 +49,6 @@ class EV():
         rcdTripError = False
         while True:
             if self.charge:
-                print("***************************** Şarj oluyor",self.application.serialPort.error_list)
                 if len(self.application.serialPort.error_list) > 0:
                     for value in self.application.serialPort.error_list:
                         if value == PidErrorList.RcdTripError:
@@ -69,6 +68,7 @@ class EV():
                     self.application.deviceState = DeviceState.FAULT
                 else:
                     counter = 0
+                    
             time.sleep(1)
                     
         

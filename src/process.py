@@ -400,7 +400,6 @@ class Process():
             
     def suspended_evse(self):
         print("****************************************************************** suspended_evse")
-        self.application.ev.charge = False
         if self.application.ocppActive:
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.suspended_evse),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)

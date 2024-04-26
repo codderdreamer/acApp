@@ -118,18 +118,19 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
-                if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                 
                 if self.application.availability == AvailabilityType.operative:
-                    await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
+                    # await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.available)
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
-                    await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable)
-                for value in self.application.serialPort.error_list:
-                    if value == PidErrorList.LockerInitializeError:
-                        await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted)
-                    if value == PidErrorList.RcdInitializeError:
-                        await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted)
+                    # await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.noError,status=ChargePointStatus.unavailable)
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
+                
+                # for value in self.application.serialPort.error_list:
+                #     if value == PidErrorList.LockerInitializeError:
+                #         await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted)
+                #     if value == PidErrorList.RcdInitializeError:
+                #         await self.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted)
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                 await self.send_heartbeat(response.interval)
             return response

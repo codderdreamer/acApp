@@ -26,7 +26,10 @@ class Application():
         self.charge_stopped = False
         self.chargePoint = None
         self.availability = AvailabilityType.operative
+        
         self.chargingStatus = ChargePointStatus.available
+        self.error_code = None
+        
         self.__deviceState = None
         self.ocppActive = False
         self.cardType = None
@@ -36,6 +39,7 @@ class Application():
         self.control_C_B = False
         self.control_A_C = False
         self.meter_values_on = False
+        
         
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
@@ -111,6 +115,14 @@ class Application():
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
                 Thread(target=self.process.suspended_evse,daemon=True).start()
                 
+
+                
+    def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus):
+        if error_code != self.error_code or status != self.chargingStatus:
+            if self.ocppActive:
+                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargingStatus),self.loop)
+        
+            
     def read_charge_values_thred(self):
         while True:
             try:

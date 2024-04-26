@@ -499,8 +499,10 @@ class SerialPort():
         error_list = []
         if data[2] == self.pid_error_list:
             # print("data:", data)
+            data[7] = "1"
             if (int(data[7]) == 1):
                 error_list.append(PidErrorList.LockerInitializeError)
+                self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted)
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                 # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.connector_lock_failure,status=ChargePointStatus.faulted),self.application.loop)
             if (int(data[8]) == 1):
@@ -509,6 +511,7 @@ class SerialPort():
                 error_list.append(PidErrorList.EarthDisconnectFailure)
             if (int(data[10]) == 1):
                 error_list.append(PidErrorList.RcdInitializeError)
+                self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted)
                 # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
                 # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=ChargePointErrorCode.ground_failure,status=ChargePointStatus.faulted),self.application.loop)
             if (int(data[11]) == 1):
@@ -534,7 +537,6 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
                 
-            error_list.append(PidErrorList.LockerInitializeError)
             self.error_list = error_list
             # print("self.error_list get_response_pid_error_list",self.error_list)
 

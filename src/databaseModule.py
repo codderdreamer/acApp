@@ -19,7 +19,7 @@ class DatabaseModule():
         self.get_functions_enable()
         self.get_availability()
         self.get_max_current()
-        self.get_mid_meter()
+        self.get_device_settings()
         self.get_local_list()
         self.get_user_login()
         self.show_init_database()
@@ -81,12 +81,13 @@ class DatabaseModule():
         print("availability:",self.application.settings.deviceSettings.availability)
         print("max_current:",self.application.settings.deviceSettings.max_current)
         print("mid_meter:",self.application.settings.deviceSettings.mid_meter)
+        print("midMeterSlaveAddress:",self.application.settings.deviceSettings.midMeterSlaveAddress)
+        print("externalMidMeter:",self.application.settings.deviceSettings.externalMidMeter)
+        print("externalMidMeterSlaveAddress:",self.application.settings.deviceSettings.externalMidMeterSlaveAddress)
         print("username:",self.application.settings.deviceSettings.username)
         print("password:",self.application.settings.deviceSettings.password)
         print("----------------------------> Local List")
         print("localList:",self.application.settings.localList)
-        
-        
         
     def get_dns_settings(self):
         data_dict = {}
@@ -327,7 +328,7 @@ class DatabaseModule():
             print(datetime.now(),"get_max_current Exception:",e)
         return data_dict
     
-    def get_mid_meter(self):
+    def get_device_settings(self):
         data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
@@ -339,9 +340,12 @@ class DatabaseModule():
             for row in data:
                 data_dict[row[0]] = row[1]
             self.application.settings.deviceSettings.mid_meter = bool(data_dict["midMeter"])
+            self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
+            self.application.settings.deviceSettings.externalMidMeter = bool(data_dict["externalMidMeter"])
+            self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(data_dict["externalMidMeterSlaveAddress"])
             return bool(data_dict["midMeter"])
         except Exception as e:
-            print(datetime.now(),"get_mid_meter Exception:",e)
+            print(datetime.now(),"get_device_settings Exception:",e)
     
     def get_user_login(self):
         try:

@@ -515,6 +515,10 @@ class DeviceSettings():
         self.availability = None
         self.max_current = None
         self.mid_meter = None
+        self.midMeterSlaveAddress = None
+        self.externalMidMeter = None
+        self.externalMidMeterSlaveAddress = None
         self.username = None
         self.password = None
+
         

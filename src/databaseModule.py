@@ -61,6 +61,26 @@ class DatabaseModule():
         print("authorizationKey:",self.application.settings.ocppSettings.authorizationKey)
         print("path:",self.application.settings.ocppSettings.path)
         print("chargePointId:",self.application.settings.ocppSettings.chargePointId)
+        print("----------------------------> Functions Enable")
+        print("card_type:",self.application.settings.functionsEnable.card_type)
+        print("whether_to_open_the_qr_code_process:",self.application.settings.functionsEnable.whether_to_open_the_qr_code_process)
+        print("local_startup_whether_to_go_ocpp_background:",self.application.settings.functionsEnable.local_startup_whether_to_go_ocpp_background)
+        print("whether_to_transfer_private_data:",self.application.settings.functionsEnable.whether_to_transfer_private_data)
+        print("----------------------------> Bluetooth Settings")
+        print("bluetooth_enable:",self.application.settings.bluetoothSettings.bluetooth_enable)
+        print("pin:",self.application.settings.bluetoothSettings.pin)
+        print("bluetooth_name:",self.application.settings.bluetoothSettings.bluetooth_name)
+        print("----------------------------> Timezoone Settings")
+        print("timezone:",self.application.settings.timezoonSettings.timezone)
+        print("----------------------------> Firmware Settings")
+        print("version:",self.application.settings.firmwareVersion.version)
+        print("----------------------------> Device Settings")
+        print("availability:",self.application.deviceSettings.availability)
+        print("max_current:",self.application.deviceSettings.max_current)
+        print("mid_meter:",self.application.deviceSettings.mid_meter)
+        print("username:",self.application.deviceSettings.username)
+        print("password:",self.application.deviceSettings.password)
+        
         
         
     def get_dns_settings(self):
@@ -297,7 +317,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            self.application.max_current = int(data_dict["maxcurrent"])
+            self.application.deviceSettings.max_current = int(data_dict["maxcurrent"])
         except Exception as e:
             print(datetime.now(),"get_max_current Exception:",e)
         return data_dict
@@ -313,10 +333,46 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
+            self.application.deviceSettings.mid_meter = bool(data_dict["midMeter"])
             return bool(data_dict["midMeter"])
         except Exception as e:
             print(datetime.now(),"get_mid_meter Exception:",e)
     
+    def get_user_login(self):
+        try:
+            data_dict = {}
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM user_login"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            # print("\n get_local_list",data)
+            for row in data:
+                data_dict["UserName"] = row[0]
+                data_dict["Password"] = row[1]
+            self.application.deviceSettings.username = data_dict["UserName"]
+            self.application.deviceSettings.password = data_dict["Password"]
+            return data_dict
+        except Exception as e:
+            print(datetime.now(),"get_user_login Exception:",e)
+            
+    def get_local_list(self):
+        id_tag_list = []
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM local_list"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            # print("\n get_local_list",data)
+            for id in data:
+                id_tag_list.append(id[0])
+            return id_tag_list
+        except Exception as e:
+            print(datetime.now(),"get_bluetooth_settings Exception:",e)
+             
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
@@ -681,39 +737,6 @@ class DatabaseModule():
             self.settings_database.close()
         except Exception as e:
             print(datetime.now(),"set_local_list Exception:",e)
-            
-    def get_local_list(self):
-        id_tag_list = []
-        try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
-            self.cursor = self.settings_database.cursor()
-            query = "SELECT * FROM local_list"
-            self.cursor.execute(query)
-            data = self.cursor.fetchall()
-            self.settings_database.close()
-            # print("\n get_local_list",data)
-            for id in data:
-                id_tag_list.append(id[0])
-            return id_tag_list
-        except Exception as e:
-            print(datetime.now(),"get_bluetooth_settings Exception:",e)
-            
-    def get_user_login(self):
-        try:
-            data_dict = {}
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
-            self.cursor = self.settings_database.cursor()
-            query = "SELECT * FROM user_login"
-            self.cursor.execute(query)
-            data = self.cursor.fetchall()
-            self.settings_database.close()
-            # print("\n get_local_list",data)
-            for row in data:
-                data_dict["UserName"] = row[0]
-                data_dict["Password"] = row[1]
-            return data_dict
-        except Exception as e:
-            print(datetime.now(),"get_user_login Exception:",e)
             
     def set_password(self,password):
         try:

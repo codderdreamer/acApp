@@ -17,6 +17,7 @@ class Settings():
         self.bluetoothSettings = BluetoothSettings()
         self.timezoonSettings = TimeZoneSettings()
         self.firmwareVersion = FirmwareVersion()
+        self.deviceSettings = DeviceSettings()
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
         
@@ -419,8 +420,6 @@ class Settings():
             print(datetime.now(),"set_stop_transaction Exception:",e)
         
             
-
-    
 class NetworkPriority():
     def __init__(self) -> None:
         self.enableWorkmode = None
@@ -508,4 +507,12 @@ class NeworkIP():
         self.eth1 = None
         self.ppp0 = None
         self.wlan0 = None
+        
+class DeviceSettings():
+    def __init__(self) -> None:
+        self.availability = None
+        self.max_current = None
+        self.mid_meter = None
+        self.username = None
+        self.password = None
         

@@ -4,7 +4,9 @@ import time
 from threading import Thread
 
 class ModbusModule:
-    def __init__(self, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
+    def __init__(self, application, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
+        from src.application import Application
+        self.application : Application = application
         self.instrument = minimalmodbus.Instrument(port, slave_address)
         self.instrument.serial.baudrate = baudrate
         self.instrument.serial.parity = parity
@@ -72,9 +74,11 @@ class ModbusModule:
                 # print("MID METER self.power",self.power)
                 # print("MID METER self.energy",self.energy)
                 self.connection = True
+                self.application.errors.mid_meter_connected = True
             except Exception as e:
                 # print(e)
                 self.connection = False
+                self.application.errors.mid_meter_connected = False
                 pass
             time.sleep(1)
 

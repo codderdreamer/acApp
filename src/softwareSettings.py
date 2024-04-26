@@ -275,8 +275,13 @@ class SoftwareSettings():
         try:
             response = requests.get("http://www.google.com", timeout=5)
             self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
+            if response.status_code == 200:
+                self.application.errors.network_connected = True
+            else:
+                self.application.errors.network_connected = False
         except Exception as e:
             print(datetime.now(),"ping_google Exception:",e)
+            self.application.errors.network_connected = False
             
     def find_network(self):
         try:

@@ -319,8 +319,8 @@ class SerialPort():
             
     def get_command_pid_error_list_init(self):
         time.sleep(15)
-        print("Başlangıçta error durumu kontrol ediliyor..")
-        print("pid_error_list",self.error_list)
+        # print("Başlangıçta error durumu kontrol ediliyor..")
+        # print("pid_error_list",self.error_list)
         if len(self.error_list)>0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:

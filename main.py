@@ -21,23 +21,17 @@ import os
 
 class Application():
     def __init__(self,loop):
-        # subprocess.run(["sh", "/root/acApp/bluetooth_set.sh"])
-        # time.sleep(10)
         os.system("gpio-test.64 w d 20 0")
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None
-  
         self.availability = AvailabilityType.operative
         self.chargingStatus = ChargePointStatus.available
         self.__deviceState = None
-        
         self.ocppActive = False
         self.cardType = None
-        
         self.socketType = SocketType.Type2
         self.max_current = 63
-        
         self.control_A_B_C = False
         self.control_C_B = False
         self.control_A_C = False
@@ -47,28 +41,23 @@ class Application():
         self.databaseModule = DatabaseModule(self)
         self.id_tag_list = self.databaseModule.get_local_list()
         self.softwareSettings = SoftwareSettings(self)
-        self.softwareSettings.set_functions_enable()
-    
         self.flaskModule = FlaskModuleThread(self)
         self.webSocketServer = WebSocketServer(self)
-        # self.updateModule = UpdateModule(self)
         self.ev = EV(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
-        self.process.idle()
-        
         if self.settings.deviceSettings.mid_meter == True:
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         elif self.settings.deviceSettings.externalMidMeter == True:
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
+        
+        # self.process.idle()
+        
+        
 
-        self.softwareSettings.set_eth()
-        # time.sleep(5)
-        self.softwareSettings.set_4G()
-        # time.sleep(5)
-        self.softwareSettings.set_wifi()
-        # time.sleep(5)
+        
+        
         Thread(target=self.softwareSettings.set_network_priority,daemon=True).start()
         Thread(target=self.softwareSettings.control_device_status,daemon=True).start()
         

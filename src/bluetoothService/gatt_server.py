@@ -863,7 +863,6 @@ class UnlockConnectorCharacteristic(Characteristic):
 def register_app_cb(application):
     print('GATT application registered')
     application.errors.connected_bluetooth = True
-    print("application.errors.connected_bluetooth = True")
     
 
 def register_app_error_cb(mainloop, error):

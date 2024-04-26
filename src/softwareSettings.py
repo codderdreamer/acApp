@@ -29,6 +29,7 @@ class SoftwareSettings():
         
     def control_websocket_ip(self):
         try:
+            print("control_websocket_ip")
             self.get_active_ips()
             if self.application.settings.deviceStatus.networkCard == "Ethernet":
                 self.application.settings.websocketIp = self.application.settings.networkip.eth1

@@ -1,10 +1,10 @@
-from src.application import Application
+import src.application as app_module
 from src.modbusModule import ModbusModule
 
 class MidMeterModule():
     def __init__(self,application) -> None:
         print("MidMeterModule Init Start")
-        self.application : Application = application
+        self.application : app_module.Application = application
         self.start_mid_meter()
         print("MidMeterModule Init Finish")
         

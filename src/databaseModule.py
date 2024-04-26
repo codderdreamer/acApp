@@ -23,12 +23,17 @@ class DatabaseModule():
         self.show_init_database()
         
     def show_init_database(self):
-        print("--> Network Priority")
+        print("----> Network Priority")
         print("enableWorkmode:",self.application.settings.networkPriority.enableWorkmode)
         print("first:", self.application.settings.networkPriority.first)
         print("second:", self.application.settings.networkPriority.second)
         print("third:", self.application.settings.networkPriority.third)
-        
+        print("----> Ethernet Settings")
+        print("ethernetEnable:",self.application.settings.ethernetSettings.ethernetEnable)
+        print("dhcpcEnable:",self.application.settings.ethernetSettings.dhcpcEnable)
+        print("ip:", self.application.settings.ethernetSettings.ip)
+        print("netmask:", self.application.settings.ethernetSettings.netmask)
+        print("gateway:", self.application.settings.ethernetSettings.gateway)
         
     def get_dns_settings(self):
         data_dict = {}

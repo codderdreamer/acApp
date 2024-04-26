@@ -25,7 +25,7 @@ class Application():
         self.databaseModule = DatabaseModule(self)
         self.bluetoothService = BluetoothService(self)
         self.softwareSettings = SoftwareSettings(self)
-        
+        self.flaskModule = FlaskModuleThread(self)
 
     
 if __name__ == "__main__":

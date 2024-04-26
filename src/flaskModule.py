@@ -130,10 +130,12 @@ class FlaskModule:
         
 class FlaskModuleThread(threading.Thread):
     def __init__(self,application):
+        print("FlaskModuleThread Init Start")
         super().__init__()
         self.stop_event = threading.Event()
         self.application = application
         self.flaskModule = FlaskModule(self.application)
+        print("FlaskModuleThread Init Finish")
 
     def stop(self):
         self.stop_event.set()

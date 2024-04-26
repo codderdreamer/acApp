@@ -75,11 +75,11 @@ class DatabaseModule():
         print("----------------------------> Firmware Settings")
         print("version:",self.application.settings.firmwareVersion.version)
         print("----------------------------> Device Settings")
-        print("availability:",self.application.deviceSettings.availability)
-        print("max_current:",self.application.deviceSettings.max_current)
-        print("mid_meter:",self.application.deviceSettings.mid_meter)
-        print("username:",self.application.deviceSettings.username)
-        print("password:",self.application.deviceSettings.password)
+        print("availability:",self.application.settings.deviceSettings.availability)
+        print("max_current:",self.application.settings.deviceSettings.max_current)
+        print("mid_meter:",self.application.settings.deviceSettings.mid_meter)
+        print("username:",self.application.settings.deviceSettings.username)
+        print("password:",self.application.settings.deviceSettings.password)
         
         
         

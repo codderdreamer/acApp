@@ -11,7 +11,9 @@ from subprocess import Popen, PIPE, STDOUT
 
 class SoftwareSettings():
     def __init__(self,application) -> None:
+        print("SoftwareSettings Init Start")
         self.application = application
+        print("SoftwareSettings Init Finish")
         
     def control_websocket_ip(self):
         try:

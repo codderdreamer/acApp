@@ -23,7 +23,8 @@ class Application():
     def __init__(self,loop):
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
-        # self.bluetoothService = BluetoothService(self)
+        self.bluetoothService = BluetoothService(self)
+        self.softwareSettings = SoftwareSettings(self)
         
 
     

@@ -5,6 +5,7 @@ from datetime import datetime
 
 class DatabaseModule():
     def __init__(self,application) -> None:
+        print("DatabaseModule Init Start")
         self.application = application
         self.get_network_priority()
         self.get_settings_4g()
@@ -22,6 +23,7 @@ class DatabaseModule():
         self.get_local_list()
         self.get_user_login()
         self.show_init_database()
+        print("DatabaseModule Init Finish")
         
     def show_init_database(self):
         print("----------------------------> Network Priority")

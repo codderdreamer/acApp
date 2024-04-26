@@ -6,6 +6,7 @@ from src.enums import *
 
 class Settings():
     def __init__(self,application) -> None:
+        print("Settings Init Start")
         self.application = application
         self.networkPriority = NetworkPriority()
         self.settings4G = Settings4G()
@@ -23,8 +24,8 @@ class Settings():
         self.localList = []
         
         self.change_ocpp = False
-        
         self.__websocketIp = None
+        print("Settings Init Finish")
         
     @property
     def websocketIp(self):

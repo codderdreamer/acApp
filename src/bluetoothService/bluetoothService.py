@@ -18,6 +18,7 @@ from datetime import datetime
 
 class BluetoothService():
     def __init__(self,application) -> None:
+        print("BluetoothService Init Start")
         self.application = application
         self.parser = None
         self.args = None
@@ -25,6 +26,7 @@ class BluetoothService():
         self.bus = None
         self.mainloop = None
         Thread(target=self.run,daemon=True).start()
+        print("BluetoothService Init Finish")
         
     def run(self):
         try:

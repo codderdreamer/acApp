@@ -407,9 +407,7 @@ class Process():
         # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-            
-                
-        
+             
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
         self.application.ev.start_stop_authorize = False

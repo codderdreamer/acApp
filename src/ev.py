@@ -49,9 +49,14 @@ class EV():
         counter = 0
         othererror = False
         rcdTripError = False
+        
+        rcd_init_error = False
+        locker_init_error = False
         while True:
             othererror = False
             rcdTripError = False
+            rcd_init_error = False
+            locker_init_error = False
             print("self.charge",self.charge,"self.application.serialPort.error_list",self.application.serialPort.error_list)
             if self.charge:
                 
@@ -83,6 +88,21 @@ class EV():
                     
                 else:
                     counter = 0
+            else:
+                if len(self.application.serialPort.error_list) > 0:
+                    for value in self.application.serialPort.error_list:
+                        if value == PidErrorList.RcdInitializeError:
+                            rcd_init_error = True
+                        elif value == PidErrorList.LockerInitializeError:
+                            locker_init_error = True
+                        else:
+                            othererror = True
+                            
+                    if othererror:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                        
+                        
+                    
                     
             time.sleep(1)
                     

@@ -85,11 +85,11 @@ class Process():
         if self.application.chargingStatus == ChargePointStatus.faulted:
             return
         
-        if self.application.ocppActive:
-            if self.application.control_C_B:
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.suspended_ev)
-            else:
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+
+        if self.application.control_C_B:
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.suspended_ev)
+        else:
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
         
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -177,8 +177,7 @@ class Process():
                     return
                 time.sleep(1)
         
-        elif self.application.cardType == CardType.BillingCard:
-            if self.application.ocppActive:
+        elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
                 time_start = time.time()
                 print("\nAuthorization edilmesi bekleniyor...\n")
                 
@@ -195,20 +194,14 @@ class Process():
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
                     time.sleep(1)
-            
-            else:
-                print("Ocpp Aktif değil Hata !!!")
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                self.application.deviceState = DeviceState.FAULT
+        
         
 
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
         
         self.application.ev.charge = False
-        
-        if self.application.ocppActive:
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
         time.sleep(1)
         
         time_start = time.time()
@@ -285,64 +278,62 @@ class Process():
                 time.sleep(3)
                 
                 
-        elif self.application.cardType == CardType.BillingCard:
-            if self.application.ocppActive:
-                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-                    self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
-                    self.application.ev.charge = True
-                    
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
-                    print("ocpp ile authorize edilmiş. ")
-                    
-                    
-                    self.application.chargePoint.start_transaction_result = None
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
-                    time_start = time.time()
+        elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
+            if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
+                self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
+                self.application.ev.charge = True
+                
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
+                print("ocpp ile authorize edilmiş. ")
+                
+                
+                self.application.chargePoint.start_transaction_result = None
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
+                time_start = time.time()
+                while True:
+                    if self.application.chargePoint.start_transaction_result != None:
+                        break
+                    if self.application.deviceState != DeviceState.CHARGING:
+                        return
+                if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
+                    pass
+                else:
+                    # print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                    self.application.deviceState = DeviceState.FAULT
+                    return
+                
+                if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
+                    if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+                        self.application.serialPort.get_command_pid_current()
+                        self.application.serialPort.get_command_pid_voltage()
+                        self.application.serialPort.get_command_pid_power(PowerType.kw)
+                        self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                        
+                        
+                    self.application.meter_values_on = True
+                    Thread(target=self.meter_values_thread,daemon=True).start()
+                    time_start = time.time() 
                     while True:
-                        if self.application.chargePoint.start_transaction_result != None:
-                            break
                         if self.application.deviceState != DeviceState.CHARGING:
                             return
-                    if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
-                        pass
-                    else:
-                        # print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                        self.application.deviceState = DeviceState.FAULT
-                        return
-                    
-                    if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                        self.application.serialPort.set_command_pid_relay_control(Relay.On)
-                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
-                        if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+                        if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
+                            print("Mid meter bağlantısı bekleniyor...")
+                            time.sleep(1)
+                            if time.time() - time_start > 3:
+                                print("Mid meter bağlanamadı")
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                                self.application.deviceState = DeviceState.FAULT
+                                break
+                        elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                             self.application.serialPort.get_command_pid_current()
                             self.application.serialPort.get_command_pid_voltage()
                             self.application.serialPort.get_command_pid_power(PowerType.kw)
                             self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                            
-                            
-                        self.application.meter_values_on = True
-                        Thread(target=self.meter_values_thread,daemon=True).start()
-                        time_start = time.time() 
-                        while True:
-                            if self.application.deviceState != DeviceState.CHARGING:
-                                return
-                            if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
-                                print("Mid meter bağlantısı bekleniyor...")
-                                time.sleep(1)
-                                if time.time() - time_start > 3:
-                                    print("Mid meter bağlanamadı")
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                                    self.application.deviceState = DeviceState.FAULT
-                                    break
-                            elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                                self.application.serialPort.get_command_pid_current()
-                                self.application.serialPort.get_command_pid_voltage()
-                                self.application.serialPort.get_command_pid_power(PowerType.kw)
-                                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                            time.sleep(3)
+                        time.sleep(3)
             else:
-                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
                 self.application.deviceState = DeviceState.WAITING_AUTH
         
@@ -373,7 +364,6 @@ class Process():
                         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                     time.sleep(3)
             else:
-                # Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
                 self.application.deviceState = DeviceState.WAITING_AUTH
           
@@ -385,15 +375,14 @@ class Process():
         self.application.ev.card_id = ""
         self.application.ev.id_tag = None
         self.application.ev.charge = False
+        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
         if self.application.ocppActive:
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             
@@ -405,8 +394,7 @@ class Process():
             
     def suspended_evse(self):
         print("****************************************************************** suspended_evse")
-        if self.application.ocppActive:
-           self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.suspended_evse)
+        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.suspended_evse)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -423,10 +411,10 @@ class Process():
         self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
+        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
         if self.application.ocppActive:
             if self.application.meter_values_on:
                 self.application.meter_values_on = False
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
@@ -452,21 +440,20 @@ class Process():
         self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-        if self.application.ocppActive:
-            if self.application.chargePoint:
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-            if self.application.meter_values_on:
-                self.application.meter_values_on = False
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+        
+        if self.application.meter_values_on and self.application.ocppActive:
+            self.application.meter_values_on = False
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+        else:
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+        
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-        if self.application.ocppActive:
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
             
     def stopped_by_user(self):
         self.application.ev.start_stop_authorize = False
@@ -478,15 +465,15 @@ class Process():
         self.application.ev.id_tag = None
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
-        if self.application.ocppActive:
-            if self.application.meter_values_on:
-                self.application.meter_values_on = False
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+        
+        if self.application.ocppActive and self.application.meter_values_on:
+            self.application.meter_values_on = False
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+            
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         

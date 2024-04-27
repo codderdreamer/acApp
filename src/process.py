@@ -193,9 +193,7 @@ class Process():
                             break
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         return
-                    time.sleep(1)
-        
-        
+                    time.sleep(1)  
 
     def waiting_state_c(self):
         print("****************************************************************** waiting_state_c")
@@ -277,28 +275,27 @@ class Process():
                     self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                 time.sleep(3)
                 
-                
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
-                self.application.ev.charge = True
+                if self.application.ev.charge == False:
+                    self.application.ev.charge = True
+                    self.application.chargePoint.start_transaction_result = None
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
+                    time_start = time.time()
+                    while True:
+                        if self.application.chargePoint.start_transaction_result != None:
+                            break
+                        if self.application.deviceState != DeviceState.CHARGING:
+                            return
+                
                 
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
                 print("ocpp ile authorize edilmiş. ")
-                
-                
-                self.application.chargePoint.start_transaction_result = None
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
-                time_start = time.time()
-                while True:
-                    if self.application.chargePoint.start_transaction_result != None:
-                        break
-                    if self.application.deviceState != DeviceState.CHARGING:
-                        return
                 if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
                     pass
                 else:
-                    # print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
+                    print("\nStart Transaction Cevabı Olumsuz !!! FAULT\n")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT
                     return

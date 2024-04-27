@@ -71,7 +71,7 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
-        
+        print("istasyon durumu:",self.application.chargingStatus)
         # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:

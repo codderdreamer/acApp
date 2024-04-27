@@ -4,6 +4,7 @@ import time
 import asyncio
 from datetime import datetime
 from ocpp.v16.datatypes import *
+from ocpp.v16.enums import *
 
 class EV():
     def __init__(self,application):
@@ -100,9 +101,6 @@ class EV():
                             
                     if othererror:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                        
-                        
-                    
                     
             time.sleep(1)
                     

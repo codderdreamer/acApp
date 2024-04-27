@@ -102,19 +102,23 @@ class EV():
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()  
                     elif othererror:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                # Cihazda hata yok ise;
                 else:
                     counter = 0
+                    
                     if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-                    if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True:
+                    
+                    
+                    if self.application.chargingStatus != ChargePointStatus.available and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
             
             if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
                 self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
-            time.sleep(1)
+            time.sleep(5)
                     
         
     def send_message(self):

@@ -225,6 +225,36 @@ class Process():
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_meter_values(),self.application.loop)
             time.sleep(10)
             
+    def charge_while(self):
+        time_start = time.time()
+        while True:
+            if self.application.deviceState != DeviceState.CHARGING:
+                return
+            if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
+                print("Mid meter bağlantısı bekleniyor...")
+                self.application.serialPort.get_command_pid_relay_control()
+                time.sleep(1)
+                print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
+                if self.application.ev.pid_relay_control == False:
+                    print("Röle devrede değil !!!!!!!!!!")
+                    return
+                if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    time.sleep(1)
+                    if time.time() - time_start > 3:
+                        print("Mid meter bağlanamadı")
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                        self.application.deviceState = DeviceState.FAULT
+                        break
+                else:
+                    return
+            elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+                self.application.meter_values_on = True
+                self.application.serialPort.get_command_pid_current()
+                self.application.serialPort.get_command_pid_voltage()
+                self.application.serialPort.get_command_pid_power(PowerType.kw)
+                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+            time.sleep(3)
+            
     def charging(self):
         print("****************************************************************** charging")
         # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
@@ -252,34 +282,7 @@ class Process():
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             print("Authorize edilmesine gerek yok şarj başlangıcı...")
             self.application.serialPort.set_command_pid_relay_control(Relay.On)
-            time_start = time.time()
-            while True:
-                if self.application.deviceState != DeviceState.CHARGING:
-                    return
-                if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
-                    print("Mid meter bağlantısı bekleniyor...")
-                    self.application.serialPort.get_command_pid_relay_control()
-                    time.sleep(1)
-                    print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
-                    if self.application.ev.pid_relay_control == False:
-                        print("Röle devrede değil !!!!!!!!!!")
-                        return
-                    if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                        time.sleep(1)
-                        if time.time() - time_start > 3:
-                            print("Mid meter bağlanamadı")
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                            self.application.deviceState = DeviceState.FAULT
-                            break
-                    else:
-                        return
-                elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                    self.application.meter_values_on = True
-                    self.application.serialPort.get_command_pid_current()
-                    self.application.serialPort.get_command_pid_voltage()
-                    self.application.serialPort.get_command_pid_power(PowerType.kw)
-                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                time.sleep(3)
+            self.charge_while()
                 
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
@@ -318,24 +321,7 @@ class Process():
                         
                     self.application.meter_values_on = True
                     Thread(target=self.meter_values_thread,daemon=True).start()
-                    time_start = time.time() 
-                    while True:
-                        if self.application.deviceState != DeviceState.CHARGING:
-                            return
-                        if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
-                            print("Mid meter bağlantısı bekleniyor...")
-                            time.sleep(1)
-                            if time.time() - time_start > 3:
-                                print("Mid meter bağlanamadı")
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                                self.application.deviceState = DeviceState.FAULT
-                                break
-                        elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                            self.application.serialPort.get_command_pid_current()
-                            self.application.serialPort.get_command_pid_voltage()
-                            self.application.serialPort.get_command_pid_power(PowerType.kw)
-                            self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                        time.sleep(3)
+                    self.charge_while()
             else:
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
                 self.application.deviceState = DeviceState.WAITING_AUTH
@@ -348,24 +334,7 @@ class Process():
                 print("rfid kart ile authorize edilmiş.")
                 self.application.serialPort.set_command_pid_relay_control(Relay.On)
                 time_start = time.time()
-                while True:
-                    if self.application.deviceState != DeviceState.CHARGING:
-                        return
-                    if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
-                        print("Mid meter bağlantısı bekleniyor...")
-                        time.sleep(1)
-                        if time.time() - time_start > 3:
-                            print("Mid meter bağlanamadı")
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                            self.application.deviceState = DeviceState.FAULT
-                            break
-                    elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                        self.application.meter_values_on = True
-                        self.application.serialPort.get_command_pid_current()
-                        self.application.serialPort.get_command_pid_voltage()
-                        self.application.serialPort.get_command_pid_power(PowerType.kw)
-                        self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                    time.sleep(3)
+                self.charge_while()
             else:
                 print("authorize edilmemiş authorize edilmesi beklenecek...")
                 self.application.deviceState = DeviceState.WAITING_AUTH

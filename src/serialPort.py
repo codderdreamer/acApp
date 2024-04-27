@@ -66,6 +66,7 @@ class SerialPort():
         
         self.set_command_pid_rfid()
         
+        
         # Thread(target=self.read_meter,daemon=True).start()
         
     def read_meter(self):
@@ -120,6 +121,9 @@ class SerialPort():
         State F : Unknown error
         '''
         time.sleep(10)
+        self.get_command_pid_relay_control()
+        time.sleep(1)
+        print("=========================== self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
         while True:
             self.parameter_data = "001"
             self.connector_id = "1"

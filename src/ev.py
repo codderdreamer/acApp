@@ -58,9 +58,8 @@ class EV():
             rcdTripError = False
             rcd_init_error = False
             locker_init_error = False
-            print("ocppActive:",self.application.ocppActive,"charge:",self.charge,"chargingStatus:",self.application.chargingStatus,"error_list:",self.application.serialPort.error_list)
+            print("ocppActive:",self.application.ocppActive,"charge:",self.charge,"chargingStatus:",self.application.chargingStatus,"error_list:",self.application.serialPort.error_list, "counter",counter)
             if self.charge:
-                
                 if len(self.application.serialPort.error_list) > 0:
                     for value in self.application.serialPort.error_list:
                         if value == PidErrorList.RcdTripError:
@@ -86,7 +85,6 @@ class EV():
                         self.application.deviceState = DeviceState.CHARGING
                     elif self.control_pilot == ControlPlot.stateB.value:
                         self.application.deviceState = DeviceState.CONNECTED
-                    
                 else:
                     counter = 0
             else:

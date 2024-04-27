@@ -98,8 +98,9 @@ class EV():
                             locker_init_error = True
                         else:
                             othererror = True
-                            
-                    if othererror:
+                    if othererror and counter == 3:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()  
+                    elif othererror:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 else:
                     if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard:

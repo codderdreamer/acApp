@@ -260,6 +260,7 @@ class Process():
                     print("Mid meter bağlantısı bekleniyor...")
                     self.application.serialPort.get_command_pid_relay_control()
                     time.sleep(1)
+                    print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
                     if self.application.ev.pid_relay_control == False:
                         print("Röle devrede değil !!!!!!!!!!")
                         return

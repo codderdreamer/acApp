@@ -34,7 +34,7 @@ class Application():
         self.ocppActive = False
         self.cardType : CardType = None
         self.socketType = SocketType.Type2
-        self.max_current = 63
+        self.max_current = 32
         self.control_A_B_C = False
         self.control_C_B = False
         self.control_A_C = False
@@ -60,9 +60,6 @@ class Application():
 
         Thread(target=self.read_charge_values_thred,daemon=True).start()
         Thread(target=self.ocpp_control,daemon=True).start()
-        
-        
-        
         
         
     @property

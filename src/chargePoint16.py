@@ -668,7 +668,7 @@ class ChargePoint16(cp):
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
             while True:
                 print("30 sn içinde kablo bağlantısı bekleniyor ! control pilot:",self.application.ev.control_pilot)
-                if self.application.ev.control_pilot == "B":
+                if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
                     print("Kablo bağlantısı sağlandı.")
                     break
                 elif time.time() - time_start > 30:

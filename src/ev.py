@@ -45,6 +45,7 @@ class EV():
         Thread(target=self.control_error_list,daemon=True).start()
         
     def control_error_list(self):
+        time.sleep(5)
         counter = 0
         othererror = False
         rcdTripError = False

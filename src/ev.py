@@ -103,6 +103,7 @@ class EV():
                     elif othererror:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 else:
+                    counter = 0
                     if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)

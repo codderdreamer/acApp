@@ -131,12 +131,8 @@ class Application():
         while True:
             try:
                 if self.cardType == CardType.BillingCard:
-                    if self.settings.ocppSettings.sslEnable == SSLEnable.Disable.value:
-                        ws = "ws://"
-                    elif self.settings.ocppSettings.sslEnable == SSLEnable.Enable.value:
-                        ws = "wss://"
                     
-                    ip_address = ws + self.settings.ocppSettings.domainName
+                    ip_address = self.settings.ocppSettings.domainName
                         
                     response = subprocess.run(
                         ['ping', '-c 1', ip_address],

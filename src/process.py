@@ -258,6 +258,11 @@ class Process():
                     return
                 if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
                     print("Mid meter bağlantısı bekleniyor...")
+                    self.application.serialPort.get_command_pid_relay_control()
+                    time.sleep(1)
+                    if self.application.ev.pid_relay_control == False:
+                        print("Röle devrede değil !!!!!!!!!!")
+                        return
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         time.sleep(1)
                         if time.time() - time_start > 3:

@@ -40,7 +40,6 @@ class Application():
         self.control_A_C = False
         self.meter_values_on = False
         
-        
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
         self.bluetoothService = BluetoothService(self)
@@ -60,6 +59,10 @@ class Application():
         # self.process.idle()
 
         Thread(target=self.read_charge_values_thred,daemon=True).start()
+        
+        
+        
+        
         
     @property
     def deviceState(self):
@@ -115,8 +118,7 @@ class Application():
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
                 Thread(target=self.process.suspended_evse,daemon=True).start()
                 
-
-                
+         
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus):
         if error_code != self.error_code or status != self.chargingStatus:
             self.error_code = error_code

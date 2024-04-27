@@ -34,6 +34,7 @@ class EV():
         self.__charge = False
         self.__card_id = None
         self.__id_tag = None
+        
         self.reservation_id = None
         self.expiry_date = None
         

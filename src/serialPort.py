@@ -544,7 +544,8 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
                 self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
-                
+            if len(error_list) > 0:
+                print(" $$$$$$$$$$$$$$$$ self.error_list",self.error_list)
             self.error_list = error_list
             # print("self.error_list get_response_pid_error_list",self.error_list)
 

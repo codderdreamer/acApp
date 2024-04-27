@@ -20,6 +20,24 @@ class DatabaseModule():
         self.get_max_current()
         self.get_device_settings()
         
+        
+    def get_charge(self):
+        data_dict = {}
+        try:
+            self.charge_database = sqlite3.connect('/root/Charge.sqlite')
+            self.cursor = self.charge_database.cursor()
+            query = "SELECT * FROM ev"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.charge_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            # print("get_charge:",data_dict,"\n")
+            return data_dict
+        except Exception as e:
+            print(datetime.now(),"get_dns_settings Exception:",e)
+        return data_dict
+        
     def get_dns_settings(self):
         data_dict = {}
         try:

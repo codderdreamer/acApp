@@ -68,6 +68,7 @@ class ChargePoint16(cp):
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                 if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                     print("-------------------------------------------------------------------  Araç bağlı değil")
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
                 if  self.application.ev.charge:
                     self.application.deviceState = DeviceState.STOPPED_BY_USER

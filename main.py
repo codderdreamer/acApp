@@ -59,6 +59,7 @@ class Application():
         # self.process.idle()
 
         Thread(target=self.read_charge_values_thred,daemon=True).start()
+        Thread(target=self.ocpp_control,daemon=True).start()
         
         
         
@@ -118,13 +119,39 @@ class Application():
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
                 Thread(target=self.process.suspended_evse,daemon=True).start()
                 
-         
+
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus):
         if error_code != self.error_code or status != self.chargingStatus:
             self.error_code = error_code
             self.chargingStatus = status
             if self.ocppActive:
                 asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargingStatus),self.loop)
+    
+    def ocpp_control(self):
+        while True:
+            try:
+                if self.cardType == CardType.BillingCard:
+                    if self.settings.ocppSettings.sslEnable == SSLEnable.Disable.value:
+                        ws = "ws://"
+                    elif self.settings.ocppSettings.sslEnable == SSLEnable.Enable.value:
+                        ws = "wss://"
+                    
+                    ip_address = ws + self.settings.ocppSettings.domainName
+                        
+                    response = subprocess.run(
+                        ['ping', '-c 1', ip_address],
+                        stdout=subprocess.PIPE,  
+                        stderr=subprocess.PIPE, 
+                        text=True  
+                    )
+                    # Eğer ping başarılı ise '0' döner
+                    if response.returncode == 0:
+                        pass
+                    else:
+                        self.ocppActive = False
+            except Exception as e:
+                print("ocpp_control",e)
+            time.sleep(3)
         
             
     def read_charge_values_thred(self):
@@ -215,10 +242,10 @@ if __name__ == "__main__":
         app = Application(loop)
         while True:
             if app.cardType == CardType.BillingCard:
-                # print("-----------------------------------ocpp start--------------------------------------")
+                print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(app.ocppStart())
                 app.ocppActive = False
-                # print("-----------------------------------ocpp stop--------------------------------------")
+                print("-----------------------------------ocpp stop--------------------------------------")
             time.sleep(3)
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)

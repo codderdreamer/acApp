@@ -58,9 +58,6 @@ class EV():
                             rcdTripError = True
                         else:
                             othererror = True
-                        
-                        if counter == 1:
-                            othererror = False
                     
                 if rcdTripError:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
@@ -69,7 +66,9 @@ class EV():
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                     counter += 1
                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                    print("Hata var! 30 sn bekleniyor... 30 sn sonra denenecek")
                     time.sleep(30)
+                    print("30 sn doldu. ",counter,".ye deneniyor")
                 elif othererror and counter == 3:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT

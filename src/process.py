@@ -231,7 +231,7 @@ class Process():
             if self.application.deviceState != DeviceState.CHARGING:
                 return
             if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
-                print("Mid meter bağlantısı bekleniyor...")
+                print(" ??????????????????????????????????????????????????????????????? Mid meter bağlantısı bekleniyor...")
                 self.application.serialPort.get_command_pid_relay_control()
                 time.sleep(1)
                 print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)

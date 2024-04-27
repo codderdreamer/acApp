@@ -142,7 +142,7 @@ class Application():
                         ['ping', '-c 1', ip_address],
                         stdout=subprocess.PIPE,  
                         stderr=subprocess.PIPE, 
-                        text=True  
+                        universal_newlines=True
                     )
                     # Eğer ping başarılı ise '0' döner
                     if response.returncode == 0:

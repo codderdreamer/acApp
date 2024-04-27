@@ -673,6 +673,7 @@ class ChargePoint16(cp):
                 elif time.time() - time_start > 30:
                     print("Kablo bağlantısı sağlanamadı 30 saniye süre doldu!")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                     self.application.ev.start_stop_authorize = False
                     self.application.chargePoint.authorize = None
                     self.application.ev.card_id = ""

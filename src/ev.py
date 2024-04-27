@@ -58,7 +58,7 @@ class EV():
             rcdTripError = False
             rcd_init_error = False
             locker_init_error = False
-            print("self.ocppActive",self.ocppActive,"self.charge",self.charge,"self.application.chargingStatus",self.application.chargingStatus,"self.application.serialPort.error_list",self.application.serialPort.error_list)
+            print("ocppActive:",self.application.ocppActive,"charge:",self.charge,"chargingStatus:",self.application.chargingStatus,"error_list:",self.application.serialPort.error_list)
             if self.charge:
                 
                 if len(self.application.serialPort.error_list) > 0:

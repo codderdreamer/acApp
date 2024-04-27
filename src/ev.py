@@ -66,9 +66,9 @@ class EV():
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                     counter += 1
                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
-                    print("Hata var! 30 sn bekleniyor... 30 sn sonra denenecek")
-                    time.sleep(30)
-                    print("30 sn doldu. ",counter,".ye deneniyor")
+                    print("Hata var! 10 sn bekleniyor... 30 sn sonra denenecek")
+                    time.sleep(10)
+                    print("10 sn doldu. ",counter,".ye deneniyor")
                 elif othererror and counter == 3:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT

@@ -118,7 +118,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
-                
+                self.application.ocppActive = True
                 if self.application.availability == AvailabilityType.operative:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
@@ -208,6 +208,7 @@ class ChargePoint16(cp):
                 await asyncio.sleep(interval)
         except Exception as e:
             print(datetime.now(),"send_heartbeat Exception:",e)
+            self.application.ocppActive = False
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
 
     # 7. METER VALUES

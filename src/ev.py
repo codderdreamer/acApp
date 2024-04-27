@@ -101,7 +101,11 @@ class EV():
                             
                     if othererror:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                    
+                else:
+                    if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                    if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
             time.sleep(1)
                     
         

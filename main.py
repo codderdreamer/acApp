@@ -32,7 +32,7 @@ class Application():
         
         self.__deviceState = None
         self.ocppActive = False
-        self.cardType = None
+        self.cardType : CardType = None
         self.socketType = SocketType.Type2
         self.max_current = 63
         self.control_A_B_C = False
@@ -192,7 +192,7 @@ class Application():
                 print("********************************************************ocpp_url:",ocpp_url)
                 
                 async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
-                    self.ocppActive = True
+                    
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws, self.loop)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)

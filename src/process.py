@@ -71,7 +71,7 @@ class Process():
         
     def connected(self):
         print("****************************************************************** connected")
-        print("istasyon durumu:",self.application.chargingStatus)
+        # print("istasyon durumu:",self.application.chargingStatus)
         # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
@@ -81,6 +81,9 @@ class Process():
                 if value == PidErrorList.RcdInitializeError:
                     print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
                     return
+                
+        if self.application.chargingStatus == ChargePointStatus.faulted:
+            return
         
         if self.application.ocppActive:
             if self.application.control_C_B:
@@ -126,6 +129,9 @@ class Process():
             time_start = time.time()
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
             while True:
+                if self.application.chargingStatus == ChargePointStatus.faulted:
+                    self.application.deviceState = DeviceState.FAULT
+                    break
                 if self.application.ev.control_pilot == ControlPlot.stateB.value:
                     if time.time() - time_start > 60*5:
                         self.application.deviceState = DeviceState.STOPPED_BY_EVSE

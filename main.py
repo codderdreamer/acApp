@@ -59,7 +59,7 @@ class Application():
         # self.process.idle()
 
         Thread(target=self.read_charge_values_thred,daemon=True).start()
-        Thread(target=self.ocpp_control,daemon=True).start()
+        # Thread(target=self.ocpp_control,daemon=True).start()
         
         
     @property

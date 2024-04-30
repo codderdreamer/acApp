@@ -15,6 +15,7 @@ class Process():
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             time.sleep(0.3)
             self.application.serialPort.get_command_pid_locker_control()
+            print("---------------------self.application.ev.pid_locker_control",self.application.ev.pid_locker_control)
             if self.application.ev.pid_locker_control == LockerState.Unlock.value:
                 print(" ------------------------------------------------------------------- Unlock")
                 break

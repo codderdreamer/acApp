@@ -139,9 +139,11 @@ class Application():
                     )
                     # Eğer ping başarılı ise '0' döner
                     if response.returncode == 0:
-                        pass
+                        counter = 0
                     else:
+                        print("ocpp_control ping atılamadı...")
                         self.ocppActive = False
+            
             except Exception as e:
                 print("ocpp_control",e)
             time.sleep(3)

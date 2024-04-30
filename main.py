@@ -127,6 +127,7 @@ class Application():
     def ocpp_control(self):
         while True:
             try:
+                time_start = None
                 if self.cardType == CardType.BillingCard:
                     
                     ip_address = self.settings.ocppSettings.domainName
@@ -139,10 +140,11 @@ class Application():
                     )
                     # Eğer ping başarılı ise '0' döner
                     if response.returncode == 0:
-                        counter = 0
+                        time_start = time.time()
                     else:
                         print("ocpp_control ping atılamadı...")
-                        self.ocppActive = False
+                        if time_start == None or time.time() - time_start > 10:
+                            self.ocppActive = False
             
             except Exception as e:
                 print("ocpp_control",e)

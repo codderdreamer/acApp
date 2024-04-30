@@ -10,6 +10,18 @@ class Process():
         self.application = application
         self.id_tag = None
         
+    def unlock(self):
+        while True:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+            time.sleep(0.3)
+            self.application.serialPort.get_command_pid_locker_control()
+            if self.application.ev.pid_locker_control == LockerState.Unlock.value:
+                print(" ------------------------------------------------------------------- Unlock")
+                break
+            else:
+                print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
+                time.sleep(1)
+        
     def unlock_connector(self):
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
         time.sleep(0.7)
@@ -356,16 +368,7 @@ class Process():
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
-        
-            while True:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-                time.sleep(0.3)
-                self.application.serialPort.get_command_pid_locker_control()
-                if self.application.ev.pid_locker_control == LockerState.Unlock.value:
-                    break
-                else:
-                    print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
-                    time.sleep(1)
+            self.unlock()
                 
         while True:
             if self.application.ev.control_pilot != ControlPlot.stateA.value:
@@ -381,15 +384,7 @@ class Process():
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         # time.sleep(4)
         if self.application.socketType == SocketType.Type2:
-            while True:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-                time.sleep(0.3)
-                self.application.serialPort.get_command_pid_locker_control()
-                if self.application.ev.pid_locker_control == LockerState.Unlock.value:
-                    break
-                else:
-                    print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
-                    time.sleep(1)
+            self.unlock()
              
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
@@ -409,15 +404,7 @@ class Process():
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
-            while True:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-                time.sleep(0.3)
-                self.application.serialPort.get_command_pid_locker_control()
-                if self.application.ev.pid_locker_control == LockerState.Unlock.value:
-                    break
-                else:
-                    print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
-                    time.sleep(1)
+            self.unlock()
             
     def idle(self):
         print("****************************************************************** idle")
@@ -450,15 +437,9 @@ class Process():
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
-            while True:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-                time.sleep(0.3)
-                self.application.serialPort.get_command_pid_locker_control()
-                if self.application.ev.pid_locker_control == LockerState.Unlock.value:
-                    break
-                else:
-                    print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
-                    time.sleep(1)
+            self.unlock()
+                    
+
             
     def stopped_by_user(self):
         self.application.ev.start_stop_authorize = False
@@ -480,14 +461,6 @@ class Process():
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
-            while True:
-                self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-                time.sleep(0.3)
-                self.application.serialPort.get_command_pid_locker_control()
-                if self.application.ev.pid_locker_control == LockerState.Unlock.value:
-                    break
-                else:
-                    print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
-                    time.sleep(1)
+            self.unlock()
         
         

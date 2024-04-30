@@ -11,6 +11,7 @@ class Process():
         self.id_tag = None
         
     def unlock(self):
+        time_start = time.time()
         while True:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
             time.sleep(0.5)
@@ -24,6 +25,8 @@ class Process():
             else:
                 print("pid_locker_control Unlock Olamadı! Tekrar deneniyor...")
                 time.sleep(1)
+                if time.time() - time_start > 20:
+                    break
         
     def unlock_connector(self):
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)

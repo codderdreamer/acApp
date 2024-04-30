@@ -12,6 +12,8 @@ class Process():
         
     def unlock(self):
         while True:
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+            time.sleep(0.5)
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             time.sleep(0.3)
             self.application.serialPort.get_command_pid_locker_control()

@@ -244,7 +244,6 @@ class SerialPort():
         '''
         Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
         '''
-        self.application.ev.pid_locker_control = None
         self.parameter_data = "001"
         data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)

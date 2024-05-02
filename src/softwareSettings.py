@@ -353,6 +353,7 @@ class SoftwareSettings():
     def control_device_status(self):
         while True:
             try:
+                time.sleep(10)
                 print("?????????????????????????????? self.application.settings.deviceStatus.linkStatus",self.application.settings.deviceStatus.linkStatus)
                 self.ping_google()
                 self.find_network()

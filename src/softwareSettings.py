@@ -280,6 +280,11 @@ class SoftwareSettings():
         try:
             response = requests.get("http://www.google.com", timeout=5)
             self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
+            if self.application.settings.deviceStatus.linkStatus == "Offline":
+                Thread(target=self.set_eth,daemon=True).start()
+                Thread(target=self.set_4G,daemon=True).start()
+                Thread(target=self.set_wifi,daemon=True).start()
+                Thread(target=self.set_network_priority,daemon=True).start()
         except Exception as e:
             print(datetime.now(),"ping_google Exception:",e)
             
@@ -341,10 +346,9 @@ class SoftwareSettings():
             print(datetime.now(),"set_timezoon Exception:",e)
         
             
-    def control_device_status(self):
+    def control_device_status_old(self):
         while True:
             try:
-                print("******************************************************* control_device_status")
                 self.ping_google()
                 self.find_network()
                 self.find_stateOfOcpp()

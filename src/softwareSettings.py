@@ -346,7 +346,7 @@ class SoftwareSettings():
             print(datetime.now(),"set_timezoon Exception:",e)
         
             
-    def control_device_status_old(self):
+    def control_device_status(self):
         while True:
             try:
                 self.ping_google()

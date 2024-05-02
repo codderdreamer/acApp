@@ -278,8 +278,11 @@ class SoftwareSettings():
         
     def ping_google(self):
         try:
-            response = requests.get("http://www.google.com", timeout=5)
-            self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
+            try:
+                response = requests.get("http://www.google.com", timeout=5)
+                self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
+            except Exception as e:
+                self.application.settings.deviceStatus.linkStatus = "Offline"
             if self.application.settings.deviceStatus.linkStatus == "Offline":
                 Thread(target=self.set_eth,daemon=True).start()
                 Thread(target=self.set_4G,daemon=True).start()

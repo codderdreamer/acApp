@@ -33,13 +33,12 @@ class SoftwareSettings():
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
                 
-            if self.application.settings.deviceStatus.networkCard != "Ethernet":
-                self.delete_connection_type("ethernet")
-            elif self.application.settings.deviceStatus.networkCard != "Wifi":
-                self.delete_connection_type("wifi")
-            elif self.application.settings.deviceStatus.networkCard != "4G":
-                self.delete_connection_type("gsm")
-                
+            if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
+                Thread(target=self.set_eth,daemon=True).start()
+            elif self.application.settings.networkPriority.first == "WLAN" and self.application.settings.deviceStatus.networkCard != "Wifi":
+                Thread(target=self.set_wifi,daemon=True).start()
+            elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
+                Thread(target=self.set_4G,daemon=True).start()
             print(self.application.settings.deviceStatus.networkCard,self.application.settings.websocketIp)
         except Exception as e:
             print(datetime.now(),"control_websocket_ip Exception:",e)

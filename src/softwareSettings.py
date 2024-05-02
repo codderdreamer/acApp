@@ -349,7 +349,7 @@ class SoftwareSettings():
     def control_device_status(self):
         while True:
             try:
-                print("**************self.application.settings.deviceStatus.linkStatus",self.application.settings.deviceStatus.linkStatus)
+                print("?????????????????????????????? self.application.settings.deviceStatus.linkStatus",self.application.settings.deviceStatus.linkStatus)
                 self.ping_google()
                 self.find_network()
                 self.find_stateOfOcpp()

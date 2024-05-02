@@ -288,6 +288,7 @@ class SoftwareSettings():
                 Thread(target=self.set_4G,daemon=True).start()
                 Thread(target=self.set_wifi,daemon=True).start()
                 Thread(target=self.set_network_priority,daemon=True).start()
+                time.sleep(15)
         except Exception as e:
             print(datetime.now(),"ping_google Exception:",e)
             

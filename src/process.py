@@ -330,6 +330,10 @@ class Process():
                             timestamp = time.mktime(date_object.timetuple())
                             if timestamp - time.time() > 0: # hala şarj etmek için zamanı varsa
                                 print("Rezervasyonla şarj başlatılıyor")
+                                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
+                                self.application.ev.reservation_id = None
+                                self.application.ev.expiry_date = None
+                                self.application.ev.reservation_id = None
                             else:
                                 print("Şarj etmek için süre dolmuş")
                                 self.application.ev.reservation_id = None
@@ -342,9 +346,9 @@ class Process():
                             self.application.deviceState = DeviceState.FAULT
                             return
                     else:
-                        pass
+                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
                 
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
+                    
                     time_start = time.time()
                     while True:
                         if self.application.chargePoint.start_transaction_result != None:
@@ -450,6 +454,10 @@ class Process():
             
     def idle(self):
         print("****************************************************************** idle")
+        if self.application.ev.reservation_id != None:
+            print("Reservation var")
+            return
+        
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:

@@ -322,7 +322,29 @@ class Process():
                 if self.application.ev.charge == False:
                     self.application.ev.charge = True
                     self.application.chargePoint.start_transaction_result = None
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0),self.application.loop)
+                    
+                    
+                    if self.application.ev.reservation_id != None:
+                        if self.application.ev.id_tag == self.id_tag:    # rezerve eden kişinin id_tagimi
+                            date_object = datetime.datetime.strptime(self.application.ev.expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+                            timestamp = time.mktime(date_object.timetuple())
+                            if timestamp - time.time() > 0: # hala şarj etmek için zamanı varsa
+                                print("Rezervasyonla şarj başlatılıyor")
+                            else:
+                                print("Şarj etmek için süre dolmuş")
+                                self.application.ev.reservation_id = None
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                                self.application.deviceState = DeviceState.FAULT
+                                return
+                        else:
+                            print("Reserve eden kişinin id tagi değil")
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                            self.application.deviceState = DeviceState.FAULT
+                            return
+                    else:
+                        pass
+                
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
                     time_start = time.time()
                     while True:
                         if self.application.chargePoint.start_transaction_result != None:

@@ -1,9 +1,12 @@
 import os
 import time
 from flask import Flask, render_template, request, jsonify, session
-from functools import wraps
+from threading import Thread
+import threading
+from werkzeug.security import check_password_hash
 import jwt
 import datetime
+from functools import wraps
 
 class FlaskModule:
     def __init__(self,application) -> None:
@@ -63,6 +66,18 @@ class FlaskModule:
         def profile():
             return render_template("index.html")
         
+        # @self.app.route('/login', methods=['POST'])
+        # def login():
+        #     data = request.get_json()
+        #     UserName = data.get('UserName')
+        #     Password = data.get('Password')
+            
+        #     login = self.application.databaseModule.get_user_login()
+        #     if login["UserName"] == UserName and login["Password"] == Password:   
+        #         return jsonify({'message': 'Login successful'})
+        #     else:
+        #         return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        
         @self.app.route('/login', methods=['POST'])
         def login():
             data = request.get_json()
@@ -75,6 +90,8 @@ class FlaskModule:
             session['UserName'] = UserName
 
             return jsonify({'message': 'Login successful'})
+            
+        
         
         @self.app.route('/changeProfile', methods=['POST'])
         @self.token_required
@@ -108,11 +125,7 @@ class FlaskModuleThread(threading.Thread):
 
     def run(self):
         if not self.stop_event.is_set():
-            print("FlaskModuleThread is running.")
+            print("FlaskModuleThread çalıştırıldı.")
             self.flaskModule.run()
-        print("FlaskModuleThread stopped.")
-
-# Usage
-# Assuming 'application' is an instance of your main application class
-flask_thread = FlaskModuleThread(application)
-flask_thread.start()
+        print("FlaskModuleThread durduruldu.")
+        

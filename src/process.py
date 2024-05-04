@@ -461,6 +461,7 @@ class Process():
         print("****************************************************************** idle")
         if self.application.ev.reservation_id != None:
             print("Reservation var")
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
             return
         
         if len(self.application.serialPort.error_list) > 0:

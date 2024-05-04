@@ -51,10 +51,16 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self)
         self.process = Process(self)
+        
         if self.settings.deviceSettings.mid_meter == True:
+            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter)
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         elif self.settings.deviceSettings.externalMidMeter == True:
+            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter)
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
+        else:
+            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter)
+            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter)
         
         # self.process.idle()
 

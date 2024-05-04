@@ -714,8 +714,6 @@ class ChargePoint16(cp):
         except Exception as e:
             print(datetime.now(),"after_remote_stop_transaction Exception:",e)
             
-
-    # 13. RESERVE NOW
     @on(Action.ReserveNow)
     def on_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
         try :
@@ -734,6 +732,7 @@ class ChargePoint16(cp):
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.accepted
                 )
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             # Şarj Noktası rezervasyon kimliği ile eşleşiyorsa talepteki yeni rezervasyonla değiştirecektir.
             elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
@@ -744,6 +743,7 @@ class ChargePoint16(cp):
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.accepted
                 )
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.ev.reservation_id != None and self.application.availability == AvailabilityType.operative:
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
@@ -770,6 +770,15 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
+        except Exception as e:
+            print(datetime.now(),"on_reserve_now Exception:",e)
+            
+    # 13. RESERVE NOW
+    @after(Action.ReserveNow)
+    def after_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
+        try :
+            # central_system - INFO - Request:ReserveNowPayload(connector_id=1, expiry_date='2024-05-04T23:00:00.000Z', id_tag='0485A54A007480', reservation_id=7, parent_id_tag=None)
+            pass
         except Exception as e:
             print(datetime.now(),"on_reserve_now Exception:",e)
 

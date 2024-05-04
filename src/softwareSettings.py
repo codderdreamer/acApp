@@ -172,12 +172,13 @@ class SoftwareSettings():
                 time.sleep(5)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
                 os.system(add_connection_string)
-                # time.sleep(1)
+                time.sleep(2)
                 print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
                     result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                     modem_id = result.split("/")[5].split()[0]
                     os.system("""mmcli -i {0} --pin={1}""".format(modem_id,pin))
+                time.sleep(2)
                 os.system("""nmcli con up "{0}" ifname ttyUSB2""".format(connection_name))
             else:
                 pass

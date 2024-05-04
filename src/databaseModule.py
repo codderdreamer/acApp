@@ -298,6 +298,7 @@ class DatabaseModule():
             
     def set_mid_settings(self,externalMidMeter,externalMidMeterSlaveAddress):
         try:
+            print("externalMidMeter",externalMidMeter,"externalMidMeterSlaveAddress",externalMidMeterSlaveAddress)
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"

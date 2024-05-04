@@ -267,20 +267,23 @@ class Settings():
         return json_string
     
     def set_mid_meter(self,sjon):
-        if(sjon["Command"] == "MidMeter"):
-            externalMid = str(sjon["Data"]["externalMid"])
-            mid_id = sjon["Data"]["mid_id"]
-            self.application.databaseModule.set_mid_settings(externalMid,mid_id)
-            print("self.mid_meter",self.mid_meter)
-            print("self.midMeterSlaveAddress",self.midMeterSlaveAddress)
-            print("self.externalMidMeter",self.externalMidMeter)
-            print("self.externalMidMeterSlaveAddress",self.externalMidMeterSlaveAddress)
-            if self.deviceSettings.mid_meter == True:
-                self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.midMeterSlaveAddress)
-            elif self.deviceSettings.externalMidMeter == True:
-                self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.externalMidMeterSlaveAddress)
-            
-            self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
+        try:
+            if(sjon["Command"] == "MidMeter"):
+                externalMid = str(sjon["Data"]["externalMid"])
+                mid_id = sjon["Data"]["mid_id"]
+                self.application.databaseModule.set_mid_settings(externalMid,mid_id)
+                print("self.mid_meter",self.deviceSettings.mid_meter)
+                print("self.midMeterSlaveAddress",self.deviceSettings.midMeterSlaveAddress)
+                print("self.externalMidMeter",self.deviceSettings.externalMidMeter)
+                print("self.externalMidMeterSlaveAddress",self.deviceSettings.externalMidMeterSlaveAddress)
+                if self.deviceSettings.mid_meter == True:
+                    self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.midMeterSlaveAddress)
+                elif self.deviceSettings.externalMidMeter == True:
+                    self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.externalMidMeterSlaveAddress)
+                
+                self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
+        except Exception as e:
+            print(datetime.now(),"set_mid_meter Exception:",e)
     
     def set_network_priority(self,sjon):
         try:

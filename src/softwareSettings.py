@@ -188,6 +188,7 @@ class SoftwareSettings():
                             net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
                             print(net)
                             os.system(net)
+                            break
                         except:
                             pass
                         time.sleep(2)
@@ -202,6 +203,7 @@ class SoftwareSettings():
                             net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
                             print(net)
                             os.system(net)
+                            break
                         except:
                             pass 
                     

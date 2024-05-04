@@ -303,7 +303,7 @@ class DatabaseModule():
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
-            midMeter = str(bool(externalMidMeter=="False"))
+            midMeter = bool(externalMidMeter=="False")
             
             value = (midMeter,"midMeter")
             self.cursor.execute(query,value)
@@ -319,8 +319,8 @@ class DatabaseModule():
             
             self.settings_database.close()
             
-            self.application.settings.deviceSettings.mid_meter = bool(midMeter)
-            self.application.settings.deviceSettings.externalMidMeter = bool(externalMidMeter)
+            self.application.settings.deviceSettings.mid_meter = midMeter
+            self.application.settings.deviceSettings.externalMidMeter = externalMidMeter
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(externalMidMeterSlaveAddress)
         except Exception as e:
             print(datetime.now(),"set_dns_settings Exception:",e)

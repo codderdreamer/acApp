@@ -366,6 +366,7 @@ class SoftwareSettings():
                 self.find_network()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
+                Thread(target=self.set_network_priority,daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_device_status()) 
             except Exception as e:
                 print(datetime.now(),"control_device_status Exception:",e)

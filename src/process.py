@@ -252,6 +252,8 @@ class Process():
     def charge_while(self):
         time_start = time.time()
         while True:
+            print("Charge wile .................")
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
             if self.application.deviceState != DeviceState.CHARGING:
                 return
             if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
@@ -272,7 +274,6 @@ class Process():
                 else:
                     return
             elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                print("Charge wile .................")
                 self.application.meter_values_on = True
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)

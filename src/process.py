@@ -272,8 +272,10 @@ class Process():
                 else:
                     return
             elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+                print("Charge wile .................")
                 self.application.meter_values_on = True
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
                 self.application.serialPort.get_command_pid_current()
                 self.application.serialPort.get_command_pid_voltage()
                 self.application.serialPort.get_command_pid_power(PowerType.kw)

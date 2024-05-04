@@ -169,18 +169,24 @@ class SoftwareSettings():
                 # os.system("nmcli connection delete ppp0")
                 time.sleep(3)
                 os.system("gpio-test.64 w d 20 1")
-                time.sleep(7)
+                time.sleep(5)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
                 os.system(add_connection_string)
-                time.sleep(7)
                 print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
-                    print("???????????????????????????????????????????")
-                    result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                    modem_id = result.split("/")[5].split()[0]
-                    net = """mmcli -i {0} --pin={1}""".format(modem_id,pin)
-                    print(net)
-                    os.system(net)
+                    time_start = time.time()
+                    while True:
+                        if time.time() - time_start > 20:
+                            break
+                        try:
+                            result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                            modem_id = result.split("/")[5].split()[0]
+                            net = """mmcli -i {0} --pin={1}""".format(modem_id,pin)
+                            print(net)
+                            os.system(net)
+                        except:
+                            pass
+                        time.sleep(2)
                 time.sleep(2)
                 net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
                 print(net)

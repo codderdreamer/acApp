@@ -175,6 +175,7 @@ class SoftwareSettings():
                 time.sleep(2)
                 print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
+                    print("???????????????????????????????????????????")
                     result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                     modem_id = result.split("/")[5].split()[0]
                     os.system("""mmcli -i {0} --pin={1}""".format(modem_id,pin))

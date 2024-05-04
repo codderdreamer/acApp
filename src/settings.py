@@ -393,6 +393,7 @@ class Settings():
             if(sjon["Command"] == "ACCurrent"):
                 maxcurrent = str(sjon["Data"]["maxcurrent"])
                 self.application.databaseModule.set_max_current(maxcurrent)
+                self.application.process.set_max_current()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
         except Exception as e:
             print(datetime.now(),"set_maxcurrent Exception:",e)

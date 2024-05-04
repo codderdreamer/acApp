@@ -1,12 +1,9 @@
 import os
 import time
-from flask import Flask, render_template, request, jsonify, make_response
-from threading import Thread
-import threading
-from werkzeug.security import check_password_hash
+from flask import Flask, render_template, request, jsonify, session
+from functools import wraps
 import jwt
 import datetime
-from functools import wraps
 
 class FlaskModule:
     def __init__(self,application) -> None:
@@ -15,21 +12,14 @@ class FlaskModule:
         self.app = Flask(__name__, static_url_path='',
                          static_folder='../client/build',
                          template_folder='../client/build')
-        self.app.config['SECRET_KEY'] = 'myS3cr3tK3y_2024!@#$'
+        self.app.secret_key = 'myS3cr3tK3y_2024!@#$'
         self.setup_routes()
         
     def token_required(self, f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            token = None
-            if 'Authorization' in request.headers:
-                token = request.headers['Authorization'].split(" ")[1]
-            if not token:
-                return jsonify({'message': 'Token is missing!'}), 403
-            try:
-                data = jwt.decode(token, self.app.config['SECRET_KEY'], algorithms=["HS256"])
-            except:
-                return jsonify({'message': 'Token is invalid!'}), 403
+            if 'authenticated' not in session:
+                return jsonify({'message': 'Unauthorized'}), 401
             return f(*args, **kwargs)
         return decorated
         
@@ -73,57 +63,35 @@ class FlaskModule:
         def profile():
             return render_template("index.html")
         
-        # @self.app.route('/login', methods=['POST'])
-        # def login():
-        #     data = request.get_json()
-        #     UserName = data.get('UserName')
-        #     Password = data.get('Password')
-            
-        #     login = self.application.databaseModule.get_user_login()
-        #     if login["UserName"] == UserName and login["Password"] == Password:   
-        #         return jsonify({'message': 'Login successful'})
-        #     else:
-        #         return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-        
         @self.app.route('/login', methods=['POST'])
         def login():
             data = request.get_json()
             UserName = data.get('UserName')
             Password = data.get('Password')
             
-            # Kullanıcı doğrulaması...
-            login = self.application.databaseModule.get_user_login()
-            if login["UserName"] == UserName and login["Password"] == Password:
-                token = jwt.encode({
-                    'user': UserName,
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
-                }, self.app.config['SECRET_KEY'], algorithm="HS256")
-                
-                return jsonify({'token': token})
-            else:
-                return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            # Assume authentication is successful
+            # You should perform actual authentication here
+            session['authenticated'] = True
+            session['UserName'] = UserName
 
-            
-        
+            return jsonify({'message': 'Login successful'})
         
         @self.app.route('/changeProfile', methods=['POST'])
+        @self.token_required
         def changeProfile():
             data = request.get_json()
             Password = data.get('Password')
             NewPassword = data.get('NewPassword')
             
-            print(self.application.databaseModule.get_user_login())
-            
             if self.application.databaseModule.get_user_login()["Password"] == Password:
-            
                 result = self.application.databaseModule.set_password(NewPassword)
                 
                 if result:
-                    return jsonify({'message': 'Login successful'})
+                    return jsonify({'message': 'Password changed successfully'})
                 else:
-                    return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+                    return jsonify({'message': 'Failed to change password'}), 500
             else:
-                return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+                return jsonify({'message': 'Invalid password'}), 401
     
     def run(self):
         self.app.run(use_reloader=False, host=self.host, port=80, threaded=True)
@@ -140,7 +108,11 @@ class FlaskModuleThread(threading.Thread):
 
     def run(self):
         if not self.stop_event.is_set():
-            print("FlaskModuleThread çalıştırıldı.")
+            print("FlaskModuleThread is running.")
             self.flaskModule.run()
-        print("FlaskModuleThread durduruldu.")
-        
+        print("FlaskModuleThread stopped.")
+
+# Usage
+# Assuming 'application' is an instance of your main application class
+flask_thread = FlaskModuleThread(application)
+flask_thread.start()

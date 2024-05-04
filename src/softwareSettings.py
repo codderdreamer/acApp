@@ -175,7 +175,9 @@ class SoftwareSettings():
                 # time.sleep(1)
                 print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
-                    os.system("""mmcli -i 0 --pin={0}""".format(pin))
+                    result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                    modem_id = result.split("/")[5].split()[0]
+                    os.system("""mmcli -i {0} --pin={1}""".format(modem_id,pin))
                 os.system("""nmcli con up "{0}" ifname ttyUSB2""".format(connection_name))
             else:
                 pass

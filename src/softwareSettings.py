@@ -174,7 +174,7 @@ class SoftwareSettings():
                 os.system(add_connection_string)
                 # time.sleep(1)
                 if pin:
-                    os.system("""mmcli -i 0 --pin={0}""".format(connection_name))
+                    os.system("""mmcli -i 0 --pin={0}""".format(pin))
                 os.system("""nmcli con up "{0}" ifname ttyUSB2""".format(connection_name))
             else:
                 pass

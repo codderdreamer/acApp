@@ -59,8 +59,8 @@ class Application():
             print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter)
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         else:
-            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter)
-            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter)
+            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter,type(self.settings.deviceSettings.mid_meter))
+            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter,type(self.settings.deviceSettings.externalMidMeter))
         
         # self.process.idle()
 

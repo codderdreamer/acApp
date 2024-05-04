@@ -263,6 +263,7 @@ class Process():
                 print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
                 if self.application.ev.pid_relay_control == False:
                     print("Röle devrede değil !!!!!!!!!!")
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                     return
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
                     time.sleep(1)

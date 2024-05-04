@@ -461,6 +461,7 @@ class Process():
         print("****************************************************************** idle")
         if self.application.ev.reservation_id != None:
             print("Reservation var")
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
             return
         

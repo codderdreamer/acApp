@@ -192,10 +192,19 @@ class SoftwareSettings():
                             pass
                         time.sleep(2)
                 else:
-                    time.sleep(2)
-                    net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
-                    print(net)
-                    os.system(net)
+                    time_start = time.time()
+                    while True:
+                        if time.time() - time_start > 60:
+                            break
+                        try:
+                            result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                            modem_id = result.split("/")[5].split()[0]
+                            net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
+                            print(net)
+                            os.system(net)
+                        except:
+                            pass 
+                    
             else:
                 pass
         except Exception as e:

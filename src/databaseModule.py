@@ -304,7 +304,8 @@ class DatabaseModule():
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
             print("??????????????????",externalMidMeter,type(externalMidMeter))
-            midMeter = str(externalMidMeter)=="False"
+            midMeter = str(str(externalMidMeter)=="False")
+            print("??????????????????",midMeter,type(midMeter))
             
             value = (midMeter,"midMeter")
             self.cursor.execute(query,value)

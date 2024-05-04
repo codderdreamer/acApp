@@ -178,9 +178,13 @@ class SoftwareSettings():
                     print("???????????????????????????????????????????")
                     result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                     modem_id = result.split("/")[5].split()[0]
-                    os.system("""mmcli -i {0} --pin={1}""".format(modem_id,pin))
+                    net = """mmcli -i {0} --pin={1}""".format(modem_id,pin)
+                    print(net)
+                    os.system(net)
                 time.sleep(2)
-                os.system("""nmcli con up "{0}" ifname ttyUSB2""".format(connection_name))
+                net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
+                print(net)
+                os.system(net)
             else:
                 pass
         except Exception as e:

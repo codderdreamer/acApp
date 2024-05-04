@@ -18,7 +18,7 @@ class DatabaseModule():
         self.get_functions_enable()
         self.get_availability()
         self.get_max_current()
-        self.get_device_settings()
+        self.get_mid_settings()
         
         
     def get_charge(self):
@@ -277,7 +277,7 @@ class DatabaseModule():
             print(datetime.now(),"get_max_current Exception:",e)
         return data_dict
     
-    def get_device_settings(self):
+    def get_mid_settings(self):
         data_dict = {}
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
@@ -294,7 +294,35 @@ class DatabaseModule():
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(data_dict["externalMidMeterSlaveAddress"])
             return bool(data_dict["midMeter"])
         except Exception as e:
-            print(datetime.now(),"get_device_settings Exception:",e)
+            print(datetime.now(),"get_mid_settings Exception:",e)
+            
+    def set_mid_settings(self,externalMidMeter,externalMidMeterSlaveAddress):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            midMeter = str(bool(externalMidMeter=="False"))
+            
+            value = (midMeter,"midMeter")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (externalMidMeter,"externalMidMeter")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            value = (externalMidMeterSlaveAddress,"externalMidMeterSlaveAddress")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.settings.deviceSettings.mid_meter = bool(midMeter)
+            self.application.settings.deviceSettings.externalMidMeter = bool(externalMidMeter)
+            self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(externalMidMeterSlaveAddress)
+        except Exception as e:
+            print(datetime.now(),"set_dns_settings Exception:",e)
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:

@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 from threading import Thread
 from src.enums import *
+from src.modbusModule import ModbusModule
 
 class Settings():
     def __init__(self,application) -> None:
@@ -252,7 +253,35 @@ class Settings():
         json_string = json.dumps(command)
         # print("Gönderilen:",command)
         return json_string
-        
+    
+    def get_mid_meter(self):
+        command = {
+                    "Command": "MidMeter",
+                    "Data": {
+                                "externalMid": bool(self.deviceSettings.externalMidMeter=="True"),
+                                "mid_id": int(self.deviceSettings.externalMidMeterSlaveAddress)
+                    }
+                }
+        json_string = json.dumps(command)
+        print("Gönderilen:",command)
+        return json_string
+    
+    def set_mid_meter(self,sjon):
+        if(sjon["Command"] == "MidMeter"):
+            externalMid = str(sjon["Data"]["externalMid"])
+            mid_id = sjon["Data"]["mid_id"]
+            self.application.databaseModule.set_mid_settings(externalMid,mid_id)
+            print("self.mid_meter",self.mid_meter)
+            print("self.midMeterSlaveAddress",self.midMeterSlaveAddress)
+            print("self.externalMidMeter",self.externalMidMeter)
+            print("self.externalMidMeterSlaveAddress",self.externalMidMeterSlaveAddress)
+            if self.deviceSettings.mid_meter == True:
+                self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.midMeterSlaveAddress)
+            elif self.deviceSettings.externalMidMeter == True:
+                self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.externalMidMeterSlaveAddress)
+            
+            self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
+    
     def set_network_priority(self,sjon):
         try:
             if(sjon["Command"] == "NetworkPriority"):

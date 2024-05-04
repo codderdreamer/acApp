@@ -33,6 +33,7 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_firmware_version())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
+                self.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
             except Exception as e:
                 print(datetime.now(),"NewClientws Exception:",e)
                 

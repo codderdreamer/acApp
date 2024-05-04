@@ -59,7 +59,7 @@ class ModbusModule:
                 self.current_L1 = self.read_input_float(register_address=7)
                 self.current_L2 = self.read_input_float(register_address=9)
                 self.current_L3 = self.read_input_float(register_address=11)
-                self.power = round(self.read_input_float(register_address=13)/1000,2)
+                self.power = round(self.read_input_float(register_address=53)/1000,2)
                 self.energy = round(self.read_input_float(register_address=73)/1000,2)
                 
                 # print("-----------MID METER-----------------")

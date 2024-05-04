@@ -60,6 +60,7 @@ class WebSocketServer():
             self.application.settings.set_maxcurrent(sjon)
             self.application.settings.set_start_transaction(sjon)
             self.application.settings.set_stop_transaction(sjon)
+            self.application.settings.set_mid_meter(sjon)
         except Exception as e:
             print(datetime.now(),"MessageReceivedws Exception:",e)
             

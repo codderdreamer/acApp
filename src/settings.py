@@ -258,7 +258,7 @@ class Settings():
         command = {
                     "Command": "MidMeter",
                     "Data": {
-                                "externalMid": bool(self.deviceSettings.externalMidMeter=="True"),
+                                "externalMid": self.deviceSettings.externalMidMeter,
                                 "mid_id": int(self.deviceSettings.externalMidMeterSlaveAddress)
                     }
                 }

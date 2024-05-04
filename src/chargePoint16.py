@@ -778,16 +778,7 @@ class ChargePoint16(cp):
     def after_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
         try :
             # central_system - INFO - Request:ReserveNowPayload(connector_id=1, expiry_date='2024-05-04T23:00:00.000Z', id_tag='0485A54A007480', reservation_id=7, parent_id_tag=None)
-            if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargingStatus == ChargePointStatus.available:
-                self.application.ev.id_tag = id_tag
-                self.application.ev.expiry_date = expiry_date
-                self.application.ev.reservation_id = reservation_id
-            
-            # Şarj Noktası rezervasyon kimliği ile eşleşiyorsa talepteki yeni rezervasyonla değiştirecektir.
-            elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
-                self.application.ev.id_tag = id_tag
-                self.application.ev.expiry_date = expiry_date
-                self.application.ev.reservation_id = reservation_id
+            pass
                 
                 
         except Exception as e:

@@ -176,7 +176,7 @@ class SoftwareSettings():
                 if pin:
                     time_start = time.time()
                     while True:
-                        if time.time() - time_start > 20:
+                        if time.time() - time_start > 60:
                             break
                         try:
                             print("4g pin ayarlanmaya çalışılıyor")

@@ -303,6 +303,7 @@ class DatabaseModule():
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
+            print("??????????????????",externalMidMeter,type(externalMidMeter))
             midMeter = str(externalMidMeter)=="False"
             
             value = (midMeter,"midMeter")

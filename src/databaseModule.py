@@ -288,9 +288,9 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            self.application.settings.deviceSettings.mid_meter = data_dict["midMeter"]
+            self.application.settings.deviceSettings.mid_meter = (data_dict["midMeter"]=="True")
             self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
-            self.application.settings.deviceSettings.externalMidMeter = data_dict["externalMidMeter"]
+            self.application.settings.deviceSettings.externalMidMeter = (data_dict["externalMidMeter"]=="True")
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(data_dict["externalMidMeterSlaveAddress"])
             return bool(data_dict["midMeter"])
         except Exception as e:
@@ -320,8 +320,8 @@ class DatabaseModule():
             
             self.settings_database.close()
             
-            self.application.settings.deviceSettings.mid_meter = midMeter
-            self.application.settings.deviceSettings.externalMidMeter = externalMidMeter
+            self.application.settings.deviceSettings.mid_meter = (midMeter=="True")
+            self.application.settings.deviceSettings.externalMidMeter = (externalMidMeter=="True")
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(externalMidMeterSlaveAddress)
         except Exception as e:
             print(datetime.now(),"set_dns_settings Exception:",e)

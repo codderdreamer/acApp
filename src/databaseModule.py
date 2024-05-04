@@ -288,9 +288,9 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            self.application.settings.deviceSettings.mid_meter = bool(data_dict["midMeter"])
+            self.application.settings.deviceSettings.mid_meter = data_dict["midMeter"]
             self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
-            self.application.settings.deviceSettings.externalMidMeter = bool(data_dict["externalMidMeter"])
+            self.application.settings.deviceSettings.externalMidMeter = data_dict["externalMidMeter"]
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(data_dict["externalMidMeterSlaveAddress"])
             return bool(data_dict["midMeter"])
         except Exception as e:

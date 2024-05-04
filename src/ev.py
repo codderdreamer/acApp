@@ -37,6 +37,7 @@ class EV():
         self.__id_tag = None
         
         self.reservation_id = None
+        self.reservation_id_tag =  None
         self.expiry_date = None
         
         self.send_message_thread_start = False

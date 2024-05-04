@@ -725,7 +725,7 @@ class ChargePoint16(cp):
                 parent_id_tag
             )
             if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargingStatus == ChargePointStatus.available:
-                self.application.ev.id_tag = id_tag
+                self.application.ev.reservation_id_tag = id_tag
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.reservation_id = reservation_id
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)

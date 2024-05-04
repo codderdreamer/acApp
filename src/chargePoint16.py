@@ -736,7 +736,7 @@ class ChargePoint16(cp):
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             # Şarj Noktası rezervasyon kimliği ile eşleşiyorsa talepteki yeni rezervasyonla değiştirecektir.
             elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
-                self.application.ev.id_tag = id_tag
+                self.application.ev.reservation_id_tag = id_tag
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.reservation_id = reservation_id
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)

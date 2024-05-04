@@ -326,7 +326,7 @@ class Process():
                     
                     if self.application.ev.reservation_id != None:
                         if self.application.ev.id_tag == self.id_tag:    # rezerve eden kişinin id_tagimi
-                            date_object = datetime.datetime.strptime(self.application.ev.expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+                            date_object = datetime.strptime(self.application.ev.expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
                             timestamp = time.mktime(date_object.timetuple())
                             if timestamp - time.time() > 0: # hala şarj etmek için zamanı varsa
                                 print("Rezervasyonla şarj başlatılıyor")

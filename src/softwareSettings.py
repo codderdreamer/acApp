@@ -179,18 +179,23 @@ class SoftwareSettings():
                         if time.time() - time_start > 20:
                             break
                         try:
+                            print("4g pin ayarlanmaya çalışılıyor")
                             result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                             modem_id = result.split("/")[5].split()[0]
                             net = """mmcli -i {0} --pin={1}""".format(modem_id,pin)
                             print(net)
                             os.system(net)
+                            net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
+                            print(net)
+                            os.system(net)
                         except:
                             pass
                         time.sleep(2)
-                time.sleep(2)
-                net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
-                print(net)
-                os.system(net)
+                else:
+                    time.sleep(2)
+                    net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
+                    print(net)
+                    os.system(net)
             else:
                 pass
         except Exception as e:

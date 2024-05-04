@@ -169,10 +169,10 @@ class SoftwareSettings():
                 # os.system("nmcli connection delete ppp0")
                 time.sleep(3)
                 os.system("gpio-test.64 w d 20 1")
-                time.sleep(10)
+                time.sleep(7)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
                 os.system(add_connection_string)
-                time.sleep(2)
+                time.sleep(7)
                 print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
                     print("???????????????????????????????????????????")

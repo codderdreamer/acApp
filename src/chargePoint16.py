@@ -439,6 +439,10 @@ class ChargePoint16(cp):
                 reservation_id
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            if reservation_id == self.application.ev.reservation_id:
+                self.application.ev.reservation_id = None
+                self.application.ev.reservation_id_tag = None
+                self.application.ev.expiry_date = None
             response = call_result.CancelReservationPayload(
                 status = CancelReservationStatus.accepted
             )

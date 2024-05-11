@@ -252,6 +252,7 @@ class Process():
             
     def charge_while(self):
         time_start = time.time()
+        self.application.databaseModule.set_charge("True",str(self.id_tag),str(self.transaction_id))
         while True:
             print("Charge wile .................")
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
@@ -405,6 +406,7 @@ class Process():
           
     def fault(self):
         print("****************************************************************** fault")
+        self.application.databaseModule.set_charge("False","","")
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
@@ -439,6 +441,7 @@ class Process():
              
     def stopped_by_evse(self):
         print("****************************************************************** stopped_by_evse")
+        self.application.databaseModule.set_charge("False","","")
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
@@ -459,6 +462,7 @@ class Process():
             
     def idle(self):
         print("****************************************************************** idle")
+        self.application.databaseModule.set_charge("False","","")
         if self.application.ev.reservation_id != None:
             print("Reservation var")
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
@@ -497,10 +501,9 @@ class Process():
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
             self.unlock()
-                    
-
-            
+                             
     def stopped_by_user(self):
+        self.application.databaseModule.set_charge("False","","")
         self.application.ev.start_stop_authorize = False
         print("****************************************************************** stopped_by_user",self.application.ev.start_stop_authorize)
         

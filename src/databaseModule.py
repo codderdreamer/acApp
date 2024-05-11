@@ -418,6 +418,26 @@ class DatabaseModule():
             self.application.settings.networkPriority.third = third
         except Exception as e:
             print(datetime.now(),"set_network_priority Exception:",e)
+            
+    def set_charge(self,charge,id_tag,transaction_id):
+        try:
+            self.charge_database = sqlite3.connect('/root/Charge.sqlite')
+            self.cursor = self.charge_database.cursor()
+            query = "UPDATE network_priority SET key = ? WHERE value = ?"
+            
+            value = (charge,"charge")
+            self.cursor.execute(query,value)
+            self.charge_database.commit()
+            
+            value = (id_tag,"id_tag")
+            self.cursor.execute(query,value)
+            self.charge_database.commit()
+            
+            value = (transaction_id,"transaction_id")
+            self.cursor.execute(query,value)
+            self.charge_database.commit()
+        except Exception as e:
+            print(datetime.now(),"set_network_priority Exception:",e)
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:

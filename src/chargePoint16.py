@@ -232,6 +232,13 @@ class ChargePoint16(cp):
         interval: int
         """
         try :
+            if self.databaseModule.get_charge()["charge"] == "True" and self.cardType == CardType.BillingCard:
+                self.application.process.transaction_id = self.databaseModule.get_charge()["transaction_id"]
+                self.application.process.id_tag = self.databaseModule.get_charge()["id_tag"]
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+                time.sleep(1)
+                self.application.process.transaction_id = None
+                self.application.process.id_tag = None
             if self.application.cardType == CardType.BillingCard:
                 print("\n\n ---------------------------------------------- heart beat ------------------------------------------\n\n")
                 for request in self.application.request_list:

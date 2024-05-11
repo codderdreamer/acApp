@@ -69,6 +69,9 @@ class Application():
         # Thread(target=self.ocpp_control,daemon=True).start()
         
         
+            
+        
+        
     @property
     def deviceState(self):
         return self.__deviceState

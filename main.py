@@ -229,6 +229,7 @@ class Application():
                         await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId,self.settings.ocppSettings.chargePointId)
                         for request in self.chargePoint.request_list:
                             await asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
+                        self.chargePoint.request_list = []
                     elif self.ocpp_subprotocols == OcppVersion.ocpp20:
                         pass
                     elif self.ocpp_subprotocols == OcppVersion.ocpp21:

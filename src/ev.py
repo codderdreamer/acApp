@@ -197,7 +197,7 @@ class EV():
     @card_id.setter
     def card_id(self, value):
         if (value != None) and (value != ""):
-            if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+            if (self.application.cardType == CardType.BillingCard):
                 if self.charge:
                     if self.application.process.id_tag == value:
                         self.application.chargePoint.authorize = None

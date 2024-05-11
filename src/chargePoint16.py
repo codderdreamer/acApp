@@ -54,13 +54,14 @@ class ChargePoint16(cp):
                 if self.application.chargingStatus == ChargePointStatus.available or self.application.chargingStatus == ChargePointStatus.preparing:
                     for request in self.request_list:
                         asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
+                    self.request_list = []
             time.sleep(3)
             
     async def send_data(self,request):
         try:
-            # LOGGER_CHARGE_POINT.info("Request:%s", request)
+            LOGGER_CHARGE_POINT.info("\n???????????????????????????????? Request:%s", request)
             response = await self.call(request)
-            # LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            LOGGER_CENTRAL_SYSTEM.info("\n????????????????????????????????Response:%s", response)
             return response
         except Exception as e:
             print(datetime.now(),"******************************************************************************************send_data Exception:",e)

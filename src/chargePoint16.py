@@ -39,7 +39,7 @@ class ChargePoint16(cp):
     def __init__(self, application, id, connection, loop, response_timeout=30):
         super().__init__(id, connection, response_timeout)
         self.application = application
-        
+        self.request_list = []
         self.loop = loop
         
         self.authorize = None
@@ -77,6 +77,9 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
+            print(type(e))
+            if e == "code = 1006 (connection closed abnormally [internal]), no reason":
+                print("here***************************************")
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -320,6 +323,9 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
+            print(type(e))
+            if e == "code = 1006 (connection closed abnormally [internal]), no reason":
+                print("here***************************************")
 
     # 8. START TRANSACTION
     async def send_start_transaction(

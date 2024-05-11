@@ -234,7 +234,11 @@ class Application():
                         pass
         except Exception as e:
             print("set_command_pid_led_control")
-            Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+            if self.chargingStatus == ChargePointStatus.charging:
+                Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
+            else:
+                self.chargingStatus = ChargePointStatus.faulted
+                Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
             print(datetime.now(),"ocppStart Exception:",e)
             
 

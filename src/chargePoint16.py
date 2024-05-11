@@ -45,6 +45,14 @@ class ChargePoint16(cp):
         self.authorize = None
         self.transaction_id = None
         self.start_transaction_result = None
+        
+    def show(self):
+        while True:
+            print("self.request_list")
+            for i in self.request_list:
+                print("\n\n------------->",self.request_list)
+            time.sleep(1)
+            
             
     async def send_data(self,request):
         try:
@@ -434,7 +442,6 @@ class ChargePoint16(cp):
                 return response
             else:
                 self.request_list.append(request)
-                return response
         except Exception as e:
             print(datetime.now(),"send_status_notification Exception:",e)
 

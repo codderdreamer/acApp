@@ -9,6 +9,7 @@ class Process():
     def __init__(self,application) -> None:
         self.application = application
         self.id_tag = None
+        self.transaction_id = None
         
     def unlock(self):
         time_start = time.time()
@@ -473,6 +474,14 @@ class Process():
                     print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
                     return
                 
+        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+            self.application.meter_values_on = False
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+        else:
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
             self.application.chargePoint.authorize = None
@@ -481,13 +490,7 @@ class Process():
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
         
-        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-            self.application.meter_values_on = False
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-        else:
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+        
         
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)

@@ -43,7 +43,7 @@ class ChargePoint16(cp):
         self.loop = loop
         
         self.authorize = None
-        self.transaction_id = None
+        
         self.start_transaction_result = None
         
         Thread(target=self.show,daemon=True).start()
@@ -271,7 +271,7 @@ class ChargePoint16(cp):
         try :
             request = call.MeterValuesPayload(
                 connector_id = 1,
-                transaction_id = self.transaction_id,
+                transaction_id = self.application.process.transaction_id,
                 meter_value = [
                     {
                         "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
@@ -398,7 +398,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            self.transaction_id = response.transaction_id
+            self.application.process.transaction_id = response.transaction_id
             self.start_transaction_result = response.id_tag_info['status']
             return response
         except Exception as e:
@@ -461,7 +461,7 @@ class ChargePoint16(cp):
         """
         meter_stop = int(self.application.ev.energy*1000)
         timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
-        transaction_id = self.transaction_id
+        transaction_id = self.application.process.transaction_id
         reason = None
         id_tag = self.application.process.id_tag
         transaction_data = None

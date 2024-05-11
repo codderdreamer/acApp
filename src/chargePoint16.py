@@ -236,7 +236,7 @@ class ChargePoint16(cp):
                 print("\n\n ---------------------------------------------- heart beat ------------------------------------------\n\n")
                 for request in self.application.request_list:
                     print("\n\n???????????????????????????????????????????? request",request)
-                    await asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
+                    asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
                 self.application.request_list = []
                 print("\n \n--------------------------------------------------run_coroutine_threadsafe finish ---------------------------\n")
                 

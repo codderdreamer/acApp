@@ -68,21 +68,37 @@ class ChargePoint16(cp):
             request = call.AuthorizePayload(
                 id_tag = id_tag,
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
-            response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            self.authorize = response.id_tag_info['status']
-            if self.authorize == AuthorizationStatus.accepted:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                    print("-------------------------------------------------------------------  Araç bağlı değil")
-                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
-                if  self.application.ev.charge:
-                    self.application.deviceState = DeviceState.STOPPED_BY_USER
+            if self.application.ocppActive == True:
+                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                response = await self.call(request)
+                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                self.authorize = response.id_tag_info['status']
+                if self.authorize == AuthorizationStatus.accepted:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                    if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
+                        print("-------------------------------------------------------------------  Araç bağlı değil")
+                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+                    if  self.application.ev.charge:
+                        self.application.deviceState = DeviceState.STOPPED_BY_USER
+                else:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                return response
             else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-            return response
+                self.request_list.append(request)
+                
+                if self.application.ev.card_id == self.application.process.id_tag:
+                    self.authorize = AuthorizationStatus.accepted
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                    if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
+                        print("-------------------------------------------------------------------  Araç bağlı değil")
+                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+                    if  self.application.ev.charge:
+                        self.application.deviceState = DeviceState.STOPPED_BY_USER
+                else:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+        
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
             if self.application.chargingStatus == ChargePointStatus.charging:
@@ -333,14 +349,17 @@ class ChargePoint16(cp):
                         ]
                     }
                 ])
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
-            response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            return response
+            if self.application.ocppActive == True:
+                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                response = await self.call(request)
+                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                return response
+            else:
+                self.request_list.append(request)
+                return response
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
-            if self.application.chargingStatus == ChargePointStatus.charging:
-                self.request_list.append(request)
+            self.request_list.append(request)
 
     # 8. START TRANSACTION
     async def send_start_transaction(
@@ -374,8 +393,6 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_start_transaction Exception:",e)
-            if self.application.chargingStatus == ChargePointStatus.charging:
-                self.request_list.append(request)
 
     # 9. STATUS NOTIFICATION
     async def send_status_notification(
@@ -410,10 +427,14 @@ class ChargePoint16(cp):
                 vendor_id,
                 vendor_error_code
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
-            response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            return response
+            if self.application.ocppActive == True:
+                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                response = await self.call(request)
+                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                return response
+            else:
+                self.request_list.append(request)
+                return response
         except Exception as e:
             print(datetime.now(),"send_status_notification Exception:",e)
 
@@ -444,14 +465,15 @@ class ChargePoint16(cp):
                 id_tag,
                 transaction_data
                 )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
-            response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            return response
+            if self.application.ocppActive == True:
+                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                response = await self.call(request)
+                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                return response
+            else:
+                self.request_list.append(request)
         except Exception as e:
             print(datetime.now(),"send_stop_transaction Exception:",e)
-            if self.application.chargingStatus == ChargePointStatus.charging:
-                self.request_list.append(request)
 
 
     # --------------------------------------------- OPERATIONS INITIATED BY CENTRAL SYSTEM ---------------------------------------------

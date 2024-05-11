@@ -234,7 +234,7 @@ class Application():
                     elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                         pass
         except Exception as e:
-            print("set_command_pid_led_control")
+            self.ocppActive = False
             if self.chargingStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             else:

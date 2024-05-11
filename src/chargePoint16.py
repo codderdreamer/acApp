@@ -39,7 +39,7 @@ class ChargePoint16(cp):
     def __init__(self, application, id, connection, loop, response_timeout=30):
         super().__init__(id, connection, response_timeout)
         self.application = application
-        self.request_list = []
+        
         self.loop = loop
         
         self.authorize = None
@@ -50,9 +50,9 @@ class ChargePoint16(cp):
         
     def show(self):
         while True:
-            print("????????????????????? self.request_list", len(self.request_list))
-            # for i in self.request_list:
-            #     print("\n\n------------->",self.request_list)
+            print("????????????????????? self.application.request_list", len(self.application.request_list))
+            # for i in self.application.request_list:
+            #     print("\n\n------------->",self.application.request_list)
             time.sleep(1)
             
             
@@ -96,7 +96,7 @@ class ChargePoint16(cp):
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                 return response
             else:
-                self.request_list.append(request)
+                self.application.request_list.append(request)
                 
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
@@ -112,7 +112,7 @@ class ChargePoint16(cp):
         
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
-            self.request_list.append(request)
+            self.application.request_list.append(request)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -235,8 +235,8 @@ class ChargePoint16(cp):
         """
         try :
             if self.application.cardType == CardType.BillingCard:
-                print("****************************************************************************************",self.request_list)
-                for request in self.request_list:
+                print("****************************************************************************************",self.application.request_list)
+                for request in self.application.request_list:
                     print("???????? request",request)
                     await asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
  
@@ -366,10 +366,10 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 return response
             else:
-                self.request_list.append(request)
+                self.application.request_list.append(request)
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
-            self.request_list.append(request)
+            self.application.request_list.append(request)
 
     # 8. START TRANSACTION
     async def send_start_transaction(
@@ -443,7 +443,7 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 return response
             else:
-                self.request_list.append(request)
+                self.application.request_list.append(request)
         except Exception as e:
             print(datetime.now(),"send_status_notification Exception:",e)
 
@@ -480,7 +480,7 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 return response
             else:
-                self.request_list.append(request)
+                self.application.request_list.append(request)
         except Exception as e:
             print(datetime.now(),"send_stop_transaction Exception:",e)
 

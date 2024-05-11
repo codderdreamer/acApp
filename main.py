@@ -25,6 +25,7 @@ class Application():
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None
+        self.request_list = []
         self.availability = AvailabilityType.operative
         
         self.chargingStatus = ChargePointStatus.available

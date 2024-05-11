@@ -46,7 +46,7 @@ class ChargePoint16(cp):
         self.transaction_id = None
         self.start_transaction_result = None
         
-        Thread(target=self.show,daemon=True).start()
+        # Thread(target=self.show,daemon=True).start()
         
     def show(self):
         while True:

@@ -51,8 +51,6 @@ class ChargePoint16(cp):
     def show(self):
         while True:
             print("????????????????????? self.application.request_list", len(self.application.request_list))
-            # for i in self.application.request_list:
-            #     print("\n\n------------->",self.application.request_list)
             time.sleep(1)
             
             
@@ -239,7 +237,7 @@ class ChargePoint16(cp):
                 for request in self.application.request_list:
                     print("???????? request",request)
                     await asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
- 
+                self.application.request_list = []
             request = call.HeartbeatPayload()
             while self.application.cardType == CardType.BillingCard:
                 if self.application.settings.change_ocpp:

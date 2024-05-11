@@ -111,8 +111,7 @@ class ChargePoint16(cp):
         
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
-            if self.application.chargingStatus == ChargePointStatus.charging:
-                self.request_list.append(request)
+            self.request_list.append(request)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -237,9 +236,9 @@ class ChargePoint16(cp):
             if self.application.cardType == CardType.BillingCard:
                 print("****************************************************************************************",self.request_list)
                 for request in self.request_list:
+                    print("???????? request",request)
                     await asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
-                self.request_list = []
-                    
+ 
             request = call.HeartbeatPayload()
             while self.application.cardType == CardType.BillingCard:
                 if self.application.settings.change_ocpp:

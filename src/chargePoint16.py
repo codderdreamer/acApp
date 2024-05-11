@@ -235,9 +235,10 @@ class ChargePoint16(cp):
         """
         try :
             if self.application.cardType == CardType.BillingCard:
-                print("***************************************************************",self.request_list)
+                print("****************************************************************************************",self.request_list)
                 for request in self.request_list:
                     await asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
+                self.request_list = []
                     
             request = call.HeartbeatPayload()
             while self.application.cardType == CardType.BillingCard:

@@ -46,11 +46,15 @@ class ChargePoint16(cp):
         self.transaction_id = None
         self.start_transaction_result = None
         
+        Thread(target=self.control_request_list,daemon=True).start()
+        
     def control_request_list(self):
         while True:
-            print("===============================================================================================")
-            for i in self.request_list:
-                print("---->   ",i)
+            if len(self.request_list) > 0:
+                print("===============================================================================================")
+                for i in self.request_list:
+                    print("---->   ",i)
+            time.sleep(3)
         
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 

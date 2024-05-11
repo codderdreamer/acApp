@@ -45,17 +45,6 @@ class ChargePoint16(cp):
         self.authorize = None
         self.transaction_id = None
         self.start_transaction_result = None
-        
-        Thread(target=self.control_request_list,daemon=True).start()
-        
-    def control_request_list(self):
-        while True:
-            if len(self.request_list) > 0:
-                if self.application.chargingStatus == ChargePointStatus.available or self.application.chargingStatus == ChargePointStatus.preparing:
-                    for request in self.request_list:
-                        asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
-                    self.request_list = []
-            time.sleep(3)
             
     async def send_data(self,request):
         try:

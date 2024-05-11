@@ -46,9 +46,11 @@ class ChargePoint16(cp):
         self.transaction_id = None
         self.start_transaction_result = None
         
+        Thread(target=self.show,daemon=True).start()
+        
     def show(self):
         while True:
-            print("self.request_list")
+            print("self.request_list", len(self.request_list))
             for i in self.request_list:
                 print("\n\n------------->",self.request_list)
             time.sleep(1)

@@ -411,8 +411,7 @@ class Process():
         self.application.ev.id_tag = None
         self.application.ev.charge = False
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
-        if self.application.ocppActive:
-            if self.application.meter_values_on:
+        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
                 self.application.meter_values_on = False
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
         self.application.serialPort.set_command_pid_cp_pwm(0)
@@ -447,10 +446,10 @@ class Process():
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-        if self.application.ocppActive:
-            if self.application.meter_values_on:
-                self.application.meter_values_on = False
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+            self.application.meter_values_on = False
+            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -482,7 +481,7 @@ class Process():
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
         
-        if self.application.meter_values_on and self.application.ocppActive:
+        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
             self.application.meter_values_on = False
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
@@ -509,7 +508,7 @@ class Process():
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         
-        if self.application.ocppActive and self.application.meter_values_on:
+        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
             self.application.meter_values_on = False
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)

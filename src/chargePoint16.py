@@ -51,11 +51,21 @@ class ChargePoint16(cp):
     def control_request_list(self):
         while True:
             if len(self.request_list) > 0:
-                print("===============================================================================================")
-                for i in self.request_list:
-                    print("---->   ",i)
+                print("===============================================================================================",self.application.chargingStatus)
+                if self.application.chargingStatus == ChargePointStatus.available or self.application.chargingStatus == ChargePointStatus.preparing:
+                    for request in self.request_list:
+                        print("---->   ",request)
+                        asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
             time.sleep(3)
-        
+            
+    async def send_data(self,request):
+        try:
+            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            return response
+        except Exception as e:
+            print(datetime.now(),"send_data Exception:",e)
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 
     # 1. AUTHORIZE

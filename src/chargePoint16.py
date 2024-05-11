@@ -36,7 +36,7 @@ LOGGER_CENTRAL_SYSTEM.setLevel(logging.INFO)
 
 
 class ChargePoint16(cp):
-    def __init__(self, application, id, connection, loop, response_timeout=30):
+    def __init__(self, application, id, connection, loop, response_timeout=5):
         super().__init__(id, connection, response_timeout)
         self.application = application
         

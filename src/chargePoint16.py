@@ -443,6 +443,10 @@ class ChargePoint16(cp):
                 self.application.ev.reservation_id = None
                 self.application.ev.reservation_id_tag = None
                 self.application.ev.expiry_date = None
+                if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
             response = call_result.CancelReservationPayload(
                 status = CancelReservationStatus.accepted
             )

@@ -46,13 +46,13 @@ class ChargePoint16(cp):
         self.transaction_id = None
         self.start_transaction_result = None
         
-        # Thread(target=self.show,daemon=True).start()
+        Thread(target=self.show,daemon=True).start()
         
     def show(self):
         while True:
-            print("self.request_list", len(self.request_list))
-            for i in self.request_list:
-                print("\n\n------------->",self.request_list)
+            print("????????????????????? self.request_list", len(self.request_list))
+            # for i in self.request_list:
+            #     print("\n\n------------->",self.request_list)
             time.sleep(1)
             
             
@@ -367,7 +367,6 @@ class ChargePoint16(cp):
                 return response
             else:
                 self.request_list.append(request)
-                return response
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
             self.request_list.append(request)

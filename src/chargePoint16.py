@@ -110,7 +110,7 @@ class ChargePoint16(cp):
         
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
-            self.application.request_list.append(request)
+            # self.application.request_list.append(request)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -369,7 +369,7 @@ class ChargePoint16(cp):
                 self.application.request_list.append(request)
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
-            self.application.request_list.append(request)
+            # self.application.request_list.append(request)
 
     # 8. START TRANSACTION
     async def send_start_transaction(

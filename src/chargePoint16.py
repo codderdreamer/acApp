@@ -46,6 +46,12 @@ class ChargePoint16(cp):
         self.transaction_id = None
         self.start_transaction_result = None
         
+    def control_request_list(self):
+        while True:
+            print("===============================================================================================")
+            for i in self.request_list:
+                print("---->   ",i)
+        
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 
     # 1. AUTHORIZE
@@ -77,9 +83,8 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_authorize Exception:",e)
-            print(type(e))
-            if e == "code = 1006 (connection closed abnormally [internal]), no reason":
-                print("here***************************************")
+            if self.application.chargingStatus == ChargePointStatus.charging:
+                self.request_list.append(request)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -327,9 +332,8 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_meter_values Exception:",e)
-            print(type(e))
-            if e == "code = 1006 (connection closed abnormally [internal]), no reason":
-                print("here***************************************")
+            if self.application.chargingStatus == ChargePointStatus.charging:
+                self.request_list.append(request)
 
     # 8. START TRANSACTION
     async def send_start_transaction(
@@ -363,6 +367,8 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_start_transaction Exception:",e)
+            if self.application.chargingStatus == ChargePointStatus.charging:
+                self.request_list.append(request)
 
     # 9. STATUS NOTIFICATION
     async def send_status_notification(
@@ -437,6 +443,8 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"send_stop_transaction Exception:",e)
+            if self.application.chargingStatus == ChargePointStatus.charging:
+                self.request_list.append(request)
 
 
     # --------------------------------------------- OPERATIONS INITIATED BY CENTRAL SYSTEM ---------------------------------------------
@@ -464,6 +472,7 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print(datetime.now(),"on_cancel_reservation Exception:",e)
+            
 
     # 2. CHANGE AVAILABILITY
     @on(Action.ChangeAvailability)

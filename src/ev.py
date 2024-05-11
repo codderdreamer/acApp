@@ -115,8 +115,11 @@ class EV():
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
             
             if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
+                if self.application.chargingStatus == ChargePointStatus.charging:
+                    pass
+                else:
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+                    self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             time.sleep(5)
                     
         

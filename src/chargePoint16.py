@@ -214,7 +214,11 @@ class ChargePoint16(cp):
         except Exception as e:
             print(datetime.now(),"send_heartbeat Exception:",e)
             self.application.ocppActive = False
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+            if self.application.chargingStatus == ChargePointStatus.charging:
+                pass
+            else:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
 
     # 7. METER VALUES
     async def send_meter_values(

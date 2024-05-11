@@ -237,8 +237,8 @@ class Application():
             if self.chargingStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             else:
-                self.chargingStatus = ChargePointStatus.faulted
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             print(datetime.now(),"ocppStart Exception:",e)
             
 

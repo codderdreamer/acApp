@@ -67,6 +67,6 @@ class TestServer():
     def run(self):
         uvicorn.run(self.app, port=5000,host="0.0.0.0")
         
-test = TestServer(None)
-while True:
-    time.sleep(1)
+# test = TestServer(None)
+# while True:
+#     time.sleep(1)

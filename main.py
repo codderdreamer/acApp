@@ -16,6 +16,7 @@ from ocpp.v16.enums import *
 from datetime import datetime
 from src.modbusModule import ModbusModule
 from src.flaskModule import FlaskModuleThread
+from src.testServer import TestServer
 import subprocess
 import os
 
@@ -251,6 +252,7 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
+        testServer = TestServer(app)
         while True:
             if app.cardType == CardType.BillingCard:
                 print("-----------------------------------ocpp start--------------------------------------")

@@ -29,7 +29,6 @@ class TestServer:
         self.app.get("/wifimac")(self.wifimac_get)
 
     async def heartbeat_post(self, heartbeat: Heartbeat):
-        print(heartbeat)
         return "OK"
 
     async def chargePointId_post(self, chargePointId: ChargePointId):
@@ -48,7 +47,7 @@ class TestServer:
 
     async def wifimac_get(self):
         try:
-            result = subprocess.run(['getmac'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(['getmac'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             output = result.stdout
             for line in output.splitlines():
                 if 'Wi-Fi' in line:

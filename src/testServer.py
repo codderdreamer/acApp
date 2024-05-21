@@ -89,7 +89,7 @@ class TestServer:
                         "uvicorn.access": {
                             "handlers": ["default"],
                             "level": "WARNING",
-                            "propagate": True,
+                            "propagate": False,
                         },
                     },
                 }

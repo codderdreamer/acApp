@@ -172,7 +172,7 @@ class SoftwareSettings():
                 time.sleep(5)
                 add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
                 os.system(add_connection_string)
-                print("---------------------------------------------------------------------------- pin",pin)
+                # print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
                     time_start = time.time()
                     while True:

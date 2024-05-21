@@ -253,12 +253,8 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         app = Application(loop)
         testServer = TestServer(app)
-        print("-------------------- test server sınıfı oluştu")
         Thread(target=testServer.run,args=(loop,), daemon=True).start()
-        print("-------------------- create_task start uvicorn")
         Thread(target=app.ocpp_task, daemon=True).start()
-        print("-------------------- ocpp task start")
-    
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)
           

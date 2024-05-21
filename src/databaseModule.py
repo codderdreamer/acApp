@@ -574,7 +574,7 @@ class DatabaseModule():
             
     def set_charge_point_id(self,id):
         try:
-            self.settings_database = sqlite3.connect(self.db_path)
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
             value = (id, "chargePointId")

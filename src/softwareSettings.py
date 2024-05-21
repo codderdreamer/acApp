@@ -263,10 +263,10 @@ class SoftwareSettings():
             second = self.application.settings.networkPriority.second
             third = self.application.settings.networkPriority.third
             # print("\n")
-            print("************* Network Priority Ayarı ************")
-            print(f"*** first {first}")
-            print(f"*** second {second}")
-            print(f"*** third {third}")
+            # print("************* Network Priority Ayarı ************")
+            # print(f"*** first {first}")
+            # print(f"*** second {second}")
+            # print(f"*** third {third}")
             if enableWorkmode == "True":
                 if first == "ETH":
                     os.system("ifmetric eth1 100")

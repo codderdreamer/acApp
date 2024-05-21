@@ -22,7 +22,7 @@ import os
 
 class Application():
     def __init__(self,loop):
-        os.system("gpio-test.64 w d 20 0")
+        os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None

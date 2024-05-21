@@ -149,9 +149,9 @@ class SoftwareSettings():
             DNS2 = self.application.settings.dnsSettings.DNS2
             if dhcpcEnable == "False":
                 if dnsEnable == "True":
-                    setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1}"'.format(DNS1,DNS2)
+                    setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1} > /dev/null 2>&1"'.format(DNS1,DNS2)
                     os.system(setDns)
-                    os.system('nmcli con up "static-eth1" ifname eth1')
+                    os.system('nmcli con up "static-eth1" ifname eth1 > /dev/null 2>&1')
         except Exception as e:
             print(datetime.now(),"set_dns Exception:",e)
           
@@ -168,9 +168,9 @@ class SoftwareSettings():
             if enableModification=="True":
                 # os.system("nmcli connection delete ppp0")
                 time.sleep(3)
-                os.system("gpio-test.64 w d 20 1")
+                os.system("gpio-test.64 w d 20 1 > /dev/null 2>&1")
                 time.sleep(5)
-                add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3}""".format(connection_name,apn,user,password)
+                add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3} > /dev/null 2>&1""".format(connection_name,apn,user,password)
                 os.system(add_connection_string)
                 # print("---------------------------------------------------------------------------- pin",pin)
                 if pin:
@@ -181,10 +181,10 @@ class SoftwareSettings():
                         try:
                             result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                             modem_id = result.split("/")[5].split()[0]
-                            net = """mmcli -i {0} --pin={1}""".format(modem_id,pin)
+                            net = """mmcli -i {0} --pin={1} > /dev/null 2>&1""".format(modem_id,pin)
                             print(net)
                             os.system(net)
-                            net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
+                            net = """nmcli con up "{0}" ifname ttyUSB2 > /dev/null 2>&1""".format(connection_name)
                             print(net)
                             os.system(net)
                             break
@@ -239,16 +239,16 @@ class SoftwareSettings():
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable, ip, netmask_prefix_length,gateway])
                 else:
                     print("mod diğer ye girdi")
-                    os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}")
-                    os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk")
-                    os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password}")
+                    os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
+                    os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
+                    os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
                     if wifidhcpcEnable == "False":
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        os.system("nmcli con modify wifi_connection ipv4.method manual")
-                        os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}")
-                        os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
-                    os.system("nmcli connection up wifi_connection")
+                        os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
+                        os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
+                        os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
+                    os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
             else:
                 pass
         except Exception as e:

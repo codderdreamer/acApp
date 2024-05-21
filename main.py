@@ -1,4 +1,6 @@
 import asyncio
+import sys
+asyncio.current_task = asyncio.Task.current_task
 import websockets
 from src.chargePoint16 import ChargePoint16
 from threading import Thread

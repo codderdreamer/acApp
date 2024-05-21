@@ -2,7 +2,7 @@
 from threading import Thread
 from functools import wraps
 import uvicorn
-from pydantic import BaseSettings, SettingsConfigDict
+from pydantic import BaseSettings
 from pydantic import BaseModel
 from fastapi import FastAPI
 import time
@@ -11,9 +11,9 @@ import subprocess
 
 class Settings(BaseSettings):
     OPENAPI_URL: str = ""
-    model_config = SettingsConfigDict(
-        env_file=".env.prod", env_file_encoding="utf-8",case_sensitive=True
-    )
+
+    class Config:
+        env_file = ".env"
     
 class Heartbeat(BaseModel):
     Status : str = None

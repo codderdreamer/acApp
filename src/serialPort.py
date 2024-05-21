@@ -318,15 +318,15 @@ class SerialPort():
             
     def get_command_pid_error_list_init(self):
         time.sleep(15)
-        print("Başlangıçta error durumu kontrol ediliyor..")
-        print("pid_error_list",self.error_list)
+        # print("Başlangıçta error durumu kontrol ediliyor..")
+        # print("pid_error_list",self.error_list)
         if len(self.error_list)>0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:
-                    print("LockerInitializeError")
+                    # print("LockerInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                 elif value == PidErrorList.RcdInitializeError:
-                    print("RcdInitializeError")
+                    # print("RcdInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
             
     def get_command_pid_error_list(self):

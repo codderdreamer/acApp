@@ -108,7 +108,8 @@ class SoftwareSettings():
             connections = self.get_connections()
             for connection in connections:
                 if con_type in connection:
-                    subprocess.run(["nmcli", "con", "delete", connection[0]])
+                    # subprocess.run(["nmcli", "con", "delete", connection[0]])
+                    subprocess.run(["nmcli", "con", "delete", connection[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
             print(datetime.now(),"delete_connection Exception:",e)
         
@@ -182,10 +183,8 @@ class SoftwareSettings():
                             result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                             modem_id = result.split("/")[5].split()[0]
                             net = """mmcli -i {0} --pin={1} > /dev/null 2>&1""".format(modem_id,pin)
-                            print(net)
                             os.system(net)
                             net = """nmcli con up "{0}" ifname ttyUSB2 > /dev/null 2>&1""".format(connection_name)
-                            print(net)
                             os.system(net)
                             break
                         except:
@@ -200,7 +199,6 @@ class SoftwareSettings():
                             result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                             modem_id = result.split("/")[5].split()[0]
                             net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
-                            print(net)
                             os.system(net)
                             break
                         except:
@@ -225,20 +223,15 @@ class SoftwareSettings():
             self.delete_connection_type("wifi")
             # time.sleep(5)
             if wifiEnable=="True":
-                print("wifi enable True girdi")
                 if mod == "AP":
-                    print("mod AP ye girdi","wifidhcpcEnable",wifidhcpcEnable)
                     if wifidhcpcEnable == "True":
-                        print("wifidhcpcEnable True")
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])
 
                     else:
-                        print("wifidhcpcEnable else")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable, ip, netmask_prefix_length,gateway])
                 else:
-                    print("mod diğer ye girdi")
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")

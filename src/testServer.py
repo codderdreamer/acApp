@@ -58,13 +58,12 @@ class TestServer:
             print(e)
         return "OK"
 
-    async def start_uvicorn(self):
+    async def start_uvicorn(self,loop):
         print("******************start_uvicorn")
-        config = uvicorn.Config(self.app, host="0.0.0.0", port=5000)
+        config = uvicorn.Config(self.app, host="0.0.0.0", port=5000, loop=loop)
         server = uvicorn.Server(config)
         await server.serve()
 
-    def run(self):
-        loop = asyncio.get_event_loop()
-        loop.create_task(self.start_uvicorn())
+    def run(self,loop):
+        loop.create_task(self.start_uvicorn(loop))
         loop.run_forever()

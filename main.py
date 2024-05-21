@@ -252,7 +252,7 @@ if __name__ == "__main__":
         app = Application(loop)
         testServer = TestServer(app)
         print("-------------------- test server sınıfı oluştu")
-        loop.create_task(testServer.start_uvicorn())
+        Thread(target=testServer.run, daemon=True).start()
         print("-------------------- create_task start uvicorn")
         Thread(target=app.ocpp_task, daemon=True).start()
         print("-------------------- ocpp task start")

@@ -179,7 +179,6 @@ class SoftwareSettings():
                         if time.time() - time_start > 60:
                             break
                         try:
-                            print("4g pin ayarlanmaya çalışılıyor")
                             result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                             modem_id = result.split("/")[5].split()[0]
                             net = """mmcli -i {0} --pin={1}""".format(modem_id,pin)
@@ -391,7 +390,6 @@ class SoftwareSettings():
         while True:
             try:
                 time.sleep(10)
-                print("?????????????????????????????? self.application.settings.deviceStatus.linkStatus",self.application.settings.deviceStatus.linkStatus)
                 self.ping_google()
                 self.find_network()
                 self.find_stateOfOcpp()

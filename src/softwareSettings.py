@@ -39,7 +39,7 @@ class SoftwareSettings():
                 Thread(target=self.set_wifi,daemon=True).start()
             elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
                 Thread(target=self.set_4G,daemon=True).start()
-            print(self.application.settings.deviceStatus.networkCard,self.application.settings.websocketIp)
+            # print(self.application.settings.deviceStatus.networkCard,self.application.settings.websocketIp)
         except Exception as e:
             print(datetime.now(),"control_websocket_ip Exception:",e)
         

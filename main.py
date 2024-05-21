@@ -64,14 +64,7 @@ class Application():
             print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter,type(self.settings.deviceSettings.mid_meter))
             print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter,type(self.settings.deviceSettings.externalMidMeter))
         
-        # self.process.idle()
-
         Thread(target=self.read_charge_values_thred,daemon=True).start()
-        # Thread(target=self.ocpp_control,daemon=True).start()
-        
-        
-            
-        
         
     @property
     def deviceState(self):
@@ -127,7 +120,6 @@ class Application():
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
                 Thread(target=self.process.suspended_evse,daemon=True).start()
                 
-
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus):
         if error_code != self.error_code or status != self.chargingStatus:
             self.error_code = error_code
@@ -161,7 +153,6 @@ class Application():
                 print("ocpp_control",e)
             time.sleep(3)
         
-            
     def read_charge_values_thred(self):
         while True:
             try:
@@ -246,21 +237,25 @@ class Application():
                 self.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             print(datetime.now(),"ocppStart Exception:",e)
             
-
-    
+    def ocpp_task(self):
+        while True:
+            if self.cardType == "BillingCard":
+                print("-----------------------------------ocpp start--------------------------------------")
+                res = loop.run_until_complete(self.ocppStart())
+                self.ocppActive = False
+                print("-----------------------------------ocpp stop--------------------------------------")
+            time.sleep(3)
+            
 if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
         testServer = TestServer(app)
-        while True:
-            if app.cardType == CardType.BillingCard:
-                print("-----------------------------------ocpp start--------------------------------------")
-                res = loop.run_until_complete(app.ocppStart())
-                app.ocppActive = False
-                print("-----------------------------------ocpp stop--------------------------------------")
-            time.sleep(3)
+        loop.create_task(testServer.start_uvicorn())
+        Thread(target=app.ocpp_task, daemon=True).start()
+    
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)
+          
     while True:
         time.sleep(5)

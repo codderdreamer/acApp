@@ -1,9 +1,7 @@
-
 from threading import Thread
-from functools import wraps
+import asyncio
 import uvicorn
-from pydantic import BaseSettings
-from pydantic import BaseModel
+from pydantic import BaseSettings, BaseModel
 from fastapi import FastAPI
 import time
 import sqlite3
@@ -14,59 +12,58 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-    
+
 class Heartbeat(BaseModel):
-    Status : str = None
-    
+    Status: str = None
+
 class ChargePointId(BaseModel):
-    id : str = None
-    
-    
-    
-class TestServer():
-    def __init__(self,application) -> None:
+    id: str = None
+
+class TestServer:
+    def __init__(self, application) -> None:
         self.application = application
-        # self.db_path = "/root/Settings.sqlite"
-        self.db_path = "Settings.sqlite"
+        self.db_path = "/root/Settings.sqlite"
         self.app = FastAPI(openapi_url=Settings().OPENAPI_URL)
         self.app.post("/heartbeat")(self.heartbeat_post)
         self.app.post("/chargePointId")(self.chargePointId_post)
         self.app.get("/wifimac")(self.wifimac_get)
-        Thread(target=self.run,daemon=True).start()
 
-    async def heartbeat_post(self, heartbeat : Heartbeat):
+    async def heartbeat_post(self, heartbeat: Heartbeat):
         print(heartbeat)
         return "OK"
-    
-    async def chargePointId_post(self, chargePointId : ChargePointId):
+
+    async def chargePointId_post(self, chargePointId: ChargePointId):
         print(chargePointId)
         try:
             self.settings_database = sqlite3.connect(self.db_path)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
-            value = (chargePointId.id,"chargePointId")
-            self.cursor.execute(query,value)
+            value = (chargePointId.id, "chargePointId")
+            self.cursor.execute(query, value)
             self.settings_database.commit()
             self.settings_database.close()
         except Exception as e:
             print(e)
         return "OK"
-    
+
     async def wifimac_get(self):
         try:
             result = subprocess.run(['getmac'], capture_output=True, text=True)
             output = result.stdout
             for line in output.splitlines():
                 if 'Wi-Fi' in line:
-                    print(line.split()[0]) 
+                    print(line.split()[0])
                     return line.split()[0]
         except Exception as e:
             print(e)
         return "OK"
-    
+
+    async def start_uvicorn(self):
+        config = uvicorn.Config(self.app, host="0.0.0.0", port=5000)
+        server = uvicorn.Server(config)
+        await server.serve()
+
     def run(self):
-        uvicorn.run(self.app, port=5000,host="0.0.0.0")
-        
-# test = TestServer(None)
-# while True:
-#     time.sleep(1)
+        loop = asyncio.get_event_loop()
+        loop.create_task(self.start_uvicorn())
+        loop.run_forever()

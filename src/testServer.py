@@ -48,7 +48,7 @@ class TestServer:
 
     async def wifimac_get(self):
         try:
-            result = subprocess.run(['getmac'], capture_output=True, text=True)
+            result = subprocess.run(['getmac'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             output = result.stdout
             for line in output.splitlines():
                 if 'Wi-Fi' in line:

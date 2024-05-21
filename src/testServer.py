@@ -47,15 +47,18 @@ class TestServer:
 
     async def wifimac_get(self):
         try:
-            result = subprocess.run(['getmac'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            result = subprocess.run(['ip', 'link'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             output = result.stdout
             for line in output.splitlines():
-                if 'Wi-Fi' in line:
-                    print(line.split()[0])
-                    return line.split()[0]
+                if 'wl' in line:  # 'wl' is a common prefix for Wi-Fi interfaces, adjust if necessary
+                    interface = line.split()[1].strip(':')
+                    mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    mac_address = mac_result.stdout.strip()
+                    print(mac_address)
+                    return mac_address
         except Exception as e:
             print(e)
-        return "OK"
+        return "Error"
 
     async def start_uvicorn(self,loop):
         logging_config = {

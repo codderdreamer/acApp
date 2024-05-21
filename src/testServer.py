@@ -59,8 +59,42 @@ class TestServer:
         return "OK"
 
     async def start_uvicorn(self,loop):
+        logging_config = {
+                    "version": 1,
+                    "disable_existing_loggers": False,
+                    "formatters": {
+                        "default": {
+                            "()": "uvicorn.logging.DefaultFormatter",
+                            "fmt": "%(levelprefix)s %(message)s",
+                            "use_colors": None,
+                        },
+                    },
+                    "handlers": {
+                        "default": {
+                            "formatter": "default",
+                            "class": "logging.StreamHandler",
+                            "stream": "ext://sys.stdout",
+                        },
+                    },
+                    "loggers": {
+                        "uvicorn": {
+                            "handlers": ["default"],
+                            "level": "WARNING",  # Change this to WARNING to suppress INFO logs
+                        },
+                        "uvicorn.error": {
+                            "handlers": ["default"],
+                            "level": "WARNING",
+                            "propagate": True,
+                        },
+                        "uvicorn.access": {
+                            "handlers": ["default"],
+                            "level": "WARNING",
+                            "propagate": True,
+                        },
+                    },
+                }
         print("******************start_uvicorn")
-        config = uvicorn.Config(self.app, host="0.0.0.0", port=5000, loop=loop)
+        config = uvicorn.Config(self.app, host="0.0.0.0", port=5000, loop=loop, log_config=logging_config)
         server = uvicorn.Server(config)
         await server.serve()
 

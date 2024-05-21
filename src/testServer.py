@@ -6,6 +6,7 @@ from fastapi import FastAPI
 import time
 import sqlite3
 import subprocess
+from datetime import datetime
 
 class Settings(BaseSettings):
     OPENAPI_URL: str = ""
@@ -34,16 +35,9 @@ class TestServer:
     async def chargePointId_post(self, chargePointId: ChargePointId):
         print(chargePointId)
         try:
-            self.settings_database = sqlite3.connect(self.db_path)
-            self.cursor = self.settings_database.cursor()
-            query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
-            value = (chargePointId.id, "chargePointId")
-            self.cursor.execute(query, value)
-            self.settings_database.commit()
-            self.settings_database.close()
-            print("database kaydedildi. ",chargePointId)
+            self.application.databaseModule.set_charge_point_id(chargePointId.id)
         except Exception as e:
-            print(e)
+            print(datetime.now(),"chargePointId_post Exception:",e)
         return "OK"
 
     async def wifimac_get(self):
@@ -58,49 +52,55 @@ class TestServer:
                     print(mac_address)
                     return mac_address
         except Exception as e:
-            print(e)
+            print(datetime.now(),"wifimac_get Exception:",e)
         return "Error"
 
     async def start_uvicorn(self,loop):
-        logging_config = {
-                    "version": 1,
-                    "disable_existing_loggers": False,
-                    "formatters": {
-                        "default": {
-                            "()": "uvicorn.logging.DefaultFormatter",
-                            "fmt": "%(levelprefix)s %(message)s",
-                            "use_colors": None,
+        try:
+            logging_config = {
+                        "version": 1,
+                        "disable_existing_loggers": False,
+                        "formatters": {
+                            "default": {
+                                "()": "uvicorn.logging.DefaultFormatter",
+                                "fmt": "%(levelprefix)s %(message)s",
+                                "use_colors": None,
+                            },
                         },
-                    },
-                    "handlers": {
-                        "default": {
-                            "formatter": "default",
-                            "class": "logging.StreamHandler",
-                            "stream": "ext://sys.stdout",
+                        "handlers": {
+                            "default": {
+                                "formatter": "default",
+                                "class": "logging.StreamHandler",
+                                "stream": "ext://sys.stdout",
+                            },
                         },
-                    },
-                    "loggers": {
-                        "uvicorn": {
-                            "handlers": ["default"],
-                            "level": "WARNING",  # Change this to WARNING to suppress INFO logs
+                        "loggers": {
+                            "uvicorn": {
+                                "handlers": ["default"],
+                                "level": "WARNING",  # Change this to WARNING to suppress INFO logs
+                            },
+                            "uvicorn.error": {
+                                "handlers": ["default"],
+                                "level": "WARNING",
+                                "propagate": True,
+                            },
+                            "uvicorn.access": {
+                                "handlers": ["default"],
+                                "level": "WARNING",
+                                "propagate": False,
+                            },
                         },
-                        "uvicorn.error": {
-                            "handlers": ["default"],
-                            "level": "WARNING",
-                            "propagate": True,
-                        },
-                        "uvicorn.access": {
-                            "handlers": ["default"],
-                            "level": "WARNING",
-                            "propagate": False,
-                        },
-                    },
-                }
-        print("******************start_uvicorn")
-        config = uvicorn.Config(self.app, host="0.0.0.0", port=5000, loop=loop, log_config=logging_config)
-        server = uvicorn.Server(config)
-        await server.serve()
+                    }
+            print("******************start_uvicorn")
+            config = uvicorn.Config(self.app, host="0.0.0.0", port=5000, loop=loop, log_config=logging_config)
+            server = uvicorn.Server(config)
+            await server.serve()
+        except Exception as e:
+            print(datetime.now(),"start_uvicorn Exception:",e)
 
     def run(self,loop):
-        loop.create_task(self.start_uvicorn(loop))
-        loop.run_forever()
+        try:
+            loop.create_task(self.start_uvicorn(loop))
+            loop.run_forever()
+        except Exception as e:
+            print(datetime.now(),"run Exception:",e)

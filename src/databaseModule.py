@@ -572,6 +572,21 @@ class DatabaseModule():
         except Exception as e:
             print(datetime.now(),"set_ocpp_settings Exception:",e)
             
+    def set_charge_point_id(self,id):
+        try:
+            self.settings_database = sqlite3.connect(self.db_path)
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
+            value = (id, "chargePointId")
+            self.cursor.execute(query, value)
+            self.settings_database.commit()
+            self.settings_database.close()
+            
+            self.application.settings.ocppSettings.chargePointId = id
+            print("Charge Point Id değiştirildi --> ",id)
+        except Exception as e:
+            print(datetime.now(),"set_charge_point_id Exception:",e)
+            
     def set_functions_enable(self,card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')

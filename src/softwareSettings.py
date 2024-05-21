@@ -127,15 +127,15 @@ class SoftwareSettings():
                     netmask_prefix_length = netmask_obj.prefixlen
                     # os.system("nmcli con delete static-eth1")
                     os.system("stty erase ^h")
-                    set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2}'.format(ip,netmask_prefix_length,gateway)
+                    set_eth = 'nmcli con add con-name "static-eth1" ifname eth1 type ethernet ip4 \\{0}/{1} gw4 {2} > /dev/null 2>&1'.format(ip,netmask_prefix_length,gateway)
                     os.system(set_eth)
-                    os.system('nmcli con up "static-eth1" ifname eth1')
+                    os.system('nmcli con up "static-eth1" ifname eth1 > /dev/null 2>&1')
                     self.set_dns()
                 else:
-                    os.system("stty erase ^h")
-                    set_eth = 'nmcli con add con-name "wire" ifname eth1 type ethernet'
+                    os.system("stty erase ^h > /dev/null 2>&1")
+                    set_eth = 'nmcli con add con-name "wire" ifname eth1 type ethernet > /dev/null 2>&1'
                     os.system(set_eth)
-                    os.system('nmcli con up "wire" ifname eth1')
+                    os.system('nmcli con up "wire" ifname eth1 > /dev/null 2>&1')
             else:
                 self.delete_connection_type("ethernet")
         except Exception as e:

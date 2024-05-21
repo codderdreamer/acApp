@@ -2,7 +2,7 @@
 from threading import Thread
 from functools import wraps
 import uvicorn
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel
 from fastapi import FastAPI
 import time

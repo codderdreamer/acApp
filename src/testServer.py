@@ -28,7 +28,7 @@ class TestServer:
         self.app.post("/heartbeat")(self.heartbeat_post)
         self.app.post("/chargePointId")(self.chargePointId_post)
         self.app.get("/wifimac")(self.wifimac_get)
-        self.app.get("/ppp0mac")(self.ppp0mac_get)
+        self.app.get("/eth1mac")(self.eth1mac_get)
 
 
     async def heartbeat_post(self, heartbeat: Heartbeat):
@@ -58,12 +58,12 @@ class TestServer:
             print(datetime.now(),"wifimac_get Exception:",e)
         return "Error"
     
-    async def ppp0mac_get(self):
+    async def eth1mac_get(self):
         try:
             result = subprocess.run(['ip', 'link'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             output = result.stdout
             for line in output.splitlines():
-                if 'ppp0' in line:
+                if 'eth1' in line:
                     interface = line.split()[1].strip(':')
                     mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     mac_address = mac_result.stdout.strip()

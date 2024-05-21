@@ -41,6 +41,7 @@ class TestServer:
             self.cursor.execute(query, value)
             self.settings_database.commit()
             self.settings_database.close()
+            print("database kaydedildi. ",chargePointId)
         except Exception as e:
             print(e)
         return "OK"

@@ -59,6 +59,7 @@ class TestServer:
         return "OK"
 
     async def start_uvicorn(self):
+        print("******************start_uvicorn")
         config = uvicorn.Config(self.app, host="0.0.0.0", port=5000)
         server = uvicorn.Server(config)
         await server.serve()

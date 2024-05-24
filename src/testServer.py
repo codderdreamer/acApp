@@ -19,6 +19,12 @@ class Heartbeat(BaseModel):
 
 class ChargePointId(BaseModel):
     id: str = None
+    
+class ModelKnowledge(BaseModel):
+    faz: str = None
+    socketType: str = None
+    mid: str = None
+    fourG: str = None
 
 class TestServer:
     def __init__(self, application) -> None:
@@ -29,6 +35,7 @@ class TestServer:
         self.app.post("/chargePointId")(self.chargePointId_post)
         self.app.get("/wifimac")(self.wifimac_get)
         self.app.get("/eth1mac")(self.eth1mac_get)
+        self.app.post("/model")(self.model_post)
 
 
     async def heartbeat_post(self, heartbeat: Heartbeat):
@@ -38,10 +45,18 @@ class TestServer:
         print(chargePointId)
         try:
             self.application.databaseModule.set_charge_point_id(chargePointId.id)
-            
         except Exception as e:
             print(datetime.now(),"chargePointId_post Exception:",e)
         return "OK"
+    
+    async def model_post(self,ModelKnowledge):
+        print(ModelKnowledge)
+        try:
+            pass
+        except Exception as e:
+            print(datetime.now(),"model_post Exception:",e)
+        return "OK"
+        
 
     async def wifimac_get(self):
         try:

@@ -32,6 +32,7 @@ class TestServer:
         self.app.post("/chargePointId")(self.chargePointId_post)
         self.app.get("/wifimac")(self.wifimac_get)
         self.app.get("/eth1mac")(self.eth1mac_get)
+        self.app.get("/imei4g")(self.imei4g_get)
         self.app.post("/model")(self.model_post)
 
 
@@ -84,6 +85,20 @@ class TestServer:
         except Exception as e:
             print(datetime.now(),"wifimac_get Exception:",e)
         return "Error"
+    
+    async def imei4g_get(self):
+        try:
+            result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+            modem_id = result.split("/")[5].split()[0]
+            modem_info = subprocess.check_output(f"mmcli -m /org/freedesktop/ModemManager1/Modem/{modem_id}", shell=True).decode('utf-8')
+            for line in modem_info.split('\n'):
+                if 'imei' in line.lower():
+                    imei = line.split(':')[1].strip()
+                    return imei
+        except Exception as e:
+            print(datetime.now(),"imei4g_get Exception:",e)
+        return "Error"
+    
 
     async def start_uvicorn(self,loop):
         try:

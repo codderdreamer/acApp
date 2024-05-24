@@ -21,10 +21,7 @@ class ChargePointId(BaseModel):
     id: str = None
     
 class ModelKnowledge(BaseModel):
-    faz: str = None
-    socketType: str = None
-    mid: str = None
-    fourG: str = None
+    model : str = None
 
 class TestServer:
     def __init__(self, application) -> None:
@@ -49,8 +46,8 @@ class TestServer:
             print(datetime.now(),"chargePointId_post Exception:",e)
         return "OK"
     
-    async def model_post(self,ModelKnowledge):
-        print(ModelKnowledge)
+    async def model_post(self,modelKnowledge : ModelKnowledge):
+        print(modelKnowledge)
         try:
             pass
         except Exception as e:

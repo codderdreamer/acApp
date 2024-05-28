@@ -255,7 +255,7 @@ if __name__ == "__main__":
         app = Application(loop)
         # testServer = TestServer(app)
         # Thread(target=testServer.run,args=(loop,), daemon=True).start()
-        Thread(target=app.ocpp_task, daemon=True).start()
+        app.ocpp_task()
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)
           

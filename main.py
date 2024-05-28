@@ -242,6 +242,7 @@ class Application():
             
     def ocpp_task(self):
         while True:
+            print("self.cardType",self.cardType)
             if self.cardType == CardType.BillingCard:
                 print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(self.ocppStart())

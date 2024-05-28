@@ -6,6 +6,7 @@ from datetime import datetime
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
+        # self.get_model()
         self.get_network_priority()
         self.get_settings_4g()
         self.get_ethernet_settings()
@@ -694,6 +695,41 @@ class DatabaseModule():
                 self.application.availability = AvailabilityType.inoperative
         except Exception as e:
             print(datetime.now(),"set_availability Exception:",e)
+            
+    def set_model(self,modelId):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            value = (modelId,"model")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.model = modelId
+        except Exception as e:
+            print(datetime.now(),"set_availability Exception:",e)
+            
+    def get_model(self):
+        data_dict = {}
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM device_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            if data_dict["model"] == "" or data_dict["model"] == None:
+                self.application.model = None
+            else:
+                self.application.model = data_dict["model"]
+        except Exception as e:
+            print(datetime.now(),"get_max_current Exception:",e)
+        return data_dict
             
     def set_max_current(self,maxcurrent):
         try:

@@ -29,6 +29,7 @@ class Application():
         self.charge_stopped = False
         self.chargePoint = None
         self.request_list = []
+        self.model = None
         self.availability = AvailabilityType.operative
         
         self.chargingStatus = ChargePointStatus.available
@@ -252,8 +253,8 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        testServer = TestServer(app)
-        Thread(target=testServer.run,args=(loop,), daemon=True).start()
+        # testServer = TestServer(app)
+        # Thread(target=testServer.run,args=(loop,), daemon=True).start()
         Thread(target=app.ocpp_task, daemon=True).start()
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)

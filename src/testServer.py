@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-
+        
 class Heartbeat(BaseModel):
     Status: str = None
 
@@ -22,7 +22,7 @@ class ChargePointId(BaseModel):
     
 class ModelKnowledge(BaseModel):
     model : str = None
-
+        
 class TestServer:
     def __init__(self, application) -> None:
         self.application = application
@@ -34,18 +34,10 @@ class TestServer:
         self.app.get("/eth1mac")(self.eth1mac_get)
         self.app.get("/imei4g")(self.imei4g_get)
         self.app.post("/model")(self.model_post)
-
-
+        
     async def heartbeat_post(self, heartbeat: Heartbeat):
         return "OK"
-
-    async def chargePointId_post(self, chargePointId: ChargePointId):
-        print(chargePointId)
-        try:
-            self.application.databaseModule.set_charge_point_id(chargePointId.id)
-        except Exception as e:
-            print(datetime.now(),"chargePointId_post Exception:",e)
-        return "OK"
+    
     
     async def model_post(self,modelKnowledge : ModelKnowledge):
         print(modelKnowledge)
@@ -54,8 +46,17 @@ class TestServer:
         except Exception as e:
             print(datetime.now(),"model_post Exception:",e)
         return "OK"
-        
+    
+    
 
+    async def chargePointId_post(self, chargePointId: ChargePointId):
+        print(chargePointId)
+        try:
+            self.application.databaseModule.set_charge_point_id(chargePointId.id)
+        except Exception as e:
+            print(datetime.now(),"chargePointId_post Exception:",e)
+        return "OK"
+        
     async def wifimac_get(self):
         try:
             result = subprocess.run(['ip', 'link'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
@@ -99,7 +100,6 @@ class TestServer:
             print(datetime.now(),"imei4g_get Exception:",e)
         return "Error"
     
-
     async def start_uvicorn(self,loop):
         try:
             logging_config = {

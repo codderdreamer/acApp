@@ -5,6 +5,25 @@ class ModelType(Enum):
     ocpp16 = "ocpp1.6"
     ocpp20 = "ocpp2.0"
     ocpp21 = "ocpp2.0.1"
+    
+class DeviceModelType(Enum):
+    faz1_mid1_4G1_S1 = "faz1_mid1_4G1_S1"
+    faz1_mid1_4G1_S0 = "faz1_mid1_4G1_S1"
+    faz1_mid1_4G0_S1 = "faz1_mid1_4G0_S1"
+    faz1_mid1_4G0_S0 = "faz1_mid1_4G0_S0"
+    faz1_mid0_4G1_S1 = "faz1_mid0_4G1_S1"
+    faz1_mid0_4G1_S0 = "faz1_mid0_4G1_S0"
+    faz1_mid0_4G0_S1 = "faz1_mid0_4G0_S1"
+    faz1_mid0_4G0_S0 = "faz1_mid0_4G0_S0"
+    faz0_mid1_4G1_S1 = "faz0_mid1_4G1_S1"
+    faz0_mid1_4G1_S0 = "faz0_mid1_4G1_S0"
+    faz0_mid1_4G0_S1 = "faz0_mid1_4G0_S1"
+    faz0_mid1_4G0_S0 = "faz0_mid1_4G0_S0"
+    faz0_mid0_4G1_S1 = "faz0_mid0_4G1_S1"
+    faz0_mid0_4G1_S0 = "faz0_mid0_4G1_S0"
+    faz0_mid0_4G0_S1 = "faz0_mid0_4G0_S1"
+    faz0_mid0_4G0_S0 = "faz0_mid0_4G0_S0"
+    
 
 class OcppVersion(Enum):
     ocpp16 = "ocpp1.6"

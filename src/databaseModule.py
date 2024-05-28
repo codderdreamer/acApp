@@ -36,7 +36,7 @@ class DatabaseModule():
             # print("get_charge:",data_dict,"\n")
             return data_dict
         except Exception as e:
-            print(datetime.now(),"get_dns_settings Exception:",e)
+            print(datetime.now(),"get_charge Exception:",e)
         return data_dict
         
     def get_dns_settings(self):

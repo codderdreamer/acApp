@@ -60,12 +60,12 @@ class Agent(dbus.service.Object):
     def Release(self):
         print("Agent released")
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
+    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="s")
     def RequestPinCode(self, device):
         print("RequestPinCode (%s)" % (device))
         return "0000"
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="")
+    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
     def RequestConfirmation(self, device, passkey):
         print("RequestConfirmation (%s)" % (device))
         return
@@ -74,12 +74,12 @@ class Agent(dbus.service.Object):
     def DisplayPinCode(self, device, pincode):
         print("DisplayPinCode (%s, %s)" % (device, pincode))
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="ouq", out_signature="")
+    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="u")
     def RequestPasskey(self, device):
         print("RequestPasskey (%s)" % (device))
         return dbus.UInt32(0)
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
+    @dbus.service.method("org.bluez.Agent1", in_signature="ouq", out_signature="")
     def DisplayPasskey(self, device, passkey, entered):
         print("DisplayPasskey (%s, %06u entered %u)" % (device, passkey, entered))
 
@@ -88,7 +88,7 @@ class Agent(dbus.service.Object):
         print("RequestAuthorization (%s)" % (device))
         return
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="")
+    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
     def AuthorizeService(self, device, uuid):
         print("AuthorizeService (%s, %s)" % (device, uuid))
         return
@@ -96,6 +96,7 @@ class Agent(dbus.service.Object):
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Cancel(self):
         print("Cancel")
+
 
 # if __name__ == "__main__":
 #     BluetoothService(application=None)

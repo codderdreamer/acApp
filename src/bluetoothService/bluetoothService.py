@@ -67,14 +67,14 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
     def RequestConfirmation(self, device, passkey):
-        print("RequestConfirmation (%s)" % (device))
+        print("RequestConfirmation (%s, %06u)" % (device, passkey))
         return
 
     @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
     def DisplayPinCode(self, device, pincode):
         print("DisplayPinCode (%s, %s)" % (device, pincode))
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="u")
+    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="u")
     def RequestPasskey(self, device):
         print("RequestPasskey (%s)" % (device))
         return dbus.UInt32(0)
@@ -96,6 +96,7 @@ class Agent(dbus.service.Object):
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Cancel(self):
         print("Cancel")
+
 
 
 # if __name__ == "__main__":

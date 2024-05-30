@@ -46,8 +46,8 @@ class BluetoothService():
     def register_agent(self):
         try:
             path = "/test/agent"
-            agent = Agent(bus, path)
-            obj = bus.get_object("org.bluez", "/org/bluez")
+            agent = Agent(self.bus, path)
+            obj = self.bus.get_object("org.bluez", "/org/bluez")
             manager = dbus.Interface(obj, "org.bluez.AgentManager1")
             manager.RegisterAgent(path, "KeyboardDisplay")
             manager.RequestDefaultAgent(path)

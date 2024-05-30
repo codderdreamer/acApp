@@ -35,10 +35,10 @@ class BluetoothService():
             self.adapter_name = self.args.adapter_name
             dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
             self.bus = dbus.SystemBus()
-            self.mainloop = GObject.MainLoop()
             self.register_agent()
+            self.mainloop = GObject.MainLoop()
             advertising.advertising_main(self.mainloop, self.bus, self.adapter_name)
-            # gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
+            gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
             self.mainloop.run()
         except Exception as e:
             print(datetime.now(), "BluetoothService run Exception:", e)

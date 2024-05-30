@@ -46,11 +46,11 @@ class ChargePoint16(cp):
         
         self.start_transaction_result = None
         
-        Thread(target=self.show,daemon=True).start()
+        # Thread(target=self.show,daemon=True).start()
         
     def show(self):
         while True:
-            print("????????????????????? self.application.request_list", len(self.application.request_list))
+            # print("????????????????????? self.application.request_list", len(self.application.request_list))
             time.sleep(1)
             
             

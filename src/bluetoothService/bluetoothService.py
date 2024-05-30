@@ -49,7 +49,7 @@ class BluetoothService():
             agent = Agent(self.bus, path)
             obj = self.bus.get_object("org.bluez", "/org/bluez")
             manager = dbus.Interface(obj, "org.bluez.AgentManager1")
-            manager.RegisterAgent(path, "KeyboardDisplay")
+            manager.RegisterAgent(path, "NoInputNoOutput")
             manager.RequestDefaultAgent(path)
             print("Agent registered successfully")
         except Exception as e:

@@ -56,9 +56,8 @@ class BluetoothService():
             print(datetime.now(), "Failed to register agent:", e)
 
 class Agent(dbus.service.Object):
-    def __init__(self, bus, path, capability):
+    def __init__(self, bus, path):
         dbus.service.Object.__init__(self, bus, path)
-        self.capability = capability
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Release(self):

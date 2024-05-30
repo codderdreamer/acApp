@@ -300,7 +300,7 @@ class NetworkPriorityCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.NETWORK_PRIORITY_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -330,7 +330,7 @@ class SettingsFourGCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.Settings4G_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -360,7 +360,7 @@ class EthernetSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.Ethernet_Settings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -390,7 +390,7 @@ class DNSSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.DNSSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -420,7 +420,7 @@ class WifiSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.WifiSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -450,7 +450,7 @@ class OcppSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.OcppSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -480,7 +480,7 @@ class FunctionsSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.FunctionsSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -510,7 +510,7 @@ class TimezoonSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.TimezoonSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -540,7 +540,7 @@ class BluetoothSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.BluetoothSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -570,7 +570,7 @@ class FirmwareSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.FirmwareSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -600,7 +600,7 @@ class DeviceStatusSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.DeviceStatusSettings_UUID,
-            ['read', 'secure-read'],
+            ['secure-read'],
             service)
         self.value = None
 
@@ -620,7 +620,7 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.MaxCurrentSettings_UUID,
-            ['read', 'write', 'secure-read', 'secure-write'],
+            ['secure-read', 'secure-write'],
             service)
         self.value = None
 
@@ -650,7 +650,7 @@ class StartTransactionCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.MaxCurrentSettings_UUID,
-            ['write', 'secure-write'],
+            ['secure-write'],
             service)
         self.value = None
 
@@ -672,7 +672,7 @@ class StopTransactionCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.MaxCurrentSettings_UUID,
-            ['write', 'secure-write'],
+            ['secure-write'],
             service)
         self.value = None
 
@@ -694,7 +694,7 @@ class ChargingCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.MaxCurrentSettings_UUID,
-            ['read', 'secure-read'],
+            ['secure-read'],
             service)
         self.value = None
 
@@ -714,7 +714,7 @@ class UnlockConnectorCharacteristic(Characteristic):
         Characteristic.__init__(
             self, bus, index,
             self.UnlockConnectorCharacteristic_UUID,
-            ['write', 'secure-write'],
+            ['secure-write'],
             service)
         self.value = None
 

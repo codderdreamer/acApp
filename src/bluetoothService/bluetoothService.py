@@ -1,8 +1,14 @@
+from __future__ import print_function
 import dbus
 import dbus.exceptions
 import dbus.mainloop.glib
 import dbus.service
-from gi.repository import GObject
+import array
+
+try:
+    from gi.repository import GObject
+except ImportError:
+    import gobject as GObject
 import argparse
 from threading import Thread
 from src.bluetoothService import advertising
@@ -19,7 +25,7 @@ class BluetoothService():
         self.bus = None
         self.mainloop = None
         Thread(target=self.run, daemon=True).start()
-        
+
     def run(self):
         try:
             print("Bluetooth run")

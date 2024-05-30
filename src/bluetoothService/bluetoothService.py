@@ -45,12 +45,12 @@ class BluetoothService():
 
     def register_agent(self):
         try:
-            agent_path = "/test/agent"
-            capability = "DisplayYesNo"
-            agent = Agent(self.bus, agent_path, capability)
-            manager = dbus.Interface(self.bus.get_object("org.bluez", "/org/bluez"), "org.bluez.AgentManager1")
-            manager.RegisterAgent(agent_path, capability)
-            manager.RequestDefaultAgent(agent_path)
+            path = "/test/agent"
+            agent = Agent(bus, path)
+            obj = bus.get_object("org.bluez", "/org/bluez")
+            manager = dbus.Interface(obj, "org.bluez.AgentManager1")
+            manager.RegisterAgent(path, "KeyboardDisplay")
+            manager.RequestDefaultAgent(path)
             print("Agent registered successfully")
         except Exception as e:
             print(datetime.now(), "Failed to register agent:", e)

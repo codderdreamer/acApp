@@ -1,14 +1,8 @@
-from __future__ import print_function
 import dbus
 import dbus.exceptions
 import dbus.mainloop.glib
 import dbus.service
-import array
-
-try:
-    from gi.repository import GObject
-except ImportError:
-    import gobject as GObject
+from gi.repository import GObject
 import argparse
 from threading import Thread
 from src.bluetoothService import advertising
@@ -25,7 +19,7 @@ class BluetoothService():
         self.bus = None
         self.mainloop = None
         Thread(target=self.run, daemon=True).start()
-
+        
     def run(self):
         try:
             print("Bluetooth run")
@@ -44,12 +38,16 @@ class BluetoothService():
             print(datetime.now(), "BluetoothService run Exception:", e)
 
     def register_agent(self):
-        agent_path = "/test/agent"
-        capability = "DisplayYesNo"
-        agent = Agent(self.bus, agent_path, capability)
-        manager = dbus.Interface(self.bus.get_object("org.bluez", "/org/bluez"), "org.bluez.AgentManager1")
-        manager.RegisterAgent(agent_path, capability)
-        manager.RequestDefaultAgent(agent_path)
+        try:
+            agent_path = "/test/agent"
+            capability = "DisplayYesNo"
+            agent = Agent(self.bus, agent_path, capability)
+            manager = dbus.Interface(self.bus.get_object("org.bluez", "/org/bluez"), "org.bluez.AgentManager1")
+            manager.RegisterAgent(agent_path, capability)
+            manager.RequestDefaultAgent(agent_path)
+            print("Agent registered successfully")
+        except Exception as e:
+            print(datetime.now(), "Failed to register agent:", e)
 
 class Agent(dbus.service.Object):
     def __init__(self, bus, path, capability):
@@ -62,42 +60,40 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="s")
     def RequestPinCode(self, device):
-        print("RequestPinCode (%s)" % (device))
+        print("RequestPinCode called for device: %s" % (device))
         return "0000"
 
     @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
     def RequestConfirmation(self, device, passkey):
-        print("RequestConfirmation (%s, %06u)" % (device, passkey))
+        print("RequestConfirmation called for device: %s with passkey: %06u" % (device, passkey))
         return
 
     @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
     def DisplayPinCode(self, device, pincode):
-        print("DisplayPinCode (%s, %s)" % (device, pincode))
+        print("DisplayPinCode called for device: %s with pincode: %s" % (device, pincode))
 
     @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="u")
     def RequestPasskey(self, device):
-        print("RequestPasskey (%s)" % (device))
+        print("RequestPasskey called for device: %s" % (device))
         return dbus.UInt32(0)
 
     @dbus.service.method("org.bluez.Agent1", in_signature="ouq", out_signature="")
     def DisplayPasskey(self, device, passkey, entered):
-        print("DisplayPasskey (%s, %06u entered %u)" % (device, passkey, entered))
+        print("DisplayPasskey called for device: %s with passkey: %06u entered: %u" % (device, passkey, entered))
 
     @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="")
     def RequestAuthorization(self, device):
-        print("RequestAuthorization (%s)" % (device))
+        print("RequestAuthorization called for device: %s" % (device))
         return
 
     @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
     def AuthorizeService(self, device, uuid):
-        print("AuthorizeService (%s, %s)" % (device, uuid))
+        print("AuthorizeService called for device: %s with uuid: %s" % (device, uuid))
         return
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Cancel(self):
-        print("Cancel")
+        print("Cancel called")
 
-
-
-# if __name__ == "__main__":
-#     BluetoothService(application=None)
+if __name__ == "__main__":
+    BluetoothService(application=None)

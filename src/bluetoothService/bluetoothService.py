@@ -68,34 +68,6 @@ class Agent(dbus.service.Object):
         print("RequestPinCode called for device: %s" % (device))
         return "0000"
 
-    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
-    def RequestConfirmation(self, device, passkey):
-        print("RequestConfirmation called for device: %s with passkey: %06u" % (device, passkey))
-        return
-
-    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
-    def DisplayPinCode(self, device, pincode):
-        print("DisplayPinCode called for device: %s with pincode: %s" % (device, pincode))
-
-    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="u")
-    def RequestPasskey(self, device):
-        print("RequestPasskey called for device: %s" % (device))
-        return dbus.UInt32(0)
-
-    @dbus.service.method("org.bluez.Agent1", in_signature="ouq", out_signature="")
-    def DisplayPasskey(self, device, passkey, entered):
-        print("DisplayPasskey called for device: %s with passkey: %06u entered: %u" % (device, passkey, entered))
-
-    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="")
-    def RequestAuthorization(self, device):
-        print("RequestAuthorization called for device: %s" % (device))
-        return
-
-    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
-    def AuthorizeService(self, device, uuid):
-        print("AuthorizeService called for device: %s with uuid: %s" % (device, uuid))
-        return
-
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Cancel(self):
         print("Cancel called")

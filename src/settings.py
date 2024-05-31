@@ -23,7 +23,6 @@ class Settings():
         self.networkip = NeworkIP()
         
         self.change_ocpp = False
-        
         self.__websocketIp = None
         
     @property

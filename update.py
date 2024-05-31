@@ -9,18 +9,24 @@ def check_for_git_changes():
         # Doğru dizine gitmek için os.chdir kullan
         os.chdir("/root/acApp")
         # Git status komutunu çalıştır
-        result = subprocess.run(['git', 'fetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        output = result.stdout
+                # Git fetch komutunu çalıştır
+        fetch_result = subprocess.run(['git', 'fetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         
-        print("output:",output)
+        # fetch_result çıktısına bakmadan devam ediyoruz çünkü fetch genellikle stdout'a bir şey yazmaz
 
-        # Değişiklik var mı kontrol et
-        # if "nothing to commit, working tree clean" in output:
-        #     print("No changes in the repository.")
-        #     return False
-        # else:
-        #     print("There are changes in the repository.")
-        #     return True
+        # Yeni commit'leri kontrol etmek için git log komutunu çalıştır
+        log_result = subprocess.run(['git', 'log', 'HEAD..origin/main', '--oneline'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        log_output = log_result.stdout
+        log_error = log_result.stderr
+        
+        if log_result.returncode != 0:
+            print("Log error:", log_error)
+            return
+        
+        if log_output:
+            print("New commits:\n", log_output)
+        else:
+            print("No new commits.")
     except Exception as e:
         print("check_for_git_changes An error occurred:", e)
         # return True

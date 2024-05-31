@@ -12,8 +12,6 @@ def check_for_git_changes():
                 # Git fetch komutunu çalıştır
         fetch_result = subprocess.run(['git', 'fetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         
-        # fetch_result çıktısına bakmadan devam ediyoruz çünkü fetch genellikle stdout'a bir şey yazmaz
-
         # Yeni commit'leri kontrol etmek için git log komutunu çalıştır
         log_result = subprocess.run(['git', 'log', 'HEAD..origin/main', '--oneline'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         log_output = log_result.stdout

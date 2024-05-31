@@ -10,8 +10,10 @@ def check_for_git_changes():
         os.chdir("/root/acApp")
         
         # Git status komutunu çalıştır
-        result = subprocess.run(['git', 'status'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        result = subprocess.run(['git', 'fetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         output = result.stdout
+        
+        print("output:",output)
 
         # Değişiklik var mı kontrol et
         if "nothing to commit, working tree clean" in output:

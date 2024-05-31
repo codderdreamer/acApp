@@ -4,7 +4,6 @@ import dbus.exceptions
 import dbus.mainloop.glib
 import dbus.service
 import array
-
 try:
     from gi.repository import GObject
 except ImportError:

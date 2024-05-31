@@ -14,6 +14,9 @@ from src.bluetoothService import exceptions
 from src.bluetoothService import adapters
 import json
 from datetime import datetime
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import base64
 
 BLUEZ_SERVICE_NAME = 'org.bluez'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
@@ -25,6 +28,20 @@ GATT_SERVICE_IFACE = 'org.bluez.GattService1'
 GATT_CHRC_IFACE = 'org.bluez.GattCharacteristic1'
 GATT_DESC_IFACE = 'org.bluez.GattDescriptor1'
 
+KEY = b'my32lengthsupersecretnooneknows1'  # 32 bytes key
+IV = b'1234567890123456'  # 16 bytes IV
+
+def encrypt(plain_text):
+    cipher = AES.new(KEY, AES.MODE_CBC, IV)
+    padded_text = pad(plain_text.encode('utf-8'), AES.block_size)
+    encrypted = cipher.encrypt(padded_text)
+    return base64.b64encode(encrypted).decode('utf-8')
+
+def decrypt(encrypted_text):
+    encrypted = base64.b64decode(encrypted_text)
+    cipher = AES.new(KEY, AES.MODE_CBC, IV)
+    decrypted = unpad(cipher.decrypt(encrypted), AES.block_size)
+    return decrypted.decode('utf-8')
 
 class ApplicationBluetooth(dbus.service.Object):
     """
@@ -269,7 +286,6 @@ class Descriptor(dbus.service.Object):
         print('Default WriteValue called, returning error')
         raise exceptions.NotSupportedException()
 
-
 class SoftwareSettingsService(Service):
     SoftwareSettings_UUID = '12345678-1234-5678-1234-56789abcab00'
 
@@ -306,7 +322,7 @@ class NetworkPriorityCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_network_priority().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_network_priority()).encode('utf-8')
             print('NetworkPriorityCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -315,7 +331,8 @@ class NetworkPriorityCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("NetworkPriorityCharacteristic WriteValue -->", json_object)
             self.application.settings.set_network_priority(json_object)
@@ -336,7 +353,7 @@ class SettingsFourGCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_Settings4G().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_Settings4G()).encode('utf-8')
             print('Settings4GCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -345,7 +362,8 @@ class SettingsFourGCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("SettingsFourGCharacteristic WriteValue -->", json_object)
             self.application.settings.set_Settings4G(json_object)
@@ -366,7 +384,7 @@ class EthernetSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_ethernet_settings().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_ethernet_settings()).encode('utf-8')
             print('EthernetSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -375,7 +393,8 @@ class EthernetSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("EthernetSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_ethernet_settings(json_object)
@@ -396,7 +415,7 @@ class DNSSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_dns_settings().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_dns_settings()).encode('utf-8')
             print('DNSSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -405,7 +424,8 @@ class DNSSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("DNSSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_dns_settings(json_object)
@@ -426,7 +446,7 @@ class WifiSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_wifi_settings().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_wifi_settings()).encode('utf-8')
             print('WifiSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -435,7 +455,8 @@ class WifiSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("WifiSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_wifi_settings(json_object)
@@ -456,7 +477,7 @@ class OcppSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_ocpp_settings().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_ocpp_settings()).encode('utf-8')
             print('OcppSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -465,7 +486,8 @@ class OcppSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("OcppSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_ocpp_settings(json_object)
@@ -486,7 +508,7 @@ class FunctionsSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_functions_enable().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_functions_enable()).encode('utf-8')
             print('FunctionsSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -495,7 +517,8 @@ class FunctionsSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("FunctionsSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_functions_enable(json_object)
@@ -516,7 +539,7 @@ class TimezoonSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_timezoon_settings().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_timezoon_settings()).encode('utf-8')
             print('TimezoonSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -525,7 +548,8 @@ class TimezoonSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("TimezoonSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_timezoon_settings(json_object)
@@ -546,7 +570,7 @@ class BluetoothSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_bluetooth_settings().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_bluetooth_settings()).encode('utf-8')
             print('BluetoothSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -555,7 +579,8 @@ class BluetoothSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("BluetoothSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_bluetooth_settings(json_object)
@@ -576,7 +601,7 @@ class FirmwareSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_firmware_version().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_firmware_version()).encode('utf-8')
             print('FirmwareSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -585,7 +610,8 @@ class FirmwareSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("FirmwareSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_firmware_version(json_object)
@@ -606,7 +632,7 @@ class DeviceStatusSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_device_status().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_device_status()).encode('utf-8')
             print('DeviceStatusSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -626,7 +652,7 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_maxcurrent().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_maxcurrent()).encode('utf-8')
             print('MaxCurrentSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -635,7 +661,8 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_maxcurrent(json_object)
@@ -657,7 +684,8 @@ class StartTransactionCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_start_transaction(json_object)
@@ -679,7 +707,8 @@ class StopTransactionCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
             self.application.settings.set_stop_transaction(json_object)
@@ -700,7 +729,7 @@ class ChargingCharacteristic(Characteristic):
 
     def ReadValue(self, options):
         try:
-            self.value = self.application.settings.get_charging().encode('utf-8')
+            self.value = encrypt(self.application.settings.get_charging()).encode('utf-8')
             print('MaxCurrentSettingsCharacteristic Read: ' + repr(self.value))
             return self.value
         except Exception as e:
@@ -721,7 +750,8 @@ class UnlockConnectorCharacteristic(Characteristic):
     def WriteValue(self, value, options):
         try:
             byte_array = bytes([byte for byte in value])
-            json_string = byte_array.decode('utf-8')
+            encrypted_string  = byte_array.decode('utf-8')
+            json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
             print("UnlockConnectorCharacteristic WriteValue -->", json_object)
             self.application.settings.set_unlock(json_object)

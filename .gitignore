@@ -1,2 +1,4 @@
 Settings.sqlite
 doc/
+*.pyc
+client/build/websocket.json

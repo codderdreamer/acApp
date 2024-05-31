@@ -16,15 +16,15 @@ def check_for_git_changes():
         print("output:",output)
 
         # Değişiklik var mı kontrol et
-        if "nothing to commit, working tree clean" in output:
-            print("No changes in the repository.")
-            return False
-        else:
-            print("There are changes in the repository.")
-            return True
+        # if "nothing to commit, working tree clean" in output:
+        #     print("No changes in the repository.")
+        #     return False
+        # else:
+        #     print("There are changes in the repository.")
+        #     return True
     except Exception as e:
         print("check_for_git_changes An error occurred:", e)
-        return True
+        # return True
 
 def is_there_charge():
     file_path = "/root/Charge.sqlite"
@@ -60,10 +60,10 @@ while True:
             pass # işlem yapma bekle
         else:
             # Git üzerinde değişiklik var mı kontrol et
-            if check_for_git_changes():
-                print("Git üzerinde değişiklik var! Update yapılacak")
-            else:
-                print("Git üzerinde bir değişiklik yok...")
+            check_for_git_changes()
+            #     print("Git üzerinde değişiklik var! Update yapılacak")
+            # else:
+            #     print("Git üzerinde bir değişiklik yok...")
     except Exception as e:
         print("Exception:", e)
         

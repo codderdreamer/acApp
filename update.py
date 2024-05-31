@@ -1,16 +1,15 @@
 import os
 import fcntl
-import os
 import time
 import sqlite3
 import subprocess
 
 def check_for_git_changes():
     try:
-        # İlk olarak doğru dizine git
-        subprocess.run(["cd", "/root/acApp"])
-
-        # Sonra Git status komutu ile repo durumunu kontrol et
+        # Doğru dizine gitmek için os.chdir kullan
+        os.chdir("/root/acApp")
+        
+        # Git status komutunu çalıştır
         result = subprocess.run(['git', 'status'], capture_output=True, text=True)
         output = result.stdout
 
@@ -29,46 +28,41 @@ def is_there_charge():
     file_path = "/root/Charge.sqlite"
     try:
         data_dict = {}
-        f = open(file_path, 'a+')
-        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        print("Dosya kilitli değil")
-        
-        charge_database = sqlite3.connect('/root/Charge.sqlite')
-        cursor = charge_database.cursor()
-        query = "SELECT * FROM ev"
-        cursor.execute(query)
-        data = cursor.fetchall()
-        charge_database.close()
-        for row in data:
-            data_dict[row[0]] = row[1]
-        print("Charge:",data_dict["charge"])
-        return data_dict["charge"] == "True"
+        with open(file_path, 'a+') as f:
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            print("Dosya kilitli değil")
+            
+            with sqlite3.connect(file_path) as charge_database:
+                cursor = charge_database.cursor()
+                query = "SELECT * FROM ev"
+                cursor.execute(query)
+                data = cursor.fetchall()
+                
+                for row in data:
+                    data_dict[row[0]] = row[1]
+                
+                print("Charge:", data_dict.get("charge", "False"))
+                return data_dict.get("charge", "False") == "True"
+    except sqlite3.Error as e:
+        print("SQLite error:", e)
+        return False
     except IOError as e:
         print("Dosya kilitli")
         time.sleep(1)
-        is_there_charge()
+        return is_there_charge()
 
 while True:
     try:
         # Devam eden bir şarj var mı?
         if is_there_charge():
             pass # işlem yapma bekle
-        # Devam eden bir şarj yoksa;
         else:
-            # internet var mı?
-            
+            # Git üzerinde değişiklik var mı kontrol et
             if check_for_git_changes():
                 print("Git üzerinde değişiklik var! Update yapılacak")
             else:
                 print("Git üzerinde bir değişiklik yok...")
-            
-        
-        
-        
     except Exception as e:
-        print("Exception:",e)
+        print("Exception:", e)
         
     time.sleep(5)
-
-
-

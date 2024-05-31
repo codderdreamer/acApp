@@ -8,7 +8,7 @@ import subprocess
 def check_for_git_changes():
     try:
         # İlk olarak doğru dizine git
-        subprocess.run(['cd', "/root/acApp"])
+        subprocess.run(["cd", "/root/acApp"])
 
         # Sonra Git status komutu ile repo durumunu kontrol et
         result = subprocess.run(['git', 'status'], capture_output=True, text=True)

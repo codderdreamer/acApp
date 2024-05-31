@@ -8,7 +8,6 @@ def check_for_git_changes():
     try:
         # Doğru dizine gitmek için os.chdir kullan
         os.chdir("/root/acApp")
-        
         # Git status komutunu çalıştır
         result = subprocess.run(['git', 'fetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         output = result.stdout

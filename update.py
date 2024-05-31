@@ -10,7 +10,7 @@ def check_for_git_changes():
         os.chdir("/root/acApp")
         
         # Git status komutunu çalıştır
-        result = subprocess.run(['git', 'status'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(['git', 'status'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         output = result.stdout
 
         # Değişiklik var mı kontrol et

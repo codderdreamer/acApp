@@ -32,6 +32,9 @@ def MessageReceivedws(client, server, message):
     if client['id']:
         try:
             sjon = json.loads(message)
+            print("Incoming:",sjon)
+            if sjon["Command"] == "Barkod":
+                pass
 
             
       

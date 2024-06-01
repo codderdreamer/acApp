@@ -28,7 +28,7 @@ class Application():
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
         os.system("chmod +x /root/acApp/bluetooth_set.sh")
         os.system("/root/acApp/bluetooth_set.sh")
-        time.sleep(10)
+        time.sleep(5)
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None

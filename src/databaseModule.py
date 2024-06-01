@@ -725,9 +725,9 @@ class DatabaseModule():
             
             self.application.model = modelId
             g4 = self.is_there_4G(modelId)
+            self.set_enable_4G(g4)
             if g4:
                 Thread(target=self.application.softwareSettings.set_4G,daemon=True).start()
-            self.set_enable_4G(g4)
             self.set_socket_type(self.is_there_socket(modelId))
             self.set_mid_settings(self.is_there_mid(modelId))
             return True

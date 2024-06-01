@@ -43,6 +43,8 @@ def decrypt(encrypted_text):
     decrypted = unpad(cipher.decrypt(encrypted), AES.block_size)
     return decrypted.decode('utf-8')
 
+print("dec:**************************************:",decrypt("2awZYsY2I0ky7RBvAxuIgusaYpcF9doXqlnnW0kj5FoLvrK36L8rQWMLxf69bckeYkKyKcQSJurivMdd/d5OCw5tPTA8zdmvbpUllKxx3wrmRjZj8XH3wanZU87+QfpMOD5uSY1uAIT5V4qBQcUH6itSe1jmKeasTxJ4ihG3YmyWQt/hJDedRPdM18DjOPDZAvF7+vr0NHoRgyMsuWdChPUvMWSjlTL1EDUFVKIavxuFmCj51iS9GW+e8CNeh0rYgxG3ULKD7QuMl4Vx31gh6R6JAR7upq6kmx7FnoaWr6oXug900IIw3vtQFMwq7ypi"))
+
 class ApplicationBluetooth(dbus.service.Object):
     """
     org.bluez.GattApplication1 interface implementation

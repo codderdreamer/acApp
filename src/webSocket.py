@@ -4,6 +4,7 @@ from datetime import datetime
 import websocket_server
 import json
 import sys
+from threading import Thread
 
 websocket = websocket_server.WebsocketServer('0.0.0.0',9000)
 
@@ -46,3 +47,5 @@ def MessageReceivedws(client, server, message):
 websocket.set_fn_new_client(NewClientws)
 websocket.set_fn_client_left(ClientLeftws)
 websocket.set_fn_message_received(MessageReceivedws)
+
+Thread(target=websocket.run_forever, daemon=True).start()

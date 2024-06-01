@@ -754,6 +754,7 @@ class DatabaseModule():
             self.settings_database.commit()
             self.settings_database.close()
             self.application.socketType = socketType
+            print("self.application.socketType",self.application.socketType)
             return True
         except Exception as e:
             print(datetime.now(),"set_socket_type Exception:",e)
@@ -893,6 +894,7 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.settings_database.commit()
             self.application.settings.settings4G.enableModification = str(value)
+            print("self.application.settings.settings4G.enableModification",self.application.settings.settings4G.enableModification)
         except Exception as e:
             print(datetime.now(),"set_enable_4G Exception:",e)
         

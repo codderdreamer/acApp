@@ -14,4 +14,4 @@ elif [ $SDIO = "0xc821" ];then
 fi
 
 #bluetooth up
-hciconfig hci0 up && hciconfig hci0 piscan
+hciconfig hci0 up && hciconfig hci0 piscan & exit

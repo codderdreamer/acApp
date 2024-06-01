@@ -3,6 +3,7 @@ import time
 from ocpp.v16.enums import *
 from datetime import datetime
 from src.enums import *
+from threading import Thread
 
 class DatabaseModule():
     def __init__(self,application) -> None:
@@ -880,6 +881,8 @@ class DatabaseModule():
             for value in fourGList:
                 if modelId == value:
                     finded = True
+            if finded:
+                Thread(target=self.application.softwareSettings.set_4G,daemon=True).start()
             return finded
         except Exception as e:
             print(datetime.now(),"is_there_4G Exception:",e)

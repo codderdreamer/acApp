@@ -21,6 +21,7 @@ from src.flaskModule import FlaskModuleThread
 from src.testServer import TestServer
 import subprocess
 import os
+from src.webSocket import *
 
 class Application():
     def __init__(self,loop):
@@ -253,8 +254,8 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        testServer = TestServer(app)
-        Thread(target=testServer.run,args=(loop,), daemon=True).start()
+        # testServer = TestServer(app)
+        # Thread(target=testServer.run,args=(loop,), daemon=True).start()
         app.ocpp_task()
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)

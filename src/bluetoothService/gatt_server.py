@@ -28,8 +28,8 @@ GATT_SERVICE_IFACE = 'org.bluez.GattService1'
 GATT_CHRC_IFACE = 'org.bluez.GattCharacteristic1'
 GATT_DESC_IFACE = 'org.bluez.GattDescriptor1'
 
-KEY = b'my32lengthsupersecretnooneknows1'  # 32 bytes key
-IV = b'1234567890123456'  # 16 bytes IV
+KEY = b'CwlCluFqKUeOFAA3OcHyj9tOyY457EJ3'  # 32 bytes key
+IV = b'aOD6qb8TJ1J0taFk'  # 16 bytes IV
 
 def encrypt(plain_text):
     cipher = AES.new(KEY, AES.MODE_CBC, IV)

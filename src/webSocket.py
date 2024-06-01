@@ -36,6 +36,7 @@ class WebSocketModule():
         except Exception as e:
             print("c['handler'] client remove problem",e )
             
+  
     def MessageReceivedws(self, client, server, message):
         if client['id']:
             try:

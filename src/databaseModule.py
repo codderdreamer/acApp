@@ -299,19 +299,12 @@ class DatabaseModule():
         except Exception as e:
             print(datetime.now(),"get_mid_settings Exception:",e)
             
-    def set_mid_settings(self,externalMidMeter,externalMidMeterSlaveAddress):
+    def set_external_mid_settings(self,externalMidMeter,externalMidMeterSlaveAddress):
         try:
             print("externalMidMeter",externalMidMeter,"externalMidMeterSlaveAddress",externalMidMeterSlaveAddress)
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
-            
-        
-            midMeter = str(str(externalMidMeter)=="False")
-            
-            value = (midMeter,"midMeter")
-            self.cursor.execute(query,value)
-            self.settings_database.commit()
             
             value = (externalMidMeter,"externalMidMeter")
             self.cursor.execute(query,value)
@@ -323,11 +316,29 @@ class DatabaseModule():
             
             self.settings_database.close()
             
-            self.application.settings.deviceSettings.mid_meter = (midMeter=="True")
             self.application.settings.deviceSettings.externalMidMeter = (externalMidMeter=="True")
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(externalMidMeterSlaveAddress)
         except Exception as e:
-            print(datetime.now(),"set_dns_settings Exception:",e)
+            print(datetime.now(),"set_external_mid_settings Exception:",e)
+            
+    def set_mid_settings(self,is_there_mid):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            value = (str(is_there_mid),"externalMidMeter")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+            
+            self.application.settings.deviceSettings.mid_meter = is_there_mid
+            
+            print("self.application.settings.deviceSettings.mid_meter",self.application.settings.deviceSettings.mid_meter)
+            
+        except Exception as e:
+            print(datetime.now(),"set_mid_settings Exception:",e)
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
@@ -714,6 +725,7 @@ class DatabaseModule():
             self.application.model = modelId
             self.set_enable_4G(self.is_there_4G(modelId))
             self.set_socket_type(self.is_there_socket(modelId))
+            self.set_mid_settings(self.is_there_mid(modelId))
             return True
         except Exception as e:
             print(datetime.now(),"set_model Exception:",e)
@@ -882,8 +894,19 @@ class DatabaseModule():
             return finded
         except Exception as e:
             print(datetime.now(),"return_socket_type Exception:",e)
+ 
+    def is_there_mid(self,modelId):
+        try:
+            midList = ["faz1_mid1_4G1_S1","faz1_mid1_4G1_S0","faz1_mid1_4G0_S1","faz1_mid1_4G0_S0","faz0_mid1_4G1_S1", "faz0_mid1_4G1_S0", "faz0_mid1_4G0_S1", "faz0_mid1_4G0_S0"]
+            finded = False
+            for value in midList:
+                if modelId == value:
+                    finded = True
+            return finded
+        except Exception as e:
+            print(datetime.now(),"is_there_mid Exception:",e)
             
-        
+              
     def set_enable_4G(self,is_there_4G):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')

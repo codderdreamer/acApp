@@ -60,7 +60,6 @@ class WebSocketModule():
                         modelReturn = self.application.databaseModule.set_model(model)
                         chargePointIdReturn = self.application.databaseModule.set_charge_point_id(chargePointId)
                         
-                        
                         if modelReturn and chargePointIdReturn:
                             message = {
                                 "Command" : "ModelReturn",

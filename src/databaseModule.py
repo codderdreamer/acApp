@@ -884,16 +884,16 @@ class DatabaseModule():
             print(datetime.now(),"return_socket_type Exception:",e)
             
         
-    def set_enable_4G(self,value):
+    def set_enable_4G(self,is_there_4G):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
-            value = (str(value),"enableModification")
+            value = (str(is_there_4G),"enableModification")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            self.application.settings.settings4G.enableModification = str(value)
+            self.application.settings.settings4G.enableModification = str(is_there_4G)
             print("self.application.settings.settings4G.enableModification",self.application.settings.settings4G.enableModification)
         except Exception as e:
             print(datetime.now(),"set_enable_4G Exception:",e)

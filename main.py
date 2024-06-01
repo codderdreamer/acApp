@@ -254,6 +254,7 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
+        WebSocketModule(app)
         # testServer = TestServer(app)
         # Thread(target=testServer.run,args=(loop,), daemon=True).start()
         app.ocpp_task()

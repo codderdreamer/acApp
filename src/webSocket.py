@@ -7,6 +7,7 @@ import sys
 from threading import Thread
 from src.enums import *
 import subprocess
+import os
 
 class WebSocketModule():
     def __init__(self, application) -> None:
@@ -53,6 +54,9 @@ class WebSocketModule():
                     self.eth1mac_get(client)
                 elif Command == "4gImeiReq":
                     self.imei4g_get(client)
+                elif Command == "Reset":
+                    self.application.databaseModule.set_bluetooth_settings("Enable","",self.application.settings.ocppSettings.chargePointId)
+                    os.system("reboot")
                 
         
             except (Exception, RuntimeError) as e:

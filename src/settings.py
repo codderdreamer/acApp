@@ -392,8 +392,8 @@ class Settings():
                 pin = sjon["Data"]["pin"]
                 bluetooth_name = sjon["Data"]["bluetooth_name"]
                 self.application.databaseModule.set_bluetooth_settings(bluetooth_enable,pin,bluetooth_name)
-                self.application.softwareSettings.set_bluetooth_settings()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_bluetooth_settings())
+                self.application.softwareSettings.set_bluetooth_settings()
         except Exception as e:
             print(datetime.now(),"set_bluetooth_settings Exception:",e)
             

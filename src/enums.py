@@ -8,7 +8,7 @@ class ModelType(Enum):
     
 class DeviceModelType(Enum):
     faz1_mid1_4G1_S1 = "faz1_mid1_4G1_S1"
-    faz1_mid1_4G1_S0 = "faz1_mid1_4G1_S1"
+    faz1_mid1_4G1_S0 = "faz1_mid1_4G1_S0"
     faz1_mid1_4G0_S1 = "faz1_mid1_4G0_S1"
     faz1_mid1_4G0_S0 = "faz1_mid1_4G0_S0"
     faz1_mid0_4G1_S1 = "faz1_mid0_4G1_S1"
@@ -143,6 +143,12 @@ class PidErrorList(Enum):
     FrequencyFailure = 13
     PhaseSequenceFailure = 14
     OverPowerFailure = 15
+    
+def get_enum_member_by_value(enum_class, value):  # enum döndürür
+    for member in enum_class:
+        if member.value == value:
+            return member
+    return None
 
 
 

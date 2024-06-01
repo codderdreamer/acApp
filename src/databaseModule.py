@@ -2,11 +2,13 @@ import sqlite3
 import time
 from ocpp.v16.enums import *
 from datetime import datetime
+from src.enums import *
 
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
-        # self.get_model()
+        self.get_model()
+        self.get_socket_type()
         self.get_network_priority()
         self.get_settings_4g()
         self.get_ethernet_settings()
@@ -582,11 +584,12 @@ class DatabaseModule():
             self.cursor.execute(query, value)
             self.settings_database.commit()
             self.settings_database.close()
-            
             self.application.settings.ocppSettings.chargePointId = id
             print("Charge Point Id değiştirildi --> ",id)
+            return True
         except Exception as e:
             print(datetime.now(),"set_charge_point_id Exception:",e)
+            return False
             
     def set_functions_enable(self,card_type,whether_to_open_the_qr_code_process,local_startup_whether_to_go_ocpp_background,whether_to_transfer_private_data):
         try:
@@ -709,8 +712,12 @@ class DatabaseModule():
             self.settings_database.close()
             
             self.application.model = modelId
+            self.set_enable_4G(self.is_there_4G(modelId))
+            self.set_socket_type(self.is_there_socket(modelId))
+            return True
         except Exception as e:
-            print(datetime.now(),"set_availability Exception:",e)
+            print(datetime.now(),"set_model Exception:",e)
+            return False
             
     def get_model(self):
         data_dict = {}
@@ -728,7 +735,48 @@ class DatabaseModule():
             else:
                 self.application.model = data_dict["model"]
         except Exception as e:
-            print(datetime.now(),"get_max_current Exception:",e)
+            print(datetime.now(),"get_model Exception:",e)
+        return data_dict
+    
+    def set_socket_type(self,is_there_socket):
+        try:
+            if is_there_socket:
+                socketType = SocketType.Type2
+            elif is_there_socket == False:
+                socketType = SocketType.TetheredType
+                
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            value = (socketType.value,"socketType")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            self.settings_database.close()
+            self.application.socketType = socketType
+            return True
+        except Exception as e:
+            print(datetime.now(),"set_socket_type Exception:",e)
+            return False
+        
+    def get_socket_type(self):
+        data_dict = {}
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM device_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            if data_dict["socketType"] == "" or data_dict["model"] == None:
+                self.application.socketType = None
+            else:
+                self.application.socketType = get_enum_member_by_value(SocketType,data_dict["socketType"])
+            print("socketType:",self.application.socketType)
+        except Exception as e:
+            print(datetime.now(),"get_socket_type Exception:",e)
         return data_dict
             
     def set_max_current(self,maxcurrent):
@@ -812,3 +860,41 @@ class DatabaseModule():
             print(datetime.now(),"set_password Exception:",e)
             return False
         
+    def is_there_4G(self,modelId):
+        try:
+            fourGList = ["faz1_mid1_4G1_S1","faz1_mid1_4G1_S0","faz1_mid0_4G1_S1","faz1_mid0_4G1_S0","faz0_mid1_4G1_S1","faz0_mid1_4G1_S0","faz0_mid0_4G1_S1","faz0_mid0_4G1_S0"]
+            finded = False
+            for value in fourGList:
+                if modelId == value:
+                    finded = True
+            return finded
+        except Exception as e:
+            print(datetime.now(),"is_there_4G Exception:",e)
+            
+    def is_there_socket(self,modelId):
+        try:
+            socketList = ["faz1_mid1_4G1_S1","faz1_mid1_4G0_S1","faz1_mid0_4G1_S1","faz1_mid0_4G0_S1","faz0_mid1_4G1_S1", "faz0_mid1_4G0_S1", "faz0_mid0_4G1_S1", "faz0_mid0_4G0_S1"]
+            finded = False
+            for value in socketList:
+                if modelId == value:
+                    finded = True
+            return finded
+        except Exception as e:
+            print(datetime.now(),"return_socket_type Exception:",e)
+            
+        
+    def set_enable_4G(self,value):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE settings_4g SET key = ? WHERE value = ?"
+            
+            value = (str(value),"enableModification")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            self.application.settings.settings4G.enableModification = str(value)
+        except Exception as e:
+            print(datetime.now(),"set_enable_4G Exception:",e)
+        
+
+

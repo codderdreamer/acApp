@@ -45,8 +45,8 @@ class WebSocketModule():
                 Command = sjon["Command"]
                 Data = sjon["Data"]
                 if Command == "Barkod":
-                    Data["model"]
-                    Data["chargePointId"]
+                    model = Data["model"]
+                    chargePointId = Data["chargePointId"]
                     modelFind = False
                     for device in DeviceModelType:
                         if device.value == Data["model"]:
@@ -56,7 +56,15 @@ class WebSocketModule():
                         "Data" : modelFind
                     }
                     self.websocket.send_message(client,json.dumps(message))
-
+                    if modelFind:
+                        modelReturn = self.application.databaseModule.set_model(model)
+                        chargePointIdReturn = self.application.databaseModule.set_charge_point_id(chargePointId)
+                        if modelReturn and chargePointIdReturn:
+                            message = {
+                                "Command" : "ModelReturn",
+                                "Data" : True
+                            }
+                            self.websocket.send_message(client,json.dumps(message))
                 
         
             except (Exception, RuntimeError) as e:

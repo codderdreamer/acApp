@@ -56,7 +56,7 @@ class WebSocketModule():
                     self.imei4g_get(client)
                 elif Command == "Reset":
                     self.application.databaseModule.set_bluetooth_settings("Enable","",self.application.settings.ocppSettings.chargePointId)
-                    os.system("reboot")
+                    self.application.softwareSettings.set_bluetooth_settings()
                 
         
             except (Exception, RuntimeError) as e:

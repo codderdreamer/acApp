@@ -6,6 +6,7 @@ import json
 import sys
 from threading import Thread
 
+print("web sock********************************************************************")
 websocket = websocket_server.WebsocketServer('0.0.0.0',9000)
 
 def NewClientws(client, server):
@@ -47,5 +48,6 @@ def MessageReceivedws(client, server, message):
 websocket.set_fn_new_client(NewClientws)
 websocket.set_fn_client_left(ClientLeftws)
 websocket.set_fn_message_received(MessageReceivedws)
-
+print("web sock********************************************************************")
 Thread(target=websocket.run_forever, daemon=True).start()
+print("web sock********************************************************************")

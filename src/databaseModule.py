@@ -724,7 +724,10 @@ class DatabaseModule():
             self.settings_database.close()
             
             self.application.model = modelId
-            self.set_enable_4G(self.is_there_4G(modelId))
+            g4 = self.is_there_4G(modelId)
+            if g4:
+                Thread(target=self.application.softwareSettings.set_4G,daemon=True).start()
+            self.set_enable_4G(g4)
             self.set_socket_type(self.is_there_socket(modelId))
             self.set_mid_settings(self.is_there_mid(modelId))
             return True
@@ -881,8 +884,6 @@ class DatabaseModule():
             for value in fourGList:
                 if modelId == value:
                     finded = True
-            if finded:
-                Thread(target=self.application.softwareSettings.set_4G,daemon=True).start()
             return finded
         except Exception as e:
             print(datetime.now(),"is_there_4G Exception:",e)

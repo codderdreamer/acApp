@@ -49,6 +49,10 @@ class WebSocketModule():
                     self.save_barkod_model_cpid(client,Data)
                 elif Command == "WifiMacReq":
                     self.wifimac_send(client)
+                elif Command == "EthMacReq":
+                    self.eth1mac_get(client)
+                elif Command == "4gImeiReq":
+                    self.imei4g_get(client)
                 
         
             except (Exception, RuntimeError) as e:
@@ -94,7 +98,6 @@ class WebSocketModule():
                     interface = line.split()[1].strip(':')
                     mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     mac_address = mac_result.stdout.strip()
-            
         except Exception as e:
             print(datetime.now(),"wifimac_get Exception:",e)
         message = {
@@ -102,4 +105,43 @@ class WebSocketModule():
             "Data" : mac_address
         }
         self.websocket.send_message(client,json.dumps(message))  
+        
+    def eth1mac_get(self,client):
+        mac_address = ""
+        try:
+            result = subprocess.run(['ip', 'link'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            output = result.stdout
+            for line in output.splitlines():
+                if 'eth1' in line:
+                    interface = line.split()[1].strip(':')
+                    mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    mac_address = mac_result.stdout.strip()
+        except Exception as e:
+            print(datetime.now(),"wifimac_get Exception:",e)
+        message = {
+            "Command" : "EthMacResult",
+            "Data" : mac_address
+        }
+        self.websocket.send_message(client,json.dumps(message))  
+        
+    def imei4g_get(self,client):
+        imei = ""
+        try:
+            if self.application.databaseModule.is_there_4G(self.application.model):
+                result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                modem_id = result.split("/")[5].split()[0]
+                modem_info = subprocess.check_output(f"mmcli -m /org/freedesktop/ModemManager1/Modem/{modem_id}", shell=True).decode('utf-8')
+                for line in modem_info.split('\n'):
+                    if 'imei' in line.lower():
+                        imei = line.split(':')[1].strip()
+            else:
+                imei = "Not"
+        except Exception as e:
+            print(datetime.now(),"imei4g_get Exception:",e)
+        message = {
+            "Command" : "4gImeiResult",
+            "Data" : imei
+        }
+        self.websocket.send_message(client,json.dumps(message))  
+        
                     

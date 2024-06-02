@@ -57,6 +57,10 @@ class WebSocketModule():
                 elif Command == "Reset":
                     self.application.databaseModule.set_bluetooth_settings("Enable","",self.application.settings.ocppSettings.chargePointId)
                     self.application.softwareSettings.set_bluetooth_settings()
+                elif Command == "RelayOn":
+                    self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                    self.application.serialPort.get_command_pid_relay_control()
+                    print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
                 
         
             except (Exception, RuntimeError) as e:

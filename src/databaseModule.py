@@ -438,7 +438,7 @@ class DatabaseModule():
         try:
             self.charge_database = sqlite3.connect('/root/Charge.sqlite')
             self.cursor = self.charge_database.cursor()
-            query = "UPDATE network_priority SET key = ? WHERE value = ?"
+            query = "UPDATE ev SET key = ? WHERE value = ?"
             
             value = (charge,"charge")
             self.cursor.execute(query,value)
@@ -452,7 +452,7 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.charge_database.commit()
         except Exception as e:
-            print(datetime.now(),"set_network_priority Exception:",e)
+            print(datetime.now(),"set_charge Exception:",e)
     
     def set_settings_4g(self,apn,user,password,enableModification,pin):
         try:

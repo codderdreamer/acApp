@@ -57,10 +57,13 @@ class WebSocketModule():
                 elif Command == "Reset":
                     self.application.databaseModule.set_bluetooth_settings("Enable","",self.application.settings.ocppSettings.chargePointId)
                     self.application.softwareSettings.set_bluetooth_settings()
-                elif Command == "RelayOn":
-                    self.application.serialPort.set_command_pid_relay_control(Relay.On)
-                    self.application.serialPort.get_command_pid_relay_control()
-                    print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
+                elif Command == "WifiControl":
+                    self.send_wifi_result(client)
+                
+                # elif Command == "RelayOn":
+                #     self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                #     self.application.serialPort.get_command_pid_relay_control()
+                #     print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
                 
         
             except (Exception, RuntimeError) as e:
@@ -154,5 +157,17 @@ class WebSocketModule():
             "Data" : imei
         }
         self.websocket.send_message(client,json.dumps(message))  
+
+    def send_wifi_result(self,client):
+        try:
+            
+            message = {
+            "Command" : "WifiIpResult",
+            "Data" : self.application.settings.networkip.wlan0
+            }
+            self.websocket.send_message(client,json.dumps(message))  
+
+        except Exception as e:
+            print(datetime.now(),"send_wifi_result Exception:",e)
         
                     

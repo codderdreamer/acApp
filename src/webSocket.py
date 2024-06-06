@@ -66,6 +66,8 @@ class WebSocketModule():
                     self.set_led_blue(client)
                 elif Command == "setLedGreen":
                     self.set_led_green(client)
+                elif Command == "saveMasterCard":
+                    self.save_master_card(client)
                 
                 # elif Command == "RelayOn":
                 #     self.application.serialPort.set_command_pid_relay_control(Relay.On)
@@ -194,5 +196,14 @@ class WebSocketModule():
             self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
             self.application.test = False
         except Exception as e:
-            print(datetime.now(),"set_led_blue Exception:",e)
+            print(datetime.now(),"set_led_green Exception:",e)
+
+    def save_master_card(self,client):
+        try:
+            while True:
+                print("Master card bekleniyor...")
+                print("card_id:",self.application.ev.card_id)
+        except Exception as e:
+            print(datetime.now(),"save_master_card Exception:",e)
+
                     

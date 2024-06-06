@@ -59,6 +59,8 @@ class WebSocketModule():
                     self.application.softwareSettings.set_bluetooth_settings()
                 elif Command == "WifiControl":
                     self.send_wifi_result(client)
+                elif Command == "setLedRed":
+                    self.set_led_red(client)
                 
                 # elif Command == "RelayOn":
                 #     self.application.serialPort.set_command_pid_relay_control(Relay.On)
@@ -169,5 +171,11 @@ class WebSocketModule():
 
         except Exception as e:
             print(datetime.now(),"send_wifi_result Exception:",e)
+
+    def set_led_red(self,client):
+        try:
+            self.application.serialPort.set_command_pid_led_control(LedState.Fault)
+        except Exception as e:
+            print(datetime.now(),"set_led_red Exception:",e)
         
                     

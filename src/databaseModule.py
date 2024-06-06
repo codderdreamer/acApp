@@ -355,6 +355,21 @@ class DatabaseModule():
             self.settings_database.close()
         except Exception as e:
             print(datetime.now(),"set_external_mid_settings Exception:",e)
+
+    def set_master_card(self,masterCard):
+        try:
+            print("masterCard",masterCard)
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE device_settings SET key = ? WHERE value = ?"
+            
+            value = (masterCard,"masterCard")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
+            
+            self.settings_database.close()
+        except Exception as e:
+            print(datetime.now(),"set_master_card Exception:",e)
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:

@@ -60,66 +60,70 @@ class EV():
             rcd_init_error = False
             locker_init_error = False
             # print("\n\n","mid_meter",self.application.modbusModule.connection,"ocppActive:",self.application.ocppActive,"control_pilot:",self.control_pilot,"charge:",self.charge,"chargingStatus:",self.application.chargingStatus,"error_list:",self.application.serialPort.error_list, "counter",counter,"\n\n")
-            if self.charge:
-                if len(self.application.serialPort.error_list) > 0:
-                    for value in self.application.serialPort.error_list:
-                        if value == PidErrorList.RcdTripError:
-                            rcdTripError = True
-                        else:
-                            othererror = True
-                    
-                if rcdTripError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
-                    self.application.deviceState = DeviceState.FAULT
-                elif othererror and counter != 3:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                    counter += 1
-                    self.application.deviceState = DeviceState.SUSPENDED_EVSE
-                    print("Hata var! 10 sn bekleniyor... 30 sn sonra denenecek")
-                    time.sleep(10)
-                    print("10 sn doldu. ",counter,".ye deneniyor")
-                elif othererror and counter == 3:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-                    self.application.deviceState = DeviceState.FAULT
-                elif othererror == False:
-                    if self.control_pilot == ControlPlot.stateC.value:
-                        self.application.deviceState = DeviceState.CHARGING
-                    elif self.control_pilot == ControlPlot.stateB.value:
-                        self.application.deviceState = DeviceState.CONNECTED
-                else:
-                    counter = 0
+            if self.application.test: # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
+                pass
             else:
-                if len(self.application.serialPort.error_list) > 0:
-                    for value in self.application.serialPort.error_list:
-                        if value == PidErrorList.RcdInitializeError:
-                            rcd_init_error = True
-                        elif value == PidErrorList.LockerInitializeError:
-                            locker_init_error = True
-                        else:
-                            othererror = True
-                    if othererror and counter == 3 and self.control_pilot != ControlPlot.stateA.value:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()  
-                    elif othererror:
+                if self.charge:
+                    if len(self.application.serialPort.error_list) > 0:
+                        for value in self.application.serialPort.error_list:
+                            if value == PidErrorList.RcdTripError:
+                                rcdTripError = True
+                            else:
+                                othererror = True
+                        
+                    if rcdTripError:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                        self.application.deviceState = DeviceState.FAULT
+                    elif othererror and counter != 3:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-                # Cihazda hata yok ise;
+                        counter += 1
+                        self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                        print("Hata var! 10 sn bekleniyor... 30 sn sonra denenecek")
+                        time.sleep(10)
+                        print("10 sn doldu. ",counter,".ye deneniyor")
+                    elif othererror and counter == 3:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
+                        self.application.deviceState = DeviceState.FAULT
+                    elif othererror == False:
+                        if self.control_pilot == ControlPlot.stateC.value:
+                            self.application.deviceState = DeviceState.CHARGING
+                        elif self.control_pilot == ControlPlot.stateB.value:
+                            self.application.deviceState = DeviceState.CONNECTED
+                    else:
+                        counter = 0
                 else:
-                    counter = 0
-                    
-                    if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-                    
-                    
-                    if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True and self.application.chargingStatus != ChargePointStatus.preparing:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                    if len(self.application.serialPort.error_list) > 0:
+                        for value in self.application.serialPort.error_list:
+                            if value == PidErrorList.RcdInitializeError:
+                                rcd_init_error = True
+                            elif value == PidErrorList.LockerInitializeError:
+                                locker_init_error = True
+                            else:
+                                othererror = True
+                        if othererror and counter == 3 and self.control_pilot != ControlPlot.stateA.value:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()  
+                        elif othererror:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                    # Cihazda hata yok ise;
+                    else:
+                        counter = 0
+                        
+                        if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                        
+                        
+                        if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True and self.application.chargingStatus != ChargePointStatus.preparing:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+                            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                
+                if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
+                    if self.application.chargingStatus == ChargePointStatus.charging:
+                        pass
+                    else:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+                        self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             
-            if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
-                if self.application.chargingStatus == ChargePointStatus.charging:
-                    pass
-                else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-                    self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             time.sleep(5)
                     
         

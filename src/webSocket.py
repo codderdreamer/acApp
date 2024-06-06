@@ -60,6 +60,7 @@ class WebSocketModule():
                 elif Command == "WifiControl":
                     self.send_wifi_result(client)
                 elif Command == "setLedRed":
+                    self.application.test = True
                     self.set_led_red(client)
                 
                 # elif Command == "RelayOn":

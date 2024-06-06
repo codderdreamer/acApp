@@ -29,6 +29,8 @@ class Application():
         os.system("chmod +x /root/acApp/bluetooth_set.sh")
         os.system("/root/acApp/bluetooth_set.sh")
         time.sleep(5)
+        self.test = False
+        
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None

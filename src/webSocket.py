@@ -62,6 +62,10 @@ class WebSocketModule():
                 elif Command == "setLedRed":
                     self.application.test = True
                     self.set_led_red(client)
+                elif Command == "setLedBlue":
+                    self.set_led_blue(client)
+                elif Command == "setLedGreen":
+                    self.set_led_green(client)
                 
                 # elif Command == "RelayOn":
                 #     self.application.serialPort.set_command_pid_relay_control(Relay.On)
@@ -179,4 +183,16 @@ class WebSocketModule():
         except Exception as e:
             print(datetime.now(),"set_led_red Exception:",e)
         
+    def set_led_blue(self,client):
+        try:
+            self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+        except Exception as e:
+            print(datetime.now(),"set_led_blue Exception:",e)
+
+    def set_led_green(self,client):
+        try:
+            self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+            self.application.test = False
+        except Exception as e:
+            print(datetime.now(),"set_led_blue Exception:",e)
                     

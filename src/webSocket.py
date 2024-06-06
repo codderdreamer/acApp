@@ -76,6 +76,8 @@ class WebSocketModule():
     def save_barkod_model_cpid(self,client,Data):
         model = Data["model"]
         chargePointId = Data["chargePointId"]
+        serialNumber = Data["serialNumber"]
+
         modelFind = False
         for device in DeviceModelType:
             if device.value == Data["model"]:
@@ -88,6 +90,7 @@ class WebSocketModule():
         if modelFind:
             modelReturn = self.application.databaseModule.set_model(model)
             chargePointIdReturn = self.application.databaseModule.set_charge_point_id(chargePointId)
+            self.application.databaseModule.set_serial_number(serialNumber)
             
             if modelReturn and chargePointIdReturn:
                 message = {

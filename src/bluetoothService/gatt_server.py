@@ -37,6 +37,7 @@ def encrypt(plain_text):
     padded_text = pad(plain_text.encode('utf-8'), AES.block_size)
     encrypted = cipher.encrypt(padded_text)
     print("encrypted",base64.b64encode(encrypted).decode('utf-8'))
+    print("decrypted", decrypt(base64.b64encode(encrypted).decode('utf-8')))
     return base64.b64encode(encrypted).decode('utf-8')
 
 def decrypt(encrypted_text):

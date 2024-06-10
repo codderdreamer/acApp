@@ -32,15 +32,19 @@ KEY = b'CwlCluFqKUeOFAA3OcHyj9tOyY457EJ3'  # 32 bytes key
 IV = b'aOD6qb8TJ1J0taFk'  # 16 bytes IV
 
 def encrypt(plain_text):
+    print("encrypt",plain_text)
     cipher = AES.new(KEY, AES.MODE_CBC, IV)
     padded_text = pad(plain_text.encode('utf-8'), AES.block_size)
     encrypted = cipher.encrypt(padded_text)
+    print("encrypted",base64.b64encode(encrypted).decode('utf-8'))
     return base64.b64encode(encrypted).decode('utf-8')
 
 def decrypt(encrypted_text):
+    print("decrypt",encrypted_text)
     encrypted = base64.b64decode(encrypted_text)
     cipher = AES.new(KEY, AES.MODE_CBC, IV)
     decrypted = unpad(cipher.decrypt(encrypted), AES.block_size)
+    print("decrypted",decrypted.decode('utf-8'))
     return decrypted.decode('utf-8')
 
 class ApplicationBluetooth(dbus.service.Object):

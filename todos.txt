@@ -5,3 +5,9 @@
     - update service yazılacak.
 - test senaryolarını planlama
 
+
+- test için flask portu değiştirildi.
+- test için websocket portu değiştirildi.
+- test için # if self.application.ev.card_id != "" and self.application.ev.card_id != None: yoruma alındı
+- 
+

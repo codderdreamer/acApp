@@ -202,15 +202,15 @@ class WebSocketModule():
     def save_master_card(self,client):
         try:
             while True:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                    message = {
-                        "Command" : "MasterCard",
-                        "Data" : self.application.ev.card_id
-                    }
-                    self.websocket.send_message(client,json.dumps(message))
-                    self.application.databaseModule.set_master_card(self.application.ev.card_id)
-                    self.application.ev.card_id = ""
-                    return
+                # if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                message = {
+                    "Command" : "MasterCard",
+                    "Data" : self.application.ev.card_id
+                }
+                self.websocket.send_message(client,json.dumps(message))
+                self.application.databaseModule.set_master_card(self.application.ev.card_id)
+                self.application.ev.card_id = ""
+                return
                 time.sleep(0.5)
         except Exception as e:
             print(datetime.now(),"save_master_card Exception:",e)

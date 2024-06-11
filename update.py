@@ -50,8 +50,7 @@ def is_there_charge():
         return is_there_charge()
     
 def updade_firmware():
-    os.system("pwd")
-    print("pwd")
+    os.system("git pull")
 
 charge = False
 there_is_change = False

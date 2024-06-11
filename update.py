@@ -35,7 +35,6 @@ def is_there_charge():
                 query = "SELECT * FROM ev"
                 cursor.execute(query)
                 data = cursor.fetchall()
-                charge_database.close()
                 for row in data:
                     data_dict[row[0]] = row[1]
                 return data_dict["charge"]=="True"

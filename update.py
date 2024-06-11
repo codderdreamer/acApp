@@ -45,6 +45,8 @@ def is_there_charge():
                 
                 for row in data:
                     data_dict[row[0]] = row[1]
+
+                print(data_dict)
                 
                 print("Charge:", data_dict.get("charge", "False"))
                 return data_dict.get("charge", "False") == "True"

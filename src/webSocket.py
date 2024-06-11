@@ -13,7 +13,7 @@ import time
 class WebSocketModule():
     def __init__(self, application) -> None:
         self.application = application
-        self.websocket = websocket_server.WebsocketServer('0.0.0.0',9000)
+        self.websocket = websocket_server.WebsocketServer('0.0.0.0',80)
         print("Web Socket Başlatılıyor... 0.0.0.0 9000")
         self.websocket.set_fn_new_client(self.NewClientws)
         self.websocket.set_fn_client_left(self.ClientLeftws)

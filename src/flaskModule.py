@@ -111,7 +111,7 @@ class FlaskModule:
                 return jsonify({'message': 'Invalid password'}), 401
     
     def run(self):
-        self.app.run(use_reloader=False, host=self.host, port=80, threaded=True)
+        self.app.run(use_reloader=False, host=self.host, port=800, threaded=True)
         
 class FlaskModuleThread(threading.Thread):
     def __init__(self,application):

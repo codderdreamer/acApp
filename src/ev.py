@@ -5,6 +5,7 @@ import asyncio
 from datetime import datetime
 from ocpp.v16.datatypes import *
 from ocpp.v16.enums import *
+import os
 
 class EV():
     def __init__(self,application):
@@ -201,7 +202,11 @@ class EV():
     @card_id.setter
     def card_id(self, value):
         if (value != None) and (value != ""):
-            if (self.application.cardType == CardType.BillingCard):
+            if self.application.masterCard == value:
+                os.system("rm -r /root/Settings.sqlite")
+                os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
+                os.system("systemctl restart acapp.service")
+            elif (self.application.cardType == CardType.BillingCard):
                 if self.charge:
                     if self.application.process.id_tag == value:
                         self.application.chargePoint.authorize = None

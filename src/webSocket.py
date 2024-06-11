@@ -202,7 +202,7 @@ class WebSocketModule():
     def save_master_card(self,client):
         try:
             while True:
-                if self.application.ev.card_id != "" or self.application.ev.card_id != None:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                     message = {
                         "Command" : "MasterCard",
                         "Data" : self.application.ev.card_id

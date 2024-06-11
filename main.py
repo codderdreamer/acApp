@@ -36,6 +36,7 @@ class Application():
         self.chargePoint = None
         self.request_list = []
         self.model = None
+        self.masterCard = None
         self.availability = AvailabilityType.operative
         
         self.chargingStatus = ChargePointStatus.available

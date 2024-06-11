@@ -4,11 +4,13 @@ from ocpp.v16.enums import *
 from datetime import datetime
 from src.enums import *
 from threading import Thread
+import os
 
 class DatabaseModule():
     def __init__(self,application) -> None:
         self.application = application
         self.get_model()
+        self.get_master_card()
         self.get_socket_type()
         self.get_network_priority()
         self.get_settings_4g()
@@ -362,14 +364,31 @@ class DatabaseModule():
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
-            
             value = (masterCard,"masterCard")
             self.cursor.execute(query,value)
             self.settings_database.commit()
-            
             self.settings_database.close()
+
+            self.application.masterCard = masterCard
+            os.system("cp /root/Settings.sqlite /root/DefaultSettings.sqlite")
         except Exception as e:
             print(datetime.now(),"set_master_card Exception:",e)
+
+    def get_master_card(self):
+        data_dict = {}
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "SELECT * FROM device_settings"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+            for row in data:
+                data_dict[row[0]] = row[1]
+            self.application.masterCard = data_dict["masterCard"]
+        except Exception as e:
+            print(datetime.now(),"get_master_card Exception:",e)
+        return data_dict
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:

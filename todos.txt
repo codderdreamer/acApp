@@ -1,7 +1,7 @@
 - update.py
     - databaselerin kitlenme durumunu kontrol et. kitli ise bir kaç saniye boyunca, kullanılan dbleri sil, default dbleri yapıştır. yazılımı yenile.
     - internet olmama durumunda bir şey yapmayacak.
-    - firmware update ocpp test ettikten sonra update.py'nin hala doğru çalışabildiğine bak.
+    - firmware update ocpp test ettikten sonra update.py'nin hala doğru çalışabildiğine bak. (ikisi aynı anda çalıştığında update o an indiriyor mu?)
     - update service yazılacak.
 - test senaryolarını planlama
 

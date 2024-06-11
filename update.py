@@ -4,6 +4,7 @@ import time
 import sqlite3
 import subprocess
 
+# bunun çalışması için dosya içerisinde git olması lazım? bu nasıl olcak düşün. test edilecek.
 def check_for_git_changes():
     try:
         os.chdir("/root/acApp")
@@ -52,20 +53,32 @@ def is_there_charge():
 def updade_firmware():
     os.system("git pull")
 
+def clone_repository():
+    try:
+        subprocess.run(['git', 'clone', 'git@github.com:codderdreamer/acApp.git', '/root/'], check=True)
+    except subprocess.CalledProcessError as e:
+        print("Failed to clone the repository:", e)
+
+def ensure_repository():
+    if not os.path.exists("/root/acApp"):
+        print("Repository not found, cloning...")
+        clone_repository()
+    else:
+        print("Repository found.")
+
 charge = False
 there_is_change = False
 while True:
     try:
-        
         charge = is_there_charge()
         if charge == False:
+            ensure_repository()
             there_is_change = check_for_git_changes()
         if there_is_change == True:
             updade_firmware()
-
     except Exception as e:
         print("Exception:", e)
-        
+
     time.sleep(5)
     
 

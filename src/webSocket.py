@@ -69,8 +69,10 @@ class WebSocketModule():
                     self.set_led_green(client)
                 elif Command == "saveMasterCard":
                     self.save_master_card(client)
-                elif Command == "SaveSlaveCard":
-                    self.save_slave_card(client)
+                elif Command == "SaveSlaveCard1":
+                    self.save_slave_card_1(client)
+                elif Command == "SaveSlaveCard2":
+                    self.save_slave_card_2(client)
                 
                 # elif Command == "RelayOn":
                 #     self.application.serialPort.set_command_pid_relay_control(Relay.On)
@@ -217,13 +219,29 @@ class WebSocketModule():
                 print(datetime.now(),"save_master_card Exception:",e)
             time.sleep(0.5)
 
-    def save_slave_card(self,client):
+    def save_slave_card_1(self,client):
         while True:
             try:
                 # if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                 self.application.databaseModule.set_local_list([self.application.ev.card_id])
                 message = {
-                    "Command" : "SlaveCard",
+                    "Command" : "SlaveCard1",
+                    "Data" : self.application.ev.card_id
+                }
+                self.websocket.send_message(client,json.dumps(message))
+                self.application.ev.card_id = ""
+                return
+            except Exception as e:
+                print(datetime.now(),"save_master_card Exception:",e)
+            time.sleep(0.5)
+
+    def save_slave_card_2(self,client):
+        while True:
+            try:
+                # if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                self.application.databaseModule.set_local_list([self.application.ev.card_id])
+                message = {
+                    "Command" : "SlaveCard2",
                     "Data" : self.application.ev.card_id
                 }
                 self.websocket.send_message(client,json.dumps(message))

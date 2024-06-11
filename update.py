@@ -35,18 +35,15 @@ def is_there_charge():
         data_dict = {}
         with open(file_path, 'a+') as f:
             fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            print("Dosya kilitli değil")
-            
+            # print("Dosya kilitli değil")
             with sqlite3.connect(file_path) as charge_database:
                 cursor = charge_database.cursor()
                 query = "SELECT * FROM ev"
                 cursor.execute(query)
                 data = cursor.fetchall()
-                
                 for row in data:
                     data_dict[row[0]] = row[1]
-
-                print(data_dict)
+                print(data_dict["charge"]=="True")
                 
                 print("Charge:", data_dict.get("charge", "False"))
                 return data_dict.get("charge", "False") == "True"

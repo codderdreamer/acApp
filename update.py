@@ -4,7 +4,6 @@ import time
 import sqlite3
 import subprocess
 
-# bunun çalışması için dosya içerisinde git olması lazım? bu nasıl olcak düşün. test edilecek.
 def check_for_git_changes():
     try:
         os.chdir("/root/acApp")
@@ -22,7 +21,6 @@ def check_for_git_changes():
             return False
     except Exception as e:
         print("check_for_git_changes An error occurred:", e)
-        # burada hataya düşerse ne olcak?
 
 def is_there_charge():
     file_path = "/root/Charge.sqlite"
@@ -30,7 +28,6 @@ def is_there_charge():
         data_dict = {}
         with open(file_path, 'a+') as f:
             fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            # print("Dosya kilitli değil")
             with sqlite3.connect(file_path) as charge_database:
                 cursor = charge_database.cursor()
                 query = "SELECT * FROM ev"
@@ -51,20 +48,34 @@ def is_there_charge():
         return is_there_charge()
     
 def updade_firmware():
-    os.system("git pull")
+    try:
+        os.system("git pull")
+    except Exception as e:
+        print("updade_firmware Exception:",e)
+
+def system_restart():
+    try:
+        os.system("systemctl restart acapp.service")
+    except Exception as e:
+        print("system_restart Exception:",e)
 
 def clone_repository():
     try:
-        subprocess.run(['git', 'clone', 'git@github.com:codderdreamer/acApp.git', '/root/'], check=True)
+        os.chdir("/root")
+        subprocess.run(['git', 'clone', 'git@github.com:codderdreamer/acApp.git'], check=True)
     except subprocess.CalledProcessError as e:
         print("Failed to clone the repository:", e)
 
 def ensure_repository():
-    if not os.path.exists("/root/acApp"):
-        print("Repository not found, cloning...")
-        clone_repository()
-    else:
-        print("Repository found.")
+    try:
+        if not os.path.exists("/root/acApp"):
+            print("Repository not found, cloning...")
+            clone_repository()
+            # clone yaptıktan sonra database'lerin açılıp açılmadığını kontrol et, açılmıyorsa kalıcı default database dönüştür.
+        else:
+            print("Repository found.")
+    except Exception as e:
+        print("ensure_repository Exception:",e)
 
 charge = False
 there_is_change = False
@@ -76,6 +87,7 @@ while True:
             there_is_change = check_for_git_changes()
         if there_is_change == True:
             updade_firmware()
+            system_restart()
     except Exception as e:
         print("Exception:", e)
 

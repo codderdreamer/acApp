@@ -405,7 +405,7 @@ class SoftwareSettings():
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
                 time.sleep(2)
                 print("Sistem yeniden başlatılıyor...")
-                os.system("reboot")
+                # os.system("reboot")
         except Exception as e:
             print(datetime.now(), "set_bluetooth_settings Exception:", e)
             

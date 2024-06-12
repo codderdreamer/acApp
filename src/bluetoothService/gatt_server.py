@@ -18,7 +18,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64
 
-BLUEZ_SERVICE_NAME = 'org.bluez'
+BLUEZ_SERVICE_NAME = 'org.bluez.t'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
 DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
 DBUS_PROP_IFACE = 'org.freedesktop.DBus.Properties'
@@ -767,10 +767,9 @@ def register_app_cb(application):
     print('GATT application registered')
     application.bluetooth_error = False
 
-def register_app_error_cb(mainloop, error, application):
+def register_app_error_cb(mainloop, error):
     try:
         print('Failed to register application: ' + str(error))
-        application.bluetooth_error = True
         mainloop.quit()
     except Exception as e:
         print(datetime.now(), "register_app_error_cb Exception:", e)
@@ -787,6 +786,6 @@ def gatt_server_main(application, mainloop, bus, adapter_name):
         print('Registering GATT application...')
         service_manager.RegisterApplication(app.get_path(), {},
                                             reply_handler=functools.partial(register_app_cb,application),
-                                            error_handler=functools.partial(register_app_error_cb, mainloop, application))
+                                            error_handler=functools.partial(register_app_error_cb, mainloop))
     except Exception as e:
         print(datetime.now(), "gatt_server_main Exception:", e)

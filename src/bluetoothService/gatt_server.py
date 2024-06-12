@@ -767,7 +767,7 @@ def register_app_cb(application):
     print('GATT application registered')
     application.bluetooth_error = False
 
-def register_app_error_cb(mainloop, application, error):
+def register_app_error_cb(mainloop, error, application):
     try:
         print('Failed to register application: ' + str(error))
         application.bluetooth_error = True

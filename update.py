@@ -3,6 +3,7 @@ import fcntl
 import time
 import sqlite3
 import subprocess
+import requests
 
 def check_for_git_changes():
     try:
@@ -77,17 +78,26 @@ def ensure_repository():
     except Exception as e:
         print("ensure_repository Exception:",e)
 
+def is_there_internet():
+    try:
+        response = requests.get("http://www.google.com", timeout=5)
+        return True
+    except Exception as e:
+        print("is_there_internet Exception:",e)
+        return False
+
 charge = False
 there_is_change = False
 while True:
     try:
-        charge = is_there_charge()
-        if charge == False:
-            ensure_repository()
-            there_is_change = check_for_git_changes()
-        if there_is_change == True:
-            updade_firmware()
-            system_restart()
+        if is_there_internet():
+            charge = is_there_charge()
+            if charge == False:
+                ensure_repository()
+                there_is_change = check_for_git_changes()
+            if there_is_change == True:
+                updade_firmware()
+                system_restart()
     except Exception as e:
         print("Exception:", e)
 

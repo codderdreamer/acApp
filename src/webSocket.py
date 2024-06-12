@@ -223,7 +223,7 @@ class WebSocketModule():
     def save_master_card(self,client):
         while True:
             try:
-                if self.application.ev.card_id != "" or self.application.ev.card_id != None or self.slave1 != self.application.ev.card_id or self.slave2 != self.application.ev.card_id:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id and self.slave2 != self.application.ev.card_id:
                     self.application.databaseModule.set_master_card(self.application.ev.card_id)
                     message = {
                         "Command" : "MasterCard",
@@ -239,7 +239,7 @@ class WebSocketModule():
     def save_slave_card_1(self,client):
         while True:
             try:
-                if self.application.ev.card_id != "" or self.application.ev.card_id != None:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                     message = {
                         "Command" : "SlaveCard1",
                         "Data" : self.application.ev.card_id
@@ -255,7 +255,7 @@ class WebSocketModule():
     def save_slave_card_2(self,client):
         while True:
             try:
-                if self.application.ev.card_id != "" or self.application.ev.card_id != None or self.slave1 != self.application.ev.card_id:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id:
                     message = {
                         "Command" : "SlaveCard2",
                         "Data" : self.application.ev.card_id

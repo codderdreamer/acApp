@@ -18,7 +18,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64
 
-BLUEZ_SERVICE_NAME = 'org.bluez.test.'
+BLUEZ_SERVICE_NAME = 'org.bluez'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
 DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
 DBUS_PROP_IFACE = 'org.freedesktop.DBus.Properties'
@@ -770,7 +770,6 @@ def register_app_cb(application):
 def register_app_error_cb(mainloop, error, application):
     try:
         print('Failed to register application: ' + str(error))
-        application.bluetooth_error = True
         mainloop.quit()
     except Exception as e:
         print(datetime.now(), "register_app_error_cb Exception:", e)

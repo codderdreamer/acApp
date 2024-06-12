@@ -206,15 +206,15 @@ class WebSocketModule():
     def save_master_card(self,client):
         while True:
             try:
-                # if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                self.application.databaseModule.set_master_card(self.application.ev.card_id)
-                message = {
-                    "Command" : "MasterCard",
-                    "Data" : self.application.ev.card_id
-                }
-                self.websocket.send_message(client,json.dumps(message))
-                self.application.ev.card_id = ""
-                return
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                    self.application.databaseModule.set_master_card(self.application.ev.card_id)
+                    message = {
+                        "Command" : "MasterCard",
+                        "Data" : self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client,json.dumps(message))
+                    self.application.ev.card_id = ""
+                    return
             except Exception as e:
                 print(datetime.now(),"save_master_card Exception:",e)
             time.sleep(0.5)
@@ -222,15 +222,15 @@ class WebSocketModule():
     def save_slave_card_1(self,client):
         while True:
             try:
-                # if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                self.application.databaseModule.set_local_list([self.application.ev.card_id])
-                message = {
-                    "Command" : "SlaveCard1",
-                    "Data" : self.application.ev.card_id
-                }
-                self.websocket.send_message(client,json.dumps(message))
-                self.application.ev.card_id = ""
-                return
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                    self.application.databaseModule.set_local_list([self.application.ev.card_id])
+                    message = {
+                        "Command" : "SlaveCard1",
+                        "Data" : self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client,json.dumps(message))
+                    self.application.ev.card_id = ""
+                    return
             except Exception as e:
                 print(datetime.now(),"save_master_card Exception:",e)
             time.sleep(0.5)
@@ -238,15 +238,15 @@ class WebSocketModule():
     def save_slave_card_2(self,client):
         while True:
             try:
-                # if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                self.application.databaseModule.set_local_list([self.application.ev.card_id])
-                message = {
-                    "Command" : "SlaveCard2",
-                    "Data" : self.application.ev.card_id
-                }
-                self.websocket.send_message(client,json.dumps(message))
-                self.application.ev.card_id = ""
-                return
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                    self.application.databaseModule.set_local_list([self.application.ev.card_id])
+                    message = {
+                        "Command" : "SlaveCard2",
+                        "Data" : self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client,json.dumps(message))
+                    self.application.ev.card_id = ""
+                    return
             except Exception as e:
                 print(datetime.now(),"save_master_card Exception:",e)
             time.sleep(0.5)

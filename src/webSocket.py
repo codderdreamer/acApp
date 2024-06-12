@@ -13,6 +13,7 @@ import time
 class WebSocketModule():
     def __init__(self, application) -> None:
         self.application = application
+        self.slave1 = None
         self.websocket = websocket_server.WebsocketServer('0.0.0.0',80)
         print("Web Socket Başlatılıyor... 0.0.0.0 9000")
         self.websocket.set_fn_new_client(self.NewClientws)
@@ -86,6 +87,8 @@ class WebSocketModule():
                     self.save_slave_card_1(client)
                 elif Command == "SaveSlaveCard2":
                     self.save_slave_card_2(client)
+
+                # slave kart geldiğinde 1.yi hafızada tut. 2. geldiğinde 1.den farklı ise database kaydet, aynı ise lütfan farklı kart okutunuz uyarısı çıkart
                 
                 # elif Command == "RelayOn":
                 #     self.application.serialPort.set_command_pid_relay_control(Relay.On)
@@ -236,12 +239,12 @@ class WebSocketModule():
         while True:
             try:
                 if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                    self.application.databaseModule.set_local_list([self.application.ev.card_id])
                     message = {
                         "Command" : "SlaveCard1",
                         "Data" : self.application.ev.card_id
                     }
                     self.websocket.send_message(client,json.dumps(message))
+                    self.slave1 = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     return
             except Exception as e:
@@ -251,13 +254,13 @@ class WebSocketModule():
     def save_slave_card_2(self,client):
         while True:
             try:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                    self.application.databaseModule.set_local_list([self.application.ev.card_id])
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id:
                     message = {
                         "Command" : "SlaveCard2",
                         "Data" : self.application.ev.card_id
                     }
                     self.websocket.send_message(client,json.dumps(message))
+                    self.application.databaseModule.set_local_list([self.slave1, self.application.ev.card_id])
                     self.application.ev.card_id = ""
                     return
             except Exception as e:

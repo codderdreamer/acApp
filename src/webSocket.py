@@ -88,6 +88,8 @@ class WebSocketModule():
                     self.save_slave_card_1(client)
                 elif Command == "SaveSlaveCard2":
                     self.save_slave_card_2(client)
+                elif Command == "MaxCurrent6":
+                    self.application.databaseModule.set_max_current(6)
 
                 # slave kart geldiğinde 1.yi hafızada tut. 2. geldiğinde 1.den farklı ise database kaydet, aynı ise lütfan farklı kart okutunuz uyarısı çıkart
                 

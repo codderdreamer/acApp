@@ -857,7 +857,7 @@ class DatabaseModule():
             
             self.settings_database.close()
             
-            self.application.max_current = maxcurrent
+            self.application.max_current = int(maxcurrent)
             
         except Exception as e:
             print(datetime.now(),"set_max_current Exception:",e)

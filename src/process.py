@@ -56,7 +56,7 @@ class Process():
                 print("set_command_pid_cp_pwm",self.application.max_current)
                 self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
         elif self.application.socketType == SocketType.TetheredType:
-            self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
+            self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
     
     def lock_control(self):
         self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
@@ -91,7 +91,7 @@ class Process():
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
         elif self.application.socketType == SocketType.TetheredType:
-            self.application.serialPort.set_command_pid_cp_pwm(self.application.max_current)
+            self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
             self.application.deviceState = DeviceState.WAITING_STATE_C
         
     def connected(self):

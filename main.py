@@ -38,6 +38,7 @@ class Application():
         self.model = None
         self.masterCard = None
         self.availability = AvailabilityType.operative
+        self.bluetooth_error = None
         
         self.chargingStatus = ChargePointStatus.available
         self.error_code = None

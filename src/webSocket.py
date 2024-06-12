@@ -19,6 +19,18 @@ class WebSocketModule():
         self.websocket.set_fn_client_left(self.ClientLeftws)
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever,daemon=True).start()
+
+    def send_heartbeat(self,client):
+        while True:
+            try:
+                message = {
+                    "Command" : "Heartbeat",
+                    "Data" : time.ti
+                }
+                self.websocket.send_message(client,json.dumps(message))
+            except Exception as e:
+                print(datetime.now(),"send_heartbeat Exception:",e)
+            time.sleep(1)
         
     def NewClientws(self, client, server):
         if client:

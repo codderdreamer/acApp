@@ -403,6 +403,7 @@ class SoftwareSettings():
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
             if (name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
+                time.sleep(2)
                 print("Sistem yeniden başlatılıyor...")
                 os.system("reboot")
         except Exception as e:

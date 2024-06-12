@@ -766,7 +766,7 @@ class UnlockConnectorCharacteristic(Characteristic):
 def register_app_cb():
     print('GATT application registered')
 
-def register_app_error_cb(mainloop, error):
+def register_app_error_cb(mainloop, application, error):
     try:
         print('Failed to register application: ' + str(error))
         mainloop.quit()
@@ -785,6 +785,6 @@ def gatt_server_main(application, mainloop, bus, adapter_name):
         print('Registering GATT application...')
         service_manager.RegisterApplication(app.get_path(), {},
                                             reply_handler=register_app_cb,
-                                            error_handler=functools.partial(register_app_error_cb, mainloop))
+                                            error_handler=functools.partial(register_app_error_cb, mainloop, application))
     except Exception as e:
         print(datetime.now(), "gatt_server_main Exception:", e)

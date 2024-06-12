@@ -67,9 +67,10 @@ class WebSocketModule():
                     self.eth1mac_get(client)
                 elif Command == "4gImeiReq":
                     self.imei4g_get(client)
-                elif Command == "Reset":
+                elif Command == "BluetoothSet":
                     self.application.databaseModule.set_bluetooth_settings("Enable","",self.application.settings.ocppSettings.chargePointId)
                     self.application.softwareSettings.set_bluetooth_settings()
+                    self.send_bluetooth(client)
                 elif Command == "WifiControl":
                     self.send_wifi_result(client)
                 elif Command == "setLedRed":
@@ -262,6 +263,24 @@ class WebSocketModule():
             except Exception as e:
                 print(datetime.now(),"save_master_card Exception:",e)
             time.sleep(0.5)
+
+    def send_bluetooth(self,client):
+        try:
+            process = subprocess.Popen(['hostname'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            output = stdout.decode('utf-8')
+            name = output.split("\n")[0]
+            print("bluetooth name",name)
+            message = {
+                "Command" : "Bluetooth",
+                "Data" : {
+                    "error" : str(self.application.bluetooth_error),
+                    "name" : name
+                }
+            }
+            self.websocket.send_message(client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_bluetooth Exception:",e)
 
 
                     

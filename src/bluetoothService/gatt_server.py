@@ -18,7 +18,7 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64
 
-BLUEZ_SERVICE_NAME = 'org.bluez'
+BLUEZ_SERVICE_NAME = 'org.bluez.test.'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
 DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
 DBUS_PROP_IFACE = 'org.freedesktop.DBus.Properties'

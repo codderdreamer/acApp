@@ -770,6 +770,7 @@ def register_app_cb(application):
 def register_app_error_cb(mainloop, error, application):
     try:
         print('Failed to register application: ' + str(error))
+        application.bluetooth_error = True
         mainloop.quit()
     except Exception as e:
         print(datetime.now(), "register_app_error_cb Exception:", e)

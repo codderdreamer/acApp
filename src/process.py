@@ -253,6 +253,8 @@ class Process():
     def charge_while(self):
         time_start = time.time()
         self.application.databaseModule.set_charge("True",str(self.id_tag),str(self.transaction_id))
+        if self.application.test_charge:
+            self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
         while True:
             print("Charge wile .................")
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)

@@ -29,7 +29,9 @@ class Application():
         os.system("chmod +x /root/acApp/bluetooth_set.sh")
         os.system("/root/acApp/bluetooth_set.sh")
         time.sleep(5)
-        self.test = False
+        self.test_led = False
+        self.test_charge = False
+        self.testWebSocket = None
         
         self.loop = loop
         self.charge_stopped = False
@@ -261,7 +263,7 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        WebSocketModule(app)
+        app.testWebSocket = TestWebSocketModule(app)
         # testServer = TestServer(app)
         # Thread(target=testServer.run,args=(loop,), daemon=True).start()
         app.ocpp_task()

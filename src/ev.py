@@ -61,7 +61,7 @@ class EV():
             rcd_init_error = False
             locker_init_error = False
             # print("\n\n","mid_meter",self.application.modbusModule.connection,"ocppActive:",self.application.ocppActive,"control_pilot:",self.control_pilot,"charge:",self.charge,"chargingStatus:",self.application.chargingStatus,"error_list:",self.application.serialPort.error_list, "counter",counter,"\n\n")
-            if self.application.test: # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
+            if self.application.test_led: # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
                 pass
             else:
                 if self.charge:

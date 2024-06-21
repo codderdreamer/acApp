@@ -10,9 +10,10 @@ import subprocess
 import os
 import time
 
-class WebSocketModule():
+class TestWebSocketModule():
     def __init__(self, application) -> None:
         self.application = application
+        self.client = None
         self.slave1 = None
         self.slave2= None
         self.websocket = websocket_server.WebsocketServer('0.0.0.0',80)
@@ -21,20 +22,9 @@ class WebSocketModule():
         self.websocket.set_fn_client_left(self.ClientLeftws)
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever,daemon=True).start()
-
-    def send_heartbeat(self,client):
-        while True:
-            try:
-                message = {
-                    "Command" : "Heartbeat",
-                    "Data" : time.ti
-                }
-                self.websocket.send_message(client,json.dumps(message))
-            except Exception as e:
-                print(datetime.now(),"send_heartbeat Exception:",e)
-            time.sleep(1)
         
     def NewClientws(self, client, server):
+        self.client = client
         if client:
             try:
                 print("New client connected and was given id %d" % client['id'], client['address'] )
@@ -45,6 +35,7 @@ class WebSocketModule():
                 
     def ClientLeftws(self, client, server):
         try:
+            self.client = client
             if client:
                 client['handler'].keep_alive=0
                 client['handler'].valid_client=False
@@ -55,6 +46,7 @@ class WebSocketModule():
             
   
     def MessageReceivedws(self, client, server, message):
+        self.client = client
         if client['id']:
             try:
                 sjon = json.loads(message)
@@ -76,7 +68,7 @@ class WebSocketModule():
                 elif Command == "WifiControl":
                     self.send_wifi_result(client)
                 elif Command == "setLedRed":
-                    self.application.test = True
+                    self.application.test_led = True
                     self.set_led_red(client)
                 elif Command == "setLedBlue":
                     self.set_led_blue(client)
@@ -90,6 +82,7 @@ class WebSocketModule():
                     self.save_slave_card_2(client)
                 elif Command == "MaxCurrent6":
                     self.application.databaseModule.set_max_current(6)
+                    self.application.test_charge = True
 
                 # slave kart geldiğinde 1.yi hafızada tut. 2. geldiğinde 1.den farklı ise database kaydet, aynı ise lütfan farklı kart okutunuz uyarısı çıkart
                 
@@ -218,7 +211,7 @@ class WebSocketModule():
     def set_led_green(self,client):
         try:
             self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
-            self.application.test = False
+            self.application.test_led = False
         except Exception as e:
             print(datetime.now(),"set_led_green Exception:",e)
 
@@ -288,6 +281,16 @@ class WebSocketModule():
             self.websocket.send_message(client,json.dumps(message))
         except Exception as e:
             print(datetime.now(),"send_bluetooth Exception:",e)
+
+    def send_there_is_mid_meter(self,mid):
+        try:
+            message = {
+                "Command" : "MidMeter",
+                "Data" : mid
+            }
+            self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_there_is_mid_meter Exception:",e)
 
 
                     

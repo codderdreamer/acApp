@@ -251,6 +251,7 @@ class Process():
             time.sleep(10)
             
     def charge_while(self):
+        print("charge_while(self):")
         time_start = time.time()
         self.application.databaseModule.set_charge("True",str(self.id_tag),str(self.transaction_id))
         

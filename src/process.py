@@ -284,6 +284,7 @@ class Process():
                         self.application.deviceState = DeviceState.FAULT
                         break
                 else:
+                    print("self.application.ev.control_pilot",self.application.ev.control_pilot)
                     return
             elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                 self.application.meter_values_on = True

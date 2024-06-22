@@ -251,7 +251,6 @@ class Process():
             time.sleep(10)
             
     def charge_while(self):
-        print("charge_while(self):")
         time_start = time.time()
         self.application.databaseModule.set_charge("True",str(self.id_tag),str(self.transaction_id))
         
@@ -279,7 +278,7 @@ class Process():
                 print(" ??????????????????????????????????????????????????????????????? Mid meter bağlantısı bekleniyor...")
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
                     time.sleep(1)
-                    if time.time() - time_start > 3:
+                    if time.time() - time_start > 6:
                         print("Mid meter bağlanamadı")
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT

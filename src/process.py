@@ -277,7 +277,7 @@ class Process():
             if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
                 print(" ??????????????????????????????????????????????????????????????? Mid meter bağlantısı bekleniyor...")
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                    if time.time() - time_start > 3:
+                    if time.time() - time_start > 6:
                         print("Mid meter bağlanamadı")
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT

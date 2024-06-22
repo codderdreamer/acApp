@@ -277,7 +277,6 @@ class Process():
             if (self.application.settings.deviceSettings.mid_meter == True or self.application.settings.deviceSettings.externalMidMeter == True) and self.application.modbusModule.connection == False:
                 print(" ??????????????????????????????????????????????????????????????? Mid meter bağlantısı bekleniyor...")
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                    time.sleep(1)
                     if time.time() - time_start > 6:
                         print("Mid meter bağlanamadı")
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
@@ -295,7 +294,7 @@ class Process():
                 self.application.serialPort.get_command_pid_power(PowerType.kw)
                 self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                 
-            time.sleep(3)
+            time.sleep(1)
             
     def charging(self):
         print("****************************************************************** charging")

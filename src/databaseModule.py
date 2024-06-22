@@ -330,7 +330,7 @@ class DatabaseModule():
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
-            value = (str(is_there_mid),"externalMidMeter")
+            value = (str(is_there_mid),"midMeter")
             self.cursor.execute(query,value)
             self.settings_database.commit()
             
@@ -356,7 +356,7 @@ class DatabaseModule():
             
             self.settings_database.close()
         except Exception as e:
-            print(datetime.now(),"set_external_mid_settings Exception:",e)
+            print(datetime.now(),"set_serial_number Exception:",e)
 
     def set_master_card(self,masterCard):
         try:

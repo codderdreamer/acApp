@@ -73,7 +73,7 @@ class ModbusModule:
                 # print("MID METER self.energy",self.energy)
                 self.connection = True
             except Exception as e:
-                # print(e)
+                print("Mid meter HATA:",e)
                 self.connection = False
                 pass
             time.sleep(1)

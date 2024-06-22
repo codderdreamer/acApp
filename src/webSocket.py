@@ -282,6 +282,7 @@ class TestWebSocketModule():
         except Exception as e:
             print(datetime.now(),"send_bluetooth Exception:",e)
 
+
     def send_there_is_mid_meter(self,mid):
         try:
             message = {

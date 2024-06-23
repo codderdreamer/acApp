@@ -68,10 +68,10 @@ class Application():
         self.process = Process(self)
         
         if self.settings.deviceSettings.externalMidMeter == True:
-            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter)
+            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter, self.settings.deviceSettings.externalMidMeterSlaveAddress)
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
-            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter)
+            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter, self.settings.deviceSettings.midMeterSlaveAddress)
             self.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         else:
             print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter,type(self.settings.deviceSettings.mid_meter))

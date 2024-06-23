@@ -331,7 +331,7 @@ class TestWebSocketModule():
         try:
             if self.application.test_charge:
                 message = {
-                    "Command" : "MidMeter",
+                    "Command" : "MidMeterKnow",
                     "Data" : mid
                 }
                 self.websocket.send_message(self.client,json.dumps(message))

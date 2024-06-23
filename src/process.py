@@ -100,7 +100,7 @@ class Process():
         print("****************************************************************** connected")
         # print("istasyon durumu:",self.application.chargingStatus)
         # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
-        self.application.testWebSocket.send_socket_connected()
+        # self.application.testWebSocket.send_socket_connected()
 
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:

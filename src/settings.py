@@ -273,9 +273,9 @@ class Settings():
                 self.application.databaseModule.set_external_mid_settings(externalMid,external_mid_id)
 
                 if self.deviceSettings.externalMidMeter == True:
-                    self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.externalMidMeterSlaveAddress)
+                    self.application.modbusModule = ModbusModule(self.application, port='/dev/ttyS5', slave_address=self.deviceSettings.externalMidMeterSlaveAddress)
                 elif self.deviceSettings.mid_meter == True:
-                    self.application.modbusModule = ModbusModule(port='/dev/ttyS5', slave_address=self.deviceSettings.midMeterSlaveAddress)
+                    self.application.modbusModule = ModbusModule(self.application, port='/dev/ttyS5', slave_address=self.deviceSettings.midMeterSlaveAddress)
                 
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
         except Exception as e:

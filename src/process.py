@@ -78,6 +78,7 @@ class Process():
         
     def _lock_connector_set_control_pilot(self):
         print("************************************************ _lock_connector_set_control_pilot")
+        self.application.testWebSocket.send_socket_type(self.application.socketType.value)
         if self.application.socketType == SocketType.Type2:
                 result = self.lock_control()
                 control_counter = 0
@@ -90,6 +91,7 @@ class Process():
                         print("Deneme bitti Lock Çalışmadı.")
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
+                self.application.testWebSocket.send_locker_state_lock(result)
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
             self.application.deviceState = DeviceState.WAITING_STATE_C
@@ -98,6 +100,8 @@ class Process():
         print("****************************************************************** connected")
         # print("istasyon durumu:",self.application.chargingStatus)
         # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
+        self.application.testWebSocket.send_socket_connected()
+
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:
@@ -255,13 +259,15 @@ class Process():
         self.application.databaseModule.set_charge("True",str(self.id_tag),str(self.transaction_id))
         
         # test uygulmasına mid meter bağlıp bağlanmayacağı bilgisini gönder.
-        if self.application.test_charge:
-            self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
+        self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
         
         # Röle kontrol ediliyor ... (Açılmazsa hata)
         self.application.serialPort.get_command_pid_relay_control()
         time.sleep(1)
         print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
+
+        self.application.testWebSocket.send_relay_control_on(self.application.ev.pid_relay_control)
+
         if self.application.ev.pid_relay_control == False:
             print("Röle devrede değil !!!!!!!!!!")
             self.application.deviceState = DeviceState.FAULT
@@ -281,6 +287,7 @@ class Process():
                         print("Mid meter bağlanamadı")
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
+                        self.application.testWebSocket.send_mid_meter_state(False)
                         break
                 else:
                     print("self.application.ev.control_pilot",self.application.ev.control_pilot)

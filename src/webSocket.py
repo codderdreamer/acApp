@@ -282,16 +282,83 @@ class TestWebSocketModule():
         except Exception as e:
             print(datetime.now(),"send_bluetooth Exception:",e)
 
+    def send_socket_connected(self):
+        try:
+            if self.application.test_charge:
+                message = {
+                    "Command" : "SocketConnected",
+                    "Data" : ""
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_socket_connected Exception:",e)
+
+    def send_socket_type(self,socketType):
+        try:
+            if self.application.test_charge:
+                message = {
+                    "Command" : "SocketType",
+                    "Data" : socketType
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_socket_type Exception:",e)
+
+    def send_locker_state_lock(self,locker_state):
+        try:
+            if self.application.test_charge:
+                message = {
+                    "Command" : "LockerStateLock",
+                    "Data" : locker_state
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_locker_state_lock Exception:",e)
+
+    def send_relay_control_on(self,relay):
+        try:
+            if self.application.test_charge:
+                message = {
+                    "Command" : "RelayStateOn",
+                    "Data" : relay
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_relay_control_on Exception:",e)
+
 
     def send_there_is_mid_meter(self,mid):
         try:
-            message = {
-                "Command" : "MidMeter",
-                "Data" : mid
-            }
-            self.websocket.send_message(self.client,json.dumps(message))
+            if self.application.test_charge:
+                message = {
+                    "Command" : "MidMeter",
+                    "Data" : mid
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
         except Exception as e:
             print(datetime.now(),"send_there_is_mid_meter Exception:",e)
+
+    def send_mid_meter_state(self,state):
+        try:
+            if self.application.test_charge:
+                message = {
+                    "Command" : "MidMeterState",
+                    "Data" : state
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_mid_meter_state Exception:",e)
+
+    def send_error(self,error):
+        try:
+            if self.application.test_charge:
+                message = {
+                    "Command" : "Error",
+                    "Data" : error
+                }
+                self.websocket.send_message(self.client,json.dumps(message))
+        except Exception as e:
+            print(datetime.now(),"send_error Exception:",e)
 
 
                     

@@ -36,6 +36,7 @@ class ModbusModule:
         if self.__connection != value:
             self.__connection = value
             if value == True:
+                self.application.testWebSocket.send_mid_meter_state(True)
                 self.firstEnergy = round(self.read_input_float(register_address=73)/1000,2)
        
 

@@ -546,6 +546,14 @@ class SerialPort():
                 self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             if len(error_list) > 0:
                 print(" $$$$$$$$$$$$$$$$ self.error_list",self.error_list)
+
+            if error_list != self.error_list:
+                if len(error_list) > 0:
+                    for error in error_list:
+                        self.application.testWebSocket.send_error(error.value)
+                else:
+                    self.application.testWebSocket.send_error("")
+            
             self.error_list = error_list
             # print("self.error_list get_response_pid_error_list",self.error_list)
 

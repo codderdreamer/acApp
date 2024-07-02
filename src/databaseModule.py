@@ -257,6 +257,8 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
+
+            print("\ndata_dict\n",data_dict["availability"])
             if data_dict["availability"] == AvailabilityType.operative.value:
                 self.application.availability = AvailabilityType.operative
             elif data_dict["availability"] == AvailabilityType.inoperative.value:

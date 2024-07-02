@@ -868,9 +868,10 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
             # Şarj Noktasında bir reservasyon yok ise ve bir şarj yok ise resetlenebilir
             if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+                print("Şarj var durduruluyor")
                 self.application.meter_values_on = False
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-
+                time.sleep(2)
             response = call_result.ResetPayload(
                     status = ResetStatus.accepted
                 )

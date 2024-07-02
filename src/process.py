@@ -464,6 +464,7 @@ class Process():
         self.application.ev.charge = False
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon= True).start()
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+        print("************************* cardType", self.application.cardType, "meter_values_on",self.application.meter_values_on)
         if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
             self.application.meter_values_on = False
             try:

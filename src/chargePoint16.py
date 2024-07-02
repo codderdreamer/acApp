@@ -869,6 +869,7 @@ class ChargePoint16(cp):
                 response = call_result.ResetPayload(
                     status = ResetStatus.accepted
                 )
+                os.system("reboot")
             else:
                 response = call_result.ResetPayload(
                     status = ResetStatus.rejected

@@ -824,6 +824,7 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.availability == AvailabilityType.inoperative:
+                print("self.application.availability",self.application.availability)
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
@@ -836,6 +837,7 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.chargingStatus != ChargePointStatus.available:
+                print("self.application.chargingStatus",self.application.chargingStatus)
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected

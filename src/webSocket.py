@@ -16,7 +16,7 @@ class TestWebSocketModule():
         self.client = None
         self.slave1 = None
         self.slave2= None
-        self.websocket = websocket_server.WebsocketServer('0.0.0.0',80)
+        self.websocket = websocket_server.WebsocketServer('0.0.0.0',9000)
         print("Web Socket Başlatılıyor... 0.0.0.0 9000")
         self.websocket.set_fn_new_client(self.NewClientws)
         self.websocket.set_fn_client_left(self.ClientLeftws)

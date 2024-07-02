@@ -233,7 +233,7 @@ class Application():
                 print("********************************************************ocpp_url:",ocpp_url)
                 
                 async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
-                    
+                    print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self,self.settings.ocppSettings.chargePointId, ws, self.loop)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
@@ -244,13 +244,14 @@ class Application():
                     elif self.ocpp_subprotocols == OcppVersion.ocpp21:
                         pass
         except Exception as e:
+            print(datetime.now(),"ocppStart Exception:",e)
             self.ocppActive = False
             if self.chargingStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             else:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
                 self.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
-            print(datetime.now(),"ocppStart Exception:",e)
+            
             
     def ocpp_task(self):
         while True:

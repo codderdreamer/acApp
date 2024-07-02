@@ -466,7 +466,15 @@ class Process():
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
         if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
             self.application.meter_values_on = False
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            try:
+                print("Attempting to send stop transaction...")
+                future = asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(), self.application.loop)
+                result = future.result()  # Blocking call to get the result
+                print("Stop transaction sent successfully, result:", result)
+            except Exception as e:
+                print("Error sending stop transaction:", e)
+
+            # asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)

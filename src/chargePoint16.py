@@ -232,7 +232,7 @@ class ChargePoint16(cp):
         interval: int
         """
         try :
-            if self.application.databaseModule.get_charge()["charge"] == "True" and self.cardType == CardType.BillingCard:
+            if self.application.databaseModule.get_charge()["charge"] == "True" and self.application.cardType == CardType.BillingCard:
                 self.application.process.transaction_id = self.application.databaseModule.get_charge()["transaction_id"]
                 self.application.process.id_tag = self.application.databaseModule.get_charge()["id_tag"]
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
@@ -867,15 +867,15 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
             # Şarj Noktasında bir reservasyon yok ise ve bir şarj yok ise resetlenebilir
-            if self.application.ev.charge == False or self.application.ev.reservation_id == None:
-                response = call_result.ResetPayload(
+            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+                self.application.meter_values_on = False
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+
+            response = call_result.ResetPayload(
                     status = ResetStatus.accepted
                 )
-                os.system("reboot")
-            else:
-                response = call_result.ResetPayload(
-                    status = ResetStatus.rejected
-                )
+            os.system("reboot")
+            
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

@@ -885,8 +885,8 @@ class ChargePoint16(cp):
             if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
                 print("Şarj var durduruluyor")
                 self.application.deviceState = DeviceState.STOPPED_BY_EVSE
-            time.sleep(5)
-            os.system("reboot")
+            # time.sleep(10)
+            # os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)
 

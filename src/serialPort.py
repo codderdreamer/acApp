@@ -207,7 +207,7 @@ class SerialPort():
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("************************* led_state -->", led_state)
+        # print("************************* led_state -->", led_state)
         self.send_data_list.append(send_data)
         if led_state != LedState.RfidVerified and led_state != LedState.RfidFailed:
             # print("********** önceki led setlendi",self.led_state)
@@ -395,43 +395,43 @@ class SerialPort():
     def set_response_pid_led_control(self,data):
         if data[2] == self.pid_led_control:
             result = data[7]
-            if result == LedState.StandBy.value:
-                print("set_response_pid_led_control --> ",LedState.StandBy.name)
-            elif result == LedState.Connecting.value:
-                print("set_response_pid_led_control --> ",LedState.Connecting.name)
-            elif result == LedState.RfidVerified.value:
-                print("set_response_pid_led_control --> ",LedState.RfidVerified.name)
-            elif result == LedState.Charging.value:
-                print("set_response_pid_led_control --> ",LedState.Charging.name)
-            elif result == LedState.RfidFailed.value:
-                print("set_response_pid_led_control --> ",LedState.RfidFailed.name)
-            elif result == LedState.NeedReplugging.value:
-                print("set_response_pid_led_control --> ",LedState.NeedReplugging.name)
-            elif result == LedState.Fault.value:
-                print("set_response_pid_led_control --> ",LedState.Fault.name)
-            elif result == LedState.ChargingStopped.value:
-                print("set_response_pid_led_control --> ",LedState.ChargingStopped.name)
+            # if result == LedState.StandBy.value:
+            #     print("set_response_pid_led_control --> ",LedState.StandBy.name)
+            # elif result == LedState.Connecting.value:
+            #     print("set_response_pid_led_control --> ",LedState.Connecting.name)
+            # elif result == LedState.RfidVerified.value:
+            #     print("set_response_pid_led_control --> ",LedState.RfidVerified.name)
+            # elif result == LedState.Charging.value:
+            #     print("set_response_pid_led_control --> ",LedState.Charging.name)
+            # elif result == LedState.RfidFailed.value:
+            #     print("set_response_pid_led_control --> ",LedState.RfidFailed.name)
+            # elif result == LedState.NeedReplugging.value:
+            #     print("set_response_pid_led_control --> ",LedState.NeedReplugging.name)
+            # elif result == LedState.Fault.value:
+            #     print("set_response_pid_led_control --> ",LedState.Fault.name)
+            # elif result == LedState.ChargingStopped.value:
+            #     print("set_response_pid_led_control --> ",LedState.ChargingStopped.name)
 
     def get_response_pid_led_control(self,data):
         if data[2] == self.pid_led_control:
             self.application.ev.pid_led_control = data[7]
             result = data[7]
-            if result == LedState.StandBy.value:
-                print("self.application.ev.pid_led_control --> ",LedState.StandBy.name)
-            elif result == LedState.Connecting.value:
-                print("self.application.ev.pid_led_control --> ",LedState.Connecting.name)
-            elif result == LedState.RfidVerified.value:
-                print("self.application.ev.pid_led_control --> ",LedState.RfidVerified.name)
-            elif result == LedState.Charging.value:
-                print("self.application.ev.pid_led_control --> ",LedState.Charging.name)
-            elif result == LedState.RfidFailed.value:
-                print("self.application.ev.pid_led_control --> ",LedState.RfidFailed.name)
-            elif result == LedState.NeedReplugging.value:
-                print("self.application.ev.pid_led_control --> ",LedState.NeedReplugging.name)
-            elif result == LedState.Fault.value:
-                print("self.application.ev.pid_led_control --> ",LedState.Fault.name)
-            elif result == LedState.ChargingStopped.value:
-                print("self.application.ev.pid_led_control --> ",LedState.ChargingStopped.name)
+            # if result == LedState.StandBy.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.StandBy.name)
+            # elif result == LedState.Connecting.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.Connecting.name)
+            # elif result == LedState.RfidVerified.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.RfidVerified.name)
+            # elif result == LedState.Charging.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.Charging.name)
+            # elif result == LedState.RfidFailed.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.RfidFailed.name)
+            # elif result == LedState.NeedReplugging.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.NeedReplugging.name)
+            # elif result == LedState.Fault.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.Fault.name)
+            # elif result == LedState.ChargingStopped.value:
+            #     print("self.application.ev.pid_led_control --> ",LedState.ChargingStopped.name)
 
     def set_response_pid_locker_control(self,data):
         if data[2] == self.pid_locker_control:

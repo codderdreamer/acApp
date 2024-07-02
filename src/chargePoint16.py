@@ -867,15 +867,11 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
             # Şarj Noktasında bir reservasyon yok ise ve bir şarj yok ise resetlenebilir
-            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-                print("Şarj var durduruluyor")
-                self.application.meter_values_on = False
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-                time.sleep(2)
+            
             response = call_result.ResetPayload(
                     status = ResetStatus.accepted
                 )
-            os.system("reboot")
+            
             
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
@@ -885,9 +881,12 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
-            if self.application.ev.charge == False or self.application.ev.reservation_id == None:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-                os.system("reboot")
+            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+                print("Şarj var durduruluyor")
+                self.application.meter_values_on = False
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            time.sleep(5)
+            os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)
 

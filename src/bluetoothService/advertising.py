@@ -118,7 +118,7 @@ class TestAdvertisement(Advertisement):
         self.include_tx_power = True
 
 def register_ad_cb():
-    # print('Advertisement registered')
+    print('Advertisement registered')
     pass
 
 def register_ad_error_cb(mainloop, error):

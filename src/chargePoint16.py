@@ -45,6 +45,10 @@ class ChargePoint16(cp):
         self.authorize = None
         
         self.start_transaction_result = None
+
+    def reboot(self):
+        time.sleep(7)
+        os.system("reboot")
         
         # Thread(target=self.show,daemon=True).start()
         
@@ -885,7 +889,7 @@ class ChargePoint16(cp):
             if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
                 print("Şarj var durduruluyor")
                 self.application.deviceState = DeviceState.STOPPED_BY_EVSE
-                time.sleep(10)
+                Thread(target=self.reboot,daemon=True).start()
             # os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)

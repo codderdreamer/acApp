@@ -885,7 +885,7 @@ class ChargePoint16(cp):
             if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
                 print("Şarj var durduruluyor")
                 self.application.meter_values_on = False
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+                self.application.chargePoint.send_stop_transaction()
             time.sleep(5)
             os.system("reboot")
         except Exception as e:

@@ -169,38 +169,37 @@ class Application():
     def read_charge_values_thred(self):
         while True:
             try:
-                if self.settings.deviceSettings.externalMidMeter == True or self.settings.deviceSettings.mid_meter == True:
-            
-                    # print("-------------CHARGE VALUES------------")
-                    if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
-                        # print("Veriler MID'den alınıyor...")
-                        self.ev.current_L1 = self.modbusModule.current_L1
-                        self.ev.current_L2 = self.modbusModule.current_L2
-                        self.ev.current_L3 = self.modbusModule.current_L3
-                        self.ev.voltage_L1 = self.modbusModule.voltage_L1
-                        self.ev.voltage_L2 = self.modbusModule.voltage_L2
-                        self.ev.voltage_L3 = self.modbusModule.voltage_L3
-                        self.ev.energy = self.modbusModule.energy - self.modbusModule.firstEnergy
-                        self.ev.power =  self.modbusModule.power
-                    elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
-                        # print("Veriler MCU'dan alınıyor...")
-                        self.ev.current_L1 = self.serialPort.current_L1
-                        self.ev.current_L2 = self.serialPort.current_L2
-                        self.ev.current_L3 = self.serialPort.current_L3
-                        self.ev.voltage_L1 = self.serialPort.voltage_L1
-                        self.ev.voltage_L2 = self.serialPort.voltage_L2
-                        self.ev.voltage_L3 = self.serialPort.voltage_L3
-                        self.ev.energy = self.serialPort.energy
-                        self.ev.power =  self.modbusModule.power
-                    else:
-                        self.ev.current_L1 = 0
-                        self.ev.current_L2 = 0
-                        self.ev.current_L3 = 0
-                        self.ev.voltage_L1 = 0
-                        self.ev.voltage_L2 = 0
-                        self.ev.voltage_L3 = 0
-                        self.ev.energy = 0
-                        self.ev.power =  0
+
+                # print("-------------CHARGE VALUES------------")
+                if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
+                    # print("Veriler MID'den alınıyor...")
+                    self.ev.current_L1 = self.modbusModule.current_L1
+                    self.ev.current_L2 = self.modbusModule.current_L2
+                    self.ev.current_L3 = self.modbusModule.current_L3
+                    self.ev.voltage_L1 = self.modbusModule.voltage_L1
+                    self.ev.voltage_L2 = self.modbusModule.voltage_L2
+                    self.ev.voltage_L3 = self.modbusModule.voltage_L3
+                    self.ev.energy = self.modbusModule.energy - self.modbusModule.firstEnergy
+                    self.ev.power =  self.modbusModule.power
+                elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
+                    # print("Veriler MCU'dan alınıyor...")
+                    self.ev.current_L1 = self.serialPort.current_L1
+                    self.ev.current_L2 = self.serialPort.current_L2
+                    self.ev.current_L3 = self.serialPort.current_L3
+                    self.ev.voltage_L1 = self.serialPort.voltage_L1
+                    self.ev.voltage_L2 = self.serialPort.voltage_L2
+                    self.ev.voltage_L3 = self.serialPort.voltage_L3
+                    self.ev.energy = self.serialPort.energy
+                    self.ev.power =  self.modbusModule.power
+                else:
+                    self.ev.current_L1 = 0
+                    self.ev.current_L2 = 0
+                    self.ev.current_L3 = 0
+                    self.ev.voltage_L1 = 0
+                    self.ev.voltage_L2 = 0
+                    self.ev.voltage_L3 = 0
+                    self.ev.energy = 0
+                    self.ev.power =  0
                     
                 # print("self.ev.current_L1",self.ev.current_L1)
                 # print("self.ev.current_L2",self.ev.current_L2)

@@ -486,6 +486,7 @@ class Process():
     def idle(self):
         print("****************************************************************** idle")
         self.application.databaseModule.set_charge("False","","")
+        self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
         if self.application.ev.reservation_id != None:
             print("Reservation var")
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()

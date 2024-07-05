@@ -46,6 +46,7 @@ class SerialPort():
         self.voltage_L3 = 0
         self.power = 0
         self.energy = 0
+        self.firstEnergy = 0
         
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -469,7 +470,10 @@ class SerialPort():
 
     def get_response_pid_energy(self,data):
         if data[2] == self.pid_energy:
-            self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
+            if self.application.deviceState == DeviceState.IDLE:
+                self.firstEnergy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
+            self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3) - self.firstEnergy
+            
 
     def set_response_pid_rfid(self,data):
         if data[2] == self.pid_rfid:

@@ -90,11 +90,13 @@ def update_mcu_firmware(firmware_name):
         print("log_output",log_output)
         if "File downloaded successfully" in log_output:
             return True
-        log_error = log_result.stderr
-        if log_result.returncode != 0:
-            print("Log error:", log_error)
+        else:
             return False
-        return True
+        # log_error = log_result.stderr
+        # if log_result.returncode != 0:
+        #     print("Log error:", log_error)
+        #     return False
+        # return True
     except Exception as e:
         print("update_mcu_firmware Exception:",e)
 

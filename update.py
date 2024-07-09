@@ -188,6 +188,8 @@ charge = False
 there_is_change = False
 while True:
     try:
+        if not os.path.exists("/root/reset_counter.txt"):
+            create_and_write_file(0)
         counter = int(read_file())
         if counter != 0 and counter < 5:
             print(f"{counter + 1}. ya deneniyor ")

@@ -155,6 +155,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            print("BootNotification Response",response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
                 self.application.ocppActive = True

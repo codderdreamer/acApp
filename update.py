@@ -17,6 +17,14 @@ def check_for_git_changes():
             print("Log error:", log_error)
         if log_output:
             print("New commits:\n", log_output)
+            diff_result = subprocess.run(['git', 'diff', '--name-only', 'HEAD', 'origin/main'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            diff_output = diff_result.stdout
+            diff_error = diff_result.stderr
+            if diff_result.returncode != 0:
+                print("Diff error:", diff_error)
+            
+            if diff_output:
+                print("Changed files:\n", diff_output)
             return True
         else:
             print("No new commits.")
@@ -104,7 +112,7 @@ charge = False
 there_is_change = False
 while True:
     try:
-        read_mcu_firmware_version()
+        # read_mcu_firmware_version()
         if is_there_internet():
             charge = is_there_charge()
             if charge == False:

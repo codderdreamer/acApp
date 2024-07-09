@@ -11,3 +11,9 @@
 - test için # if self.application.ev.card_id != "" and self.application.ev.card_id != None: yoruma alındı
 - 
 
+
+
+YAPILACAKLAR 09.07.
+
+- interneti ayağa kaldıran yerleri farklı service yap.
+

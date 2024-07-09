@@ -4,6 +4,7 @@ import time
 import sqlite3
 import subprocess
 import requests
+import json
 
 def check_for_git_changes():
     try:
@@ -85,6 +86,19 @@ def is_there_internet():
     except Exception as e:
         print("is_there_internet Exception:",e)
         return False
+    
+def read_mcu_firmware_version():
+    try:
+        with open("/root/version.json", "r") as file:
+            data = json.load(file)
+            print("data",data)
+            files_and_dirs = os.listdir("/root/acApp")
+            bin_files = [f for f in files_and_dirs if f.endswith('.bin')]
+            for bin_file in bin_files:
+                print(bin_file)
+
+    except Exception as e:
+        print("read_mcu_firmware_version Exception:",e)
 
 charge = False
 there_is_change = False
@@ -97,7 +111,8 @@ while True:
                 there_is_change = check_for_git_changes()
             if there_is_change == True:
                 updade_firmware()
-                system_restart()
+                read_mcu_firmware_version()
+                # system_restart()
     except Exception as e:
         print("Exception:", e)
 

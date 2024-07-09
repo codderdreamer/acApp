@@ -192,7 +192,7 @@ while True:
             create_and_write_file(0)
         counter = int(read_file())
         if counter != 0 and counter < 5:
-            print(f"{counter + 1}. ya deneniyor ")
+            print(f"{counter + 1}. ye deneniyor ")
             firmware_name = find_name_bin_file()
             if firmware_name != None:
                 if update_mcu_firmware(firmware_name) == False:
@@ -201,7 +201,9 @@ while True:
                     create_and_write_file(0)
             else:
                 create_and_write_file(0)
-            
+        if counter == 5:
+            create_and_write_file(0)
+            os.system("systemctl restart acapp.service")
 
         if is_there_internet():
             charge = is_there_charge()

@@ -266,10 +266,10 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        app.testWebSocket = TestWebSocketModule(app)
-        # testServer = TestServer(app)
-        # Thread(target=testServer.run,args=(loop,), daemon=True).start()
-        app.ocpp_task()
+        # app.testWebSocket = TestWebSocketModule(app)
+        # # testServer = TestServer(app)
+        # # Thread(target=testServer.run,args=(loop,), daemon=True).start()
+        # app.ocpp_task()
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)
           

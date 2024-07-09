@@ -5,6 +5,7 @@ import sqlite3
 import subprocess
 import requests
 import json
+import threading
 
 def check_for_git_changes():
     try:
@@ -17,24 +18,31 @@ def check_for_git_changes():
             print("Log error:", log_error)
         if log_output:
             print("New commits:\n", log_output)
-            diff_result = subprocess.run(['git', 'diff', '--name-only', 'HEAD', 'origin/main'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-            diff_output = diff_result.stdout
-            diff_error = diff_result.stderr
-            if diff_result.returncode != 0:
-                print("Diff error:", diff_error)
-            if diff_output:
-                print("Changed files:\n", diff_output)
-                bin_files = [line for line in diff_output.splitlines() if line.endswith('.bin')]
-                if bin_files:
-                    print("bin_files",bin_files)
-                else:
-                    print("No .bin files changed.")
             return True
         else:
             print("No new commits.")
             return False
     except Exception as e:
         print("check_for_git_changes An error occurred:", e)
+
+def check_for_mcu_change():
+    try:
+        diff_result = subprocess.run(['git', 'diff', '--name-only', 'HEAD', 'origin/main'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        diff_output = diff_result.stdout
+        diff_error = diff_result.stderr
+        if diff_result.returncode != 0:
+            print("Diff error:", diff_error)
+        if diff_output:
+            print("Changed files:\n", diff_output)
+            bin_files = [line for line in diff_output.splitlines() if line.endswith('.bin')]
+            if bin_files:
+                print("bin_files",bin_files)
+                return True, bin_files[0]
+            else:
+                print("No .bin files changed.")
+                return False, ""
+    except Exception as e:
+        print("check_for_mcu_change An error occurred:", e)
 
 def is_there_charge():
     file_path = "/root/Charge.sqlite"
@@ -61,11 +69,27 @@ def is_there_charge():
         print("is_there_charge Exception:", e)
         return is_there_charge()
     
-def updade_firmware():
+def update_firmware():
     try:
         os.system("git pull")
     except Exception as e:
         print("updade_firmware Exception:",e)
+
+def update_mcu_firmware(firmware_name):
+    print("MCU boot moduna geçiyor...")
+    threading.Thread(target=pe_10_set,daemon=True).start()
+    threading.Thread(target=pe_11_set,daemon=True).start()
+    path = "/root/acApp/" + firmware_name
+    time.sleep(10)
+    print("MCU güncelleniyor...")
+    run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
+    log_result = subprocess.run(['dfu-util', '-a', '0', '-s', '0x08020000:leave', '-D', path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    log_output = log_result.stdout
+    log_error = log_result.stderr
+    if log_result.returncode != 0:
+        print("Log error:", log_error)
+    if log_output:
+        print("log_output", log_output)
 
 def system_restart():
     try:
@@ -112,6 +136,39 @@ def read_mcu_firmware_version():
     except Exception as e:
         print("read_mcu_firmware_version Exception:",e)
 
+def set_gpio(port, pin, value):
+    command = f"gpio-test.64 w {port} {pin} {value}"
+    subprocess.run(command, shell=True)
+
+def pe_10_set():
+    set_gpio('e', 10, 1)
+    set_gpio('e', 11, 1)
+    time.sleep(0.3)
+    set_gpio('e', 10, 0)
+
+def pe_11_set():
+    time.sleep(0.5)
+    set_gpio('e', 11, 0)
+    time.sleep(0.1)
+    set_gpio('e', 11, 1)
+    time.sleep(0.1)
+
+    set_gpio('e', 11, 0)
+    time.sleep(0.1)
+    set_gpio('e', 11, 1)
+    time.sleep(0.1)
+
+    set_gpio('e', 11, 0)
+    time.sleep(0.1)
+    set_gpio('e', 11, 1)
+    time.sleep(0.1)
+
+    set_gpio('e', 11, 0)
+    time.sleep(0.1)
+    set_gpio('e', 11, 1)
+    time.sleep(0.1)
+
+
 charge = False
 there_is_change = False
 while True:
@@ -123,7 +180,10 @@ while True:
                 ensure_repository()
                 there_is_change = check_for_git_changes()
             if there_is_change == True:
-                updade_firmware()
+                mcu_firmware_changed, firmware_name = check_for_mcu_change()
+                if mcu_firmware_changed:
+                    update_mcu_firmware(firmware_name)
+                update_firmware()
                 
                 # system_restart()
     except Exception as e:

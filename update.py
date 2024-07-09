@@ -188,8 +188,6 @@ charge = False
 there_is_change = False
 while True:
     try:
-        set_gpio('e', 10, 0)
-        set_gpio('e', 11, 0)
         if not os.path.exists("/root/reset_counter.txt"):
             create_and_write_file(0)
         counter = int(read_file())

@@ -71,25 +71,44 @@ def is_there_charge():
     
 def update_firmware():
     try:
+        create_and_write_file(0)
         os.system("git pull")
     except Exception as e:
         print("updade_firmware Exception:",e)
 
 def update_mcu_firmware(firmware_name):
-    print("MCU boot moduna geçiyor...")
-    # threading.Thread(target=pe_10_set,daemon=True).start()
-    # threading.Thread(target=pe_11_set,daemon=True).start()
-    path = "/root/acApp/" + firmware_name
-    time.sleep(10)
-    print("MCU güncelleniyor...")
-    run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
-    log_result = subprocess.run(['dfu-util', '-a', '0', '-s', '0x08020000:leave', '-D', path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-    log_output = log_result.stdout
-    log_error = log_result.stderr
-    if log_result.returncode != 0:
-        print("Log error:", log_error)
-    if log_output:
-        print("log_output", log_output)
+    try:
+        print("MCU boot moduna geçiyor...")
+        # threading.Thread(target=pe_10_set,daemon=True).start()
+        # threading.Thread(target=pe_11_set,daemon=True).start()
+        path = "/root/acApp/" + firmware_name
+        time.sleep(10)
+        print("MCU güncelleniyor...")
+        run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
+        log_result = subprocess.run(['dfu-util', '-a', '0', '-s', '0x08020000:leave', '-D', path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        log_output = log_result.stdout
+        log_error = log_result.stderr
+        if log_result.returncode != 0:
+            print("Log error:", log_error)
+            return False
+        return True
+    except Exception as e:
+        print("update_mcu_firmware Exception:",e)
+
+def create_and_write_file(counter):
+    try:
+        with open("/root/reset_counter.txt", "w") as file:
+            file.write(str(counter))
+    except Exception as e:
+        print("create_and_write_file Exception:",e)
+
+def read_file():
+    try:
+        with open("/root/reset_counter.txt", "r") as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        print("read_file Exception:",e)
 
 def system_restart():
     try:
@@ -123,18 +142,6 @@ def is_there_internet():
         print("is_there_internet Exception:",e)
         return False
     
-def read_mcu_firmware_version():
-    try:
-        with open("/root/version.json", "r") as file:
-            data = json.load(file)
-            print("data",data)
-            files_and_dirs = os.listdir("/root/acApp")
-            bin_files = [f for f in files_and_dirs if f.endswith('.bin')]
-            for bin_file in bin_files:
-                print(bin_file)
-
-    except Exception as e:
-        print("read_mcu_firmware_version Exception:",e)
 
 def set_gpio(port, pin, value):
     command = f"gpio-test.64 w {port} {pin} {value}"
@@ -168,11 +175,32 @@ def pe_11_set():
     set_gpio('e', 11, 1)
     time.sleep(0.1)
 
+def find_name_bin_file():
+    try:
+        files_and_dirs = os.listdir("/root/acApp")
+        bin_files = [f for f in files_and_dirs if f.endswith('.bin')]
+        if len(bin_files)>0:
+            return bin_files[0]
+    except Exception as e:
+        print("list_bin_files Exception:",e)
 
 charge = False
 there_is_change = False
 while True:
     try:
+        counter = int(read_file())
+        if counter != 0 and counter < 5:
+            print(f"{counter + 1}. ya deneniyor ")
+            firmware_name = find_name_bin_file()
+            if firmware_name != None:
+                if update_mcu_firmware(firmware_name) == False:
+                    create_and_write_file(counter + 1)
+                else:
+                    create_and_write_file(0)
+            else:
+                create_and_write_file(0)
+            
+
         if is_there_internet():
             charge = is_there_charge()
             if charge == False:
@@ -182,7 +210,11 @@ while True:
                 mcu_firmware_changed, firmware_name = check_for_mcu_change()
                 update_firmware()
                 if mcu_firmware_changed:
-                    update_mcu_firmware(firmware_name)
+                    if update_mcu_firmware(firmware_name) == False:
+                        if int(read_file()) == 0:
+                            create_and_write_file(1)
+                            print("Reboot ediliyor")
+        
                 
                 # system_restart()
     except Exception as e:

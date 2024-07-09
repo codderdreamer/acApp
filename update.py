@@ -77,8 +77,8 @@ def update_firmware():
 
 def update_mcu_firmware(firmware_name):
     print("MCU boot moduna geçiyor...")
-    threading.Thread(target=pe_10_set,daemon=True).start()
-    threading.Thread(target=pe_11_set,daemon=True).start()
+    # threading.Thread(target=pe_10_set,daemon=True).start()
+    # threading.Thread(target=pe_11_set,daemon=True).start()
     path = "/root/acApp/" + firmware_name
     time.sleep(10)
     print("MCU güncelleniyor...")
@@ -173,7 +173,6 @@ charge = False
 there_is_change = False
 while True:
     try:
-        # read_mcu_firmware_version()
         if is_there_internet():
             charge = is_there_charge()
             if charge == False:

@@ -231,12 +231,15 @@ while True:
             if there_is_change == True:
                 mcu_firmware_changed, firmware_name = check_for_mcu_change()
                 update_firmware()
+                create_and_write_file(1)
                 if mcu_firmware_changed:
                     if update_mcu_firmware(firmware_name) == False:
-                        if int(read_file()) == 0:
-                            create_and_write_file(1)
+                        if int(read_file()) == 1:
+                            create_and_write_file(2)
                             print("Reboot ediliyor")
                             # os.system("reboot")
+                    else:
+                        create_and_write_file(0)
                             
                 system_restart()
     except Exception as e:

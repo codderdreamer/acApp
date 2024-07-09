@@ -79,8 +79,8 @@ def update_firmware():
 def update_mcu_firmware(firmware_name):
     try:
         print("MCU boot moduna geçiyor...")
-        # threading.Thread(target=pe_10_set,daemon=True).start()
-        # threading.Thread(target=pe_11_set,daemon=True).start()
+        threading.Thread(target=pe_10_set,daemon=True).start()
+        threading.Thread(target=pe_11_set,daemon=True).start()
         path = "/root/acApp/" + firmware_name
         time.sleep(10)
         print("MCU güncelleniyor...")
@@ -203,7 +203,7 @@ while True:
                 create_and_write_file(0)
         if counter == 5:
             create_and_write_file(0)
-            os.system("systemctl restart acapp.service")
+            system_restart()
 
         if is_there_internet():
             charge = is_there_charge()
@@ -218,9 +218,7 @@ while True:
                         if int(read_file()) == 0:
                             create_and_write_file(1)
                             print("Reboot ediliyor")
-        
-                
-                # system_restart()
+                system_restart()
     except Exception as e:
         print("Exception:", e)
 

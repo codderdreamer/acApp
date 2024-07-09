@@ -22,9 +22,13 @@ def check_for_git_changes():
             diff_error = diff_result.stderr
             if diff_result.returncode != 0:
                 print("Diff error:", diff_error)
-            
             if diff_output:
                 print("Changed files:\n", diff_output)
+                bin_files = [line for line in diff_output.splitlines() if line.endswith('.bin')]
+                if bin_files:
+                    print("bin_files",bin_files)
+                else:
+                    print("No .bin files changed.")
             return True
         else:
             print("No new commits.")

@@ -104,6 +104,7 @@ charge = False
 there_is_change = False
 while True:
     try:
+        read_mcu_firmware_version()
         if is_there_internet():
             charge = is_there_charge()
             if charge == False:
@@ -111,7 +112,7 @@ while True:
                 there_is_change = check_for_git_changes()
             if there_is_change == True:
                 updade_firmware()
-                read_mcu_firmware_version()
+                
                 # system_restart()
     except Exception as e:
         print("Exception:", e)

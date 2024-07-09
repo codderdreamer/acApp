@@ -87,6 +87,9 @@ def update_mcu_firmware(firmware_name):
         run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
         log_result = subprocess.run(['dfu-util', '-a', '0', '-s', '0x08020000:leave', '-D', path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         log_output = log_result.stdout
+        print("log_output",log_output)
+        if "File downloaded successfully" in log_output:
+            return True
         log_error = log_result.stderr
         if log_result.returncode != 0:
             print("Log error:", log_error)

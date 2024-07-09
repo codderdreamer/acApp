@@ -181,9 +181,9 @@ while True:
                 there_is_change = check_for_git_changes()
             if there_is_change == True:
                 mcu_firmware_changed, firmware_name = check_for_mcu_change()
+                update_firmware()
                 if mcu_firmware_changed:
                     update_mcu_firmware(firmware_name)
-                update_firmware()
                 
                 # system_restart()
     except Exception as e:

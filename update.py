@@ -221,6 +221,7 @@ while True:
                         if int(read_file()) == 0:
                             create_and_write_file(1)
                             print("Reboot ediliyor")
+                            os.system("reboot")
                             
                 system_restart()
     except Exception as e:

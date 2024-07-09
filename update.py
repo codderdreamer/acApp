@@ -88,6 +88,13 @@ def update_mcu_firmware(firmware_name):
         log_result = subprocess.run(['dfu-util', '-a', '0', '-s', '0x08020000:leave', '-D', path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         log_output = log_result.stdout
         print("log_output",log_output)
+        time.sleep(0.1)
+        set_gpio('e', 10, 0)
+        set_gpio('e', 11, 0)
+        time.sleep(0.1)
+        set_gpio('e', 10, 1)
+        time.sleep(0.5)
+        set_gpio('e', 10, 0)
         if "File downloaded successfully" in log_output:
             return True
         else:
@@ -191,6 +198,12 @@ def find_name_bin_file():
 
 charge = False
 there_is_change = False
+set_gpio('e', 10, 0)
+set_gpio('e', 11, 0)
+time.sleep(0.1)
+set_gpio('e', 10, 1)
+time.sleep(0.5)
+set_gpio('e', 10, 0)
 while True:
     try:
         if not os.path.exists("/root/reset_counter.txt"):

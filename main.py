@@ -27,58 +27,58 @@ class Application():
     def __init__(self,loop):
         print("Application start.")
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
-        # os.system("chmod +x /root/acApp/bluetooth_set.sh")
-        # os.system("/root/acApp/bluetooth_set.sh")
-        # time.sleep(5)
-        # self.test_led = False
-        # self.test_charge = False
-        # self.testWebSocket = None
+        os.system("chmod +x /root/acApp/bluetooth_set.sh")
+        os.system("/root/acApp/bluetooth_set.sh")
+        time.sleep(5)
+        self.test_led = False
+        self.test_charge = False
+        self.testWebSocket = None
         
-        # self.loop = loop
-        # self.charge_stopped = False
-        # self.chargePoint = None
-        # self.request_list = []
-        # self.model = None
-        # self.masterCard = None
-        # self.availability = AvailabilityType.operative
-        # self.bluetooth_error = None
+        self.loop = loop
+        self.charge_stopped = False
+        self.chargePoint = None
+        self.request_list = []
+        self.model = None
+        self.masterCard = None
+        self.availability = AvailabilityType.operative
+        self.bluetooth_error = None
         
-        # self.chargingStatus = ChargePointStatus.available
-        # self.error_code = None
+        self.chargingStatus = ChargePointStatus.available
+        self.error_code = None
         
-        # self.__deviceState = None
-        # self.ocppActive = False
-        # self.cardType : CardType = None
-        # self.socketType = SocketType.Type2
-        # self.max_current = 32
-        # self.control_A_B_C = False
-        # self.control_C_B = False
-        # self.control_A_C = False
-        # self.meter_values_on = False
+        self.__deviceState = None
+        self.ocppActive = False
+        self.cardType : CardType = None
+        self.socketType = SocketType.Type2
+        self.max_current = 32
+        self.control_A_B_C = False
+        self.control_C_B = False
+        self.control_A_C = False
+        self.meter_values_on = False
         
-        # self.settings = Settings(self)
-        # self.databaseModule = DatabaseModule(self)
-        # self.bluetoothService = BluetoothService(self)
-        # self.id_tag_list = self.databaseModule.get_local_list()
-        # self.softwareSettings = SoftwareSettings(self)
-        # self.flaskModule = FlaskModuleThread(self)
-        # self.webSocketServer = WebSocketServer(self)
-        # self.ev = EV(self)
-        # self.ocpp_subprotocols = OcppVersion.ocpp16
-        # self.serialPort = SerialPort(self)
-        # self.process = Process(self)
+        self.settings = Settings(self)
+        self.databaseModule = DatabaseModule(self)
+        self.bluetoothService = BluetoothService(self)
+        self.id_tag_list = self.databaseModule.get_local_list()
+        self.softwareSettings = SoftwareSettings(self)
+        self.flaskModule = FlaskModuleThread(self)
+        self.webSocketServer = WebSocketServer(self)
+        self.ev = EV(self)
+        self.ocpp_subprotocols = OcppVersion.ocpp16
+        self.serialPort = SerialPort(self)
+        self.process = Process(self)
         
-        # if self.settings.deviceSettings.externalMidMeter == True:
-        #     print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter, self.settings.deviceSettings.externalMidMeterSlaveAddress)
-        #     self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
-        # elif self.settings.deviceSettings.mid_meter == True:
-        #     print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter, self.settings.deviceSettings.midMeterSlaveAddress)
-        #     self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
-        # else:
-        #     print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter,type(self.settings.deviceSettings.mid_meter))
-        #     print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter,type(self.settings.deviceSettings.externalMidMeter))
+        if self.settings.deviceSettings.externalMidMeter == True:
+            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter, self.settings.deviceSettings.externalMidMeterSlaveAddress)
+            self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
+        elif self.settings.deviceSettings.mid_meter == True:
+            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter, self.settings.deviceSettings.midMeterSlaveAddress)
+            self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
+        else:
+            print("----------------------------self.settings.deviceSettings.mid_meter",self.settings.deviceSettings.mid_meter,type(self.settings.deviceSettings.mid_meter))
+            print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter,type(self.settings.deviceSettings.externalMidMeter))
         
-        # Thread(target=self.read_charge_values_thred,daemon=True).start()
+        Thread(target=self.read_charge_values_thred,daemon=True).start()
         
     @property
     def deviceState(self):
@@ -266,10 +266,10 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        # app.testWebSocket = TestWebSocketModule(app)
-        # # testServer = TestServer(app)
-        # # Thread(target=testServer.run,args=(loop,), daemon=True).start()
-        # app.ocpp_task()
+        app.testWebSocket = TestWebSocketModule(app)
+        # testServer = TestServer(app)
+        # Thread(target=testServer.run,args=(loop,), daemon=True).start()
+        app.ocpp_task()
     except Exception as e:
         print(datetime.now(),"__main__ Exception:",e)
           

@@ -26,7 +26,7 @@ from src.webSocket import *
 class Application():
     def __init__(self,loop):
         print("Application start.")
-        # os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
+        os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
         os.system("chmod +x /root/acApp/bluetooth_set.sh")
         os.system("/root/acApp/bluetooth_set.sh")
         time.sleep(5)

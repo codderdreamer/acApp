@@ -67,10 +67,18 @@ class SerialPort():
         
         self.set_command_pid_rfid()
 
-        self.get_command_pid_energy(EnergyType.kwh)
+        
         
         
         # Thread(target=self.read_meter,daemon=True).start()
+
+    def get_energy_thread(self):
+        while True:
+            try:
+                self.get_command_pid_energy(EnergyType.kwh)
+            except Exception as e:
+                print(datetime.now(),"get_energy_thread Exception:",e)
+            time.sleep(5)
         
     def read_meter(self):
         while True:

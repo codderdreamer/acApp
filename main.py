@@ -79,6 +79,8 @@ class Application():
             print("----------------------------self.settings.deviceSettings.externalMidMeter",self.settings.deviceSettings.externalMidMeter,type(self.settings.deviceSettings.externalMidMeter))
         
         Thread(target=self.read_charge_values_thred,daemon=True).start()
+
+        self.deviceState = DeviceState.IDLE
         
     @property
     def deviceState(self):

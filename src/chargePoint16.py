@@ -891,6 +891,8 @@ class ChargePoint16(cp):
                 print("Şarj var durduruluyor")
                 self.application.deviceState = DeviceState.STOPPED_BY_EVSE
                 Thread(target=self.reboot,daemon=True).start()
+            else:
+                Thread(target=self.reboot,daemon=True).start()
             # os.system("reboot")
         except Exception as e:
             print(datetime.now(),"after_reset Exception:",e)

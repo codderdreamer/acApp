@@ -1,0 +1,96 @@
+apt-get update -y
+apt install python3-pip -y
+mkdir hci-bak
+cd hci-bak/
+cp /usr/bin/hci* . -a
+apt remove --purge bluez -y
+cd ~
+wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.45.tar.xz
+tar -xvf bluez-5.45.tar.xz
+cd bluez-5.45
+apt-get install libudev-dev libical-dev libreadline-dev libglib2.0-dev libdbus-1-dev -y
+./configure
+make -j4
+make install
+cp ~/hci-bak/hci* /usr/bin/ -a
+hciattach -n -s 1500000 /dev/ttyS1 sprd &
+hciconfig hci0 up && hciconfig hci0 piscan
+systemctl start bluetooth.service
+apt install nano -y
+ExecStart=/usr/local/libexec/bluetooth/bluetoothd --experimental
+systemctl daemon-reload
+service bluetooth restart
+apt-get install virtualenv python-dev libdbus-1-dev libdbus-glib-1-dev python-gi -y
+pip3 install dbus-python
+apt install git -y
+pip3 install websockets
+pip3 install ocpp
+pip3 install pyserial
+pip3 install minimalmodbus
+pip3 install --upgrade setuptools
+# 39.0.1 --> 59.6.0
+pip3 install Flask
+apt-get install ifmetric
+pip3 install psutil
+pip3 install pycryptodome
+apt install curl -y
+pip3 install websocket-server
+pip3 install pyjwt
+pip3 install uvicorn
+pip3 install pydantic
+pip3 install fastapi
+
+service bluetooth restart
+
+cd /lib/systemd/system/
+nano acapp.service
+
+[Unit]
+Description=Acapp Service
+After=network.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /root/acApp/main.py
+StandardOutput=inherit
+StandardError=inherit
+Restart=restart
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+systemctl daemon-reload
+systemctl enable acapp.service
+systemctl start acapp.service
+
+nano update.service
+
+[Unit]
+Description=Update Service
+After=network.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /root/update.py
+StandardOutput=inherit
+StandardError=inherit
+Restart=restart
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+systemctl daemon-reload
+systemctl enable update.service
+systemctl start update.service
+
+cat /root/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+systemctl restart sshd
+service ssh restart
+
+scp C:\Users\syucedag\.ssh\id_rsa.pub root@192.168.1.133:/root/.ssh/
+scp C:\Users\syucedag\.ssh\id_rsa root@192.168.1.133:/root/.ssh/
+chmod 600 /root/.ssh/id_rsa

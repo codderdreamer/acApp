@@ -17,6 +17,7 @@ hciattach -n -s 1500000 /dev/ttyS1 sprd &
 hciconfig hci0 up && hciconfig hci0 piscan
 systemctl start bluetooth.service
 apt install nano -y
+nano /lib/systemd/system/bluetooth.service
 ExecStart=/usr/local/libexec/bluetooth/bluetoothd --experimental
 systemctl daemon-reload
 service bluetooth restart

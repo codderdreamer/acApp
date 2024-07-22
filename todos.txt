@@ -16,4 +16,5 @@
 YAPILACAKLAR 09.07.
 
 - interneti ayağa kaldıran yerleri farklı service yap.
+- git pull'u değiştir her zamn git clone yap, yada index sorununa bak hatalıysa git clone yapsın
 

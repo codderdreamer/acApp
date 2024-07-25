@@ -65,18 +65,11 @@ class SerialPort():
         Thread(target=self.get_command_pid_error_list_init,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         Thread(target=self.get_energy_thread,daemon=True).start()
-        Thread(target=self.test,daemon=True).start()
         
         self.set_command_pid_rfid()
 
         
-    def test(self):
-        while True:
-            try:
-                self.set_command_pid_led_control(LedState.Charging)
-            except Exception as e:
-                print(datetime.now(),"get_energy_thread Exception:",e)
-            time.sleep(1)
+
 
     def get_energy_thread(self):
         while True:

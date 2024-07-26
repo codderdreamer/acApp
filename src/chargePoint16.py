@@ -564,7 +564,7 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
             response = call_result.ChangeConfigurationPayload(
-                status= AvailabilityStatus.rejected
+                status= ConfigurationStatus.not_supported
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response

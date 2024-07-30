@@ -58,6 +58,7 @@ class ModbusModule:
         return round(float_val,2)
     
     def read_all_data(self):
+        counter = 0
         while True:
             try:
                 self.voltage_L1 = self.read_input_float(register_address=1)
@@ -68,7 +69,7 @@ class ModbusModule:
                 self.current_L3 = self.read_input_float(register_address=11)
                 self.power = round(self.read_input_float(register_address=53)/1000,2)
                 self.energy = round(self.read_input_float(register_address=73)/1000,2)
-                
+                counter = 0
                 # print("-----------MID METER-----------------")
                 # print("MID METER self.volt_l1",self.volt_l1)
                 # print("MID METER self.volt_l2",self.volt_l2)
@@ -80,10 +81,12 @@ class ModbusModule:
                 # print("MID METER self.energy",self.energy)
                 self.connection = True
             except Exception as e:
-                # print("Mid meter HATA:",e)
-                self.connection = False
+                counter += 1
+                if counter > 10:
+                    self.connection = False
+                    counter = 0
                 pass
-            time.sleep(1)
+            time.sleep(0.5)
 
     
     

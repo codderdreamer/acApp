@@ -302,6 +302,8 @@ class Process():
                 self.application.serialPort.get_command_pid_voltage()
                 self.application.serialPort.get_command_pid_power(PowerType.kw)
                 self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+            elif self.application.modbusModule.connection == True:
+                print("Mid meter bağlı", "self.application.modbusModule.port",self.application.modbusModule.port,"self.application.modbusModule.slave_address",self.application.modbusModule.slave_address, "self.application.modbusModule.baudrate",self.application.modbusModule.baudrate)
                 
             time.sleep(1)
             

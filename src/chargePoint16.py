@@ -240,7 +240,7 @@ class ChargePoint16(cp):
             if self.application.databaseModule.get_charge()["charge"] == "True" and self.application.cardType == CardType.BillingCard:
                 self.application.process.transaction_id = self.application.databaseModule.get_charge()["transaction_id"]
                 self.application.process.id_tag = self.application.databaseModule.get_charge()["id_tag"]
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
                 time.sleep(1)
                 self.application.process.transaction_id = None
                 self.application.process.id_tag = None
@@ -461,7 +461,7 @@ class ChargePoint16(cp):
 
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
-                                    self
+                                    self, reason = None
                                     ):
         """
         meter_stop: int,

@@ -5,6 +5,7 @@ from threading import Thread
 
 class ModbusModule:
     def __init__(self,application, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
+        print("*********** Modbus Bağlantı port:",port,"slave_address:",slave_address, "baudrate:",baudrate)
         self.application = application
         self.instrument = minimalmodbus.Instrument(port, slave_address)
         self.instrument.serial.baudrate = baudrate

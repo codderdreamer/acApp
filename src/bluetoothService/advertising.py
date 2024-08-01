@@ -8,6 +8,9 @@ from src.bluetoothService import exceptions
 from src.bluetoothService import adapters
 from datetime import datetime
 
+from src.logger import ac_app_logger as logger
+
+
 BLUEZ_SERVICE_NAME = 'org.bluez'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
 DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
@@ -48,13 +51,13 @@ class Advertisement(dbus.service.Object):
                 properties['IncludeTxPower'] = dbus.Boolean(self.include_tx_power)
             return {LE_ADVERTISEMENT_IFACE: properties}
         except Exception as e:
-            print(datetime.now(),"get_properties Exception:",e)
+            logger.exception("get_properties Exception:", e)
 
     def get_path(self):
         try:
             return dbus.ObjectPath(self.path)
         except Exception as e:
-            print(datetime.now(),"get_path Exception:",e)
+            logger.exception("get_path Exception:", e)
 
     def add_service_uuid(self, uuid):
         try:
@@ -62,7 +65,7 @@ class Advertisement(dbus.service.Object):
                 self.service_uuids = []
             self.service_uuids.append(uuid)
         except Exception as e:
-            print(datetime.now(),"add_service_uuid Exception:",e)
+            logger.exception("add_service_uuid Exception:", e)
 
     def add_solicit_uuid(self, uuid):
         try:
@@ -70,7 +73,7 @@ class Advertisement(dbus.service.Object):
                 self.solicit_uuids = []
             self.solicit_uuids.append(uuid)
         except Exception as e:
-            print(datetime.now(),"add_solicit_uuid Exception:",e)
+            logger.exception("add_solicit_uuid Exception:", e)
 
     def add_manufacturer_data(self, manuf_code, data):
         try:
@@ -78,7 +81,7 @@ class Advertisement(dbus.service.Object):
                 self.manufacturer_data = dbus.Dictionary({}, signature='qv')
             self.manufacturer_data[manuf_code] = dbus.Array(data, signature='y')
         except Exception as e:
-            print(datetime.now(),"add_manufacturer_data Exception:",e)
+            logger.exception("add_manufacturer_data Exception:", e)
 
     def add_service_data(self, uuid, data):
         try:
@@ -86,7 +89,7 @@ class Advertisement(dbus.service.Object):
                 self.service_data = dbus.Dictionary({}, signature='sv')
             self.service_data[uuid] = dbus.Array(data, signature='y')
         except Exception as e:
-            print(datetime.now(),"add_service_data Exception:",e)
+            logger.exception("add_service_data Exception:", e)
 
     @dbus.service.method(DBUS_PROP_IFACE,
                          in_signature='s',
@@ -96,10 +99,9 @@ class Advertisement(dbus.service.Object):
             # print('GetAll')
             if interface != LE_ADVERTISEMENT_IFACE:
                 raise exceptions.InvalidArgsException()
-            # print('returning props')
             return self.get_properties()[LE_ADVERTISEMENT_IFACE]
         except Exception as e:
-            print(datetime.now(),"GetAll Exception:",e)
+            logger.exception("GetAll Exception:", e)
 
     @dbus.service.method(LE_ADVERTISEMENT_IFACE,
                          in_signature='',
@@ -118,15 +120,15 @@ class TestAdvertisement(Advertisement):
         self.include_tx_power = True
 
 def register_ad_cb():
-    print('Advertisement registered')
+    logger.info('Advertisement registered')
     pass
 
 def register_ad_error_cb(mainloop, error):
     try:
-        print('Failed to register advertisement: ' + str(error))
+        logger.error('Failed to register advertisement: ' + str(error))
         mainloop.quit()
     except Exception as e:
-            print(datetime.now(),"register_ad_error_cb Exception:",e)
+        logger.exception("register_ad_error_cb Exception:", e)
 
 
 def advertising_main(mainloop, bus, adapter_name):
@@ -150,4 +152,4 @@ def advertising_main(mainloop, bus, adapter_name):
                                      reply_handler=register_ad_cb,
                                      error_handler=functools.partial(register_ad_error_cb, mainloop))
     except Exception as e:
-        print(datetime.now(),"advertising_main Exception:",e)
+        logger.exception("advertising_main Exception:", e)

@@ -76,12 +76,12 @@ class FlaskModule:
             if login["UserName"] == UserName and login["Password"] == Password:   
                 return jsonify({'message': 'Login successful'})
             else:
-                return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+                return jsonify({'message': 'Invalid username or password'}), 401
+              
         
         # @self.app.route('/login', methods=['POST'])
         # def login():
         #     data = request.get_json()
-        #     print("Login data",data)
         #     UserName = data.get('UserName')
         #     Password = data.get('Password')
             
@@ -94,7 +94,7 @@ class FlaskModule:
             
         
         
-        @self.app.route('/changeProfile', methods=['POST'])
+        @self.app.route('/ ', methods=['POST'])
         @self.token_required
         def changeProfile():
             data = request.get_json()

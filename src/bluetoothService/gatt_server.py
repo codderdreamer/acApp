@@ -18,6 +18,8 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64
 
+from src.logger import ac_app_logger as logger
+
 BLUEZ_SERVICE_NAME = 'org.bluez'
 LE_ADVERTISING_MANAGER_IFACE = 'org.bluez.LEAdvertisingManager1'
 DBUS_OM_IFACE = 'org.freedesktop.DBus.ObjectManager'
@@ -32,21 +34,23 @@ KEY = b'CwlCluFqKUeOFAA3OcHyj9tOyY457EJ3'  # 32 bytes key
 IV = b'aOD6qb8TJ1J0taFk'  # 16 bytes IV
 
 def encrypt(plain_text):
-    print("encrypt",plain_text)
+    logger.info("Encrypting text: %s", plain_text)
     cipher = AES.new(KEY, AES.MODE_CBC, IV)
     padded_text = pad(plain_text.encode('utf-8'), AES.block_size)
     encrypted = cipher.encrypt(padded_text)
-    print("encrypted",base64.b64encode(encrypted).decode('utf-8'))
-    print("decrypted", decrypt(base64.b64encode(encrypted).decode('utf-8')))
-    return base64.b64encode(encrypted).decode('utf-8')
+    encrypted_base64 = base64.b64encode(encrypted).decode('utf-8')
+    logger.info("Encrypted text: %s", encrypted_base64)
+    logger.info("Decrypted text: %s", decrypt(encrypted_base64))
+    return encrypted_base64
 
 def decrypt(encrypted_text):
-    print("decrypt",encrypted_text)
+    logger.info("Decrypting text: %s", encrypted_text)
     encrypted = base64.b64decode(encrypted_text)
     cipher = AES.new(KEY, AES.MODE_CBC, IV)
     decrypted = unpad(cipher.decrypt(encrypted), AES.block_size)
-    print("decrypted",decrypted.decode('utf-8'))
-    return decrypted.decode('utf-8')
+    decrypted_text = decrypted.decode('utf-8')
+    logger.info("Decrypted text: %s", decrypted_text)
+    return decrypted_text
 
 class ApplicationBluetooth(dbus.service.Object):
     """
@@ -63,19 +67,18 @@ class ApplicationBluetooth(dbus.service.Object):
         try:
             return dbus.ObjectPath(self.path)
         except Exception as e:
-            print(datetime.now(), "get_path Exception:", e)
+            logger.exception("get_path Exception:", e)
 
     def add_service(self, service):
         try:
             self.services.append(service)
         except Exception as e:
-            print(datetime.now(), "add_service Exception:", e)
+            logger.exception("add_service Exception:", e)
 
     @dbus.service.method(DBUS_OM_IFACE, out_signature='a{oa{sa{sv}}}')
     def GetManagedObjects(self):
         try:
             response = {}
-            # print('GetManagedObjects')
             for service in self.services:
                 response[service.get_path()] = service.get_properties()
                 chrcs = service.get_characteristics()
@@ -86,7 +89,7 @@ class ApplicationBluetooth(dbus.service.Object):
                         response[desc.get_path()] = desc.get_properties()
             return response
         except Exception as e:
-            print(datetime.now(), "GetManagedObjects Exception:", e)
+            logger.exception("GetManagedObjects Exception:", e)
 
 class Service(dbus.service.Object):
     """
@@ -114,19 +117,19 @@ class Service(dbus.service.Object):
                 }
             }
         except Exception as e:
-            print(datetime.now(), "get_properties Exception:", e)
+            logger.exception("get_properties Exception:", e)
 
     def get_path(self):
         try:
             return dbus.ObjectPath(self.path)
         except Exception as e:
-            print(datetime.now(), "get_path Exception:", e)
+            logger.exception("get_path Exception:", e)
 
     def add_characteristic(self, characteristic):
         try:
             self.characteristics.append(characteristic)
         except Exception as e:
-            print(datetime.now(), "add_characteristic Exception:", e)
+            logger.exception("add_characteristic Exception:", e)
 
     def get_characteristic_paths(self):
         try:
@@ -135,7 +138,7 @@ class Service(dbus.service.Object):
                 result.append(chrc.get_path())
             return result
         except Exception as e:
-            print(datetime.now(), "get_characteristic_paths Exception:", e)
+            logger.exception("get_characteristic_paths Exception:", e)
 
     def get_characteristics(self):
         return self.characteristics
@@ -149,7 +152,7 @@ class Service(dbus.service.Object):
                 raise exceptions.InvalidArgsException()
             return self.get_properties()[GATT_SERVICE_IFACE]
         except Exception as e:
-            print(datetime.now(), "GetAll Exception:", e)
+            logger.exception("GetAll Exception:", e)
 
 class Characteristic(dbus.service.Object):
     """
@@ -177,13 +180,13 @@ class Characteristic(dbus.service.Object):
                 }
             }
         except Exception as e:
-            print(datetime.now(), "get_properties Exception:", e)
+            logger.exception("get_properties Exception:", e)
 
     def get_path(self):
         try:
             return dbus.ObjectPath(self.path)
         except Exception as e:
-            print(datetime.now(), "get_path Exception:", e)
+            logger.exception("get_path Exception:", e)
 
     def add_descriptor(self, descriptor):
         self.descriptors.append(descriptor)
@@ -195,7 +198,7 @@ class Characteristic(dbus.service.Object):
                 result.append(desc.get_path())
             return result
         except Exception as e:
-            print(datetime.now(), "get_descriptor_paths Exception:", e)
+            logger.exception("get_descriptor_paths Exception:", e)
 
     def get_descriptors(self):
         return self.descriptors
@@ -209,28 +212,28 @@ class Characteristic(dbus.service.Object):
                 raise exceptions.InvalidArgsException()
             return self.get_properties()[GATT_CHRC_IFACE]
         except Exception as e:
-            print(datetime.now(), "GetAll Exception:", e)
+            logger.exception("GetAll Exception:", e)
 
     @dbus.service.method(GATT_CHRC_IFACE,
                          in_signature='a{sv}',
                          out_signature='ay')
     def ReadValue(self, options):
-        print('Secure ReadValue called')
+        logger.info('Secure ReadValue called')
         raise exceptions.NotSupportedException()
 
     @dbus.service.method(GATT_CHRC_IFACE, in_signature='aya{sv}')
     def WriteValue(self, value, options):
-        print('Secure WriteValue called')
+        logger.info('Secure WriteValue called')
         raise exceptions.NotSupportedException()
 
     @dbus.service.method(GATT_CHRC_IFACE)
     def StartNotify(self):
-        print('Default StartNotify called, returning error')
+        logger.info('Default StartNotify called, returning error')
         raise exceptions.NotSupportedException()
 
     @dbus.service.method(GATT_CHRC_IFACE)
     def StopNotify(self):
-        print('Default StopNotify called, returning error')
+        logger.info('Default StopNotify called, returning error')
         raise exceptions.NotSupportedException()
 
     @dbus.service.signal(DBUS_PROP_IFACE,
@@ -260,13 +263,13 @@ class Descriptor(dbus.service.Object):
                 }
             }
         except Exception as e:
-            print(datetime.now(), "get_properties Exception:", e)
+            logger.exception("get_properties Exception:", e)
 
     def get_path(self):
         try:
             return dbus.ObjectPath(self.path)
         except Exception as e:
-            print(datetime.now(), "get_path Exception:", e)
+            logger.exception("get_path Exception:", e)
 
     @dbus.service.method(DBUS_PROP_IFACE,
                          in_signature='s',
@@ -277,18 +280,18 @@ class Descriptor(dbus.service.Object):
                 raise exceptions.InvalidArgsException()
             return self.get_properties()[GATT_DESC_IFACE]
         except Exception as e:
-            print(datetime.now(), "GetAll Exception:", e)
+            logger.exception("GetAll Exception:", e)
 
     @dbus.service.method(GATT_DESC_IFACE,
                          in_signature='a{sv}',
                          out_signature='ay')
     def ReadValue(self, options):
-        print('Default ReadValue called, returning error')
+        logger.info('Default ReadValue called, returning error')
         raise exceptions.NotSupportedException()
 
     @dbus.service.method(GATT_DESC_IFACE, in_signature='aya{sv}')
     def WriteValue(self, value, options):
-        print('Default WriteValue called, returning error')
+        logger.info('Default WriteValue called, returning error')
         raise exceptions.NotSupportedException()
 
 class SoftwareSettingsService(Service):
@@ -328,10 +331,10 @@ class NetworkPriorityCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_network_priority()).encode('utf-8')
-            print('NetworkPriorityCharacteristic Read: ' + repr(self.value))
+            logger.info('NetworkPriorityCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "NetworkPriorityCharacteristic ReadValue Exception:", e)
+            logger.exception("NetworkPriorityCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -339,10 +342,10 @@ class NetworkPriorityCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("NetworkPriorityCharacteristic WriteValue -->", json_object)
+            logger.info("NetworkPriorityCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_network_priority(json_object)
         except Exception as e:
-            print(datetime.now(), "NetworkPriorityCharacteristic WriteValue Exception:", e)
+            logger.exception("NetworkPriorityCharacteristic WriteValue Exception:", e)
 
 class SettingsFourGCharacteristic(Characteristic):
     Settings4G_UUID = '12345678-1234-5678-1234-56789abcab02'
@@ -359,10 +362,10 @@ class SettingsFourGCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_Settings4G()).encode('utf-8')
-            print('Settings4GCharacteristic Read: ' + repr(self.value))
+            logger.info('Settings4GCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "SettingsFourGCharacteristic ReadValue Exception:", e)
+            logger.exception("SettingsFourGCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -370,10 +373,10 @@ class SettingsFourGCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("SettingsFourGCharacteristic WriteValue -->", json_object)
+            logger.info("SettingsFourGCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_Settings4G(json_object)
         except Exception as e:
-            print(datetime.now(), "SettingsFourGCharacteristic WriteValue Exception:", e)
+            logger.exception("SettingsFourGCharacteristic WriteValue Exception:", e)
 
 class EthernetSettingsCharacteristic(Characteristic):
     Ethernet_Settings_UUID = '12345678-1234-5678-1234-56789abcab03'
@@ -390,10 +393,10 @@ class EthernetSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_ethernet_settings()).encode('utf-8')
-            print('EthernetSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('EthernetSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "EthernetSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("EthernetSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -401,10 +404,10 @@ class EthernetSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("EthernetSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("EthernetSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_ethernet_settings(json_object)
         except Exception as e:
-            print(datetime.now(), "EthernetSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("EthernetSettingsCharacteristic WriteValue Exception:", e)
 
 class DNSSettingsCharacteristic(Characteristic):
     DNSSettings_UUID = '12345678-1234-5678-1234-56789abcab04'
@@ -421,10 +424,10 @@ class DNSSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_dns_settings()).encode('utf-8')
-            print('DNSSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('DNSSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "DNSSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("DNSSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -432,10 +435,10 @@ class DNSSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("DNSSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("DNSSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_dns_settings(json_object)
         except Exception as e:
-            print(datetime.now(), "DNSSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("DNSSettingsCharacteristic WriteValue Exception:", e)
 
 class WifiSettingsCharacteristic(Characteristic):
     WifiSettings_UUID = '12345678-1234-5678-1234-56789abcab05'
@@ -452,10 +455,10 @@ class WifiSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_wifi_settings()).encode('utf-8')
-            print('WifiSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('WifiSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "WifiSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("WifiSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -463,10 +466,10 @@ class WifiSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("WifiSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("WifiSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_wifi_settings(json_object)
         except Exception as e:
-            print(datetime.now(), "WifiSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("WifiSettingsCharacteristic WriteValue Exception:", e)
 
 class OcppSettingsCharacteristic(Characteristic):
     OcppSettings_UUID = '12345678-1234-5678-1234-56789abcab06'
@@ -483,10 +486,10 @@ class OcppSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_ocpp_settings()).encode('utf-8')
-            print('OcppSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('OcppSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "OcppSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("OcppSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -494,10 +497,10 @@ class OcppSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("OcppSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("OcppSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_ocpp_settings(json_object)
         except Exception as e:
-            print(datetime.now(), "OcppSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("OcppSettingsCharacteristic WriteValue Exception:", e)
 
 class FunctionsSettingsCharacteristic(Characteristic):
     FunctionsSettings_UUID = '12345678-1234-5678-1234-56789abcab07'
@@ -514,10 +517,10 @@ class FunctionsSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_functions_enable()).encode('utf-8')
-            print('FunctionsSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('FunctionsSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "FunctionsSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("FunctionsSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -525,10 +528,10 @@ class FunctionsSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("FunctionsSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("FunctionsSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_functions_enable(json_object)
         except Exception as e:
-            print(datetime.now(), "FunctionsSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("FunctionsSettingsCharacteristic WriteValue Exception:", e)
 
 class TimezoonSettingsCharacteristic(Characteristic):
     TimezoonSettings_UUID = '12345678-1234-5678-1234-56789abcab08'
@@ -545,10 +548,10 @@ class TimezoonSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_timezoon_settings()).encode('utf-8')
-            print('TimezoonSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('TimezoonSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "TimezoonSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("TimezoonSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -556,10 +559,10 @@ class TimezoonSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("TimezoonSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("TimezoonSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_timezoon_settings(json_object)
         except Exception as e:
-            print(datetime.now(), "TimezoonSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("TimezoonSettingsCharacteristic WriteValue Exception:", e)
 
 class BluetoothSettingsCharacteristic(Characteristic):
     BluetoothSettings_UUID = '12345678-1234-5678-1234-56789abcab09'
@@ -576,10 +579,10 @@ class BluetoothSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_bluetooth_settings()).encode('utf-8')
-            print('BluetoothSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('BluetoothSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "BluetoothSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("BluetoothSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -587,10 +590,10 @@ class BluetoothSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("BluetoothSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("BluetoothSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_bluetooth_settings(json_object)
         except Exception as e:
-            print(datetime.now(), "BluetoothSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("BluetoothSettingsCharacteristic WriteValue Exception:", e)
 
 class FirmwareSettingsCharacteristic(Characteristic):
     FirmwareSettings_UUID = '12345678-1234-5678-1234-56789abcab10'
@@ -607,10 +610,10 @@ class FirmwareSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_firmware_version()).encode('utf-8')
-            print('FirmwareSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('FirmwareSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "FirmwareSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("FirmwareSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -618,10 +621,10 @@ class FirmwareSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("FirmwareSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("FirmwareSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_firmware_version(json_object)
         except Exception as e:
-            print(datetime.now(), "FirmwareSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("FirmwareSettingsCharacteristic WriteValue Exception:", e)
 
 class DeviceStatusSettingsCharacteristic(Characteristic):
     DeviceStatusSettings_UUID = '12345678-1234-5678-1234-56789abcab11'
@@ -638,10 +641,10 @@ class DeviceStatusSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_device_status()).encode('utf-8')
-            print('DeviceStatusSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('DeviceStatusSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "DeviceStatusSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("DeviceStatusSettingsCharacteristic ReadValue Exception:", e)
 
 class MaxCurrentSettingsCharacteristic(Characteristic):
     MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab12'
@@ -658,10 +661,10 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_maxcurrent()).encode('utf-8')
-            print('MaxCurrentSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('MaxCurrentSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "MaxCurrentSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("MaxCurrentSettingsCharacteristic ReadValue Exception:", e)
 
     def WriteValue(self, value, options):
         try:
@@ -669,10 +672,10 @@ class MaxCurrentSettingsCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("MaxCurrentSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_maxcurrent(json_object)
         except Exception as e:
-            print(datetime.now(), "MaxCurrentSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("MaxCurrentSettingsCharacteristic WriteValue Exception:", e)
 
 class StartTransactionCharacteristic(Characteristic):
     MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab13'
@@ -692,10 +695,10 @@ class StartTransactionCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("MaxCurrentSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_start_transaction(json_object)
         except Exception as e:
-            print(datetime.now(), "MaxCurrentSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("MaxCurrentSettingsCharacteristic WriteValue Exception:", e)
 
 class StopTransactionCharacteristic(Characteristic):
     MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab14'
@@ -715,10 +718,10 @@ class StopTransactionCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("MaxCurrentSettingsCharacteristic WriteValue -->", json_object)
+            logger.info("MaxCurrentSettingsCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_stop_transaction(json_object)
         except Exception as e:
-            print(datetime.now(), "MaxCurrentSettingsCharacteristic WriteValue Exception:", e)
+            logger.exception("MaxCurrentSettingsCharacteristic WriteValue Exception:", e)
 
 class ChargingCharacteristic(Characteristic):
     MaxCurrentSettings_UUID = '12345678-1234-5678-1234-56789abcab15'
@@ -735,10 +738,10 @@ class ChargingCharacteristic(Characteristic):
     def ReadValue(self, options):
         try:
             self.value = encrypt(self.application.settings.get_charging()).encode('utf-8')
-            print('MaxCurrentSettingsCharacteristic Read: ' + repr(self.value))
+            logger.info('MaxCurrentSettingsCharacteristic Read: %s', repr(self.value))
             return self.value
         except Exception as e:
-            print(datetime.now(), "MaxCurrentSettingsCharacteristic ReadValue Exception:", e)
+            logger.exception("MaxCurrentSettingsCharacteristic ReadValue Exception:", e)
 
 class UnlockConnectorCharacteristic(Characteristic):
     UnlockConnectorCharacteristic_UUID = '12345678-1234-5678-1234-56789abcab16'
@@ -758,21 +761,21 @@ class UnlockConnectorCharacteristic(Characteristic):
             encrypted_string  = byte_array.decode('utf-8')
             json_string = decrypt(encrypted_string)
             json_object = json.loads(json_string)
-            print("UnlockConnectorCharacteristic WriteValue -->", json_object)
+            logger.info("UnlockConnectorCharacteristic WriteValue --> %s", json_object)
             self.application.settings.set_unlock(json_object)
         except Exception as e:
-            print(datetime.now(), "UnlockConnectorCharacteristic WriteValue Exception:", e)
+            logger.exception("UnlockConnectorCharacteristic WriteValue Exception:", e)
 
 def register_app_cb(application):
-    print('GATT application registered')
+    logger.info('GATT application registered')
     application.bluetooth_error = False
 
 def register_app_error_cb(mainloop, error):
     try:
-        print('Failed to register application: ' + str(error))
+        logger.error('Failed to register application: %s', str(error))
         mainloop.quit()
     except Exception as e:
-        print(datetime.now(), "register_app_error_cb Exception:", e)
+        logger.exception("register_app_error_cb Exception:", e)
 
 def gatt_server_main(application, mainloop, bus, adapter_name):
     try:
@@ -783,10 +786,10 @@ def gatt_server_main(application, mainloop, bus, adapter_name):
             bus.get_object(BLUEZ_SERVICE_NAME, adapter),
             GATT_MANAGER_IFACE)
         app = ApplicationBluetooth(bus, application)
-        print('Registering GATT application...')
+        logger.info('Registering GATT application...')
         service_manager.RegisterApplication(app.get_path(), {},
-                                            reply_handler=functools.partial(register_app_cb,application),
+                                            reply_handler=functools.partial(register_app_cb, application),
                                             error_handler=functools.partial(register_app_error_cb, mainloop))
     except Exception as e:
-        print(datetime.now(), "gatt_server_main Exception:", e)
+        logger.exception("gatt_server_main Exception:", e)
         application.bluetooth_error = True

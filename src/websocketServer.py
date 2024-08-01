@@ -7,19 +7,20 @@ from src.enums import *
 from datetime import datetime
 
 class WebSocketServer():
-    def __init__(self,application) -> None:
+    def __init__(self, application, logger) -> None:
         self.application = application
-        self.websocketServer = websocket_server.WebsocketServer('0.0.0.0',8000)
+        self.logger = logger
+        self.websocketServer = websocket_server.WebsocketServer('0.0.0.0', 8000)
         self.websocketServer.set_fn_new_client(self.NewClientws)
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
-        # print("Web Socket started... 0.0.0.0  8000")
+        self.logger.info("Web Socket started... 0.0.0.0  8000")
         
     def NewClientws(self, client, server):
         if client:
             try:
-                print("New client connected and was given id %d" % client['id'], client['address'] )
+                self.logger.info(f"New client connected and was given id {client['id']}, {client['address']}")
                 
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
@@ -35,18 +36,18 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
             except Exception as e:
-                print(datetime.now(),"NewClientws Exception:",e)
+                self.logger.error(f"NewClientws Exception: {e}")
                 
     def ClientLeftws(self, client, server):
         try:
-            print("Client disconnected client[id]:{}  client['address'] ={}  ".format(client["id"], client['address'] ))
+            self.logger.info(f"Client disconnected client[id]:{client['id']}  client['address'] ={client['address']}")
         except Exception as e:
-            print(datetime.now(),"ClientLeftws Exception:",e)
+            self.logger.error(f"ClientLeftws Exception: {e}")
             
     def MessageReceivedws(self, client, server, message):
         try:
             sjon = json.loads(message)
-            print(sjon)
+            self.logger.info(f"Received message: {sjon}")
             self.application.settings.set_network_priority(sjon)
             self.application.settings.set_Settings4G(sjon)
             self.application.settings.set_ethernet_settings(sjon)
@@ -62,8 +63,4 @@ class WebSocketServer():
             self.application.settings.set_stop_transaction(sjon)
             self.application.settings.set_external_mid_meter(sjon)
         except Exception as e:
-            print(datetime.now(),"MessageReceivedws Exception:",e)
-            
-            
-        
-        
+            self.logger.error(f"MessageReceivedws Exception: {e}")

@@ -16,6 +16,9 @@ from src.bluetoothService import gatt_server
 import time
 from datetime import datetime
 
+from src.logger import ac_app_logger as logger
+
+
 class BluetoothService():
     def __init__(self,application) -> None:
         self.application = application
@@ -28,7 +31,7 @@ class BluetoothService():
         
     def run(self):
         try:
-            print("Bluetooth run")
+            logger.info("Bluetooth run")
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()
@@ -41,5 +44,4 @@ class BluetoothService():
             self.mainloop.run()
             self.application.bluetooth_error = True
         except Exception as e:
-            print(datetime.now(),"BluetoothService run Exception:",e)
-        
+            logger.exception("BluetoothService run Exception:", e)

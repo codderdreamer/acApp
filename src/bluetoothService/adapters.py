@@ -16,18 +16,19 @@ GATT_SERVICE_IFACE = 'org.bluez.GattService1'
 GATT_CHRC_IFACE =    'org.bluez.GattCharacteristic1'
 GATT_DESC_IFACE =    'org.bluez.GattDescriptor1'
 
+from src.logger import ac_app_logger as logger
 
 def find_adapter(bus, adapter_interface_name, adapter_name):
     try:
         remote_om = dbus.Interface(bus.get_object(BLUEZ_SERVICE_NAME, '/'), DBUS_OM_IFACE)
         objects = remote_om.GetManagedObjects()
         for o, props in objects.items():
-            # print('checking adapter %s, keys: %s' % (o, props.keys()))
+            logger.debug('Checking adapter %s, keys: %s', o, props.keys())
             if adapter_interface_name in props.keys():
-                # print('found adapter %s' % (o,))
+                logger.debug('Found adapter %s', o)
                 if '/' + adapter_name in o:
-                    # print('returning adapter %s' % (o,))
+                    logger.debug('Returning adapter %s', o)
                     return o
         return None
     except Exception as e:
-        print(datetime.now(),"find_adapter Exception:",e)
+        logger.exception("find_adapter Exception: %s", e)

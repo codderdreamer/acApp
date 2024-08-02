@@ -450,9 +450,9 @@ class SoftwareSettings():
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
 
                 time.sleep(3)
-                self.bluetoothService = None
+                self.application.bluetoothService = None
                 time.sleep(3)
-                self.bluetoothService = BluetoothService(self)
+                self.application.bluetoothService = BluetoothService(self)
                 # D-Bus üzerinden Bluetooth adını değiştirme
                 # dbus_command = [
                 #     'dbus-send',

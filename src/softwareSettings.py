@@ -330,12 +330,15 @@ class SoftwareSettings():
             ppp0_metric = 1000
             for data in result_list:
                 if "eth1" in data:
-                    eth1_metric = int(data.split("metric")[1]) 
+                    eth1_metric = int(data.split("metric")[1].strip().split()[0])
+                    print("eth1_metric", data.split("metric")[1], eth1_metric)
                 elif "wlan0" in data:
-                    wlan0_metric = int(data.split("metric")[1])
+                    wlan0_metric = int(data.split("metric")[1].strip().split()[0])
+                    print("wlan0_metric", data.split("metric")[1], wlan0_metric)
                 elif "ppp0" in data:
-                    ppp0_metric = int(data.split("metric")[1])
-            min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
+                    ppp0_metric = int(data.split("metric")[1].strip().split()[0])
+                    print("ppp0_metric", data.split("metric")[1], ppp0_metric)
+            min_metric = min(eth1_metric, wlan0_metric, ppp0_metric)
             if min_metric == eth1_metric:
                 self.application.settings.deviceStatus.networkCard = "Ethernet"
             elif min_metric == wlan0_metric:
@@ -344,7 +347,7 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.networkCard = "4G"
             self.control_websocket_ip()
         except Exception as e:
-            print(datetime.now(),"find_network Exception:",e)
+            print(datetime.now(), "find_network Exception:", e)
             
     def find_stateOfOcpp(self):
         try:

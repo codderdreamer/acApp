@@ -545,6 +545,7 @@ class ChargePoint16(cp):
     @after(Action.ChangeAvailability)
     def after_change_availability(self,connector_id: int, type: AvailabilityType):
         try :
+            print(type)
             if type == AvailabilityType.operative:
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 self.application.databaseModule.set_availability(AvailabilityType.operative.value)

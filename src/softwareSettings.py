@@ -250,6 +250,7 @@ class SoftwareSettings():
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
                     
                     if wifidhcpcEnable == "False":
+                        print("Statik wifi ayarlanıyor..")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
                         os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")

@@ -223,6 +223,16 @@ class SoftwareSettings():
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
             
+            print(datetime.now(), "set_wifi: wifiEnable:", wifiEnable)
+            print(datetime.now(), "set_wifi: mod:", mod)
+            print(datetime.now(), "set_wifi: ssid:", ssid)
+            print(datetime.now(), "set_wifi: password:", password)
+            print(datetime.now(), "set_wifi: encryptionType:", encryptionType)
+            print(datetime.now(), "set_wifi: wifidhcpcEnable:", wifidhcpcEnable)
+            print(datetime.now(), "set_wifi: ip:", ip)
+            print(datetime.now(), "set_wifi: netmask:", netmask)
+            print(datetime.now(), "set_wifi: gateway:", gateway)
+            
             self.delete_connection_type("wifi")
             
             if wifiEnable == "True":
@@ -234,36 +244,37 @@ class SoftwareSettings():
                         netmask_prefix_length = netmask_obj.prefixlen
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
-                    os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
-                    time.sleep(2)
-                    os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
-                    time.sleep(2)
-                    os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
-                    time.sleep(2)
-                    os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
-                    print("wifi..................................")
-                    time.sleep(10)
+                    result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, capture_output=True, text=True)
+                    print(datetime.now(), "nmcli con add result:", result.stdout, result.stderr)
+                    
+                    result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk", shell=True, capture_output=True, text=True)
+                    print(datetime.now(), "nmcli modify key-mgmt result:", result.stdout, result.stderr)
+                    
+                    result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.psk {password}", shell=True, capture_output=True, text=True)
+                    print(datetime.now(), "nmcli modify psk result:", result.stdout, result.stderr)
+                    
                     if wifidhcpcEnable == "False":
-                        print("Statik wifi ayarlanıyor..")
+                        print("Statik IP ayarlanıyor...")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
-                        print("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
-                        time.sleep(2)
-                        os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
-                        print(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
-                        time.sleep(2)
-                        os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
-                        print(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
-                        time.sleep(2)
+
+                        result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, capture_output=True, text=True)
+                        print(datetime.now(), "nmcli modify method manual result:", result.stdout, result.stderr)
+
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}", shell=True, capture_output=True, text=True)
+                        print(datetime.now(), "nmcli modify address result:", result.stdout, result.stderr)
+
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.gateway {gateway}", shell=True, capture_output=True, text=True)
+                        print(datetime.now(), "nmcli modify gateway result:", result.stdout, result.stderr)
                         
-                    os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
-                    print("nmcli connection up wifi_connection > /dev/null 2>&1")
-                    time.sleep(5)
+                        print(f"IP: {ip}, Netmask: {netmask_prefix_length}, Gateway: {gateway}")
+                        
+                    result = subprocess.run("nmcli connection up wifi_connection", shell=True, capture_output=True, text=True)
+                    print(datetime.now(), "nmcli connection up result:", result.stdout, result.stderr)
             else:
-                print(datetime.now(), "set_wifi: WiFi is disabled")
+                print(datetime.now(), "set_wifi: WiFi devre dışı")
         except Exception as e:
-            print(datetime.now(), "set_wifi Exception:", e)
+            print(datetime.now(), "set_wifi Hatası:", e)
                   
     def set_network_priority(self):
         time.sleep(10)

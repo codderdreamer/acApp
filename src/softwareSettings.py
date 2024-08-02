@@ -238,7 +238,7 @@ class SoftwareSettings():
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
                     os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
-                    time.sleep(5)
+                    time.sleep(10)
                     if wifidhcpcEnable == "False":
                         print("Statik wifi ayarlanıyor..")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)

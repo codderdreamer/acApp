@@ -235,8 +235,11 @@ class SoftwareSettings():
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
+                    time.sleep(2)
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
+                    time.sleep(2)
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
+                    time.sleep(2)
                     os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
                     print("wifi..................................")
                     time.sleep(10)

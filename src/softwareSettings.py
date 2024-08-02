@@ -222,32 +222,45 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
+            
+            print(datetime.now(), "set_wifi: wifiEnable:", wifiEnable)
+            print(datetime.now(), "set_wifi: mod:", mod)
+            print(datetime.now(), "set_wifi: ssid:", ssid)
+            print(datetime.now(), "set_wifi: password:", password)
+            print(datetime.now(), "set_wifi: encryptionType:", encryptionType)
+            print(datetime.now(), "set_wifi: wifidhcpcEnable:", wifidhcpcEnable)
+            print(datetime.now(), "set_wifi: ip:", ip)
+            print(datetime.now(), "set_wifi: netmask:", netmask)
+            print(datetime.now(), "set_wifi: gateway:", gateway)
+            
             self.delete_connection_type("wifi")
             # time.sleep(5)
-            if wifiEnable=="True":
+            
+            if wifiEnable == "True":
                 if mod == "AP":
                     if wifidhcpcEnable == "True":
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])
-
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24", "192.168.1.1"])
                     else:
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable, ip, netmask_prefix_length,gateway])
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
+                    
                     if wifidhcpcEnable == "False":
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
                         os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
                         os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
                         os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
+                        
                     os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
             else:
-                pass
+                print(datetime.now(), "set_wifi: WiFi is disabled")
         except Exception as e:
-            print(datetime.now(),"set_wifi Exception:",e)
+            print(datetime.now(), "set_wifi Exception:", e)
                   
     def set_network_priority(self):
         time.sleep(10)

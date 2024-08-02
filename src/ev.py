@@ -206,6 +206,8 @@ class EV():
                 os.system("rm -r /root/Settings.sqlite")
                 os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
                 os.system("systemctl restart acapp.service")
+            elif self.application.availability == AvailabilityType.inoperative:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
             elif (self.application.cardType == CardType.BillingCard):
                 if self.charge:
                     if self.application.process.id_tag == value:

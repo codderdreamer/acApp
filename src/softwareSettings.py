@@ -223,18 +223,7 @@ class SoftwareSettings():
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
             
-            print(datetime.now(), "set_wifi: wifiEnable:", wifiEnable)
-            print(datetime.now(), "set_wifi: mod:", mod)
-            print(datetime.now(), "set_wifi: ssid:", ssid)
-            print(datetime.now(), "set_wifi: password:", password)
-            print(datetime.now(), "set_wifi: encryptionType:", encryptionType)
-            print(datetime.now(), "set_wifi: wifidhcpcEnable:", wifidhcpcEnable)
-            print(datetime.now(), "set_wifi: ip:", ip)
-            print(datetime.now(), "set_wifi: netmask:", netmask)
-            print(datetime.now(), "set_wifi: gateway:", gateway)
-            
             self.delete_connection_type("wifi")
-            # time.sleep(5)
             
             if wifiEnable == "True":
                 if mod == "AP":
@@ -248,7 +237,7 @@ class SoftwareSettings():
                     os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
                     os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
-                    print("Wifi..................................")
+                    os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
                     if wifidhcpcEnable == "False":
                         print("Statik wifi ayarlanıyor..")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)

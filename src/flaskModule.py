@@ -81,6 +81,7 @@ class FlaskModule:
         @self.app.route('/login', methods=['POST'])
         def login():
             data = request.get_json()
+            print("Login data",data)
             UserName = data.get('UserName')
             Password = data.get('Password')
             

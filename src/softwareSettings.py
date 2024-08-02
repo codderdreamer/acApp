@@ -471,6 +471,8 @@ class SoftwareSettings():
                 os.system("hciconfig hci0 up")
                 time.sleep(2)
                 os.system("/root/acApp/bluetooth_set.sh")
+                time.sleep(2)
+                self.application.bluetoothService = BluetoothService(self.application)
 
 
                 # os.system("service bluetooth restart")

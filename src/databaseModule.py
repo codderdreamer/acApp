@@ -919,7 +919,7 @@ class DatabaseModule():
             self.cursor = self.settings_database.cursor()
             query = "UPDATE user_login SET Password = ? WHERE UserName = ?"
             
-            value = (password,"HCAC")
+            value = (password,self.get_user_login()["UserName"])
             self.cursor.execute(query,value)
             self.settings_database.commit()
             

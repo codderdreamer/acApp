@@ -449,30 +449,28 @@ class SoftwareSettings():
 
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
 
-                time.sleep(3)
-                self.application.bluetoothService = None
-                time.sleep(3)
-                self.application.bluetoothService = BluetoothService(self)
                 # D-Bus üzerinden Bluetooth adını değiştirme
-                # dbus_command = [
-                #     'dbus-send',
-                #     '--system',
-                #     '--dest=org.bluez',
-                #     '--print-reply',
-                #     '/org/bluez/hci0',
-                #     'org.freedesktop.DBus.Properties.Set',
-                #     'string:org.bluez.Adapter1',
-                #     'string:Alias',
-                #     'variant:string:' + new_bluetooth_name
-                # ]
-                # process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                # stdout, stderr = process.communicate()
+                dbus_command = [
+                    'dbus-send',
+                    '--system',
+                    '--dest=org.bluez',
+                    '--print-reply',
+                    '/org/bluez/hci0',
+                    'org.freedesktop.DBus.Properties.Set',
+                    'string:org.bluez.Adapter1',
+                    'string:Alias',
+                    'variant:string:' + new_bluetooth_name
+                ]
+                process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
 
-                # os.system("hciconfig hci0 down")
-                # time.sleep(2)
-                # os.system("service bluetooth restart")
-                # time.sleep(2)
-                # os.system("hciconfig hci0 up")
+                os.system("hciconfig hci0 down")
+                time.sleep(2)
+                os.system("service bluetooth restart")
+                time.sleep(2)
+                os.system("hciconfig hci0 up")
+                time.sleep(2)
+                os.system("/root/acApp/bluetooth_set.sh")
 
 
                 # os.system("service bluetooth restart")

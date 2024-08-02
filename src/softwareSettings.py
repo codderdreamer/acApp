@@ -472,6 +472,7 @@ class SoftwareSettings():
                 time.sleep(2)
                 os.system("/root/acApp/bluetooth_set.sh")
                 time.sleep(2)
+                self.application.bluetoothService = None
                 self.application.bluetoothService = BluetoothService(self.application)
 
 

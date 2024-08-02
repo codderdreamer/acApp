@@ -25,6 +25,8 @@ class DatabaseModule():
         self.get_availability()
         self.get_max_current()
         self.get_mid_settings()
+
+        self.user = self.get_user_login()["UserName"]
         
         
     def get_charge(self):
@@ -919,7 +921,7 @@ class DatabaseModule():
             self.cursor = self.settings_database.cursor()
             query = "UPDATE user_login SET Password = ? WHERE UserName = ?"
             
-            value = (password,"HCAC")
+            value = (password,self.user)
             self.cursor.execute(query,value)
             self.settings_database.commit()
             

@@ -148,13 +148,15 @@ class SoftwareSettings():
             dnsEnable = self.application.settings.dnsSettings.dnsEnable
             DNS1 = self.application.settings.dnsSettings.DNS1
             DNS2 = self.application.settings.dnsSettings.DNS2
+
             if dhcpcEnable == "False":
                 if dnsEnable == "True":
-                    setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1} > /dev/null 2>&1"'.format(DNS1,DNS2)
+                    setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1}" > /dev/null 2>&1'.format(DNS1, DNS2)
+                    print(datetime.now(), "set_dns: Executing command:", setDns)
                     os.system(setDns)
                     os.system('nmcli con up "static-eth1" ifname eth1 > /dev/null 2>&1')
         except Exception as e:
-            print(datetime.now(),"set_dns Exception:",e)
+            print(datetime.now(), "set_dns Exception:", e)
           
     def set_4G(self):
         try:
@@ -220,32 +222,62 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
+            
+            print(datetime.now(), "set_wifi: wifiEnable:", wifiEnable)
+            print(datetime.now(), "set_wifi: mod:", mod)
+            print(datetime.now(), "set_wifi: ssid:", ssid)
+            print(datetime.now(), "set_wifi: password:", password)
+            print(datetime.now(), "set_wifi: encryptionType:", encryptionType)
+            print(datetime.now(), "set_wifi: wifidhcpcEnable:", wifidhcpcEnable)
+            print(datetime.now(), "set_wifi: ip:", ip)
+            print(datetime.now(), "set_wifi: netmask:", netmask)
+            print(datetime.now(), "set_wifi: gateway:", gateway)
+            
             self.delete_connection_type("wifi")
-            # time.sleep(5)
-            if wifiEnable=="True":
+            
+            if wifiEnable == "True":
                 if mod == "AP":
                     if wifidhcpcEnable == "True":
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24","192.168.1.1"])
-
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24", "192.168.1.1"])
                     else:
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, wifidhcpcEnable, ip, netmask_prefix_length,gateway])
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
-                    os.system(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid} > /dev/null 2>&1")
-                    os.system(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk > /dev/null 2>&1")
-                    os.system(f"nmcli connection modify wifi_connection wifi-sec.psk {password} > /dev/null 2>&1")
+                    result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    print(datetime.now(), "nmcli con add result:", result.stdout, result.stderr)
+                    
+                    # Bağlantının eklenmesi için kısa bir bekleme süresi
+                    time.sleep(2)
+                    
+                    result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    print(datetime.now(), "nmcli modify key-mgmt result:", result.stdout, result.stderr)
+                    
+                    result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.psk {password}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    print(datetime.now(), "nmcli modify psk result:", result.stdout, result.stderr)
+                    
                     if wifidhcpcEnable == "False":
+                        print("Statik IP ayarlanıyor...")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
-                        os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
-                        os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
-                    os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
+
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.addresses {ip}/{netmask_prefix_length}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify addresses result:", result.stdout, result.stderr)
+
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.gateway {gateway}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify gateway result:", result.stdout, result.stderr)
+
+                        result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify method manual result:", result.stdout, result.stderr)
+                        
+                        print(f"IP: {ip}, Netmask: {netmask_prefix_length}, Gateway: {gateway}")
+                        
+                    result = subprocess.run("nmcli connection up wifi_connection", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    print(datetime.now(), "nmcli connection up result:", result.stdout, result.stderr)
             else:
-                pass
+                print(datetime.now(), "set_wifi: WiFi devre dışı")
         except Exception as e:
-            print(datetime.now(),"set_wifi Exception:",e)
+            print(datetime.now(), "set_wifi Hatası:", e)
                   
     def set_network_priority(self):
         time.sleep(10)
@@ -330,12 +362,15 @@ class SoftwareSettings():
             ppp0_metric = 1000
             for data in result_list:
                 if "eth1" in data:
-                    eth1_metric = int(data.split("metric")[1]) 
+                    eth1_metric = int(data.split("metric")[1].strip().split()[0])
+                    print("eth1_metric", data.split("metric")[1], eth1_metric)
                 elif "wlan0" in data:
-                    wlan0_metric = int(data.split("metric")[1])
+                    wlan0_metric = int(data.split("metric")[1].strip().split()[0])
+                    print("wlan0_metric", data.split("metric")[1], wlan0_metric)
                 elif "ppp0" in data:
-                    ppp0_metric = int(data.split("metric")[1])
-            min_metric = min(eth1_metric,wlan0_metric,ppp0_metric)
+                    ppp0_metric = int(data.split("metric")[1].strip().split()[0])
+                    print("ppp0_metric", data.split("metric")[1], ppp0_metric)
+            min_metric = min(eth1_metric, wlan0_metric, ppp0_metric)
             if min_metric == eth1_metric:
                 self.application.settings.deviceStatus.networkCard = "Ethernet"
             elif min_metric == wlan0_metric:
@@ -344,7 +379,7 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.networkCard = "4G"
             self.control_websocket_ip()
         except Exception as e:
-            print(datetime.now(),"find_network Exception:",e)
+            print(datetime.now(), "find_network Exception:", e)
             
     def find_stateOfOcpp(self):
         try:

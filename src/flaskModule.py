@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, make_response
 from threading import Thread
 import threading
 from werkzeug.security import check_password_hash
@@ -66,30 +66,31 @@ class FlaskModule:
         def profile():
             return render_template("index.html")
         
-        # @self.app.route('/login', methods=['POST'])
-        # def login():
-        #     data = request.get_json()
-        #     UserName = data.get('UserName')
-        #     Password = data.get('Password')
-            
-        #     login = self.application.databaseModule.get_user_login()
-        #     if login["UserName"] == UserName and login["Password"] == Password:   
-        #         return jsonify({'message': 'Login successful'})
-        #     else:
-        #         return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-        
         @self.app.route('/login', methods=['POST'])
         def login():
             data = request.get_json()
             UserName = data.get('UserName')
             Password = data.get('Password')
             
-            # Assume authentication is successful
-            # You should perform actual authentication here
-            session['authenticated'] = True
-            session['UserName'] = UserName
+            login = self.application.databaseModule.get_user_login()
+            if login["UserName"] == UserName and login["Password"] == Password:   
+                return jsonify({'message': 'Login successful'})
+            else:
+                return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        
+        # @self.app.route('/login', methods=['POST'])
+        # def login():
+        #     data = request.get_json()
+        #     print("Login data",data)
+        #     UserName = data.get('UserName')
+        #     Password = data.get('Password')
+            
+        #     # Assume authentication is successful
+        #     # You should perform actual authentication here
+        #     session['authenticated'] = True
+        #     session['UserName'] = UserName
 
-            return jsonify({'message': 'Login successful'})
+        #     return jsonify({'message': 'Login successful'})
             
         
         

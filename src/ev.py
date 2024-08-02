@@ -111,12 +111,17 @@ class EV():
                         
                         if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-                        
+                            if self.application.availability == AvailabilityType.operative:
+                                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                            else:
+                                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
                         
                         if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True and self.application.chargingStatus != ChargePointStatus.preparing:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                            if self.application.availability == AvailabilityType.operative:
+                                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                            else:
+                                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
                 
                 if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
                     if self.application.chargingStatus == ChargePointStatus.charging:
@@ -206,6 +211,8 @@ class EV():
                 os.system("rm -r /root/Settings.sqlite")
                 os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
                 os.system("systemctl restart acapp.service")
+            elif self.application.availability == AvailabilityType.inoperative:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
             elif (self.application.cardType == CardType.BillingCard):
                 if self.charge:
                     if self.application.process.id_tag == value:

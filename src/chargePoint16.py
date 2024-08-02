@@ -545,10 +545,13 @@ class ChargePoint16(cp):
     @after(Action.ChangeAvailability)
     def after_change_availability(self,connector_id: int, type: AvailabilityType):
         try :
+            print(type == AvailabilityType.operative)
             if type == AvailabilityType.operative:
+                self.application.availability = AvailabilityType.operative
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 self.application.databaseModule.set_availability(AvailabilityType.operative.value)
             elif type == AvailabilityType.inoperative:
+                self.application.availability = AvailabilityType.inoperative
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
@@ -706,6 +709,13 @@ class ChargePoint16(cp):
             )
             self.application.ev.id_tag = id_tag
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+
+            # charger uygun değilse izin verme
+            if self.application.availability == AvailabilityType.inoperative:
+                response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.rejected
+                        )
+                return response
             
             # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
             error = False

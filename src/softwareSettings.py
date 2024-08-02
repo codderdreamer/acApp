@@ -245,12 +245,16 @@ class SoftwareSettings():
                         netmask_prefix_length = netmask_obj.prefixlen
                         os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
                         print("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
+                        time.sleep(2)
                         os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
                         print(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
+                        time.sleep(2)
                         os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
                         print(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
+                        time.sleep(2)
                         
                     os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
+                    print("nmcli connection up wifi_connection > /dev/null 2>&1")
             else:
                 print(datetime.now(), "set_wifi: WiFi is disabled")
         except Exception as e:

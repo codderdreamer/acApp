@@ -468,23 +468,25 @@ class SoftwareSettings():
                 # os.system("service bluetooth restart")
                 # time.sleep(2)
                 # os.system("hciconfig hci0 up")
-                os.system("service bluetooth restart")
-                time.sleep(2)
-                os.system("/root/acApp/bluetooth_set.sh")
 
-                dbus_command = [
-                    'dbus-send',
-                    '--system',
-                    '--dest=org.bluez',
-                    '--print-reply',
-                    '/org/bluez/hci0',
-                    'org.freedesktop.DBus.Properties.Set',
-                    'string:org.bluez.Adapter1',
-                    'string:Alias',
-                    'variant:string:' + new_bluetooth_name
-                ]
-                process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
+
+                # os.system("service bluetooth restart")
+                # time.sleep(2)
+                # os.system("/root/acApp/bluetooth_set.sh")
+
+                # dbus_command = [
+                #     'dbus-send',
+                #     '--system',
+                #     '--dest=org.bluez',
+                #     '--print-reply',
+                #     '/org/bluez/hci0',
+                #     'org.freedesktop.DBus.Properties.Set',
+                #     'string:org.bluez.Adapter1',
+                #     'string:Alias',
+                #     'variant:string:' + new_bluetooth_name
+                # ]
+                # process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                # stdout, stderr = process.communicate()
 
         except Exception as e:
             print(datetime.now(),"set_bluetooth_settings Exception:",e)

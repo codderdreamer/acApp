@@ -463,11 +463,15 @@ class SoftwareSettings():
                 process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = process.communicate()
 
-                os.system("hciconfig hci0 down")
-                time.sleep(2)
+                # os.system("hciconfig hci0 down")
+                # time.sleep(2)
+                # os.system("service bluetooth restart")
+                # time.sleep(2)
+                # os.system("hciconfig hci0 up")
                 os.system("service bluetooth restart")
                 time.sleep(2)
-                os.system("hciconfig hci0 up")
+                os.system("/root/acApp/bluetooth_set.sh")
+
         except Exception as e:
             print(datetime.now(),"set_bluetooth_settings Exception:",e)
             

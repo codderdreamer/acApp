@@ -434,14 +434,41 @@ class SoftwareSettings():
             stdout, stderr = process.communicate()
             output = stdout.decode('utf-8')
             name = output.split("\n")[0]
-            print("bluetooth name",name)
+
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
-            if (name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name != None):
+           
+            if (name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name is not None):
+                max_length = 32  # Bluetooth adı için genel kabul gören maksimum uzunluk
+                valid_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ ")
+
+                if len(new_bluetooth_name) > max_length:
+                    return
+
+                if not all(char in valid_chars for char in new_bluetooth_name):
+                    return
+
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
-                # time.sleep(2)
-                # print("Sistem yeniden başlatılıyor...")
-                # os.system("reboot")
+                # D-Bus üzerinden Bluetooth adını değiştirme
+                dbus_command = [
+                    'dbus-send',
+                    '--system',
+                    '--dest=org.bluez',
+                    '--print-reply',
+                    '/org/bluez/hci0',
+                    'org.freedesktop.DBus.Properties.Set',
+                    'string:org.bluez.Adapter1',
+                    'string:Alias',
+                    'variant:string:' + new_bluetooth_name
+                ]
+                process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
+
+                os.system("hciconfig hci0 down")
+                time.sleep(2)
+                os.system("service bluetooth restart")
+                time.sleep(2)
+                os.system("hciconfig hci0 up")
         except Exception as e:
-            print(datetime.now(), "set_bluetooth_settings Exception:", e)
+            print(datetime.now(),"set_bluetooth_settings Exception:",e)
             
     

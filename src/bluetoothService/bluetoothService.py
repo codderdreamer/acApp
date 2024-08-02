@@ -25,6 +25,9 @@ class BluetoothService():
         self.mainloop = None
         Thread(target=self.run, daemon=True).start()
 
+    def __del__(self):
+        print("BluetoothService nesnesi siliniyor")
+
     def run(self):
         try:
             print("Bluetooth run")

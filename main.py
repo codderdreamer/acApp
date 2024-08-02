@@ -140,6 +140,7 @@ class Application():
                 
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus):
         print("error_code != self.error_code or status != self.chargingStatus",error_code != self.error_code or status != self.chargingStatus)
+        print("status",status,self.chargingStatus)
         if error_code != self.error_code or status != self.chargingStatus:
             self.error_code = error_code
             self.chargingStatus = status

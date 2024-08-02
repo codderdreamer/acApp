@@ -442,7 +442,7 @@ class SoftwareSettings():
             stdout, stderr = process.communicate()
             output = stdout.decode('utf-8')
             name = output.split("\n")[0]
-            self.logger.debug(f"Bluetooth name: {name}")
+            self.logger.info(f"Current hostname: {name}")
 
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
            
@@ -451,9 +451,11 @@ class SoftwareSettings():
                 valid_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ ")
 
                 if len(new_bluetooth_name) > max_length:
+                    self.logger.warning("Bluetooth name is too long")
                     return
 
                 if not all(char in valid_chars for char in new_bluetooth_name):
+                    self.logger.warning("Bluetooth name contains invalid characters")
                     return
 
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
@@ -470,8 +472,11 @@ class SoftwareSettings():
                     'string:Alias',
                     'variant:string:' + new_bluetooth_name
                 ]
+
                 process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = process.communicate()
+
+                # Bluetooth servisini yeniden başlatma
 
                 os.system("hciconfig hci0 down")
                 time.sleep(2)
@@ -479,26 +484,6 @@ class SoftwareSettings():
                 time.sleep(2)
                 os.system("hciconfig hci0 up")
 
-
-                # os.system("service bluetooth restart")
-                # time.sleep(2)
-                # os.system("/root/acApp/bluetooth_set.sh")
-
-                # dbus_command = [
-                #     'dbus-send',
-                #     '--system',
-                #     '--dest=org.bluez',
-                #     '--print-reply',
-                #     '/org/bluez/hci0',
-                #     'org.freedesktop.DBus.Properties.Set',
-                #     'string:org.bluez.Adapter1',
-                #     'string:Alias',
-                #     'variant:string:' + new_bluetooth_name
-                # ]
-                # process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                # stdout, stderr = process.communicate()
-
+                self.logger.info(f"Bluetooth name changed to: {new_bluetooth_name}")
         except Exception as e:
-            print(datetime.now(),"set_bluetooth_settings Exception:",e)
-            
-    
+            self.logger.exception("Exception in set_bluetooth_settings")

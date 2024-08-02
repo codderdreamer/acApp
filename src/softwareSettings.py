@@ -246,6 +246,8 @@ class SoftwareSettings():
                 else:
                     result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     print(datetime.now(), "nmcli con add result:", result.stdout, result.stderr)
+
+                    time.sleep(2)
                     
                     result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     print(datetime.now(), "nmcli modify key-mgmt result:", result.stdout, result.stderr)

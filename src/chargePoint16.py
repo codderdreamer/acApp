@@ -261,7 +261,7 @@ class ChargePoint16(cp):
                 response = await self.call(request)
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.application.ocppActive = True
-                await asyncio.sleep(100)
+                await asyncio.sleep(5)
         except Exception as e:
             print(datetime.now(),"send_heartbeat Exception:",e)
             self.application.ocppActive = False

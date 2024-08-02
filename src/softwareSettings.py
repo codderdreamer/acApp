@@ -246,7 +246,8 @@ class SoftwareSettings():
                 else:
                     result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     print(datetime.now(), "nmcli con add result:", result.stdout, result.stderr)
-
+                    
+                    # Bağlantının eklenmesi için kısa bir bekleme süresi
                     time.sleep(2)
                     
                     result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
@@ -260,14 +261,14 @@ class SoftwareSettings():
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
 
-                        result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                        print(datetime.now(), "nmcli modify method manual result:", result.stdout, result.stderr)
-
-                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                        print(datetime.now(), "nmcli modify address result:", result.stdout, result.stderr)
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.addresses {ip}/{netmask_prefix_length}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify addresses result:", result.stdout, result.stderr)
 
                         result = subprocess.run(f"nmcli con modify wifi_connection ipv4.gateway {gateway}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                         print(datetime.now(), "nmcli modify gateway result:", result.stdout, result.stderr)
+
+                        result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify method manual result:", result.stdout, result.stderr)
                         
                         print(f"IP: {ip}, Netmask: {netmask_prefix_length}, Gateway: {gateway}")
                         

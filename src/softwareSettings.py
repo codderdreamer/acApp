@@ -259,6 +259,7 @@ class SoftwareSettings():
                         
                     os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
                     print("nmcli connection up wifi_connection > /dev/null 2>&1")
+                    time.sleep(5)
             else:
                 print(datetime.now(), "set_wifi: WiFi is disabled")
         except Exception as e:

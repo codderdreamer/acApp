@@ -547,9 +547,11 @@ class ChargePoint16(cp):
         try :
             print(type == AvailabilityType.operative)
             if type == AvailabilityType.operative:
+                self.application.availability = AvailabilityType.operative
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 self.application.databaseModule.set_availability(AvailabilityType.operative.value)
             elif type == AvailabilityType.inoperative:
+                self.application.availability = AvailabilityType.inoperative
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:

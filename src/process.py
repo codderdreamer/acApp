@@ -48,7 +48,7 @@ class Process():
     def set_max_current(self):
         if self.application.socketType == SocketType.Type2:
             print("self.application.ev.proximity_pilot",self.application.ev.proximity_pilot_current)
-            print("self.application.max_current",self.application.ev.proximity_pilot_current)
+            print("self.application.max_current",self.application.max_current)
             if int(self.application.max_current) > int(self.application.ev.proximity_pilot_current):
                 print("set_command_pid_cp_pwm",self.application.ev.proximity_pilot_current)
                 self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))

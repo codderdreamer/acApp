@@ -254,9 +254,9 @@ class Application():
             self.ocppActive = False
             if self.chargingStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
-            else:
-                Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-                self.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
+            # else:
+            #     Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+            #     self.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             
             
     def ocpp_task(self):

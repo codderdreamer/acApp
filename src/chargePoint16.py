@@ -267,9 +267,9 @@ class ChargePoint16(cp):
             self.application.ocppActive = False
             if self.application.chargingStatus == ChargePointStatus.charging:
                 pass
-            else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
+            # else:
+            #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
+            #     self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
 
     # 7. METER VALUES
     async def send_meter_values(

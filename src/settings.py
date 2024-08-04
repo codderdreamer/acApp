@@ -419,6 +419,7 @@ class Settings():
     def set_maxcurrent(self,sjon):
         try:
             if(sjon["Command"] == "ACCurrent"):
+                print(sjon)
                 maxcurrent = str(sjon["Data"]["maxcurrent"])
                 self.application.databaseModule.set_max_current(maxcurrent)
                 self.application.process.set_max_current()

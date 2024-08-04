@@ -75,6 +75,7 @@ class SerialPort():
         while True:
             try:
                 self.get_command_pid_energy(EnergyType.kwh)
+                self.get_command_pid_proximity_pilot()
             except Exception as e:
                 print(datetime.now(),"get_energy_thread Exception:",e)
             time.sleep(5)

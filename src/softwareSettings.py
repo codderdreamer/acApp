@@ -179,25 +179,37 @@ class SoftwareSettings():
                 os.system(add_connection_string)
                 if pin:
                     time_start = time.time()
-                    while True:
-                        if time.time() - time_start > 60:
-                            break
-                        try:
-                            result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                            modem_id = result.split("/")[5].split()[0]
-                            net = """mmcli -i {0} --pin={1} > /dev/null 2>&1""".format(modem_id,pin)
-                            os.system(net)
-                            net = """nmcli con up "{0}" ifname ttyUSB2 > /dev/null 2>&1""".format(connection_name)
-                            os.system(net)
-                            break
-                        except:
-                            pass
-                        time.sleep(2)
+                    pin_valid = False
+                    
+                    # PIN doğrulama
+                    try:
+                        result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                        modem_id = result.split("/")[5].split()[0]
+                        pin_check = subprocess.run("""mmcli -i {0} --pin={1}""".format(modem_id, pin), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        
+                        if "error" in pin_check.stderr.decode('utf-8').lower():
+                            self.logger.error("PIN hatalı. Lütfen doğru PIN'i girin.")
+                        else:
+                            pin_valid = True
+                    except Exception as e:
+                        self.logger.error(f"PIN doğrulama sırasında bir hata oluştu: {str(e)}")
+
+                    if pin_valid:
+                        while True:
+                            if time.time() - time_start > 60:
+                                break
+                            try:
+                                net = """nmcli con up "{0}" ifname ttyUSB2 > /dev/null 2>&1""".format(connection_name)
+                                os.system(net)
+                                break
+                            except:
+                                pass
+                            time.sleep(2)
                 else:
                     time_start = time.time()
                     while True:
                         if time.time() - time_start > 60:
-                            break
+                                break
                         try:
                             result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                             modem_id = result.split("/")[5].split()[0]

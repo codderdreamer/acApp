@@ -1,17 +1,20 @@
 {
   "files": {
-    "main.css": "/static/css/main.f70a6993.css",
-    "main.js": "/static/js/main.08d18642.js",
-    "static/js/27.432ad563.chunk.js": "/static/js/27.432ad563.chunk.js",
-    "static/media/nucleo-icons.svg": "/static/media/nucleo-icons.95fa360c1c73431a0f9a.svg",
+    "main.css": "/static/css/main.d97d47e8.css",
+    "main.js": "/static/js/main.0b154164.js",
+    "static/js/787.7d86338c.chunk.js": "/static/js/787.7d86338c.chunk.js",
+    "static/media/nucleo-icons.svg": "/static/media/nucleo-icons.01ebecaf50461162d4bc.svg",
     "static/media/nucleo-icons.eot": "/static/media/nucleo-icons.19abb5402a664606b14c.eot",
     "static/media/nucleo-icons.ttf": "/static/media/nucleo-icons.d6a66724e7a7bf1bba65.ttf",
     "static/media/nucleo-icons.woff": "/static/media/nucleo-icons.c82c9b7c40130b7116d3.woff",
     "static/media/nucleo-icons.woff2": "/static/media/nucleo-icons.cba267483aa6a7cb6e33.woff2",
-    "index.html": "/index.html"
+    "index.html": "/index.html",
+    "main.d97d47e8.css.map": "/static/css/main.d97d47e8.css.map",
+    "main.0b154164.js.map": "/static/js/main.0b154164.js.map",
+    "787.7d86338c.chunk.js.map": "/static/js/787.7d86338c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f70a6993.css",
-    "static/js/main.08d18642.js"
+    "static/css/main.d97d47e8.css",
+    "static/js/main.0b154164.js"
   ]
 }

@@ -94,7 +94,7 @@ class FlaskModule:
             
         
         
-        @self.app.route('/ ', methods=['POST'])
+        @self.app.route('/changeProfile', methods=['POST'])
         @self.token_required
         def changeProfile():
             data = request.get_json()

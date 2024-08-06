@@ -74,6 +74,8 @@ class FlaskModule:
             
             login = self.application.databaseModule.get_user_login()
             if login["UserName"] == UserName and login["Password"] == Password:   
+                session['authenticated'] = True
+                session['UserName'] = UserName
                 return jsonify({'message': 'Login successful'})
             else:
                 return make_response('Could not verify', 403, {'WWW-Authenticate': 'Basic realm="Login required!"'})

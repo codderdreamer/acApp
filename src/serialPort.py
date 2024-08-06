@@ -8,10 +8,11 @@ import asyncio
 from ocpp.v16.enums import *
 
 class SerialPort():
-    def __init__(self,application) -> None:
+    def __init__(self, application, logger) -> None:
         self.application = application
-        self.serial = serial.Serial("/dev/ttyS2",115200 ,timeout=1)
-        # print("Serial connection...")
+        self.logger = logger
+        self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
+        self.logger.info("Serial connection established on /dev/ttyS2 with baudrate 115200")
         self.send_data_list = []
         
         self.error_list = []
@@ -36,7 +37,7 @@ class SerialPort():
         self.pid_energy             = "E"   # PID_ENERGY		    ('E')
         self.pid_evse_temp          = "T"   # PID_EVSE_TEMP		    ('T')
         self.pid_rfid               = "N"   # PID_RFID              ('N')
-        self.pid_error_list          = "H"   # PID_ERROR_LİST        ('H')
+        self.pid_error_list         = "H"   # PID_ERROR_LİST        ('H')
         
         self.current_L1 = 0
         self.current_L2 = 0
@@ -77,33 +78,25 @@ class SerialPort():
                 self.get_command_pid_energy(EnergyType.kwh)
                 self.get_command_pid_proximity_pilot()
             except Exception as e:
-                print(datetime.now(),"get_energy_thread Exception:",e)
+                self.logger.exception("Exception in get_energy_thread")
             time.sleep(5)
         
     def read_meter(self):
         while True:
-            print("------------------ MCU ----------------")
-            print("self.current_L1",self.current_L1)
-            print("self.current_L2",self.current_L2)
-            print("self.current_L3",self.current_L3)
-            print("self.voltage_L1",self.voltage_L1)
-            print("self.voltage_L2",self.voltage_L2)
-            print("self.voltage_L3",self.voltage_L3)
-            print("self.power",self.power)
-            print("self.energy",self.energy)
+            self.logger.debug(f"MCU current_L1: {self.current_L1}, current_L2: {self.current_L2}, current_L3: {self.current_L3}, "
+                         f"voltage_L1: {self.voltage_L1}, voltage_L2: {self.voltage_L2}, voltage_L3: {self.voltage_L3}, "
+                         f"power: {self.power}, energy: {self.energy}")
             time.sleep(1)
 
     def write(self):
-        # counter = 0
         while True:
             try:
-                if len(self.send_data_list)>0:
+                if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
-                    # print("Gönderilen",self.send_data_list[0],"counter:",counter)
-                    # counter +=1
+                    self.logger.debug(f"Sent data: {self.send_data_list[0]}")
                     self.send_data_list.pop(0)
             except Exception as e:
-                print(datetime.now(),"write Exception:",e)
+                self.logger.exception("Exception in write")
             time.sleep(0.1)
 
     def calculate_checksum(self,data):
@@ -138,7 +131,7 @@ class SerialPort():
             data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            # print("Send get_command_PID_control_pilot -->", send_data)
+            self.logger.debug(f"Send get_command_PID_control_pilot: {send_data}")
             self.send_data_list.append(send_data)
             time.sleep(1)
 
@@ -159,7 +152,7 @@ class SerialPort():
         data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send get_command_pid_proximity_pilot -->", send_data)
+        self.logger.debug(f"Send get_command_pid_proximity_pilot: {send_data}")
         self.send_data_list.append(send_data)
             
     def set_command_pid_cp_pwm(self,max_current):
@@ -178,16 +171,16 @@ class SerialPort():
         data = self.set_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send set_command_pid_cp_pwm -->", send_data)
+        self.logger.debug(f"Send set_command_pid_cp_pwm: {send_data}")
         self.send_data_list.append(send_data)
-        
+
     def get_command_pid_cp_pwm(self):
         self.parameter_data = "001"
         self.connector_id = "1"
         data = self.get_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_cp_pwm -->", send_data)
+        self.logger.debug(f"Send get_command_pid_cp_pwm: {send_data}")
         self.send_data_list.append(send_data)
         
     def set_command_pid_relay_control(self,relay:Relay):
@@ -199,7 +192,7 @@ class SerialPort():
         data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send set_command_pid_relay_control",send_data)
+        self.logger.debug(f"Send set_command_pid_relay_control: {send_data}")
         self.send_data_list.append(send_data)
 
     def get_command_pid_relay_control(self):
@@ -210,18 +203,17 @@ class SerialPort():
         data = self.get_command + self.pid_relay_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_relay",send_data)
+        self.logger.debug(f"Send get_command_pid_relay: {send_data}")
         self.send_data_list.append(send_data)
 
-    def set_command_pid_led_control(self,led_state:LedState):
+    def set_command_pid_led_control(self, led_state: LedState):
         self.parameter_data = "002"
         data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("************************* led_state -->", led_state)
+        self.logger.debug(f"Send set_command_pid_led_control: {send_data}")
         self.send_data_list.append(send_data)
-        if led_state != LedState.RfidVerified and led_state != LedState.RfidFailed:
-            # print("********** önceki led setlendi",self.led_state)
+        if led_state not in [LedState.RfidVerified, LedState.RfidFailed]:
             self.led_state = led_state
         else:
             time.sleep(2)
@@ -229,7 +221,7 @@ class SerialPort():
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            print("1 sn sonra set_command_pid_led_control -->", self.led_state)
+            self.logger.debug(f"Send set_command_pid_led_control after 2 seconds: {self.led_state}")
             self.send_data_list.append(send_data)
 
     def get_command_pid_led_control(self):
@@ -237,7 +229,7 @@ class SerialPort():
         data = self.get_command + self.pid_led_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send get_command_pid_led_control -->", send_data)
+        self.logger.debug(f"Send get_command_pid_led_control: {send_data}")
         self.send_data_list.append(send_data)
 
     def set_command_pid_locker_control(self,locker_state:LockerState):
@@ -248,7 +240,7 @@ class SerialPort():
         data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        print("Send set_command_pid_locker_control -->", send_data)
+        self.logger.debug(f"Send set_command_pid_locker_control: {send_data}")
         self.send_data_list.append(send_data)
 
     def get_command_pid_locker_control(self): 
@@ -259,7 +251,7 @@ class SerialPort():
         data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_locker_control -->", send_data)
+        self.logger.debug(f"Send get_command_pid_locker_control: {send_data}")
         self.send_data_list.append(send_data)
 
     def get_command_pid_current(self):
@@ -267,7 +259,7 @@ class SerialPort():
         data = self.get_command + self.pid_current + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_current -->", send_data)
+        self.logger.debug(f"Send get_command_pid_current: {send_data}")
         self.send_data_list.append(send_data)
         
     def get_command_pid_voltage(self):
@@ -275,23 +267,23 @@ class SerialPort():
         data = self.get_command + self.pid_voltage + self.parameter_data + self.connector_id
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_voltage -->", send_data)
+        self.logger.debug(f"Send get_command_pid_voltage: {send_data}")
         self.send_data_list.append(send_data)
 
-    def get_command_pid_power(self,power_type:PowerType):
+    def get_command_pid_power(self, power_type: PowerType):
         self.parameter_data = "002"
         data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_power -->", send_data)
+        self.logger.debug(f"Send get_command_pid_power: {send_data}")
         self.send_data_list.append(send_data)
 
-    def get_command_pid_energy(self,energy_type:EnergyType):
+    def get_command_pid_energy(self, energy_type: EnergyType):
         self.parameter_data = "002"
         data = self.get_command + self.pid_energy + self.parameter_data + self.connector_id + energy_type.value
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send get_command_pid_energy -->", send_data)
+        self.logger.debug(f"Send get_command_pid_energy: {send_data}")
         self.send_data_list.append(send_data)
 
     def set_command_pid_rfid(self):
@@ -302,9 +294,9 @@ class SerialPort():
         data = self.set_command + self.pid_rfid + self.parameter_data + self.connector_id + "R"
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        # print("Send set_command_pid_rfid -->", send_data)
+        self.logger.debug(f"Send set_command_pid_rfid: {send_data}")
         self.send_data_list.append(send_data)
-        
+
     def get_command_pid_rfid(self):
         time.sleep(10)
         while True:
@@ -312,10 +304,10 @@ class SerialPort():
             data = self.get_command + self.pid_rfid + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            # print("Send get_command_pid_rfid -->", send_data)
+            self.logger.debug(f"Send get_command_pid_rfid: {send_data}")
             self.send_data_list.append(send_data)
             time.sleep(0.5)
-            
+
     def get_command_pid_evse_temp(self):
         time.sleep(10)
         while True:
@@ -323,21 +315,20 @@ class SerialPort():
             data = self.get_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "R"
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            # print("Send get_command_pid_evse_temp -->", send_data)
+            self.logger.debug(f"Send get_command_pid_evse_temp: {send_data}")
             self.send_data_list.append(send_data)
             time.sleep(15)
-            
+
     def get_command_pid_error_list_init(self):
         time.sleep(15)
-        # print("Başlangıçta error durumu kontrol ediliyor..")
-        # print("pid_error_list",self.error_list)
-        if len(self.error_list)>0:
+        self.logger.info("Checking initial error status")
+        if len(self.error_list) > 0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:
-                    # print("LockerInitializeError")
+                    self.logger.error("LockerInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
                 elif value == PidErrorList.RcdInitializeError:
-                    # print("RcdInitializeError")
+                    self.logger.error("RcdInitializeError")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
             
     def get_command_pid_error_list(self):
@@ -347,6 +338,7 @@ class SerialPort():
             data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.logger.debug(f"Send get_command_pid_error_list: {send_data}")
             self.send_data_list.append(send_data)
             time.sleep(1)
         
@@ -364,46 +356,43 @@ class SerialPort():
         '''
         if data[2] == self.pid_control_pilot:
             self.application.ev.control_pilot = data[7]
-            # print("self.application.ev.control_pilot------>",self.application.ev.control_pilot)
-            
-    def get_response_pid_proximity_pilot(self,data):
+            self.logger.debug(f"Control pilot state: {self.application.ev.control_pilot}")
+
+
+    def get_response_pid_proximity_pilot(self, data):
         if data[2] == self.pid_proximity_pilot:
             self.application.ev.proximity_pilot = data[7]
-            print("self.application.ev.proximity_pilot------>",self.application.ev.proximity_pilot)
-      
-    def set_response_pid_cp_pwm(self,data):
+            self.logger.debug(f"Proximity pilot state: {self.application.ev.proximity_pilot}")
+    def set_response_pid_cp_pwm(self, data):
         if data[2] == self.pid_cp_pwm_control:
             digit_100 = int(data[7]) * 100
             digit_10 = int(data[8]) * 10
             digit_1 = int(data[9])
             digit_01 = int(data[10]) / 10
-            
             original_number = digit_100 + digit_10 + digit_1 + digit_01
             pid_cp_pwm = int(original_number) if original_number.is_integer() else original_number
-            # print("pid_cp_pwm------>",pid_cp_pwm)
-    
-    def get_response_pid_cp_pwm(self,data):
+            self.logger.debug(f"CP PWM set to: {pid_cp_pwm}")
+    def get_response_pid_cp_pwm(self, data):
         if data[2] == self.pid_cp_pwm_control:
             digit_100 = int(data[7]) * 100
             digit_10 = int(data[8]) * 10
             digit_1 = int(data[9])
             digit_01 = int(data[10]) / 10
-            
             original_number = digit_100 + digit_10 + digit_1 + digit_01
             self.application.ev.pid_cp_pwm = int(original_number) if original_number.is_integer() else original_number
-            # print("self.application.ev.pid_cp_pwm------>",self.application.ev.pid_cp_pwm)
-            
-    def set_response_pid_relay_control(self,data):
+            self.logger.debug(f"CP PWM: {self.application.ev.pid_cp_pwm}")
+
+    def set_response_pid_relay_control(self, data):
         if data[2] == self.pid_relay_control:
             result = data[7]
-            print("set_response_pid_relay_control------>",result)
+            self.logger.debug(f"Relay control set to: {result}")
 
-    def get_response_pid_relay_control(self,data):
+    def get_response_pid_relay_control(self, data):
         if data[2] == self.pid_relay_control:
             self.application.ev.pid_relay_control = bool(int(data[7]))
-            print("self.application.ev.pid_relay_control------>",self.application.ev.pid_relay_control)
+            self.logger.debug(f"Relay control state: {self.application.ev.pid_relay_control}")
 
-    def set_response_pid_led_control(self,data):
+    def set_response_pid_led_control(self, data):
         if data[2] == self.pid_led_control:
             result = data[7]
             # if result == LedState.StandBy.value:
@@ -443,55 +432,58 @@ class SerialPort():
             #     print("self.application.ev.pid_led_control --> ",LedState.Fault.name)
             # elif result == LedState.ChargingStopped.value:
             #     print("self.application.ev.pid_led_control --> ",LedState.ChargingStopped.name)
+            self.logger.debug(f"LED control state: {self.application.ev.pid_led_control}")
 
     def set_response_pid_locker_control(self,data):
         if data[2] == self.pid_locker_control:
             result = data[7]
             if result == LockerState.Lock.value:
-                print("set_response_pid_locker_control",LockerState.Lock.name)
+                self.logger.info("Locker control set to Lock")
             elif result == LockerState.Unlock.value:
-                print("set_response_pid_locker_control",LockerState.Unlock.name)
+                self.logger.info("Locker control set to Unlock")
 
-    def get_response_pid_locker_control(self,data):
+    def get_response_pid_locker_control(self, data):
         if data[2] == self.pid_locker_control:
             self.application.ev.pid_locker_control = data[7]
             result = data[7]
-            # if result == LockerState.Lock.value:
-            #     print("self.application.ev.pid_locker_control-->",LockerState.Lock.name)
-            # elif result == LockerState.Unlock.value:
-            #     print("self.application.ev.pid_locker_control-->",LockerState.Unlock.name)
+            if result == LockerState.Lock.value:
+                self.logger.info("Locker state: Lock")
+            elif result == LockerState.Unlock.value:
+                self.logger.info("Locker state: Unlock")
 
-    def get_response_pid_current(self,data):
+    def get_response_pid_current(self, data):
         if data[2] == self.pid_current:
             self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
             self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
             self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
+            self.logger.info(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
 
-            
-    def get_response_pid_voltage(self,data):
+    def get_response_pid_voltage(self, data):
         if data[2] == self.pid_voltage:
             self.voltage_L1 = round(int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01 , 3)
             self.voltage_L2 = round(int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01 , 3)
             self.voltage_L3 = round(int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01 , 3)
-            
+            self.logger.info(f"Voltage L1: {self.voltage_L1}, L2: {self.voltage_L2}, L3: {self.voltage_L3}")
+
     def get_response_pid_power(self,data):
         if data[2] == self.pid_power:
-            self.power = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
+            self.power = round(int(data[8]) * 100 + int(data[9]) * 10 + int(data[10]) * 1 + int(data[11]) * 0.1 + int(data[12]) * 0.01 + int(data[13]) * 0.001, 3)
+            self.logger.info(f"Power: {self.power}")
 
-    def get_response_pid_energy(self,data):
+    def get_response_pid_energy(self, data):
         if data[2] == self.pid_energy:
-            print("-------------------------------------------------------------------------- self.application.deviceState",self.application.deviceState)
+            self.logger.info(f"Device state: {self.application.deviceState}")
             if self.application.deviceState == DeviceState.IDLE:
                 self.firstEnergy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
             self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3) - self.firstEnergy
-            
+            self.logger.info(f"Energy: {self.energy}")
 
-    def set_response_pid_rfid(self,data):
+    def set_response_pid_rfid(self, data):
         if data[2] == self.pid_rfid:
             result = data[7]
-            # print("Rfid Reset -->",result)
-            
-    def get_response_pid_rfid(self,data):
+            self.logger.info(f"RFID set response: {result}")
+
+    def get_response_pid_rfid(self, data):
         if data[2] == self.pid_rfid:
             card_id = ""
             card_id_length = int(data[7] + data[8])
@@ -500,17 +492,17 @@ class SerialPort():
                     card_id += data[i]
             if card_id != "":
                 self.application.ev.card_id = card_id
-                print(card_id)
+                self.logger.info(f"RFID card ID: {card_id}")
                 self.set_command_pid_rfid()
-                
-    def get_response_pid_evse_temp(self,data):
+
+    def get_response_pid_evse_temp(self, data):
         if data[2] == self.pid_evse_temp:
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)
-            # print("temp:", self.application.ev.temperature)
-            
-    def get_response_pid_error_list(self,data):
+            self.logger.info(f"Temperature: {self.application.ev.temperature}")
+
+    def get_response_pid_error_list(self, data):
         error_list = []
         if data[2] == self.pid_error_list:
             # print("data:", data)
@@ -560,7 +552,7 @@ class SerialPort():
                 error_list.append(PidErrorList.OverPowerFailure)
                 self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
             if len(error_list) > 0:
-                print(" $$$$$$$$$$$$$$$$ self.error_list",self.error_list)
+                self.logger.error(f"Error list: {self.error_list}")
 
             if error_list != self.error_list:
                 if len(error_list) > 0:
@@ -570,16 +562,14 @@ class SerialPort():
                     self.application.testWebSocket.send_error("")
             
             self.error_list = error_list
-            # print("self.error_list get_response_pid_error_list",self.error_list)
 
     def read(self):
-        # counter = 0
         while True:
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    # print("incoming data",incoming,"counter:", counter)
+                    self.logger.debug(f"Incoming data: {incoming}")
                     # counter +=1
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
@@ -602,12 +592,5 @@ class SerialPort():
                         self.set_response_pid_locker_control(incoming)
                         self.set_response_pid_rfid(incoming)
             except Exception as e:
-                print(datetime.now(),"read Exception:",e)
+                self.logger.exception("Exception in read")
             time.sleep(0.1)
-            
-# 04E2D04A0074801
-# 0485A54A0074801
-            
-
-
-		

@@ -15,6 +15,9 @@ from src.bluetoothService import gatt_server
 import time
 from datetime import datetime
 
+from src.logger import ac_app_logger as logger
+
+
 class BluetoothService():
     def __init__(self, application) -> None:
         self.application = application
@@ -30,7 +33,7 @@ class BluetoothService():
 
     def run(self):
         try:
-            print("Bluetooth run")
+            logger.info("Bluetooth run")
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()
@@ -43,7 +46,7 @@ class BluetoothService():
             gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
             self.mainloop.run()
         except Exception as e:
-            print(datetime.now(), "BluetoothService run Exception:", e)
+            logger.exception("BluetoothService run Exception:", e)
 
     def register_agent(self):
         try:
@@ -53,9 +56,9 @@ class BluetoothService():
             manager = dbus.Interface(obj, "org.bluez.AgentManager1")
             manager.RegisterAgent(path, "NoInputNoOutput")
             manager.RequestDefaultAgent(path)
-            print("Agent registered successfully")
+            logger.info("Agent registered successfully")
         except Exception as e:
-            print(datetime.now(), "Failed to register agent:", e)
+            logger.exception("Failed to register agent:", e)
 
 class Agent(dbus.service.Object):
     def __init__(self, bus, path):
@@ -63,16 +66,16 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Release(self):
-        print("Agent released")
+        logger.info("Agent released")
 
     @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="s")
     def RequestPinCode(self, device):
-        print("RequestPinCode called for device: %s" % (device))
+        logger.info("RequestPinCode called for device: %s", device)
         return "0000"
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Cancel(self):
-        print("Cancel called")
+        logger.info("Cancel called")
 
 if __name__ == "__main__":
     BluetoothService(application=None)

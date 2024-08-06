@@ -6,9 +6,10 @@ from datetime import datetime
 from ocpp.v16.datatypes import *
 from ocpp.v16.enums import *
 import os
+from src.logger import ac_app_logger as logger
 
 class EV():
-    def __init__(self,application):
+    def __init__(self, application):
         self.application = application
         
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F 
@@ -46,6 +47,7 @@ class EV():
         self.start_stop_authorize = False
         
         Thread(target=self.control_error_list,daemon=True).start()
+        logger.debug("EV instance created and control_error_list thread started")
         
     def control_error_list(self):
         time.sleep(5)
@@ -60,8 +62,11 @@ class EV():
             rcdTripError = False
             rcd_init_error = False
             locker_init_error = False
-            # print("\n\n","mid_meter",self.application.modbusModule.connection,"ocppActive:",self.application.ocppActive,"control_pilot:",self.control_pilot,"charge:",self.charge,"chargingStatus:",self.application.chargingStatus,"error_list:",self.application.serialPort.error_list, "counter",counter,"\n\n")
-            if self.application.test_led: # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
+            
+            logger.debug("Checking error list. Charge: %s, Control Pilot: %s, Charging Status: %s", 
+                         self.charge, self.control_pilot, self.application.chargingStatus)
+            
+            if self.application.test_led:  # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
                 pass
             else:
                 if self.charge:
@@ -73,18 +78,19 @@ class EV():
                                 othererror = True
                         
                     if rcdTripError:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
                         self.application.deviceState = DeviceState.FAULT
+                        logger.error("RCD Trip Error detected, setting device state to FAULT")
                     elif othererror and counter != 3:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                         counter += 1
                         self.application.deviceState = DeviceState.SUSPENDED_EVSE
-                        print("Hata var! 30 sn bekleniyor... 30 sn sonra denenecek")
+                        logger.warning("Other errors detected, waiting 30 seconds before retrying. Attempt: %s", counter)
                         time.sleep(30)
-                        print("30 sn doldu. ",counter,".ye deneniyor")
                     elif othererror and counter == 3:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                         self.application.deviceState = DeviceState.FAULT
+                        logger.error("Max retries reached, setting device state to FAULT")
                     elif othererror == False:
                         if self.control_pilot == ControlPlot.stateC.value:
                             self.application.deviceState = DeviceState.CHARGING
@@ -127,20 +133,22 @@ class EV():
                     if self.application.chargingStatus == ChargePointStatus.charging:
                         pass
                     else:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-                        self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
+                        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
             
             time.sleep(5)
                     
         
     def send_message(self):
         self.send_message_thread_start = True
+        logger.debug("Message sending thread started")
         while self.send_message_thread_start:
             try:
-                self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+                self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
             except Exception as e:
-                print(datetime.now(),"send_message Exception:",e)
+                logger.exception("send_message Exception: %s", e)
             time.sleep(3)
+        logger.debug("Message sending thread stopped")
         
     @property
     def proximity_pilot(self):
@@ -162,7 +170,7 @@ class EV():
             self.proximity_pilot_current = 32
         elif self.__proximity_pilot == ProximityPilot.CablePluggedIntoCharger63Amper.value:
             self.proximity_pilot_current = 63
-        # print(self.proximity_pilot_current)
+        logger.debug("Proximity pilot set to %s, current: %s", self.__proximity_pilot, self.proximity_pilot_current)
         
     @property
     def control_pilot(self):
@@ -171,7 +179,7 @@ class EV():
     @control_pilot.setter
     def control_pilot(self, value):
         if self.__control_pilot != value:
-            print("************************************************************  control_pilot",value)
+            logger.info("Control pilot state changing from %s to %s", self.__control_pilot, value)
             self.__control_pilot = value
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
@@ -180,11 +188,13 @@ class EV():
             elif self.__control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
+                logger.error("Fault state detected in control pilot: %s", self.__control_pilot)
             else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
+                logger.error("Unexpected control pilot state: %s", self.__control_pilot)
                 
     @property
     def charge(self):
@@ -193,11 +203,12 @@ class EV():
     @charge.setter
     def charge(self, value):
         self.__charge = value
+        logger.debug("Charge state set to: %s", value)
         if value:
             Thread(target=self.send_message,daemon=True).start()
         else:
             self.send_message_thread_start = False
-            self.application.webSocketServer.websocketServer.send_message_to_all(msg = self.application.settings.get_charging())
+            self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
         
         
     @property
@@ -208,6 +219,7 @@ class EV():
     def card_id(self, value):
         if (value != None) and (value != ""):
             if self.application.masterCard == value:
+                logger.info("Master card detected, resetting settings")
                 os.system("rm -r /root/Settings.sqlite")
                 os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
                 os.system("systemctl restart acapp.service")
@@ -222,8 +234,8 @@ class EV():
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                 else:
                     self.application.chargePoint.authorize = None
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
-            elif (self.application.cardType == CardType.StartStopCard):
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag=value), self.application.loop)
+            elif self.application.cardType == CardType.StartStopCard:
                 # Local cardlarda var mı database bak...
                 finded = False
                 card_id_list = self.application.databaseModule.get_local_list()
@@ -241,8 +253,8 @@ class EV():
                         elif self.charge == False:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                             if self.__control_pilot != "B":
-                                print("-------------------------------------------------------------------  Araç bağlı değil")
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+                                logger.debug("Vehicle not connected")
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
                         else:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
                             
@@ -258,10 +270,4 @@ class EV():
     @id_tag.setter
     def id_tag(self, value):
         self.__id_tag = value
-                
-            
-
-        
-        
-        
-        
+        logger.debug("ID tag set to: %s", value)

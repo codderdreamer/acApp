@@ -2,10 +2,11 @@ import minimalmodbus
 import serial
 import time
 from threading import Thread
+from src.logger import ac_app_logger as logger
 
 class ModbusModule:
-    def __init__(self,application, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
-        print("*********** Modbus Bağlantı port:",port,"slave_address:",slave_address, "baudrate:",baudrate)
+    def __init__(self, application, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
+        logger.info("Initializing Modbus connection on port: %s, slave_address: %s, baudrate: %s", port, slave_address, baudrate)
         self.port = port
         self.slave_address = slave_address
         self.baudrate = baudrate
@@ -31,8 +32,9 @@ class ModbusModule:
         self.__connection = False
         self.firstEnergy = None
         
-        Thread(target=self.read_all_data,daemon=True).start()
-        
+        Thread(target=self.read_all_data, daemon=True).start()
+        logger.info("Started read_all_data thread")
+
     @property
     def connection(self):
         return self.__connection
@@ -41,21 +43,49 @@ class ModbusModule:
     def connection(self, value):
         if self.__connection != value:
             self.__connection = value
-            if value == True:
+            if value:
+                logger.info("Modbus connection established")
                 self.application.testWebSocket.send_mid_meter_state(True)
-                self.firstEnergy = round(self.read_input_float(register_address=73)/1000,2)
-       
+                first_energy = self.read_input_float(register_address=73)
+                self.firstEnergy = round(first_energy / 1000, 2) if first_energy is not None else None
+            else:
+                logger.warning("Modbus connection lost")
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
-        return self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
+        try:
+            result = self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
+            logger.debug("Read float from register %s: %s", register_address, result)
+            return result
+        except minimalmodbus.NoResponseError:
+            logger.debug("No response from instrument at register %s", register_address)
+            return None
+        except Exception as e:
+            logger.exception("Exception in read_float: %s", e)
+            return None
 
     def write_float(self, register_address, value, number_of_registers=2, byteorder=0):
-        self.instrument.write_float(register_address, value, functioncode=16, number_of_registers=number_of_registers, byteorder=byteorder)
+        try:
+            self.instrument.write_float(register_address, value, functioncode=16, number_of_registers=number_of_registers, byteorder=byteorder)
+            logger.debug("Wrote float to register %s: %s", register_address, value)
+        except minimalmodbus.NoResponseError:
+            logger.debug("No response from instrument when writing to register %s", register_address)
+        except Exception as e:
+            logger.exception("Exception in write_float: %s", e)
 
     def read_input_float(self, register_address):
         adjusted_address = register_address - 1
-        float_val = self.read_float(adjusted_address, number_of_registers=2)
-        return round(float_val,2)
+        try:
+            float_val = self.read_float(adjusted_address, number_of_registers=2)
+            if float_val is not None:
+                result = round(float_val, 2)
+                logger.debug("Read input float from register %s: %s", register_address, result)
+                return result
+            else:
+                logger.debug("Failed to read input float from register %s", register_address)
+                return None
+        except Exception as e:
+            logger.exception("Exception in read_input_float: %s", e)
+            return None
     
     def read_all_data(self):
         counter = 0
@@ -67,18 +97,18 @@ class ModbusModule:
                 self.current_L1 = self.read_input_float(register_address=7)
                 self.current_L2 = self.read_input_float(register_address=9)
                 self.current_L3 = self.read_input_float(register_address=11)
-                self.power = round(self.read_input_float(register_address=53)/1000,2)
-                self.energy = round(self.read_input_float(register_address=73)/1000,2)
+                
+                power_reading = self.read_input_float(register_address=53)
+                self.power = round(power_reading / 1000, 2) if power_reading is not None else None
+                
+                energy_reading = self.read_input_float(register_address=73)
+                self.energy = round(energy_reading / 1000, 2) if energy_reading is not None else None
+                
                 counter = 0
-                # print("-----------MID METER-----------------")
-                # print("MID METER self.volt_l1",self.volt_l1)
-                # print("MID METER self.volt_l2",self.volt_l2)
-                # print("MID METER self.volt_l3",self.volt_l3)
-                # print("MID METER self.current_l1",self.current_l1)
-                # print("MID METER self.current_l2",self.current_l2)
-                # print("MID METER self.current_l3",self.current_l3)
-                # print("MID METER self.power",self.power)
-                # print("MID METER self.energy",self.energy)
+                logger.debug("Read all data: Voltage L1: %s, L2: %s, L3: %s; Current L1: %s, L2: %s, L3: %s; Power: %s, Energy: %s",
+                            self.voltage_L1, self.voltage_L2, self.voltage_L3,
+                            self.current_L1, self.current_L2, self.current_L3,
+                            self.power, self.energy)
                 self.connection = True
             except Exception as e:
                 counter += 1
@@ -87,16 +117,3 @@ class ModbusModule:
                     counter = 0
                 pass
             time.sleep(0.5)
-
-    
-    
-
-        
-
-    
-
-
-    
-    
-    
-    

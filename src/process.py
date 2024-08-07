@@ -272,9 +272,11 @@ class Process:
 
         while True:
             logger.info("Charging in progress...")
+            if len(self.application.serialPort.error_list) > 0:
+                break
             self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
             if self.application.deviceState != DeviceState.CHARGING:
-                return
+                break
             if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                 logger.warning("Waiting for mid meter connection...")
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
@@ -286,7 +288,7 @@ class Process:
                         break
                 else:
                     logger.debug("Control pilot state: %s", self.application.ev.control_pilot)
-                    return
+                    break
             elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                 self.application.meter_values_on = True
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()

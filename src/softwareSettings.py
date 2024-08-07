@@ -275,7 +275,7 @@ class SoftwareSettings():
                             pass
         except Exception as e:
             self.logger.exception("Exception in set_4G")
-
+            
     def set_wifi(self):
         try:
             wifiEnable = self.application.settings.wifiSettings.wifiEnable
@@ -299,8 +299,7 @@ class SoftwareSettings():
             print(datetime.now(), "set_wifi: gateway:", gateway)
             
             self.delete_connection_type("wifi")
-            self.logger.debug("Setting WiFi connection")
-
+            
             if wifiEnable == "True":
                 if mod == "AP":
                     if wifidhcpcEnable == "True":
@@ -308,7 +307,7 @@ class SoftwareSettings():
                     else:
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, netmask_prefix_length, gateway])
+                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
                     result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     print(datetime.now(), "nmcli con add result:", result.stdout, result.stderr)
@@ -326,16 +325,24 @@ class SoftwareSettings():
                         print("Statik IP ayarlanıyor...")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        os.system("nmcli con modify wifi_connection ipv4.method manual > /dev/null 2>&1")
-                        self.logger.info(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length}")
-                        os.system(f"nmcli con modify wifi_connection ipv4.address {ip}/{netmask_prefix_length} > /dev/null 2>&1")
-                        self.logger.info(f"nmcli con modify wifi_connection ipv4.gateway {gateway}")
-                        os.system(f"nmcli con modify wifi_connection ipv4.gateway {gateway} > /dev/null 2>&1")
-                        self.logger.info(f"nmcli con modify wifi_connection ipv4.dns {gateway}")
-                    os.system("nmcli connection up wifi_connection > /dev/null 2>&1")
-                    self.logger.info("nmcli connection up wifi_connection")
+
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.addresses {ip}/{netmask_prefix_length}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify addresses result:", result.stdout, result.stderr)
+
+                        result = subprocess.run(f"nmcli con modify wifi_connection ipv4.gateway {gateway}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify gateway result:", result.stdout, result.stderr)
+
+                        result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                        print(datetime.now(), "nmcli modify method manual result:", result.stdout, result.stderr)
+                        
+                        print(f"IP: {ip}, Netmask: {netmask_prefix_length}, Gateway: {gateway}")
+                        
+                    result = subprocess.run("nmcli connection up wifi_connection", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    print(datetime.now(), "nmcli connection up result:", result.stdout, result.stderr)
+            else:
+                print(datetime.now(), "set_wifi: WiFi devre dışı")
         except Exception as e:
-            self.logger.exception("Exception in set_wifi")
+            print(datetime.now(), "set_wifi Hatası:", e)
 
     def set_network_priority(self):
         time.sleep(10)

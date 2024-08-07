@@ -271,35 +271,38 @@ class Process:
             return
 
         while True:
-            logger.info("Charging in progress...")
-            self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
-            if self.application.deviceState != DeviceState.CHARGING:
-                break
-            if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
-                logger.warning("Waiting for mid meter connection...")
-                if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                    if time.time() - time_start > 6:
-                        logger.error("Failed to connect to mid meter")
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
-                        self.application.deviceState = DeviceState.FAULT
-                        self.application.testWebSocket.send_mid_meter_state(False)
-                        break
-                else:
-                    logger.debug("Control pilot state: %s", self.application.ev.control_pilot)
+            try:
+                logger.info("Charging in progress...")
+                self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
+                if self.application.deviceState != DeviceState.CHARGING:
                     break
-            elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                self.application.meter_values_on = True
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
-                self.application.serialPort.get_command_pid_current()
-                self.application.serialPort.get_command_pid_voltage()
-                self.application.serialPort.get_command_pid_power(PowerType.kw)
-                self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-            elif self.application.modbusModule.connection == True:
-                logger.info("Mid meter connected: port=%s, slave_address=%s, baudrate=%s", 
-            self.application.modbusModule.port, 
-            self.application.modbusModule.slave_address, 
-            self.application.modbusModule.baudrate)
+                if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
+                    logger.warning("Waiting for mid meter connection...")
+                    if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                        if time.time() - time_start > 6:
+                            logger.error("Failed to connect to mid meter")
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+                            self.application.deviceState = DeviceState.FAULT
+                            self.application.testWebSocket.send_mid_meter_state(False)
+                            break
+                    else:
+                        logger.debug("Control pilot state: %s", self.application.ev.control_pilot)
+                        break
+                elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+                    self.application.meter_values_on = True
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
+                    self.application.serialPort.get_command_pid_current()
+                    self.application.serialPort.get_command_pid_voltage()
+                    self.application.serialPort.get_command_pid_power(PowerType.kw)
+                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                elif self.application.modbusModule.connection == True:
+                    logger.info("Mid meter connected: port=%s, slave_address=%s, baudrate=%s", 
+                self.application.modbusModule.port, 
+                self.application.modbusModule.slave_address, 
+                self.application.modbusModule.baudrate)
+            except Exception as e:
+                print("**************************************************** charge_while Exception", e)
                 
 
 

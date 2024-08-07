@@ -78,7 +78,6 @@ class SoftwareSettings():
                 return "ppp0"
         except Exception as e:
             self.logger.exception("Exception in turn_interface: " + e)
-            
 
     def control_websocket_ip(self):
         try:

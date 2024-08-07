@@ -19,10 +19,65 @@ class SoftwareSettings():
         Thread(target=self.set_eth, daemon=True).start()
         Thread(target=self.set_4G, daemon=True).start()
         Thread(target=self.set_wifi, daemon=True).start()
-        Thread(target=self.set_network_priority, daemon=True).start()
+        # Thread(target=self.set_network_priority, daemon=True).start()
         Thread(target=self.control_device_status, daemon=True).start()
         self.set_timezoon()
         self.set_bluetooth_settings()
+        Thread(target=self.check_internet_connection, daemon=True).start()
+
+    def check_internet_connection(self):
+        interfaces = ["eth1", "wlan0", "ppp0"]
+        while True:
+            try:
+                success_interfaces = []
+                for interface in interfaces:
+                    command = f"ping -I {interface} -c 3 8.8.8.8"
+                    try:
+                        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        if result.returncode == 0:
+                            print(f"Başarılı ağ arayüzü: {interface}")
+                            success_interfaces.append(interface)
+                        else:
+                            print(f"Başarısız ağ arayüzü: {interface}")
+                    except Exception as e:
+                        print(f"{interface} için ping atılırken hata oluştu: {str(e)}")
+
+                print("success_interfaces",success_interfaces)
+                
+                if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")
+                    print(self.application.settings.networkPriority.first, "100")
+                else:
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 800")
+                    print(self.application.settings.networkPriority.first, "800")
+
+                if self.turn_interface(self.application.settings.networkPriority.second) in success_interfaces:
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 300")
+                    print(self.application.settings.networkPriority.second, "300")
+                else:
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 850")
+
+                if self.turn_interface(self.application.settings.networkPriority.third) in success_interfaces:
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 700")
+                    print(self.application.settings.networkPriority.third, "700")
+                else:
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 900")
+            
+            except Exception as e:
+                self.logger.exception("Exception in check_internet_connection: " + e)
+
+            time.sleep(2)
+
+    def turn_interface(self,value):
+        try:
+            if value == "ETH":
+                return "eth1"
+            elif value == "WLAN":
+                return "wlan0"
+            elif value == "4G":
+                return "ppp0"
+        except Exception as e:
+            self.logger.exception("Exception in turn_interface: " + e)
 
     def control_websocket_ip(self):
         try:
@@ -342,7 +397,7 @@ class SoftwareSettings():
                 Thread(target=self.set_eth, daemon=True).start()
                 Thread(target=self.set_4G, daemon=True).start()
                 Thread(target=self.set_wifi, daemon=True).start()
-                Thread(target=self.set_network_priority, daemon=True).start()
+                # Thread(target=self.set_network_priority, daemon=True).start()
                 time.sleep(15)
         except Exception as e:
             self.logger.exception("Exception in ping_google")
@@ -442,7 +497,7 @@ class SoftwareSettings():
                 self.find_network()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
-                Thread(target=self.set_network_priority, daemon=True).start()
+                # Thread(target=self.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
                 self.logger.exception("Exception in control_device_status")

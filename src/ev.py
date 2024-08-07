@@ -59,7 +59,7 @@ class EV():
         locker_init_error = False
         while True:
             try:
-                print("****************************************************self.charge",self.charge)
+                # print("****************************************************self.charge",self.charge)
 
                 othererror = False
                 rcdTripError = False

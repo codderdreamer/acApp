@@ -151,7 +151,7 @@ class EV():
             except Exception as e:
                 print("******************************************** control_error_list Exception",e)
 
-            time.sleep(0.1)
+            time.sleep(5)
 
 
     def send_message(self):

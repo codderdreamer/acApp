@@ -272,8 +272,6 @@ class Process:
 
         while True:
             logger.info("Charging in progress...")
-            if len(self.application.serialPort.error_list) > 0:
-                break
             self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
             if self.application.deviceState != DeviceState.CHARGING:
                 break

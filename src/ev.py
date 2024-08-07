@@ -70,8 +70,8 @@ class EV():
                 pass
             else:
                 if self.charge:
+                    print("if len(self.application.serialPort.error_list) > 0:**************************************************",self.application.serialPort.error_list)
                     if len(self.application.serialPort.error_list) > 0:
-                        print("if len(self.application.serialPort.error_list) > 0:**************************************************",self.application.serialPort.error_list)
                         for value in self.application.serialPort.error_list:
                             if value == PidErrorList.RcdTripError:
                                 rcdTripError = True

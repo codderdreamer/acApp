@@ -64,8 +64,8 @@ class EV():
                 rcd_init_error = False
                 locker_init_error = False
                 
-                logger.debug("Checking error list. Charge: %s, Control Pilot: %s, Charging Status: %s", 
-                            self.charge, self.control_pilot, self.application.chargingStatus)
+                # logger.debug("Checking error list. Charge: %s, Control Pilot: %s, Charging Status: %s", 
+                #             self.charge, self.control_pilot, self.application.chargingStatus)
                 
                 if self.application.test_led:  # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
                     pass
@@ -84,18 +84,18 @@ class EV():
                         if rcdTripError:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT
-                            logger.error("RCD Trip Error detected, setting device state to FAULT")
+                            # logger.error("RCD Trip Error detected, setting device state to FAULT")
                         elif othererror and counter != 3:
                             print("elif othererror and counter != 3:")
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                             counter += 1
                             self.application.deviceState = DeviceState.SUSPENDED_EVSE
-                            logger.warning("Other errors detected, waiting 30 seconds before retrying. Attempt: %s", counter)
+                            # logger.warning("Other errors detected, waiting 30 seconds before retrying. Attempt: %s", counter)
                             time.sleep(30)
                         elif othererror and counter == 3:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                             self.application.deviceState = DeviceState.FAULT
-                            logger.error("Max retries reached, setting device state to FAULT")
+                            # logger.error("Max retries reached, setting device state to FAULT")
                         elif othererror == False:
                             if self.control_pilot == ControlPlot.stateC.value:
                                 self.application.deviceState = DeviceState.CHARGING
@@ -143,7 +143,7 @@ class EV():
             except Exception as e:
                 print("******************************************** control_error_list Exception",e)
             
-            time.sleep(0.5)
+            time.sleep(0.1)
                     
         
     def send_message(self):

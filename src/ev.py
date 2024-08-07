@@ -69,6 +69,7 @@ class EV():
             if self.application.test_led:  # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
                 pass
             else:
+                print("****************************************************self.charge",self.charge)
                 if self.charge:
                     print("if len(self.application.serialPort.error_list) > 0:**************************************************",self.application.serialPort.error_list)
                     if len(self.application.serialPort.error_list) > 0:

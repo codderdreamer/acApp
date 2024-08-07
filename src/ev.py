@@ -74,21 +74,17 @@ class EV():
                 else:
                     
                     if self.charge:
-                        print("if len(self.application.serialPort.error_list) > 0:**************************************************",self.application.serialPort.error_list)
                         if len(self.application.serialPort.error_list) > 0:
                             for value in self.application.serialPort.error_list:
                                 if value == PidErrorList.RcdTripError:
                                     rcdTripError = True
                                 else:
                                     othererror = True
-                                    print("othererror**********************************************************")
-                        print("counter********************",counter)  
                         if rcdTripError:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT
                             # logger.error("RCD Trip Error detected, setting device state to FAULT")
                         elif othererror and counter != 3:
-                            print("elif othererror and counter != 3:")
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                             counter += 1
                             self.application.deviceState = DeviceState.SUSPENDED_EVSE

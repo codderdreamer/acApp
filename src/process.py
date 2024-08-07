@@ -102,7 +102,7 @@ class Process:
             self.application.deviceState = DeviceState.WAITING_STATE_C
 
     def connected(self):
-        logger.info("Process connected")
+        print("Process connected...............................................................")
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:

@@ -19,7 +19,7 @@ class SoftwareSettings():
         Thread(target=self.set_eth, daemon=True).start()
         Thread(target=self.set_4G, daemon=True).start()
         Thread(target=self.set_wifi, daemon=True).start()
-        Thread(target=self.set_network_priority, daemon=True).start()
+        # Thread(target=self.set_network_priority, daemon=True).start()
         Thread(target=self.control_device_status, daemon=True).start()
         self.set_timezoon()
         self.set_bluetooth_settings()
@@ -390,7 +390,7 @@ class SoftwareSettings():
                 Thread(target=self.set_eth, daemon=True).start()
                 Thread(target=self.set_4G, daemon=True).start()
                 Thread(target=self.set_wifi, daemon=True).start()
-                Thread(target=self.set_network_priority, daemon=True).start()
+                # Thread(target=self.set_network_priority, daemon=True).start()
                 time.sleep(15)
         except Exception as e:
             self.logger.exception("Exception in ping_google")
@@ -490,7 +490,7 @@ class SoftwareSettings():
                 self.find_network()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
-                Thread(target=self.set_network_priority, daemon=True).start()
+                # Thread(target=self.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
                 self.logger.exception("Exception in control_device_status")

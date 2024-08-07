@@ -136,7 +136,7 @@ class EV():
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
                         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
             
-            time.sleep(5)
+            time.sleep(1)
                     
         
     def send_message(self):

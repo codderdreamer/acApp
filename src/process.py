@@ -300,6 +300,7 @@ class Process:
             self.application.modbusModule.port, 
             self.application.modbusModule.slave_address, 
             self.application.modbusModule.baudrate)
+                
 
 
             time.sleep(1)

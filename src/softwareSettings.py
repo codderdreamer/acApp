@@ -41,6 +41,8 @@ class SoftwareSettings():
                             print(f"Başarısız ağ arayüzü: {interface}")
                     except Exception as e:
                         print(f"{interface} için ping atılırken hata oluştu: {str(e)}")
+
+                print("success_interfaces",success_interfaces)
                 
                 if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")

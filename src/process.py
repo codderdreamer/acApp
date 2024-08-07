@@ -272,7 +272,7 @@ class Process:
 
         while True:
             try:
-                logger.info("Charging in progress...")
+                print("Charging in progress...")
                 self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
                 if self.application.deviceState != DeviceState.CHARGING:
                     break

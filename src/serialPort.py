@@ -456,27 +456,27 @@ class SerialPort():
             self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
             self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
             self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
-            self.logger.info(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
+            # self.logger.info(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
 
     def get_response_pid_voltage(self, data):
         if data[2] == self.pid_voltage:
             self.voltage_L1 = round(int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01 , 3)
             self.voltage_L2 = round(int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01 , 3)
             self.voltage_L3 = round(int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01 , 3)
-            self.logger.info(f"Voltage L1: {self.voltage_L1}, L2: {self.voltage_L2}, L3: {self.voltage_L3}")
+            # self.logger.info(f"Voltage L1: {self.voltage_L1}, L2: {self.voltage_L2}, L3: {self.voltage_L3}")
 
     def get_response_pid_power(self,data):
         if data[2] == self.pid_power:
             self.power = round(int(data[8]) * 100 + int(data[9]) * 10 + int(data[10]) * 1 + int(data[11]) * 0.1 + int(data[12]) * 0.01 + int(data[13]) * 0.001, 3)
-            self.logger.info(f"Power: {self.power}")
+            # self.logger.info(f"Power: {self.power}")
 
     def get_response_pid_energy(self, data):
         if data[2] == self.pid_energy:
-            self.logger.info(f"Device state: {self.application.deviceState}")
+            # self.logger.info(f"Device state: {self.application.deviceState}")
             if self.application.deviceState == DeviceState.IDLE:
                 self.firstEnergy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
             self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3) - self.firstEnergy
-            self.logger.info(f"Energy: {self.energy}")
+            # self.logger.info(f"Energy: {self.energy}")
 
     def set_response_pid_rfid(self, data):
         if data[2] == self.pid_rfid:
@@ -500,7 +500,7 @@ class SerialPort():
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)
-            self.logger.info(f"Temperature: {self.application.ev.temperature}")
+            # self.logger.info(f"Temperature: {self.application.ev.temperature}")
 
     def get_response_pid_error_list(self, data):
         error_list = []

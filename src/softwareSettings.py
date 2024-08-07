@@ -49,6 +49,7 @@ class SoftwareSettings():
                     print(self.application.settings.networkPriority.first, "100")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 800")
+                    print(self.application.settings.networkPriority.first, "800")
 
                 if self.turn_interface(self.application.settings.networkPriority.second) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 300")

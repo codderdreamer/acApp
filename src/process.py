@@ -306,6 +306,9 @@ class Process:
 
     def charging(self):
         logger.info("Charging started")
+
+        self.set_max_current()
+ 
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:
@@ -323,6 +326,7 @@ class Process:
         if self.application.ev.id_tag != None:
             self.id_tag = self.application.ev.id_tag
         logger.debug("Card type: %s",self.application.cardType)
+
         if self.application.cardType == CardType.LocalPnC:
             self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
             self.application.ev.charge = True

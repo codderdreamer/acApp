@@ -59,6 +59,8 @@ class EV():
         locker_init_error = False
         while True:
             try:
+                print("****************************************************self.charge",self.charge)
+
                 othererror = False
                 rcdTripError = False
                 rcd_init_error = False
@@ -70,7 +72,7 @@ class EV():
                 if self.application.test_led:  # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
                     pass
                 else:
-                    print("****************************************************self.charge",self.charge)
+                    
                     if self.charge:
                         print("if len(self.application.serialPort.error_list) > 0:**************************************************",self.application.serialPort.error_list)
                         if len(self.application.serialPort.error_list) > 0:
@@ -91,7 +93,14 @@ class EV():
                             counter += 1
                             self.application.deviceState = DeviceState.SUSPENDED_EVSE
                             # logger.warning("Other errors detected, waiting 30 seconds before retrying. Attempt: %s", counter)
-                            time.sleep(30)
+                            time_start = time.time()
+                            while True:
+                                if len(self.application.serialPort.error_list) > 0:
+                                    time.sleep(1)
+                                else:
+                                    break
+                                if time.time() - time_start >30:
+                                    break
                         elif othererror and counter == 3:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
                             self.application.deviceState = DeviceState.FAULT

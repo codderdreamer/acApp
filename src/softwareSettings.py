@@ -37,21 +37,26 @@ class SoftwareSettings():
                         if result.returncode == 0:
                             print(f"Başarılı ağ arayüzü: {interface}")
                             success_interfaces.append(interface)
+                        else:
+                            print(f"Başarısız ağ arayüzü: {interface}")
                     except Exception as e:
                         print(f"{interface} için ping atılırken hata oluştu: {str(e)}")
                 
                 if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")
+                    print(self.application.settings.networkPriority.first, "100")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 800")
 
                 if self.turn_interface(self.application.settings.networkPriority.second) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 300")
+                    print(self.application.settings.networkPriority.second, "300")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 850")
 
                 if self.turn_interface(self.application.settings.networkPriority.third) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 700")
+                    print(self.application.settings.networkPriority.third, "700")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 900")
             

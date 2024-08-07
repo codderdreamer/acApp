@@ -48,12 +48,12 @@ class SoftwareSettings():
                 if self.turn_interface(self.application.settings.networkPriority.second) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 300")
                 else:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 850")
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 850")
 
                 if self.turn_interface(self.application.settings.networkPriority.third) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 700")
                 else:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 900")
+                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 900")
             
             except Exception as e:
                 self.logger.exception("Exception in check_internet_connection: " + e)

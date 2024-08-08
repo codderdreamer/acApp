@@ -26,49 +26,83 @@ class SoftwareSettings():
         Thread(target=self.check_internet_connection, daemon=True).start()
 
     def check_internet_connection(self):
-        interfaces = ["eth1", "wlan0", "ppp0"]
         while True:
             try:
-                success_interfaces = []
-                for interface in interfaces:
-                    command = f"ping -I {interface} -c 3 8.8.8.8"
-                    try:
-                        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        if result.returncode == 0:
-                            print(f"Başarılı ağ arayüzü: {interface}")
-                            success_interfaces.append(interface)
-                        else:
-                            print(f"Başarısız ağ arayüzü: {interface}")
-                    except Exception as e:
-                        print(f"{interface} için ping atılırken hata oluştu: {str(e)}")
-
-                print("success_interfaces",success_interfaces)
-                
-                if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")
-                    print(self.application.settings.networkPriority.first, "100")
-                else:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 800")
-                    print(self.application.settings.networkPriority.first, "800")
-
-                if self.turn_interface(self.application.settings.networkPriority.second) in success_interfaces:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 300")
-                    print(self.application.settings.networkPriority.second, "300")
-                else:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 850")
-
-                if self.turn_interface(self.application.settings.networkPriority.third) in success_interfaces:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 700")
-                    print(self.application.settings.networkPriority.third, "700")
-                else:
-                    os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 900")
-            
+                active_interfaces = self.get_active_interfaces()
+                self.update_interfaces_status(active_interfaces)
+                self.set_interface_metrics(active_interfaces)
             except Exception as e:
-                self.logger.exception("Exception in check_internet_connection: " + e)
+                self.logger.exception("Exception in check_internet_connection: " + str(e))
 
-            time.sleep(2)
+            time.sleep(10)  # Increase check interval to 10 seconds
 
-    def turn_interface(self,value):
+    def get_active_interfaces(self):
+        interfaces = [
+            {'name': self.turn_interface(self.application.settings.networkPriority.first), 'config_priority': 1, 'real_priority': None, 'is_active': False},
+            {'name': self.turn_interface(self.application.settings.networkPriority.second), 'config_priority': 2, 'real_priority': None, 'is_active': False},
+            {'name': self.turn_interface(self.application.settings.networkPriority.third), 'config_priority': 3, 'real_priority': None, 'is_active': False}
+        ]
+        return interfaces
+
+    def update_interfaces_status(self, interfaces):
+        for interface in interfaces:
+            if self.is_interface_active(interface['name']) and self.ping_interface(interface['name']):
+                self.logger.info(f"Internet connection successful: {interface['name']}")
+                interface['is_active'] = True
+            else:
+                self.logger.warning(f"Internet connection failed or interface inactive: {interface['name']}")
+                interface['is_active'] = False
+
+    def set_interface_metrics(self, interfaces):
+        active_interfaces = [iface for iface in interfaces if iface['is_active']]
+        active_interfaces.sort(key=lambda x: x['config_priority'])
+
+        for idx, iface in enumerate(active_interfaces):
+            iface['real_priority'] = idx + 1
+
+        metrics = {1: 100, 2: 300, 3: 700}
+        correct_order = True
+
+        for iface in interfaces:
+            if iface['is_active']:
+                current_metric = self.get_metric(iface['name'])
+                correct_metric = metrics[iface['real_priority']]
+                if current_metric != correct_metric:
+                    correct_order = False
+                    break
+
+        if correct_order:
+            self.logger.info("Interface metrics are already correct. No changes needed.")
+            return
+
+        for iface in interfaces:
+            if iface['is_active']:
+                metric = metrics[iface['real_priority']]
+                command = f"ifmetric {iface['name']} {metric}"
+                result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                if result.returncode == 0:
+                    self.logger.info(f"Set metric {metric} for {iface['name']}")
+                else:
+                    self.logger.warning(f"Failed to set metric {metric} for {iface['name']}. Error: {result.stderr.decode()}")
+            else:
+                self.logger.info(f"Interface {iface['name']} is inactive. Skipping metric setting.")
+
+    def is_interface_active(self, interface):
+        command = f"ip link show {interface}"
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode == 0:
+            output = result.stdout.decode()
+            return "state UP" in output
+        else:
+            self.logger.warning(f"Failed to check interface status for {interface}")
+            return False
+
+    def ping_interface(self, interface):
+        command = f"ping -I {interface} -c 3 8.8.8.8"
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return result.returncode == 0
+
+    def turn_interface(self, value):
         try:
             if value == "ETH":
                 return "eth1"
@@ -77,8 +111,28 @@ class SoftwareSettings():
             elif value == "4G":
                 return "ppp0"
         except Exception as e:
-            self.logger.exception("Exception in turn_interface: " + e)
+            self.logger.exception("Exception in turn_interface: " + str(e))
 
+    def get_metric(self, interface):
+        command = f"ip route"
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode == 0:
+            output = result.stdout.decode().strip()
+            for line in output.split('\n'):
+                if f'dev {interface}' in line and 'metric' in line:
+                    try:
+                        metric_value = int(line.split('metric')[-1].strip())
+                        self.logger.debug(f"Metric for {interface}: {metric_value}")
+                        return metric_value
+                    except (ValueError, IndexError) as e:
+                        self.logger.warning(f"Failed to parse metric for {interface}: {e}")
+                        return None
+            self.logger.warning(f"No metric found for {interface} in ip route output")
+            return None
+        else:
+            self.logger.warning(f"Failed to get metric for {interface}")
+            return None
+        
     def control_websocket_ip(self):
         try:
             self.get_active_ips()

@@ -14,6 +14,8 @@ class SerialPort():
         self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
         self.logger.info("Serial connection established on /dev/ttyS2 with baudrate 115200")
         self.send_data_list = []
+
+        self.error = False
         
         self.error_list = []
 
@@ -66,7 +68,7 @@ class SerialPort():
         Thread(target=self.get_command_pid_error_list_init,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         Thread(target=self.get_energy_thread,daemon=True).start()
-        
+
         self.set_command_pid_rfid()
 
         
@@ -79,6 +81,7 @@ class SerialPort():
                 self.get_command_pid_proximity_pilot()
             except Exception as e:
                 self.logger.exception("Exception in get_energy_thread")
+
             time.sleep(5)
         
     def read_meter(self):
@@ -551,8 +554,35 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
                 self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
+
             if len(error_list) > 0:
-                self.logger.error(f"Error list: {self.error_list}")
+                self.error = True
+
+            
+            # # Herhangi bir hata durumu algılandı
+            # if len(error_list) > 0:
+            #     # Hata durumu algılandığında bir şarj işlmi var mıydı ?
+            #     if self.application.ev.charge:
+            #         # 30 saniye sonra şarj etmeyi dene
+            #         self.try_after_30_seconds_charge = True
+
+            #     self.logger.error(f"Error list: {self.error_list}")
+            #     self.application.deviceState = DeviceState.FAULT
+
+            #     # Hatanın Led durumuna karar ver
+            #     for value in self.error_list:
+            #         if value == PidErrorList.RcdTripError:
+            #             rcdTripError = True
+            #         else:
+            #             othererror = True
+
+            #     if rcdTripError:
+            #         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
+            #     elif othererror:
+            #         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+
+            
+
 
             if error_list != self.error_list:
                 if len(error_list) > 0:

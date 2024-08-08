@@ -94,12 +94,14 @@ class EV():
                             print("------------------------------ 30 sn doldu")
                             time_start = None
                             print("--------------------------------- self.control_pilot", self.control_pilot)
-                            if self.control_pilot == ControlPlot.stateB.value:
-                                self.application.deviceState = DeviceState.CONNECTED
-                            elif self.control_pilot == ControlPlot.stateC.value:
-                                self.application.deviceState = DeviceState.CHARGING
+                            print("--------------------------------- self.application.deviceState", self.application.deviceState)
+                            # if self.control_pilot == ControlPlot.stateB.value:
+                            #     self.application.deviceState = DeviceState.CONNECTED
+                            # elif self.control_pilot == ControlPlot.stateC.value:
+                            #     self.application.deviceState = DeviceState.CHARGING
 
-                    elif counter > 3:
+                    elif counter == 4:
+                        print("---------------------- Counter 4 NeedRepluging")
                         if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT

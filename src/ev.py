@@ -88,7 +88,7 @@ class EV():
                 else:
                     print("----------------------------- Cihaz hatada değil counter:",counter)
                     if counter <= 3 and counter != 0:
-                        print("--------------------------- " + counter + ".ye denenecek...")
+                        print("--------------------------- ", counter ,".ye denenecek...")
                         print("------------------------------- Tekrar şarj denenecek 30 saniye beklemede..." + time.time() - time_start + ". saniye")
                         if time.time() - time_start > 30:
                             print("------------------------------ 30 sn doldu")

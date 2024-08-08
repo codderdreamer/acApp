@@ -89,16 +89,20 @@ class EV():
                     print("----------------------------- Cihaz hatada değil counter:",counter)
                     if counter <= 3 and counter != 0:
                         print("--------------------------- ", counter ,".ye denenecek...")
-                        print("------------------------------- Tekrar şarj denenecek 30 saniye beklemede...", time.time() - time_start, ". saniye")
-                        if time.time() - time_start > 30:
-                            print("------------------------------ 30 sn doldu")
-                            time_start = None
-                            print("--------------------------------- self.control_pilot", self.control_pilot)
-                            print("--------------------------------- self.application.deviceState", self.application.deviceState)
-                            # if self.control_pilot == ControlPlot.stateB.value:
-                            #     self.application.deviceState = DeviceState.CONNECTED
-                            # elif self.control_pilot == ControlPlot.stateC.value:
-                            #     self.application.deviceState = DeviceState.CHARGING
+                        
+                        if time_start != None:
+                            print("------------------------------- Tekrar şarj denenecek 30 saniye beklemede...", time.time() - time_start, ". saniye")
+                            if time.time() - time_start > 30:
+                                print("------------------------------ 30 sn doldu")
+                                time_start = None
+                                print("--------------------------------- self.control_pilot", self.control_pilot)
+                                print("--------------------------------- self.application.deviceState", self.application.deviceState)
+                                if self.control_pilot == ControlPlot.stateB.value:
+                                    self.application.deviceState = DeviceState.CONNECTED
+                                elif self.control_pilot == ControlPlot.stateC.value:
+                                    self.application.deviceState = DeviceState.CHARGING
+                        else:
+                            print("------------------------- time_start None")
 
                     elif counter == 4:
                         print("---------------------- Counter 4 NeedRepluging")

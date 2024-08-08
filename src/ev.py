@@ -99,8 +99,15 @@ class EV():
                             elif self.control_pilot == ControlPlot.stateC.value:
                                 self.application.deviceState = DeviceState.CHARGING
 
-                    else:
-                        pass
+                    elif counter > 3:
+                        if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
+                            self.application.deviceState = DeviceState.FAULT
+
+                    if self.control_pilot == ControlPlot.stateA.value:
+                        counter = 0
+                        time_start = None
+
 
                     if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
@@ -120,8 +127,13 @@ class EV():
                     if self.application.chargingStatus == ChargePointStatus.charging:
                         pass
                     else:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
-                        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
+                        if len(self.application.serialPort.error_list) > 0:
+                            for value in self.application.serialPort.error_list:
+                                if value == PidErrorList.RcdTripError:
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
+                        else:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
+                            self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
             
 
             except Exception as e:

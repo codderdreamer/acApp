@@ -60,7 +60,18 @@ class EV():
                     if self.charge:
                         counter += 1
                     else:
-                        pass
+                        if counter == 0:
+                            print("------------------------------- Cihazda şarj yokken hata oluştu")
+                            self.application.deviceState = DeviceState.FAULT
+                            for value in self.application.serialPort.error_list:
+                                if value == PidErrorList.RcdTripError:
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
+                                else:
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+                        elif counter>0:
+                            print("------------------------------- Cihazda daha önceden şarj vardı hataya geçmiş counter:", counter)
+                    
+                    
                     self.application.deviceState = DeviceState.FAULT
                     for value in self.application.serialPort.error_list:
                         if value == PidErrorList.RcdTripError:
@@ -68,17 +79,8 @@ class EV():
                         else:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                     self.application.serialPort.error = False
-                else:
-                    if counter>0:
-                        print("------------------------------- Cihazda daha önceden şarj vardı hataya geçmiş counter:", counter)
-                    else:
-                        print("------------------------------- Cihazda şarj yokken hata oluştu")
-                        self.application.deviceState = DeviceState.FAULT
-                        for value in self.application.serialPort.error_list:
-                            if value == PidErrorList.RcdTripError:
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-                            else:
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+            
+                        
 
 
             except Exception as e:

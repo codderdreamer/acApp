@@ -212,6 +212,11 @@ class SoftwareSettings():
                     print(datetime.now(), "set_dns: Executing command:", setDns)
                     os.system(setDns)
                     os.system('nmcli con up "static-eth1" ifname eth1 > /dev/null 2>&1')
+
+            if dnsEnable == "False":
+                setDns = "nmcli con modify \"static-eth1\" ipv4.dns \"\""
+                os.system(setDns)
+
         except Exception as e:
             self.logger.exception("Exception in set_dns")
 

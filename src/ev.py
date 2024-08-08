@@ -52,13 +52,16 @@ class EV():
     def control_error_list(self):
         time.sleep(5)
         counter = 0
+        time_start = None
         while True:
             try:
                 print("------------------------------------ Cihazda bir hata var mı?", len(self.application.serialPort.error_list) > 0)
                 if self.application.serialPort.error:
                     print("-------------------------------- Cihazda şarj var mı? ", self.charge)
                     if self.charge:
-                        counter += 1
+                        if time_start == None:
+                            counter += 1
+                            time_start = time.time()
                     else:
                         if counter == 0:
                             print("------------------------------- Cihazda şarj yokken hata oluştu")
@@ -76,13 +79,24 @@ class EV():
                     for value in self.application.serialPort.error_list:
                         if value == PidErrorList.RcdTripError:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
+                            counter = 0
                         else:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                     self.application.serialPort.error = False
+                    
                 else:
                     print("----------------------------- Cihaz hatada değil counter:",counter)
                     if counter > 0:
-                        pass
+                        print("Tekrar şarj denenecek 30 saniye beklemede..." + time.time() - time_start + ". saniye")
+                        if time.time() - time_start > 30:
+                            print("------------------------------ 30 sn doldu")
+                            time_start = None
+                            print("--------------------------------- self.control_pilot", self.control_pilot)
+                            if self.control_pilot == ControlPlot.stateB.value:
+                                self.application.deviceState = DeviceState.CONNECTED
+                            elif self.control_pilot == ControlPlot.stateC.value:
+                                self.application.deviceState = DeviceState.CHARGING
+
                     else:
                         pass
 

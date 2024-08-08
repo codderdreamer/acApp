@@ -62,6 +62,15 @@ class EV():
                         if time_start == None:
                             counter += 1
                             time_start = time.time()
+                            
+                            for value in self.application.serialPort.error_list:
+                                if value == PidErrorList.RcdTripError:
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
+                                    counter = 0
+                                    self.application.deviceState = DeviceState.FAULT
+                                else:
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+                                    self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     else:
                         if counter == 0:
                             print("------------------------------- Cihazda şarj yokken hata oluştu")
@@ -74,20 +83,13 @@ class EV():
                         elif counter>0:
                             print("------------------------------- Cihazda daha önceden şarj vardı hataya geçmiş counter:", counter)
                     
-                    
-                    self.application.deviceState = DeviceState.FAULT
-                    for value in self.application.serialPort.error_list:
-                        if value == PidErrorList.RcdTripError:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-                            counter = 0
-                        else:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                     self.application.serialPort.error = False
                     
                 else:
                     print("----------------------------- Cihaz hatada değil counter:",counter)
-                    if counter > 0:
-                        print("Tekrar şarj denenecek 30 saniye beklemede..." + time.time() - time_start + ". saniye")
+                    if counter <= 3 and counter != 0:
+                        print("--------------------------- " + counter + ".ye denenecek...")
+                        print("------------------------------- Tekrar şarj denenecek 30 saniye beklemede..." + time.time() - time_start + ". saniye")
                         if time.time() - time_start > 30:
                             print("------------------------------ 30 sn doldu")
                             time_start = None

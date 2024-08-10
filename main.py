@@ -27,7 +27,7 @@ from src.logger import ac_app_logger as logger
 
 class Application():
     def __init__(self, loop):
-        print(Color.Blue.value + "------------------------------------------------- Application Run Started ------------------------------------------------" + Color.Blue.value)
+        print(Color.Blue.value + "------------------------------------------------- Application Run Started ------------------------------------------------")
         os.system("service bluetooth restart")
         time.sleep(2)
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")

@@ -55,9 +55,7 @@ class EV():
         time_start = None
         while True:
             try:
-                print("------------------------------------ Cihazda bir hata var mı?", len(self.application.serialPort.error_list) > 0)
                 if self.application.serialPort.error:
-                    print("-------------------------------- Cihazda şarj var mı? ", self.charge)
                     if self.charge:
                         if time_start == None:
                             counter += 1
@@ -73,7 +71,6 @@ class EV():
                                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     else:
                         if counter == 0:
-                            print("------------------------------- Cihazda şarj yokken hata oluştu")
                             self.application.deviceState = DeviceState.FAULT
                             for value in self.application.serialPort.error_list:
                                 if value == PidErrorList.RcdTripError:
@@ -81,31 +78,23 @@ class EV():
                                 else:
                                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                         elif counter>0:
-                            print("------------------------------- Cihazda daha önceden şarj vardı hataya geçmiş counter:", counter)
+                            pass
                     
                     self.application.serialPort.error = False
                     
                 else:
-                    print("----------------------------- Cihaz hatada değil counter:",counter)
                     if counter <= 3 and counter != 0:
-                        print("--------------------------- ", counter ,".ye denenecek...")
-                        
                         if time_start != None:
-                            print("------------------------------- Tekrar şarj denenecek 30 saniye beklemede...", time.time() - time_start, ". saniye")
                             if time.time() - time_start > 30:
-                                print("------------------------------ 30 sn doldu")
                                 time_start = None
-                                print("--------------------------------- self.control_pilot", self.control_pilot)
-                                print("--------------------------------- self.application.deviceState", self.application.deviceState)
                                 if self.control_pilot == ControlPlot.stateB.value:
                                     self.application.deviceState = DeviceState.CONNECTED
                                 elif self.control_pilot == ControlPlot.stateC.value:
                                     self.application.deviceState = DeviceState.CHARGING
                         else:
-                            print("------------------------- time_start None")
+                            pass
 
                     elif counter == 4:
-                        print("---------------------- Counter 4 NeedRepluging")
                         if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT
@@ -140,8 +129,6 @@ class EV():
                         else:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
                             self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
-            
-
             except Exception as e:
                 print("******************************************** control_error_list Exception",e)
             time.sleep(1)

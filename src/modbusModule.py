@@ -74,10 +74,10 @@ class ModbusModule:
                 result = round(float_val, 2)
                 return result
             else:
-                print("Failed to read input float from register", register_address)
+                print("Failed to read input float from register %s", register_address)
                 return None
         except Exception as e:
-            print("Exception in read_input_float:", e)
+            print("Exception in read_input_float: %s", e)
             return None
     
     def read_all_data(self):

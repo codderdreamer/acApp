@@ -171,7 +171,6 @@ class Application():
             try:
                 # MID meter veya MCU'den veri alınıyor
                 if (self.settings.deviceSettings.mid_meter or self.settings.deviceSettings.externalMidMeter) and self.modbusModule.connection:
-                    print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1 if self.modbusModule.current_L1 is not None else 0
                     self.ev.current_L2 = self.modbusModule.current_L2 if self.modbusModule.current_L2 is not None else 0
                     self.ev.current_L3 = self.modbusModule.current_L3 if self.modbusModule.current_L3 is not None else 0
@@ -184,7 +183,6 @@ class Application():
                     self.ev.energy = round(energy - firstEnergy, 2)
                     self.ev.power = self.modbusModule.power if self.modbusModule.power is not None else 0
                 elif not self.settings.deviceSettings.mid_meter and not self.settings.deviceSettings.externalMidMeter:
-                    print("Veriler MCU'den alınıyor...")
                     self.ev.current_L1 = self.serialPort.current_L1 if self.serialPort.current_L1 is not None else 0
                     self.ev.current_L2 = self.serialPort.current_L2 if self.serialPort.current_L2 is not None else 0
                     self.ev.current_L3 = self.serialPort.current_L3 if self.serialPort.current_L3 is not None else 0

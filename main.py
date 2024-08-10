@@ -27,7 +27,7 @@ from src.logger import ac_app_logger as logger
 
 original_print = builtins.print
 def timestamped_print(*args, **kwargs):
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     original_print(f"[{current_time}]", *args, **kwargs)
 builtins.print = timestamped_print
 

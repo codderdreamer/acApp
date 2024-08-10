@@ -96,7 +96,6 @@ class Advertisement(dbus.service.Object):
                          out_signature='a{sv}')
     def GetAll(self, interface):
         try:
-            # print('GetAll')
             if interface != LE_ADVERTISEMENT_IFACE:
                 raise exceptions.InvalidArgsException()
             return self.get_properties()[LE_ADVERTISEMENT_IFACE]
@@ -107,7 +106,6 @@ class Advertisement(dbus.service.Object):
                          in_signature='',
                          out_signature='')
     def Release(self):
-        # print('%s: Released!' % self.path)
         pass
 
 class TestAdvertisement(Advertisement):

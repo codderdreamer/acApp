@@ -27,11 +27,7 @@ from src.logger import ac_app_logger as logger
 
 class Application():
     def __init__(self, loop):
-        print("------------------------------------------------------------")
-        print("------------------------------------------------------------")
-        print("------------------------------------------------------------")
-        print("------------------------------------------------------------")
-        print("\n--- Application Run Started ---\n")
+        print("\n------------------------------------------------- Application Run Started ------------------------------------------------ \n")
         os.system("service bluetooth restart")
         time.sleep(2)
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
@@ -77,20 +73,9 @@ class Application():
         self.process = Process(self)
         
         if self.settings.deviceSettings.externalMidMeter == True:
-            print("----------------------------self.settings.deviceSettings.externalMidMeter %s %s",
-                               self.settings.deviceSettings.externalMidMeter,
-                               self.settings.deviceSettings.externalMidMeterSlaveAddress)
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
-            print("----------------------------self.settings.deviceSettings.mid_meter %s %s",
-                               self.settings.deviceSettings.mid_meter,
-                               self.settings.deviceSettings.midMeterSlaveAddress)
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
-        else:
-            print("----------------------------self.settings.deviceSettings.mid_meter %s %s",
-                               self.settings.deviceSettings.mid_meter, type(self.settings.deviceSettings.mid_meter))
-            print("----------------------------self.settings.deviceSettings.externalMidMeter %s %s",
-                               self.settings.deviceSettings.externalMidMeter, type(self.settings.deviceSettings.externalMidMeter))
         
         Thread(target=self.read_charge_values_thred, daemon=True).start()
 
@@ -102,7 +87,6 @@ class Application():
 
     @deviceState.setter
     def deviceState(self, value):
-        print("???????????????????????????????????????????????????????", value)
         if self.__deviceState != value:
             
             self.__deviceState = value
@@ -175,7 +159,6 @@ class Application():
                     if response.returncode == 0:
                         time_start = time.time()
                     else:
-                        print("ocpp_control ping atılamadı...")
                         if time_start == None or time.time() - time_start > 10:
                             self.ocppActive = False
             
@@ -225,7 +208,7 @@ class Application():
                 time.sleep(1)
                 
             except Exception as e:
-                print("read_charge_values_thred Exception: %s", e)
+                print("read_charge_values_thred Exception:", e)
     async def ocppStart(self):
         try:
             self.ocppActive = False
@@ -254,10 +237,6 @@ class Application():
             self.ocppActive = False
             if self.chargingStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
-            # else:
-            #     Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-            #     self.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
-            
             
     def ocpp_task(self):
         while True:
@@ -272,8 +251,6 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        # testServer = TestServer(app)
-        # Thread(target=testServer.run,args=(loop,), daemon=True).start()
         app.testWebSocket = TestWebSocketModule(app,logger)
 
         app.ocpp_task()

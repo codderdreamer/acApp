@@ -28,12 +28,8 @@ class BluetoothService():
         self.mainloop = None
         Thread(target=self.run, daemon=True).start()
 
-    def __del__(self):
-        print("BluetoothService nesnesi siliniyor")
-
     def run(self):
         try:
-            print("Bluetooth run")
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()
@@ -70,7 +66,7 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="s")
     def RequestPinCode(self, device):
-        print("RequestPinCode called for device: %s", device)
+        print("RequestPinCode called for device:", device)
         return "0000"
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")

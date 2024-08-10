@@ -111,7 +111,6 @@ class ChargePoint16(cp):
         
         except Exception as e:
             print("send_authorize Exception:",e)
-            # self.application.request_list.append(request)
 
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -152,7 +151,6 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            print("BootNotification Response",response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
                 self.application.ocppActive = True
@@ -242,8 +240,8 @@ class ChargePoint16(cp):
                 self.application.process.transaction_id = None
                 self.application.process.id_tag = None
             if self.application.cardType == CardType.BillingCard:
-                print("\n\n ---------------------------------------------- heart beat ------------------------------------------\n\n")
                 for request in self.application.request_list:
+                    print("Requested List")
                     print("\n\n???????????????????????????????????????????? request",request)
                     asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
                 self.application.request_list = []
@@ -542,7 +540,6 @@ class ChargePoint16(cp):
     @after(Action.ChangeAvailability)
     def after_change_availability(self,connector_id: int, type: AvailabilityType):
         try :
-            print(type == AvailabilityType.operative)
             if type == AvailabilityType.operative:
                 self.application.availability = AvailabilityType.operative
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
@@ -793,7 +790,6 @@ class ChargePoint16(cp):
         # Eğer kablo bağlı değilse
         # Waiting plug led yak
         # 30 saniye içinde kablo bağlanmazsa idle
-        print("remote_start_thread")
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
             print("self.application.ev.control_pilot",self.application.ev.control_pilot)
@@ -865,7 +861,6 @@ class ChargePoint16(cp):
                 )
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
-            # Şarj Noktası rezervasyon kimliği ile eşleşiyorsa talepteki yeni rezervasyonla değiştirecektir.
             elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
                 self.application.ev.reservation_id_tag = id_tag
                 self.application.ev.expiry_date = expiry_date
@@ -883,7 +878,6 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.availability == AvailabilityType.inoperative:
-                print("self.application.availability",self.application.availability)
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
@@ -896,7 +890,6 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.chargingStatus != ChargePointStatus.available:
-                print("self.application.chargingStatus",self.application.chargingStatus)
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
@@ -972,10 +965,8 @@ class ChargePoint16(cp):
     def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
         try :
             localList = []
-            # print(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
             for data in local_authorization_list:
                 localList.append(data["id_tag"])
-            # print("\n\n", localList, "\n\n")
             self.application.databaseModule.set_local_list(localList)
             self.application.databaseModule.get_local_list()
         except Exception as e:
@@ -1115,43 +1106,3 @@ class ChargePoint16(cp):
         except Exception as e:
             print("after_update_firmware Exception:",e)
         
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-# Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-# await self.send_firmware_status_notification(FirmwareStatus.downloading)
-# result = subprocess.run(["git", "pull"], cwd="/root/acApp", stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-
-# if result.returncode == 0:
-#     print("git pull başarıyla tamamlandı.")
-#     print("Çıktı:", result.stdout)
-#     await self.send_firmware_status_notification(FirmwareStatus.downloaded)
-#     time.sleep(0.5)
-#     os.system("reboot")
-# else:
-#     print("git pull başarısız oldu.")
-#     print("Hata:", result.stderr)
-#     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
-#     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-#     time.sleep(1)
-#     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-    
-# print("Update firmware")
-
-
-
-
-

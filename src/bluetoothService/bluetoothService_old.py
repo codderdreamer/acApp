@@ -31,7 +31,6 @@ class BluetoothService():
         
     def run(self):
         try:
-            print("Bluetooth run")
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()

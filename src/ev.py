@@ -154,7 +154,7 @@ class EV():
             try:
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
             except Exception as e:
-                print("send_message Exception: %s", e)
+                print("send_message Exception:", e)
             time.sleep(3)
         print("Message sending thread stopped")
 
@@ -178,7 +178,6 @@ class EV():
             self.proximity_pilot_current = 32
         elif self.__proximity_pilot == ProximityPilot.CablePluggedIntoCharger63Amper.value:
             self.proximity_pilot_current = 63
-        print("Proximity pilot set to %s, current: %s", self.__proximity_pilot, self.proximity_pilot_current)
 
     @property
     def control_pilot(self):
@@ -187,7 +186,6 @@ class EV():
     @control_pilot.setter
     def control_pilot(self, value):
         if self.__control_pilot != value:
-            print("Control pilot state changing from %s to %s", self.__control_pilot, value)
             self.__control_pilot = value
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
@@ -198,11 +196,9 @@ class EV():
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
-                print("Fault state detected in control pilot: %s", self.__control_pilot)
             else:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
-                print("Unexpected control pilot state: %s", self.__control_pilot)
 
     @property
     def charge(self):
@@ -211,7 +207,6 @@ class EV():
     @charge.setter
     def charge(self, value):
         self.__charge = value
-        print("Charge state set to: %s", value)
         if value:
             Thread(target=self.send_message,daemon=True).start()
         else:
@@ -261,7 +256,6 @@ class EV():
                         elif self.charge == False:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                             if self.__control_pilot != "B":
-                                print("Vehicle not connected")
                                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
                         else:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
@@ -278,4 +272,3 @@ class EV():
     @id_tag.setter
     def id_tag(self, value):
         self.__id_tag = value
-        print("ID tag set to: %s", value)

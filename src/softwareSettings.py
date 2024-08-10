@@ -35,36 +35,27 @@ class SoftwareSettings():
                     try:
                         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         if result.returncode == 0:
-                            print(f"Başarılı ağ arayüzü: {interface}")
                             success_interfaces.append(interface)
-                        else:
-                            print(f"Başarısız ağ arayüzü: {interface}")
                     except Exception as e:
-                        print(f"{interface} için ping atılırken hata oluştu: {str(e)}")
-
-                print("success_interfaces",success_interfaces)
+                        print("check_internet_connection ping Exception:",e)
                 
                 if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")
-                    print(self.application.settings.networkPriority.first, "100")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 800")
-                    print(self.application.settings.networkPriority.first, "800")
 
                 if self.turn_interface(self.application.settings.networkPriority.second) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 300")
-                    print(self.application.settings.networkPriority.second, "300")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.second) + " 850")
 
                 if self.turn_interface(self.application.settings.networkPriority.third) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 700")
-                    print(self.application.settings.networkPriority.third, "700")
                 else:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 900")
             
             except Exception as e:
-                print("Exception in check_internet_connection: " + e)
+                print("check_internet_connection Exception:",e)
 
             time.sleep(2)
 
@@ -77,12 +68,11 @@ class SoftwareSettings():
             elif value == "4G":
                 return "ppp0"
         except Exception as e:
-            print("Exception in turn_interface: " + e)
+            print("turn_interface Exception:",e)
 
     def control_websocket_ip(self):
         try:
             self.get_active_ips()
-            print(f"Active IPs: eth1={self.application.settings.networkip.eth1}, ppp0={self.application.settings.networkip.ppp0}, wlan0={self.application.settings.networkip.wlan0}")
 
             if self.application.settings.deviceStatus.networkCard == "Ethernet":
                 self.application.settings.websocketIp = self.application.settings.networkip.eth1
@@ -91,8 +81,6 @@ class SoftwareSettings():
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
 
-            print(f"WebSocket IP set to: {self.application.settings.websocketIp}")
-
             if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
                 Thread(target=self.set_eth, daemon=True).start()
             elif self.application.settings.networkPriority.first == "WLAN" and self.application.settings.deviceStatus.networkCard != "Wifi":
@@ -100,7 +88,7 @@ class SoftwareSettings():
             elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
                 Thread(target=self.set_4G, daemon=True).start()
         except Exception as e:
-            print("Exception in control_websocket_ip")
+            print("control_websocket_ip Exception:",e)
 
     def get_active_ips(self):
         try:
@@ -131,7 +119,7 @@ class SoftwareSettings():
             self.application.settings.networkip.ppp0 = ppp0
             self.application.settings.networkip.wlan0 = wlan0
         except Exception as e:
-            print("Exception in get_active_ips")
+            print("get_active_ips Exception:",e)
 
     def get_connections(self):
         try:
@@ -159,7 +147,7 @@ class SoftwareSettings():
                     connections.append(connection)
             return connections
         except Exception as e:
-            print("Exception in get_connections")
+            print("get_connections Exception:",e)
 
     def delete_connection_type(self, con_type):
         try:
@@ -168,7 +156,7 @@ class SoftwareSettings():
                 if con_type in connection:
                     subprocess.run(["nmcli", "con", "delete", connection[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
-            print("Exception in delete_connection_type")
+            print("delete_connection_type Exception:",e)
 
     def set_eth(self):
         try:
@@ -178,7 +166,6 @@ class SoftwareSettings():
             netmask = self.application.settings.ethernetSettings.netmask
             gateway = self.application.settings.ethernetSettings.gateway
             self.delete_connection_type("ethernet")
-            print("Setting Ethernet connection")
 
             if ethernetEnable == "True":
                 if dhcpcEnable == "False":
@@ -197,7 +184,7 @@ class SoftwareSettings():
             else:
                 self.delete_connection_type("ethernet")
         except Exception as e:
-            print("Exception in set_eth")
+            print("set_eth Exception:",e)
 
     def set_dns(self):
         try:
@@ -205,20 +192,16 @@ class SoftwareSettings():
             dnsEnable = self.application.settings.dnsSettings.dnsEnable
             DNS1 = self.application.settings.dnsSettings.DNS1
             DNS2 = self.application.settings.dnsSettings.DNS2
-
             if dhcpcEnable == "False":
                 if dnsEnable == "True":
                     setDns = 'nmcli con modify "static-eth1" ipv4.dns "{0},{1}" > /dev/null 2>&1'.format(DNS1, DNS2)
-                    print(datetime.now(), "set_dns: Executing command:", setDns)
                     os.system(setDns)
                     os.system('nmcli con up "static-eth1" ifname eth1 > /dev/null 2>&1')
-
             if dnsEnable == "False":
                 setDns = "nmcli con modify \"static-eth1\" ipv4.dns \"\""
                 os.system(setDns)
-
         except Exception as e:
-            print("Exception in set_dns")
+            print("set_dns Exception:",e)
 
     def set_4G(self):
         try:
@@ -229,8 +212,6 @@ class SoftwareSettings():
             pin = self.application.settings.settings4G.pin
             enableModification = self.application.settings.settings4G.enableModification
             self.delete_connection_type("gsm")
-            print("Setting 4G connection")
-
             if enableModification == "True":
                 time.sleep(3)
                 os.system("gpio-test.64 w d 20 1 > /dev/null 2>&1")
@@ -240,13 +221,10 @@ class SoftwareSettings():
                 if pin:
                     time_start = time.time()
                     pin_valid = False
-                    
-                    # PIN doğrulama
                     try:
                         result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
                         modem_id = result.split("/")[5].split()[0]
                         pin_check = subprocess.run("""mmcli -i {0} --pin={1}""".format(modem_id, pin), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        
                         if "error" in pin_check.stderr.decode('utf-8').lower():
                             print("PIN hatalı. Lütfen doğru PIN'i girin.")
                         else:
@@ -279,7 +257,7 @@ class SoftwareSettings():
                         except:
                             pass
         except Exception as e:
-            print("Exception in set_4G")
+            print("set_4G Exception:",e)
             
     def set_wifi(self):
         try:
@@ -292,19 +270,7 @@ class SoftwareSettings():
             ip = self.application.settings.wifiSettings.ip
             netmask = self.application.settings.wifiSettings.netmask
             gateway = self.application.settings.wifiSettings.gateway
-            
-            print(datetime.now(), "set_wifi: wifiEnable:", wifiEnable)
-            print(datetime.now(), "set_wifi: mod:", mod)
-            print(datetime.now(), "set_wifi: ssid:", ssid)
-            print(datetime.now(), "set_wifi: password:", password)
-            print(datetime.now(), "set_wifi: encryptionType:", encryptionType)
-            print(datetime.now(), "set_wifi: wifidhcpcEnable:", wifidhcpcEnable)
-            print(datetime.now(), "set_wifi: ip:", ip)
-            print(datetime.now(), "set_wifi: netmask:", netmask)
-            print(datetime.now(), "set_wifi: gateway:", gateway)
-            
             self.delete_connection_type("wifi")
-            
             if wifiEnable == "True":
                 if mod == "AP":
                     if wifidhcpcEnable == "True":
@@ -315,39 +281,19 @@ class SoftwareSettings():
                         subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
                     result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                    print(datetime.now(), "nmcli con add result:", result.stdout, result.stderr)
-                    
-                    # Bağlantının eklenmesi için kısa bir bekleme süresi
                     time.sleep(2)
-                    
                     result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                    print(datetime.now(), "nmcli modify key-mgmt result:", result.stdout, result.stderr)
                     
                     result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.psk {password}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                    print(datetime.now(), "nmcli modify psk result:", result.stdout, result.stderr)
-                    
                     if wifidhcpcEnable == "False":
-                        print("Statik IP ayarlanıyor...")
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-
                         result = subprocess.run(f"nmcli con modify wifi_connection ipv4.addresses {ip}/{netmask_prefix_length}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                        print(datetime.now(), "nmcli modify addresses result:", result.stdout, result.stderr)
-
                         result = subprocess.run(f"nmcli con modify wifi_connection ipv4.gateway {gateway}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                        print(datetime.now(), "nmcli modify gateway result:", result.stdout, result.stderr)
-
                         result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                        print(datetime.now(), "nmcli modify method manual result:", result.stdout, result.stderr)
-                        
-                        print(f"IP: {ip}, Netmask: {netmask_prefix_length}, Gateway: {gateway}")
-                        
                     result = subprocess.run("nmcli connection up wifi_connection", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                    print(datetime.now(), "nmcli connection up result:", result.stdout, result.stderr)
-            else:
-                print(datetime.now(), "set_wifi: WiFi devre dışı")
         except Exception as e:
-            print(datetime.now(), "set_wifi Hatası:", e)
+            print("set_wifi Exception:",e)
 
     def set_network_priority(self):
         time.sleep(10)
@@ -356,37 +302,31 @@ class SoftwareSettings():
             first = self.application.settings.networkPriority.first
             second = self.application.settings.networkPriority.second
             third = self.application.settings.networkPriority.third
-            print(f"Setting network priority: first={first}, second={second}, third={third}")
-
             if enableWorkmode == "True":
                 if first == "ETH":
                     os.system("ifmetric eth1 100")
                 elif first == "WLAN":
                     os.system("ifmetric wlan0 100")
                 elif first == "4G":
-                    os.system("ifmetric ppp0 100 > /dev/null 2>&1") # Not logging this as it is not an error
-
+                    os.system("ifmetric ppp0 100 > /dev/null 2>&1")
                 if second == "ETH":
                     os.system("ifmetric eth1 300")
                 elif second == "WLAN":
                     os.system("ifmetric wlan0 300")
                 elif second == "4G":
-                    os.system("ifmetric ppp0 300 > /dev/null 2>&1") # Not logging this as it is not an error
-
+                    os.system("ifmetric ppp0 300 > /dev/null 2>&1")
                 if third == "ETH":
                     os.system("ifmetric eth1 700")
                 elif third == "WLAN":
                     os.system("ifmetric wlan0 700")
                 elif third == "4G":
-                    os.system("ifmetric ppp0 700 > /dev/null 2>&1") # Not logging this as it is not an error
+                    os.system("ifmetric ppp0 700 > /dev/null 2>&1")
         except Exception as e:
-            print("Exception in set_network_priority")
+            print("set_network_priority Exception:",e)
 
     def set_functions_enable(self):
         try:
             card_type = self.application.settings.functionsEnable.card_type
-            print(f"Setting functions enable: card_type={card_type}")
-
             if card_type == CardType.StartStopCard.value:
                 self.application.cardType = CardType.StartStopCard
             elif card_type == CardType.LocalPnC.value:
@@ -394,7 +334,7 @@ class SoftwareSettings():
             elif card_type == CardType.BillingCard.value:
                 self.application.cardType = CardType.BillingCard
         except Exception as e:
-            print("Exception in set_functions_enable")
+            print("set_functions_enable Exception:",e)
 
     def ping_google(self):
         try:
@@ -403,8 +343,6 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
             except Exception as e:
                 self.application.settings.deviceStatus.linkStatus = "Offline"
-            print(f"Ping Google: linkStatus={self.application.settings.deviceStatus.linkStatus}")
-
             if self.application.settings.deviceStatus.linkStatus == "Offline":
                 Thread(target=self.set_eth, daemon=True).start()
                 Thread(target=self.set_4G, daemon=True).start()
@@ -412,7 +350,7 @@ class SoftwareSettings():
                 # Thread(target=self.set_network_priority, daemon=True).start()
                 time.sleep(15)
         except Exception as e:
-            print("Exception in ping_google")
+            print("ping_google Exception:",e)
 
     def find_network(self):
         try:
@@ -436,39 +374,29 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.networkCard = "Wifi"
             elif min_metric == ppp0_metric:
                 self.application.settings.deviceStatus.networkCard = "4G"
-            print(f"Network found: {self.application.settings.deviceStatus.networkCard}")
             self.control_websocket_ip()
         except Exception as e:
-            print("Exception in find_network")
+            print("find_network Exception:",e)
 
     def find_stateOfOcpp(self):
         try:
             self.application.settings.deviceStatus.stateOfOcpp = "Online" if self.application.ocppActive else "Offline"
-            print(f"OCPP state: {self.application.settings.deviceStatus.stateOfOcpp}")
         except Exception as e:
-            print("Exception in find_stateOfOcpp")
+            print("find_stateOfOcpp Exception:",e)
 
-    # buraya önceki halinde log'lar ekledim ve hata yazdırıyordu hataları düzeltmek adına yeni kontroller ekledim
+
     def strenghtOf4G(self):
         try:
             enableModification = self.application.settings.settings4G.enableModification
             if enableModification == "True":
-                # Get modem list
                 result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                
-                # Check if the result contains modem details
                 modems = result.strip().split("\n")
                 if len(modems) > 0:
-                    modem_info = modems[0]  # Assuming the first modem is the one we need
+                    modem_info = modems[0]
                     modem_parts = modem_info.split()
-                    
-                    # Check if the modem information is in the expected format
                     if len(modem_parts) > 0 and modem_parts[0].startswith("/org/"):
                         modem_id = modem_parts[0].split("/")[-1]  # Get the short modem id
-                        
-                        # Get modem details
                         result = subprocess.check_output(f"mmcli -m {modem_id}", shell=True).decode('utf-8')
-                        # Parse modem details
                         result_list = result.split("\n")
                         for data in result_list:
                             if "signal quality" in data.lower():
@@ -479,27 +407,19 @@ class SoftwareSettings():
                                     self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                                 break
                         else:
-                            print("Signal quality information not found in modem details.")
                             self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                     else:
-                        print("No valid modem information found.")
                         self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                 else:
-                    print("No modems found.")
                     self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
-                    
-                print(f"4G strength: {self.application.settings.deviceStatus.strenghtOf4G}")
-        except subprocess.CalledProcessError as e:
-            print("Subprocess error in strenghtOf4G: %s", e)
         except Exception as e:
-            print("Exception in strenghtOf4G: %s", e)
+            print("strenghtOf4G Exception:",e)
 
     def set_timezoon(self):
         try:
             subprocess.run(['timedatectl', 'set-timezone', self.application.settings.timezoonSettings.timezone], check=True)
-            print(f"Timezone set to: {self.application.settings.timezoonSettings.timezone}")
         except subprocess.CalledProcessError as e:
-            print("Exception in set_timezoon")
+            print("set_timezoon Exception:",e)
 
     def control_device_status(self):
         while True:
@@ -512,7 +432,7 @@ class SoftwareSettings():
                 # Thread(target=self.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
-                print("Exception in control_device_status")
+                print("control_device_status Exception:",e)
             time.sleep(10)
 
     def set_bluetooth_settings(self):
@@ -521,48 +441,7 @@ class SoftwareSettings():
             stdout, stderr = process.communicate()
             output = stdout.decode('utf-8')
             name = output.split("\n")[0]
-            print(f"Current hostname: {name}")
-
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
-           
-            if (name != new_bluetooth_name) and (new_bluetooth_name != "") and (new_bluetooth_name is not None):
-                max_length = 32  # Bluetooth adı için genel kabul gören maksimum uzunluk
-                valid_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ ")
-
-                if len(new_bluetooth_name) > max_length:
-                    print("Bluetooth name is too long")
-                    return
-
-                if not all(char in valid_chars for char in new_bluetooth_name):
-                    print("Bluetooth name contains invalid characters")
-                    return
-
-                os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
-
-                # D-Bus üzerinden Bluetooth adını değiştirme
-                dbus_command = [
-                    'dbus-send',
-                    '--system',
-                    '--dest=org.bluez',
-                    '--print-reply',
-                    '/org/bluez/hci0',
-                    'org.freedesktop.DBus.Properties.Set',
-                    'string:org.bluez.Adapter1',
-                    'string:Alias',
-                    'variant:string:' + new_bluetooth_name
-                ]
-
-                process = subprocess.Popen(dbus_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
-
-                # Bluetooth servisini yeniden başlatma
-
-                os.system("hciconfig hci0 down")
-                time.sleep(2)
-                os.system("service bluetooth restart")
-                time.sleep(2)
-                os.system("hciconfig hci0 up")
-
-                print(f"Bluetooth name changed to: {new_bluetooth_name}")
+            os.system("reboot")
         except Exception as e:
             print("Exception in set_bluetooth_settings")

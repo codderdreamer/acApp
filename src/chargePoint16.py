@@ -652,12 +652,58 @@ class ChargePoint16(cp):
                 key
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.GetConfigurationPayload(
-                configuration_key = None,
-                unknown_key = None
-            )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
-            return response
+
+            full_configuration = [
+                {"key": "AllowOfflineTxForUnknownId", "readonly": True, "value": "false"},
+                {"key": "AuthorizationCacheEnabled", "readonly": True, "value": "true"},
+                {"key": "AuthorizeRemoteTxRequests", "readonly": True, "value": "true"},        
+                {"key": "BlinkRepeat", "readonly": True, "value": "1"},
+                {"key": "ClockAlignedDataInterval", "readonly": True, "value": "10"},           
+                {"key": "ConnectionTimeOut", "readonly": True, "value": "10"},                  
+                {"key": "GetConfigurationMaxKeys", "readonly": True, "value": "34"},
+                {"key": "HeartbeatInterval", "readonly": True, "value": "5"},
+                {"key": "LightIntensity", "readonly": True, "value": "100"},
+                {"key": "LocalAuthorizeOffline", "readonly": True, "value": "true"},
+                {"key": "LocalPreAuthorize", "readonly": True, "value": "false"},
+                {"key": "MaxEnergyOnInvalidId", "readonly": True, "value": "0"},
+                {"key": "MeterValuesAlignedData", "readonly": True, "value": "Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature"},
+                {"key": "MeterValuesAlignedDataMaxLength", "readonly": True, "value": "5"},
+                {"key": "MeterValuesSampledData", "readonly": True, "value": "Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature"},
+                {"key": "MeterValuesSampledDataMaxLength", "readonly": True, "value": "5"},
+                {"key": "MeterValueSampleInterval", "readonly": True, "value": "10"},
+                {"key": "MinimumStatusDuration", "readonly": True, "value": "10"},
+                {"key": "NumberOfConnectors", "readonly": True, "value": "1"},
+                {"key": "ResetRetries", "readonly": True, "value": "0"},
+                {"key": "ConnectorPhaseRotation", "readonly": True, "value": "RST,NotApplicable"},
+                {"key": "ConnectorPhaseRotationMaxLength", "readonly": True, "value": "2"},
+                {"key": "StopTransactionOnEVSideDisconnect", "readonly": True, "value": "true"},
+                {"key": "StopTransactionOnInvalidId", "readonly": True, "value": "true"},
+                {"key": "StopTxnAlignedData", "readonly": True, "value": "Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature"},
+                {"key": "StopTxnAlignedDataMaxLength", "readonly": True, "value": "5"},
+                {"key": "StopTxnSampledData", "readonly": True, "value": "Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature"},
+                {"key": "StopTxnSampledDataMaxLength", "readonly": True, "value": "5"},
+                {"key": "SupportedFeatureProfiles", "readonly": True, "value": "Core,FirmwareManagement,LocalAuthListManagement,Reservation,SmartCharging,RemoteTrigger"},
+                {"key": "SupportedFeatureProfilesMaxLength", "readonly": True, "value": "6"},
+                {"key": "TransactionMessageAttempts", "readonly": True, "value": "3"},
+                {"key": "TransactionMessageRetryInterval", "readonly": True, "value": "5"},
+                {"key": "UnlockConnectorOnEVSideDisconnect", "readonly": True, "value": "true"},
+                {"key": "WebSocketPingInterval", "readonly": True, "value": "20"}
+            ]
+
+            if key:
+                filtered_configuration = [config for config in full_configuration if config["key"] in key]
+                response_payload = call_result.GetConfigurationPayload(
+                    configuration_key=filtered_configuration,
+                    unknown_key=[k for k in key if k not in [conf["key"] for conf in full_configuration]]
+                )
+            else:
+                response_payload = call_result.GetConfigurationPayload(
+                    configuration_key=full_configuration,
+                    unknown_key=None
+                )
+
+            LOGGER_CHARGE_POINT.info("Response:%s", response_payload)
+            return response_payload
         except Exception as e:
             self.logger.exception("on_get_configration Exception:",e)
 

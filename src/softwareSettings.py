@@ -364,7 +364,6 @@ class SoftwareSettings():
                     eth1_metric = int(data.split("metric")[1])
                 elif "wlan0" in data:
                     wlan0_metric = int(data.split("metric")[1].strip().split()[0])
-                    print("wlan0_metric", data.split("metric")[1], wlan0_metric)
                 elif "ppp0" in data:
                     ppp0_metric = int(data.split("metric")[1])
             min_metric = min(eth1_metric, wlan0_metric, ppp0_metric)

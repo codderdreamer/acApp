@@ -26,14 +26,15 @@ import builtins
 from src.logger import ac_app_logger as logger
 
 original_print = builtins.print
-def timestamped_print(*args, **kwargs):
+def timestamped_print(color = "",*args, **kwargs):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    original_print(f"[{current_time}]", *args, **kwargs)
+    args = (f"[{current_time}]",) + (color,) + args + ("\033[0m",)
+    original_print(*args, **kwargs)
 builtins.print = timestamped_print
 
 class Application():
     def __init__(self, loop):
-        print(Color.Yellow.value + "------------------------------------------------- Application Run Started ------------------------------------------------" + Color.Reset.value)
+        print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
         os.system("service bluetooth restart")
         time.sleep(2)
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
@@ -94,7 +95,7 @@ class Application():
     @deviceState.setter
     def deviceState(self, value):
         if self.__deviceState != value:
-            print(f"{Color.Cyan.value}Device State:{self.__deviceState}{Color.Reset.value}")
+            print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
                 if self.charge_stopped != True:

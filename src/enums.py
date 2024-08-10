@@ -143,6 +143,13 @@ class PidErrorList(Enum):
     FrequencyFailure = 13
     PhaseSequenceFailure = 14
     OverPowerFailure = 15
+
+class Color(Enum):
+    Red = '\033[31m'
+    Green = '\033[32m'
+    Yellow = '\033[33m'
+    Blue = '\033[34m'
+    
     
 def get_enum_member_by_value(enum_class, value):  # enum döndürür
     for member in enum_class:

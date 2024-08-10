@@ -22,8 +22,14 @@ from src.testServer import TestServer
 import subprocess
 import os
 from src.webSocket import *
-
+import builtins
 from src.logger import ac_app_logger as logger
+
+original_print = builtins.print
+def timestamped_print(*args, **kwargs):
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    original_print(f"[{current_time}]", *args, **kwargs)
+builtins.print = timestamped_print
 
 class Application():
     def __init__(self, loop):
@@ -88,7 +94,7 @@ class Application():
     @deviceState.setter
     def deviceState(self, value):
         if self.__deviceState != value:
-            print(f"{Color.Cyan.value}Device State:",self.__deviceState)
+            print(f"{Color.Cyan.value}Device State:{self.__deviceState}{Color.Reset.value}")
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
                 if self.charge_stopped != True:

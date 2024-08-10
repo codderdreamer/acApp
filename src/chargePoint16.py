@@ -51,19 +51,19 @@ class ChargePoint16(cp):
         
     def show(self):
         while True:
-            # self.logger.info("????????????????????? self.application.request_list", len(self.application.request_list))
+            # print("????????????????????? self.application.request_list", len(self.application.request_list))
             time.sleep(1)
             
             
     async def send_data(self,request):
         try:
-            self.logger.info("************************************************** SEND DATA ******************************************* ")
+            print("************************************************** SEND DATA ******************************************* ")
             LOGGER_CHARGE_POINT.info("\n???????????????????????????????? Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("\n????????????????????????????????Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("******************************************************************************************send_data Exception:",e)
+            print("******************************************************************************************send_data Exception:",e)
     # --------------------------------------------- OPERATIONS INITIATED BY CHARGE POINT ---------------------------------------------
 
     # 1. AUTHORIZE
@@ -86,7 +86,7 @@ class ChargePoint16(cp):
                 if self.authorize == AuthorizationStatus.accepted:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                        self.logger.info("-------------------------------------------------------------------  Araç bağlı değil")
+                        print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
                     if  self.application.ev.charge:
@@ -101,7 +101,7 @@ class ChargePoint16(cp):
                     self.authorize = AuthorizationStatus.accepted
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                        self.logger.info("-------------------------------------------------------------------  Araç bağlı değil")
+                        print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
                     if  self.application.ev.charge:
@@ -110,7 +110,7 @@ class ChargePoint16(cp):
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
         
         except Exception as e:
-            self.logger.exception("send_authorize Exception:",e)
+            print("send_authorize Exception:",e)
             # self.application.request_list.append(request)
 
     # 2. BOOT NOTIFICATION
@@ -152,9 +152,9 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
-            self.logger.info("BootNotification Response",response)
+            print("BootNotification Response",response)
             if response.status == RegistrationStatus.accepted:
-                self.logger.info("Connected to central system.")
+                print("Connected to central system.")
                 self.application.ocppActive = True
                 if self.application.availability == AvailabilityType.operative:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
@@ -163,7 +163,7 @@ class ChargePoint16(cp):
                 await self.send_heartbeat(response.interval)
             return response
         except Exception as e:
-            self.logger.exception("send_boot_notification Exception:",e)
+            print("send_boot_notification Exception:",e)
 
     # 3. DATA TRANSFER
     async def send_data_transfer(
@@ -188,7 +188,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("send_data_transfer Exception:",e)
+            print("send_data_transfer Exception:",e)
 
     # 4. DIAGNOSTICS STATUS NOTIFICATION
     async def send_diagnostics_status_notification(
@@ -207,7 +207,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("send_diagnostics_status_notification Exception:",e)
+            print("send_diagnostics_status_notification Exception:",e)
 
     # 5. FIRMWARE STATUS NOTIFICATION
     async def send_firmware_status_notification(
@@ -226,7 +226,7 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("send_firmware_status_notification Exception:",e)
+            print("send_firmware_status_notification Exception:",e)
 
     # 6. HEARTBEAT
     async def send_heartbeat(self, interval):
@@ -242,12 +242,12 @@ class ChargePoint16(cp):
                 self.application.process.transaction_id = None
                 self.application.process.id_tag = None
             if self.application.cardType == CardType.BillingCard:
-                self.logger.info("\n\n ---------------------------------------------- heart beat ------------------------------------------\n\n")
+                print("\n\n ---------------------------------------------- heart beat ------------------------------------------\n\n")
                 for request in self.application.request_list:
-                    self.logger.info("\n\n???????????????????????????????????????????? request",request)
+                    print("\n\n???????????????????????????????????????????? request",request)
                     asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
                 self.application.request_list = []
-                self.logger.info("\n \n--------------------------------------------------run_coroutine_threadsafe finish ---------------------------\n")
+                print("\n \n--------------------------------------------------run_coroutine_threadsafe finish ---------------------------\n")
                 
             request = call.HeartbeatPayload()
             while self.application.cardType == CardType.BillingCard:
@@ -260,7 +260,7 @@ class ChargePoint16(cp):
                 self.application.ocppActive = True
                 await asyncio.sleep(5)
         except Exception as e:
-            self.logger.exception("send_heartbeat Exception:",e)
+            print("send_heartbeat Exception:",e)
             self.application.ocppActive = False
             if self.application.chargingStatus == ChargePointStatus.charging:
                 pass
@@ -377,7 +377,7 @@ class ChargePoint16(cp):
             else:
                 self.application.request_list.append(request)
         except Exception as e:
-            self.logger.exception("send_meter_values Exception:",e)
+            print("send_meter_values Exception:",e)
             # self.application.request_list.append(request)
 
     # 8. START TRANSACTION
@@ -411,7 +411,7 @@ class ChargePoint16(cp):
             self.start_transaction_result = response.id_tag_info['status']
             return response
         except Exception as e:
-            self.logger.exception("send_start_transaction Exception:",e)
+            print("send_start_transaction Exception:",e)
 
     # 9. STATUS NOTIFICATION
     async def send_status_notification(
@@ -454,7 +454,7 @@ class ChargePoint16(cp):
             else:
                 self.application.request_list.append(request)
         except Exception as e:
-            self.logger.exception("send_status_notification Exception:",e)
+            print("send_status_notification Exception:",e)
 
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
@@ -468,7 +468,7 @@ class ChargePoint16(cp):
         id_tag: str | None = None,
         transaction_data: List | None = None
         """
-        self.logger.info("send_stop_transaction")
+        print("send_stop_transaction")
         meter_stop = int(self.application.ev.energy*1000)
         timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
         transaction_id = self.application.process.transaction_id
@@ -492,7 +492,7 @@ class ChargePoint16(cp):
             else:
                 self.application.request_list.append(request)
         except Exception as e:
-            self.logger.exception("send_stop_transaction Exception:",e)
+            print("send_stop_transaction Exception:",e)
 
 
     # --------------------------------------------- OPERATIONS INITIATED BY CENTRAL SYSTEM ---------------------------------------------
@@ -519,7 +519,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_cancel_reservation Exception:",e)
+            print("on_cancel_reservation Exception:",e)
             
 
     # 2. CHANGE AVAILABILITY
@@ -537,7 +537,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_change_availability Exception:",e)
+            print("on_change_availability Exception:",e)
             
     @after(Action.ChangeAvailability)
     def after_change_availability(self,connector_id: int, type: AvailabilityType):
@@ -552,7 +552,7 @@ class ChargePoint16(cp):
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
-            self.logger.exception("after_change_availability Exception:",e)
+            print("after_change_availability Exception:",e)
 
     # 3. CHANGE CONFIGRATION
     @on(Action.ChangeConfiguration)
@@ -569,7 +569,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_change_configration Exception:",e)
+            print("on_change_configration Exception:",e)
 
     # 4. CLEAR CACHE
     @on(Action.ClearCache)
@@ -583,7 +583,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_clear_cache Exception:",e)
+            print("on_clear_cache Exception:",e)
 
     # 5. CLEAR CHARGING PROFILE
     @on(Action.ClearChargingProfile)
@@ -602,7 +602,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_clear_charging_profile Exception:",e)
+            print("on_clear_charging_profile Exception:",e)
 
     # 6. DATA TRANSFER
     @on(Action.DataTransfer)
@@ -621,7 +621,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_data_transfer Exception:",e)
+            print("on_data_transfer Exception:",e)
 
     # 7. GET COMPOSITE SCHEDULE
     @on(Action.GetCompositeSchedule)
@@ -642,7 +642,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_get_composite_schedule Exception:",e)
+            print("on_get_composite_schedule Exception:",e)
 
     # 8. GET CONFIGRATION
     @on(Action.GetConfiguration)
@@ -705,7 +705,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response_payload)
             return response_payload
         except Exception as e:
-            self.logger.exception("on_get_configration Exception:",e)
+            print("on_get_configration Exception:",e)
 
     # 9. GET DIAGNOSTICS
     @on(Action.GetDiagnostics)
@@ -725,7 +725,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_get_diagnostics Exception:",e)
+            print("on_get_diagnostics Exception:",e)
 
     # 10. GET LOCAL LIST VERSION
     @on(Action.GetLocalListVersion)
@@ -739,7 +739,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_get_local_list_version Exception:",e)
+            print("on_get_local_list_version Exception:",e)
 
     # 11. REMOTE START TRANSACTION
     @on(Action.RemoteStartTransaction)
@@ -765,13 +765,13 @@ class ChargePoint16(cp):
             if len(self.application.serialPort.error_list) > 0:
                 for value in self.application.serialPort.error_list:
                     if value == PidErrorList.LockerInitializeError:
-                        self.logger.info("Şarja başlanamaz! PidErrorList.LockerInitializeError")
+                        print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
                         response = call_result.RemoteStartTransactionPayload(
                             status= RemoteStartStopStatus.rejected
                         )
                         error = True
                     if value == PidErrorList.RcdInitializeError:
-                        self.logger.info("Şarja başlanamaz! PidErrorList.RcdInitializeError")
+                        print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
                         response = call_result.RemoteStartTransactionPayload(
                             status= RemoteStartStopStatus.rejected
                         )
@@ -787,24 +787,24 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_remote_start_transaction Exception:",e)
+            print("on_remote_start_transaction Exception:",e)
             
     def remote_start_thread(self):
         # Eğer kablo bağlı değilse
         # Waiting plug led yak
         # 30 saniye içinde kablo bağlanmazsa idle
-        self.logger.info("remote_start_thread")
+        print("remote_start_thread")
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
-            self.logger.info("self.application.ev.control_pilot",self.application.ev.control_pilot)
+            print("self.application.ev.control_pilot",self.application.ev.control_pilot)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
             while True:
-                self.logger.info("30 sn içinde kablo bağlantısı bekleniyor ! control pilot:",self.application.ev.control_pilot)
+                print("30 sn içinde kablo bağlantısı bekleniyor ! control pilot:",self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
-                    self.logger.info("Kablo bağlantısı sağlandı.")
+                    print("Kablo bağlantısı sağlandı.")
                     break
                 elif time.time() - time_start > 30:
-                    self.logger.info("Kablo bağlantısı sağlanamadı 30 saniye süre doldu!")
+                    print("Kablo bağlantısı sağlanamadı 30 saniye süre doldu!")
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                     self.application.ev.start_stop_authorize = False
@@ -820,7 +820,7 @@ class ChargePoint16(cp):
         try :
             pass
         except Exception as e:
-            self.logger.exception("after_remote_start_transaction Exception:",e)
+            print("after_remote_start_transaction Exception:",e)
             
     # 12. REMOTE STOP TRANSACTION
     @on(Action.RemoteStopTransaction)
@@ -836,14 +836,14 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_remote_stop_transaction Exception:",e)
+            print("on_remote_stop_transaction Exception:",e)
             
     @after(Action.RemoteStopTransaction)
     def after_remote_stop_transaction(self,transaction_id:int):
         try :
             self.application.deviceState = DeviceState.STOPPED_BY_EVSE
         except Exception as e:
-            self.logger.exception("after_remote_stop_transaction Exception:",e)
+            print("after_remote_stop_transaction Exception:",e)
             
     @on(Action.ReserveNow)
     def on_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
@@ -883,7 +883,7 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.availability == AvailabilityType.inoperative:
-                self.logger.info("self.application.availability",self.application.availability)
+                print("self.application.availability",self.application.availability)
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
@@ -896,7 +896,7 @@ class ChargePoint16(cp):
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             elif self.application.chargingStatus != ChargePointStatus.available:
-                self.logger.info("self.application.chargingStatus",self.application.chargingStatus)
+                print("self.application.chargingStatus",self.application.chargingStatus)
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
@@ -904,7 +904,7 @@ class ChargePoint16(cp):
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_reserve_now Exception:",e)
+            print("on_reserve_now Exception:",e)
             
     # 13. RESERVE NOW
     @after(Action.ReserveNow)
@@ -915,7 +915,7 @@ class ChargePoint16(cp):
                 
                 
         except Exception as e:
-            self.logger.exception("on_reserve_now Exception:",e)
+            print("on_reserve_now Exception:",e)
 
     # 14. RESET
     @on(Action.Reset)
@@ -935,20 +935,20 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_reset Exception:",e)
+            print("on_reset Exception:",e)
             
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
             if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-                self.logger.info("Şarj var durduruluyor")
+                print("Şarj var durduruluyor")
                 self.application.deviceState = DeviceState.STOPPED_BY_EVSE
                 Thread(target=self.reboot,daemon=True).start()
             else:
                 Thread(target=self.reboot,daemon=True).start()
             # os.system("reboot")
         except Exception as e:
-            self.logger.exception("after_reset Exception:",e)
+            print("after_reset Exception:",e)
 
     # 15. SEND LOCAL LIST
     @on(Action.SendLocalList)
@@ -966,20 +966,20 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_send_local_list Exception:",e)
+            print("on_send_local_list Exception:",e)
             
     @after(Action.SendLocalList)
     def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
         try :
             localList = []
-            # self.logger.info(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
+            # print(f"SendLocalList: list_version {list_version} update_type {update_type} local_authorization_list {local_authorization_list}")
             for data in local_authorization_list:
                 localList.append(data["id_tag"])
-            # self.logger.info("\n\n", localList, "\n\n")
+            # print("\n\n", localList, "\n\n")
             self.application.databaseModule.set_local_list(localList)
             self.application.databaseModule.get_local_list()
         except Exception as e:
-            self.logger.exception("after_send_local_list Exception:",e)
+            print("after_send_local_list Exception:",e)
 
     # 16. SET CHARGING PROFILE
     @on(Action.SetChargingProfile)
@@ -996,7 +996,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_set_charging_profile Exception:",e)
+            print("on_set_charging_profile Exception:",e)
 
     # 17. TRIGGER MESSAGE
     @on(Action.TriggerMessage)
@@ -1013,7 +1013,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_trigger_message Exception:",e)
+            print("on_trigger_message Exception:",e)
         
     @after(Action.TriggerMessage)
     def after_trigger_message(self,requested_message,connector_id = None):
@@ -1021,7 +1021,7 @@ class ChargePoint16(cp):
             if requested_message == MessageTrigger.bootNotification:
                 pass
         except Exception as e:
-            self.logger.exception("after_trigger_message Exception:",e)
+            print("after_trigger_message Exception:",e)
 
     # 18. UNLOCK CONNECTOR 
     @on(Action.UnlockConnector)
@@ -1048,7 +1048,7 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_unlock_connector Exception:",e)
+            print("on_unlock_connector Exception:",e)
 
     # 19. UPDATE FIRMWARE
     @on(Action.UpdateFirmware)
@@ -1066,26 +1066,26 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            self.logger.exception("on_update_firmware Exception:",e)
+            print("on_update_firmware Exception:",e)
             
     def download_firmware(self,location):
-        self.logger.info("Update firmware")
+        print("Update firmware")
         asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading),self.application.loop)
         # await self.send_firmware_status_notification(FirmwareStatus.downloading)
         filename = "/root/new_firmware.zip"
         exit_status = os.system(f"curl {location} --output {filename}")
         if exit_status == 0:
-            self.logger.info("Dosya başarıyla indirildi.")
+            print("Dosya başarıyla indirildi.")
             with zipfile.ZipFile(filename, 'r') as zip_ref:
                 # password = b'sifreniz' 
                 # zip_ref.setpassword(password)
                 zip_ref.extractall('/root')
-            self.logger.info("Dosya başarıyla unzip yapıldı.")
+            print("Dosya başarıyla unzip yapıldı.")
             subprocess.run(["/bin/bash", "/root/update.sh"])
             asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloaded),self.application.loop)
             # await self.send_firmware_status_notification(FirmwareStatus.downloaded)
         else:
-            self.logger.info("Hata: Dosya indirilirken bir sorun oluştu.")
+            print("Hata: Dosya indirilirken bir sorun oluştu.")
             asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed),self.application.loop)
             # await self.send_firmware_status_notification(FirmwareStatus.download_failed)
             
@@ -1097,14 +1097,14 @@ class ChargePoint16(cp):
                 asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading),self.application.loop)
                 # await self.send_firmware_status_notification(FirmwareStatus.downloading)
                 while True:
-                    self.logger.info("Firmware güncelleme için bekleniyor..............................................................")
+                    print("Firmware güncelleme için bekleniyor..............................................................")
                     if self.application.ev.charge == False:
                         self.download_firmware(location)
                         return
                     else:
                         time.sleep(1)
         except Exception as e:
-            self.logger.exception("update_firmware Exception:",e)
+            print("update_firmware Exception:",e)
             asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed),self.application.loop)
             # await self.send_firmware_status_notification(FirmwareStatus.download_failed)
             
@@ -1113,7 +1113,7 @@ class ChargePoint16(cp):
         try :
             Thread(target=self.update_firmware,args=(location,),daemon=True).start()
         except Exception as e:
-            self.logger.exception("after_update_firmware Exception:",e)
+            print("after_update_firmware Exception:",e)
         
 
 
@@ -1136,20 +1136,20 @@ class ChargePoint16(cp):
 # result = subprocess.run(["git", "pull"], cwd="/root/acApp", stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
 # if result.returncode == 0:
-#     self.logger.info("git pull başarıyla tamamlandı.")
-#     self.logger.info("Çıktı:", result.stdout)
+#     print("git pull başarıyla tamamlandı.")
+#     print("Çıktı:", result.stdout)
 #     await self.send_firmware_status_notification(FirmwareStatus.downloaded)
 #     time.sleep(0.5)
 #     os.system("reboot")
 # else:
-#     self.logger.info("git pull başarısız oldu.")
-#     self.logger.info("Hata:", result.stderr)
+#     print("git pull başarısız oldu.")
+#     print("Hata:", result.stderr)
 #     await self.send_firmware_status_notification(FirmwareStatus.downloadFailed)
 #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
 #     time.sleep(1)
 #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
     
-# self.logger.info("Update firmware")
+# print("Update firmware")
 
 
 

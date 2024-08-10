@@ -33,7 +33,7 @@ class BluetoothService():
 
     def run(self):
         try:
-            logger.info("Bluetooth run")
+            print("Bluetooth run")
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()
@@ -46,7 +46,7 @@ class BluetoothService():
             gatt_server.gatt_server_main(self.application, self.mainloop, self.bus, self.adapter_name)
             self.mainloop.run()
         except Exception as e:
-            logger.exception("BluetoothService run Exception:", e)
+            print("BluetoothService run Exception:", e)
 
     def register_agent(self):
         try:
@@ -56,9 +56,9 @@ class BluetoothService():
             manager = dbus.Interface(obj, "org.bluez.AgentManager1")
             manager.RegisterAgent(path, "NoInputNoOutput")
             manager.RequestDefaultAgent(path)
-            logger.info("Agent registered successfully")
+            print("Agent registered successfully")
         except Exception as e:
-            logger.exception("Failed to register agent:", e)
+            print("Failed to register agent:", e)
 
 class Agent(dbus.service.Object):
     def __init__(self, bus, path):
@@ -66,16 +66,16 @@ class Agent(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Release(self):
-        logger.info("Agent released")
+        print("Agent released")
 
     @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="s")
     def RequestPinCode(self, device):
-        logger.info("RequestPinCode called for device: %s", device)
+        print("RequestPinCode called for device: %s", device)
         return "0000"
 
     @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
     def Cancel(self):
-        logger.info("Cancel called")
+        print("Cancel called")
 
 if __name__ == "__main__":
     BluetoothService(application=None)

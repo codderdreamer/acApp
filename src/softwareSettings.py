@@ -64,7 +64,7 @@ class SoftwareSettings():
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.third) + " 900")
             
             except Exception as e:
-                self.logger.exception("Exception in check_internet_connection: " + e)
+                print("Exception in check_internet_connection: " + e)
 
             time.sleep(2)
 
@@ -77,12 +77,12 @@ class SoftwareSettings():
             elif value == "4G":
                 return "ppp0"
         except Exception as e:
-            self.logger.exception("Exception in turn_interface: " + e)
+            print("Exception in turn_interface: " + e)
 
     def control_websocket_ip(self):
         try:
             self.get_active_ips()
-            self.logger.debug(f"Active IPs: eth1={self.application.settings.networkip.eth1}, ppp0={self.application.settings.networkip.ppp0}, wlan0={self.application.settings.networkip.wlan0}")
+            print(f"Active IPs: eth1={self.application.settings.networkip.eth1}, ppp0={self.application.settings.networkip.ppp0}, wlan0={self.application.settings.networkip.wlan0}")
 
             if self.application.settings.deviceStatus.networkCard == "Ethernet":
                 self.application.settings.websocketIp = self.application.settings.networkip.eth1
@@ -91,7 +91,7 @@ class SoftwareSettings():
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
 
-            self.logger.debug(f"WebSocket IP set to: {self.application.settings.websocketIp}")
+            print(f"WebSocket IP set to: {self.application.settings.websocketIp}")
 
             if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
                 Thread(target=self.set_eth, daemon=True).start()
@@ -100,7 +100,7 @@ class SoftwareSettings():
             elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
                 Thread(target=self.set_4G, daemon=True).start()
         except Exception as e:
-            self.logger.exception("Exception in control_websocket_ip")
+            print("Exception in control_websocket_ip")
 
     def get_active_ips(self):
         try:
@@ -131,7 +131,7 @@ class SoftwareSettings():
             self.application.settings.networkip.ppp0 = ppp0
             self.application.settings.networkip.wlan0 = wlan0
         except Exception as e:
-            self.logger.exception("Exception in get_active_ips")
+            print("Exception in get_active_ips")
 
     def get_connections(self):
         try:
@@ -159,7 +159,7 @@ class SoftwareSettings():
                     connections.append(connection)
             return connections
         except Exception as e:
-            self.logger.exception("Exception in get_connections")
+            print("Exception in get_connections")
 
     def delete_connection_type(self, con_type):
         try:
@@ -168,7 +168,7 @@ class SoftwareSettings():
                 if con_type in connection:
                     subprocess.run(["nmcli", "con", "delete", connection[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
-            self.logger.exception("Exception in delete_connection_type")
+            print("Exception in delete_connection_type")
 
     def set_eth(self):
         try:
@@ -178,7 +178,7 @@ class SoftwareSettings():
             netmask = self.application.settings.ethernetSettings.netmask
             gateway = self.application.settings.ethernetSettings.gateway
             self.delete_connection_type("ethernet")
-            self.logger.debug("Setting Ethernet connection")
+            print("Setting Ethernet connection")
 
             if ethernetEnable == "True":
                 if dhcpcEnable == "False":
@@ -197,7 +197,7 @@ class SoftwareSettings():
             else:
                 self.delete_connection_type("ethernet")
         except Exception as e:
-            self.logger.exception("Exception in set_eth")
+            print("Exception in set_eth")
 
     def set_dns(self):
         try:
@@ -218,7 +218,7 @@ class SoftwareSettings():
                 os.system(setDns)
 
         except Exception as e:
-            self.logger.exception("Exception in set_dns")
+            print("Exception in set_dns")
 
     def set_4G(self):
         try:
@@ -229,7 +229,7 @@ class SoftwareSettings():
             pin = self.application.settings.settings4G.pin
             enableModification = self.application.settings.settings4G.enableModification
             self.delete_connection_type("gsm")
-            self.logger.debug("Setting 4G connection")
+            print("Setting 4G connection")
 
             if enableModification == "True":
                 time.sleep(3)
@@ -248,11 +248,11 @@ class SoftwareSettings():
                         pin_check = subprocess.run("""mmcli -i {0} --pin={1}""".format(modem_id, pin), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         
                         if "error" in pin_check.stderr.decode('utf-8').lower():
-                            self.logger.error("PIN hatalı. Lütfen doğru PIN'i girin.")
+                            print("PIN hatalı. Lütfen doğru PIN'i girin.")
                         else:
                             pin_valid = True
                     except Exception as e:
-                        self.logger.error(f"PIN doğrulama sırasında bir hata oluştu: {str(e)}")
+                        print(f"PIN doğrulama sırasında bir hata oluştu: {str(e)}")
 
                     if pin_valid:
                         while True:
@@ -279,7 +279,7 @@ class SoftwareSettings():
                         except:
                             pass
         except Exception as e:
-            self.logger.exception("Exception in set_4G")
+            print("Exception in set_4G")
             
     def set_wifi(self):
         try:
@@ -356,7 +356,7 @@ class SoftwareSettings():
             first = self.application.settings.networkPriority.first
             second = self.application.settings.networkPriority.second
             third = self.application.settings.networkPriority.third
-            self.logger.debug(f"Setting network priority: first={first}, second={second}, third={third}")
+            print(f"Setting network priority: first={first}, second={second}, third={third}")
 
             if enableWorkmode == "True":
                 if first == "ETH":
@@ -380,12 +380,12 @@ class SoftwareSettings():
                 elif third == "4G":
                     os.system("ifmetric ppp0 700 > /dev/null 2>&1") # Not logging this as it is not an error
         except Exception as e:
-            self.logger.exception("Exception in set_network_priority")
+            print("Exception in set_network_priority")
 
     def set_functions_enable(self):
         try:
             card_type = self.application.settings.functionsEnable.card_type
-            self.logger.debug(f"Setting functions enable: card_type={card_type}")
+            print(f"Setting functions enable: card_type={card_type}")
 
             if card_type == CardType.StartStopCard.value:
                 self.application.cardType = CardType.StartStopCard
@@ -394,7 +394,7 @@ class SoftwareSettings():
             elif card_type == CardType.BillingCard.value:
                 self.application.cardType = CardType.BillingCard
         except Exception as e:
-            self.logger.exception("Exception in set_functions_enable")
+            print("Exception in set_functions_enable")
 
     def ping_google(self):
         try:
@@ -403,7 +403,7 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
             except Exception as e:
                 self.application.settings.deviceStatus.linkStatus = "Offline"
-            self.logger.debug(f"Ping Google: linkStatus={self.application.settings.deviceStatus.linkStatus}")
+            print(f"Ping Google: linkStatus={self.application.settings.deviceStatus.linkStatus}")
 
             if self.application.settings.deviceStatus.linkStatus == "Offline":
                 Thread(target=self.set_eth, daemon=True).start()
@@ -412,7 +412,7 @@ class SoftwareSettings():
                 # Thread(target=self.set_network_priority, daemon=True).start()
                 time.sleep(15)
         except Exception as e:
-            self.logger.exception("Exception in ping_google")
+            print("Exception in ping_google")
 
     def find_network(self):
         try:
@@ -436,17 +436,17 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.networkCard = "Wifi"
             elif min_metric == ppp0_metric:
                 self.application.settings.deviceStatus.networkCard = "4G"
-            self.logger.debug(f"Network found: {self.application.settings.deviceStatus.networkCard}")
+            print(f"Network found: {self.application.settings.deviceStatus.networkCard}")
             self.control_websocket_ip()
         except Exception as e:
-            self.logger.exception("Exception in find_network")
+            print("Exception in find_network")
 
     def find_stateOfOcpp(self):
         try:
             self.application.settings.deviceStatus.stateOfOcpp = "Online" if self.application.ocppActive else "Offline"
-            self.logger.debug(f"OCPP state: {self.application.settings.deviceStatus.stateOfOcpp}")
+            print(f"OCPP state: {self.application.settings.deviceStatus.stateOfOcpp}")
         except Exception as e:
-            self.logger.exception("Exception in find_stateOfOcpp")
+            print("Exception in find_stateOfOcpp")
 
     # buraya önceki halinde log'lar ekledim ve hata yazdırıyordu hataları düzeltmek adına yeni kontroller ekledim
     def strenghtOf4G(self):
@@ -479,27 +479,27 @@ class SoftwareSettings():
                                     self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                                 break
                         else:
-                            self.logger.warning("Signal quality information not found in modem details.")
+                            print("Signal quality information not found in modem details.")
                             self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                     else:
-                        self.logger.warning("No valid modem information found.")
+                        print("No valid modem information found.")
                         self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                 else:
-                    self.logger.warning("No modems found.")
+                    print("No modems found.")
                     self.application.settings.deviceStatus.strenghtOf4G = "Unknown"
                     
-                self.logger.info(f"4G strength: {self.application.settings.deviceStatus.strenghtOf4G}")
+                print(f"4G strength: {self.application.settings.deviceStatus.strenghtOf4G}")
         except subprocess.CalledProcessError as e:
-            self.logger.exception("Subprocess error in strenghtOf4G: %s", e)
+            print("Subprocess error in strenghtOf4G: %s", e)
         except Exception as e:
-            self.logger.exception("Exception in strenghtOf4G: %s", e)
+            print("Exception in strenghtOf4G: %s", e)
 
     def set_timezoon(self):
         try:
             subprocess.run(['timedatectl', 'set-timezone', self.application.settings.timezoonSettings.timezone], check=True)
-            self.logger.debug(f"Timezone set to: {self.application.settings.timezoonSettings.timezone}")
+            print(f"Timezone set to: {self.application.settings.timezoonSettings.timezone}")
         except subprocess.CalledProcessError as e:
-            self.logger.exception("Exception in set_timezoon")
+            print("Exception in set_timezoon")
 
     def control_device_status(self):
         while True:
@@ -512,7 +512,7 @@ class SoftwareSettings():
                 # Thread(target=self.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
-                self.logger.exception("Exception in control_device_status")
+                print("Exception in control_device_status")
             time.sleep(10)
 
     def set_bluetooth_settings(self):
@@ -521,7 +521,7 @@ class SoftwareSettings():
             stdout, stderr = process.communicate()
             output = stdout.decode('utf-8')
             name = output.split("\n")[0]
-            self.logger.info(f"Current hostname: {name}")
+            print(f"Current hostname: {name}")
 
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
            
@@ -530,11 +530,11 @@ class SoftwareSettings():
                 valid_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ ")
 
                 if len(new_bluetooth_name) > max_length:
-                    self.logger.warning("Bluetooth name is too long")
+                    print("Bluetooth name is too long")
                     return
 
                 if not all(char in valid_chars for char in new_bluetooth_name):
-                    self.logger.warning("Bluetooth name contains invalid characters")
+                    print("Bluetooth name contains invalid characters")
                     return
 
                 os.system("""hostnamectl set-hostname {0}""".format(new_bluetooth_name))
@@ -563,6 +563,6 @@ class SoftwareSettings():
                 time.sleep(2)
                 os.system("hciconfig hci0 up")
 
-                self.logger.info(f"Bluetooth name changed to: {new_bluetooth_name}")
+                print(f"Bluetooth name changed to: {new_bluetooth_name}")
         except Exception as e:
-            self.logger.exception("Exception in set_bluetooth_settings")
+            print("Exception in set_bluetooth_settings")

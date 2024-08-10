@@ -15,12 +15,12 @@ class WebSocketServer():
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
         threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
-        self.logger.info("Web Socket started... 0.0.0.0  8000")
+        print("Web Socket started... 0.0.0.0  8000")
         
     def NewClientws(self, client, server):
         if client:
             try:
-                self.logger.info(f"New client connected and was given id {client['id']}, {client['address']}")
+                print(f"New client connected and was given id {client['id']}, {client['address']}")
                 
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_network_priority())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_Settings4G())
@@ -36,18 +36,18 @@ class WebSocketServer():
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_maxcurrent())
                 self.websocketServer.send_message_to_all(msg = self.application.settings.get_mid_meter())
             except Exception as e:
-                self.logger.error(f"NewClientws Exception: {e}")
+                print(f"NewClientws Exception: {e}")
                 
     def ClientLeftws(self, client, server):
         try:
-            self.logger.info(f"Client disconnected client[id]:{client['id']}  client['address'] ={client['address']}")
+            print(f"Client disconnected client[id]:{client['id']}  client['address'] ={client['address']}")
         except Exception as e:
-            self.logger.error(f"ClientLeftws Exception: {e}")
+            print(f"ClientLeftws Exception: {e}")
             
     def MessageReceivedws(self, client, server, message):
         try:
             sjon = json.loads(message)
-            self.logger.info(f"Received message: {sjon}")
+            print(f"Received message: {sjon}")
             self.application.settings.set_network_priority(sjon)
             self.application.settings.set_Settings4G(sjon)
             self.application.settings.set_ethernet_settings(sjon)
@@ -63,4 +63,4 @@ class WebSocketServer():
             self.application.settings.set_stop_transaction(sjon)
             self.application.settings.set_external_mid_meter(sjon)
         except Exception as e:
-            self.logger.error(f"MessageReceivedws Exception: {e}")
+            print(f"MessageReceivedws Exception: {e}")

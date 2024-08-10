@@ -47,11 +47,11 @@ class Settings():
     def set_websocket_ip(self, ip):
         try:
             data = {"ip": ip}
-            logger.debug(f"Setting websocket IP: {data}")
+            print(f"Setting websocket IP: {data}")
             with open("/root/acApp/client/build/websocket.json", "w") as file:
                 json.dump(data, file)
         except Exception as e:
-            logger.exception("Exception in set_websocket_ip")
+            print("Exception in set_websocket_ip")
 
     def get_network_priority(self):
         command = {
@@ -245,7 +245,7 @@ class Settings():
             }
         }
         json_string = json.dumps(command)
-        logger.debug(f"Sent: {command}")
+        print(f"Sent: {command}")
         return json_string
 
     def set_external_mid_meter(self, sjon):
@@ -262,7 +262,7 @@ class Settings():
 
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_mid_meter())
         except Exception as e:
-            logger.exception("Exception in set_external_mid_meter")
+            print("Exception in set_external_mid_meter")
 
     def set_network_priority(self, sjon):
         try:
@@ -275,7 +275,7 @@ class Settings():
                 # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_network_priority())
         except Exception as e:
-            logger.exception("Exception in set_network_priority")
+            print("Exception in set_network_priority")
 
     def set_Settings4G(self, sjon):
         try:
@@ -290,7 +290,7 @@ class Settings():
                 # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_Settings4G())
         except Exception as e:
-            logger.exception("Exception in set_Settings4G")
+            print("Exception in set_Settings4G")
 
     def set_ethernet_settings(self, sjon):
         try:
@@ -305,7 +305,7 @@ class Settings():
                 # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_ethernet_settings())
         except Exception as e:
-            logger.exception("Exception in set_ethernet_settings")
+            print("Exception in set_ethernet_settings")
 
     def set_dns_settings(self, sjon):
         try:
@@ -317,7 +317,7 @@ class Settings():
                 self.application.softwareSettings.set_dns()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_dns_settings())
         except Exception as e:
-            logger.exception("Exception in set_dns_settings")
+            print("Exception in set_dns_settings")
 
     def set_wifi_settings(self, sjon):
         try:
@@ -336,7 +336,7 @@ class Settings():
                 # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_wifi_settings())
         except Exception as e:
-            logger.exception("Exception in set_wifi_settings")
+            print("Exception in set_wifi_settings")
 
     def set_ocpp_settings(self, sjon):
         try:
@@ -351,7 +351,7 @@ class Settings():
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_ocpp_settings())
                 self.change_ocpp = True
         except Exception as e:
-            logger.exception("Exception in set_ocpp_settings")
+            print("Exception in set_ocpp_settings")
 
     def set_functions_enable(self, sjon):
         try:
@@ -366,7 +366,7 @@ class Settings():
                 self.application.softwareSettings.set_functions_enable()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_functions_enable())
         except Exception as e:
-            logger.exception("Exception in set_functions_enable")
+            print("Exception in set_functions_enable")
 
     def set_bluetooth_settings(self, sjon):
         try:
@@ -378,7 +378,7 @@ class Settings():
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_bluetooth_settings())
                 self.application.softwareSettings.set_bluetooth_settings()
         except Exception as e:
-            logger.exception("Exception in set_bluetooth_settings")
+            print("Exception in set_bluetooth_settings")
 
     def set_timezoon_settings(self, sjon):
         try:
@@ -388,7 +388,7 @@ class Settings():
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_timezoon_settings())
                 self.application.softwareSettings.set_timezoon()
         except Exception as e:
-            logger.exception("Exception in set_timezoon_settings")
+            print("Exception in set_timezoon_settings")
 
     def set_firmware_version(self, sjon):
         try:
@@ -397,7 +397,7 @@ class Settings():
                 self.application.databaseModule.set_firmware_version(version)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_firmware_version())
         except Exception as e:
-            logger.exception("Exception in set_firmware_version")
+            print("Exception in set_firmware_version")
 
     def set_maxcurrent(self, sjon):
         try:
@@ -407,29 +407,29 @@ class Settings():
                 self.application.process.set_max_current()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_maxcurrent())
         except Exception as e:
-            logger.exception("Exception in set_maxcurrent")
+            print("Exception in set_maxcurrent")
 
     def set_start_transaction(self, sjon):
         try:
             if (sjon["Command"] == "StartTransaction"):
-                logger.debug("Starting transaction")
+                print("Starting transaction")
                 self.application.ev.start_stop_authorize = True
         except Exception as e:
-            logger.exception("Exception in set_start_transaction")
+            print("Exception in set_start_transaction")
 
     def set_stop_transaction(self, sjon):
         try:
             if (sjon["Command"] == "StopTransaction"):
                 self.application.deviceState = DeviceState.STOPPED_BY_USER
         except Exception as e:
-            logger.exception("Exception in set_stop_transaction")
+            print("Exception in set_stop_transaction")
 
     def set_unlock(self, sjon):
         try:
             if (sjon["Command"] == "UnlockConnector"):
                 self.application.deviceState = DeviceState.STOPPED_BY_USER
         except Exception as e:
-            logger.exception("Exception in set_unlock")
+            print("Exception in set_unlock")
 
 # Definition of other classes used in Settings class
 class NetworkPriority():

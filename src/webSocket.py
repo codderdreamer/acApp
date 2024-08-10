@@ -18,7 +18,7 @@ class TestWebSocketModule():
         self.slave1 = None
         self.slave2 = None
         self.websocket = websocket_server.WebsocketServer('0.0.0.0', 9000)
-        self.logger.info("Web Socket Başlatılıyor... 0.0.0.0 9000")
+        print("Web Socket Başlatılıyor... 0.0.0.0 9000")
         self.websocket.set_fn_new_client(self.NewClientws)
         self.websocket.set_fn_client_left(self.ClientLeftws)
         self.websocket.set_fn_message_received(self.MessageReceivedws)
@@ -28,10 +28,10 @@ class TestWebSocketModule():
         self.client = client
         if client:
             try:
-                self.logger.info(f"New client connected and was given id {client['id']} {client['address']}")
+                print(f"New client connected and was given id {client['id']} {client['address']}")
                 sys.stdout.flush()
             except Exception as e:
-                self.logger.error(f"could not get New Client id: {e}")
+                print(f"could not get New Client id: {e}")
                 sys.stdout.flush()
 
     def ClientLeftws(self, client, server):
@@ -41,16 +41,16 @@ class TestWebSocketModule():
                 client['handler'].keep_alive = 0
                 client['handler'].valid_client = False
                 client['handler'].connection._closed = True
-                self.logger.info(f"Client disconnected client[id]:{client['id']} client['address']={client['address']}")
+                print(f"Client disconnected client[id]:{client['id']} client['address']={client['address']}")
         except Exception as e:
-            self.logger.error(f"c['handler'] client remove problem: {e}")
+            print(f"c['handler'] client remove problem: {e}")
 
     def MessageReceivedws(self, client, server, message):
         self.client = client
         if client['id']:
             try:
                 sjon = json.loads(message)
-                self.logger.info(f"Incoming: {sjon}")
+                print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
                 if Command == "Barkod":
@@ -84,7 +84,7 @@ class TestWebSocketModule():
                     self.application.databaseModule.set_max_current(6)
                     self.application.test_charge = True
             except (Exception, RuntimeError) as e:
-                self.logger.error(f"MessageReceivedws error: {e}")
+                print(f"MessageReceivedws error: {e}")
                 sys.stdout.flush()
                 if client['handler'].connection._closed == False:
                     for c in server.clients:
@@ -130,7 +130,7 @@ class TestWebSocketModule():
                     mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     mac_address = mac_result.stdout.strip()
         except Exception as e:
-            self.logger.error(f"wifimac_get Exception: {e}")
+            print(f"wifimac_get Exception: {e}")
         message = {
             "Command": "WifiMacResult",
             "Data": mac_address
@@ -148,7 +148,7 @@ class TestWebSocketModule():
                     mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     mac_address = mac_result.stdout.strip()
         except Exception as e:
-            self.logger.error(f"wifimac_get Exception: {e}")
+            print(f"wifimac_get Exception: {e}")
         message = {
             "Command": "EthMacResult",
             "Data": mac_address
@@ -168,7 +168,7 @@ class TestWebSocketModule():
             else:
                 imei = "Not"
         except Exception as e:
-            self.logger.error(f"imei4g_get Exception: {e}")
+            print(f"imei4g_get Exception: {e}")
         message = {
             "Command": "4gImeiResult",
             "Data": imei
@@ -183,26 +183,26 @@ class TestWebSocketModule():
             }
             self.websocket.send_message(client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_wifi_result Exception: {e}")
+            print(f"send_wifi_result Exception: {e}")
 
     def set_led_red(self, client):
         try:
             self.application.serialPort.set_command_pid_led_control(LedState.Fault)
         except Exception as e:
-            self.logger.error(f"set_led_red Exception: {e}")
+            print(f"set_led_red Exception: {e}")
 
     def set_led_blue(self, client):
         try:
             self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
         except Exception as e:
-            self.logger.error(f"set_led_blue Exception: {e}")
+            print(f"set_led_blue Exception: {e}")
 
     def set_led_green(self, client):
         try:
             self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
             self.application.test_led = False
         except Exception as e:
-            self.logger.error(f"set_led_green Exception: {e}")
+            print(f"set_led_green Exception: {e}")
 
     def save_master_card(self, client):
         while True:
@@ -217,7 +217,7 @@ class TestWebSocketModule():
                     self.application.ev.card_id = ""
                     return
             except Exception as e:
-                self.logger.error(f"save_master_card Exception: {e}")
+                print(f"save_master_card Exception: {e}")
             time.sleep(0.5)
 
     def save_slave_card_1(self, client):
@@ -233,7 +233,7 @@ class TestWebSocketModule():
                     self.application.ev.card_id = ""
                     return
             except Exception as e:
-                self.logger.error(f"save_slave_card_1 Exception: {e}")
+                print(f"save_slave_card_1 Exception: {e}")
             time.sleep(0.5)
 
     def save_slave_card_2(self, client):
@@ -250,7 +250,7 @@ class TestWebSocketModule():
                     self.application.ev.card_id = ""
                     return
             except Exception as e:
-                self.logger.error(f"save_slave_card_2 Exception: {e}")
+                print(f"save_slave_card_2 Exception: {e}")
             time.sleep(0.5)
 
     def send_bluetooth(self, client):
@@ -259,7 +259,7 @@ class TestWebSocketModule():
             stdout, stderr = process.communicate()
             output = stdout.decode('utf-8')
             name = output.split("\n")[0]
-            self.logger.info(f"bluetooth name: {name}")
+            print(f"bluetooth name: {name}")
             message = {
                 "Command": "Bluetooth",
                 "Data": {
@@ -269,7 +269,7 @@ class TestWebSocketModule():
             }
             self.websocket.send_message(client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_bluetooth Exception: {e}")
+            print(f"send_bluetooth Exception: {e}")
 
     def send_socket_connected(self):
         try:
@@ -280,7 +280,7 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_socket_connected Exception: {e}")
+            print(f"send_socket_connected Exception: {e}")
 
     def send_socket_type(self, socketType):
         try:
@@ -291,7 +291,7 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_socket_type Exception: {e}")
+            print(f"send_socket_type Exception: {e}")
 
     def send_locker_state_lock(self, locker_state):
         try:
@@ -302,7 +302,7 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_locker_state_lock Exception: {e}")
+            print(f"send_locker_state_lock Exception: {e}")
 
     def send_relay_control_on(self, relay):
         try:
@@ -313,7 +313,7 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_relay_control_on Exception: {e}")
+            print(f"send_relay_control_on Exception: {e}")
 
     def send_there_is_mid_meter(self, mid):
         try:
@@ -324,7 +324,7 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_there_is_mid_meter Exception: {e}")
+            print(f"send_there_is_mid_meter Exception: {e}")
 
     def send_mid_meter_state(self, state):
         try:
@@ -335,7 +335,7 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_mid_meter_state Exception: {e}")
+            print(f"send_mid_meter_state Exception: {e}")
 
     def send_error(self, error):
         try:
@@ -346,4 +346,4 @@ class TestWebSocketModule():
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
         except Exception as e:
-            self.logger.error(f"send_error Exception: {e}")
+            print(f"send_error Exception: {e}")

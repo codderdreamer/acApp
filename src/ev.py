@@ -147,121 +147,16 @@ class EV():
             time.sleep(1)
 
 
-    # def control_error_list(self):
-    #     time.sleep(5)
-    #     counter = 0
-    #     othererror = False
-    #     rcdTripError = False
-
-    #     rcd_init_error = False
-    #     locker_init_error = False
-    #     while True:
-    #         try:
-    #             # print("****************************************************self.charge",self.charge)
-
-    #             othererror = False
-    #             rcdTripError = False
-    #             rcd_init_error = False
-    #             locker_init_error = False
-
-    #             # logger.debug("Checking error list. Charge: %s, Control Pilot: %s, Charging Status: %s",
-    #             #             self.charge, self.control_pilot, self.application.chargingStatus)
-
-    #             if self.application.test_led:  # test uygulması çalışıyorken ledler sürekli değiştirilmemiş olsun diye
-    #                 pass
-    #             else:
-
-    #                 if self.charge:
-    #                     if len(self.application.serialPort.error_list) > 0:
-    #                         for value in self.application.serialPort.error_list:
-    #                             if value == PidErrorList.RcdTripError:
-    #                                 rcdTripError = True
-    #                             else:
-    #                                 othererror = True
-    #                     if rcdTripError:
-    #                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-    #                         self.application.deviceState = DeviceState.FAULT
-    #                         # logger.error("RCD Trip Error detected, setting device state to FAULT")
-    #                     elif othererror and counter != 3:
-    #                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
-    #                         counter += 1
-    #                         self.application.deviceState = DeviceState.SUSPENDED_EVSE
-    #                         # logger.warning("Other errors detected, waiting 30 seconds before retrying. Attempt: %s", counter)
-    #                         # time_start = time.time()
-    #                         # while True:
-    #                         #     if len(self.application.serialPort.error_list) > 0:
-    #                         #         time.sleep(1)
-    #                         #     else:
-    #                         #         break
-    #                         #     if time.time() - time_start > 30:
-    #                         #         break
-    #                     elif othererror and counter == 3:
-    #                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-    #                         self.application.deviceState = DeviceState.FAULT
-    #                         # logger.error("Max retries reached, setting device state to FAULT")
-    #                     elif othererror == False:
-    #                         if self.control_pilot == ControlPlot.stateC.value:
-    #                             print("C durmuna geçti 30 saniye bekliyor... Şarj etmeyi deneyecek")
-    #                             time.sleep(30)
-    #                             if self.control_pilot == ControlPlot.stateC.value:
-    #                                 self.application.deviceState = DeviceState.CHARGING
-    #                         elif self.control_pilot == ControlPlot.stateB.value:
-    #                             self.application.deviceState = DeviceState.CONNECTED
-    #                     else:
-    #                         counter = 0
-    #                 else:
-    #                     if len(self.application.serialPort.error_list) > 0:
-    #                         for value in self.application.serialPort.error_list:
-    #                             if value == PidErrorList.RcdInitializeError:
-    #                                 rcd_init_error = True
-    #                             elif value == PidErrorList.LockerInitializeError:
-    #                                 locker_init_error = True
-    #                             else:
-    #                                 othererror = True
-    #                         if othererror and counter == 3 and self.control_pilot != ControlPlot.stateA.value:
-    #                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon= True).start()
-    #                         elif othererror:
-    #                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
-    #                     # Cihazda hata yok ise;
-    #                     else:
-    #                         counter = 0
-
-    #                         if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
-    #                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-    #                             if self.application.availability == AvailabilityType.operative:
-    #                                 self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-    #                             else:
-    #                                 self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
-
-    #                         if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True and self.application.chargingStatus != ChargePointStatus.preparing:
-    #                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-    #                             if self.application.availability == AvailabilityType.operative:
-    #                                 self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-    #                             else:
-    #                                 self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
-
-    #                 if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
-    #                     if self.application.chargingStatus == ChargePointStatus.charging:
-    #                         pass
-    #                     else:
-    #                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
-    #                         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
-    #         except Exception as e:
-    #             print("******************************************** control_error_list Exception",e)
-
-    #         time.sleep(5)
-
-
     def send_message(self):
         self.send_message_thread_start = True
-        logger.debug("Message sending thread started")
+        print("Message sending thread started")
         while self.send_message_thread_start:
             try:
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
             except Exception as e:
-                logger.exception("send_message Exception: %s", e)
+                print("send_message Exception: %s", e)
             time.sleep(3)
-        logger.debug("Message sending thread stopped")
+        print("Message sending thread stopped")
 
     @property
     def proximity_pilot(self):
@@ -283,7 +178,7 @@ class EV():
             self.proximity_pilot_current = 32
         elif self.__proximity_pilot == ProximityPilot.CablePluggedIntoCharger63Amper.value:
             self.proximity_pilot_current = 63
-        logger.debug("Proximity pilot set to %s, current: %s", self.__proximity_pilot, self.proximity_pilot_current)
+        print("Proximity pilot set to %s, current: %s", self.__proximity_pilot, self.proximity_pilot_current)
 
     @property
     def control_pilot(self):
@@ -292,7 +187,7 @@ class EV():
     @control_pilot.setter
     def control_pilot(self, value):
         if self.__control_pilot != value:
-            logger.info("Control pilot state changing from %s to %s", self.__control_pilot, value)
+            print("Control pilot state changing from %s to %s", self.__control_pilot, value)
             self.__control_pilot = value
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
@@ -303,11 +198,11 @@ class EV():
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
-                logger.error("Fault state detected in control pilot: %s", self.__control_pilot)
+                print("Fault state detected in control pilot: %s", self.__control_pilot)
             else:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
-                logger.error("Unexpected control pilot state: %s", self.__control_pilot)
+                print("Unexpected control pilot state: %s", self.__control_pilot)
 
     @property
     def charge(self):
@@ -316,7 +211,7 @@ class EV():
     @charge.setter
     def charge(self, value):
         self.__charge = value
-        logger.debug("Charge state set to: %s", value)
+        print("Charge state set to: %s", value)
         if value:
             Thread(target=self.send_message,daemon=True).start()
         else:
@@ -332,7 +227,7 @@ class EV():
     def card_id(self, value):
         if (value != None) and (value != ""):
             if self.application.masterCard == value:
-                logger.info("Master card detected, resetting settings")
+                print("Master card detected, resetting settings")
                 os.system("rm -r /root/Settings.sqlite")
                 os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
                 os.system("systemctl restart acapp.service")
@@ -366,7 +261,7 @@ class EV():
                         elif self.charge == False:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
                             if self.__control_pilot != "B":
-                                logger.debug("Vehicle not connected")
+                                print("Vehicle not connected")
                                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
                         else:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
@@ -383,4 +278,4 @@ class EV():
     @id_tag.setter
     def id_tag(self, value):
         self.__id_tag = value
-        logger.debug("ID tag set to: %s", value)
+        print("ID tag set to: %s", value)

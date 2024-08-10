@@ -31,7 +31,7 @@ class BluetoothService():
         
     def run(self):
         try:
-            logger.info("Bluetooth run")
+            print("Bluetooth run")
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()
@@ -44,4 +44,4 @@ class BluetoothService():
             self.mainloop.run()
             self.application.bluetooth_error = True
         except Exception as e:
-            logger.exception("BluetoothService run Exception:", e)
+            print("BluetoothService run Exception:", e)

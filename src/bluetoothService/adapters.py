@@ -23,12 +23,12 @@ def find_adapter(bus, adapter_interface_name, adapter_name):
         remote_om = dbus.Interface(bus.get_object(BLUEZ_SERVICE_NAME, '/'), DBUS_OM_IFACE)
         objects = remote_om.GetManagedObjects()
         for o, props in objects.items():
-            logger.debug('Checking adapter %s, keys: %s', o, props.keys())
+            print('Checking adapter %s, keys: %s', o, props.keys())
             if adapter_interface_name in props.keys():
-                logger.debug('Found adapter %s', o)
+                print('Found adapter %s', o)
                 if '/' + adapter_name in o:
-                    logger.debug('Returning adapter %s', o)
+                    print('Returning adapter %s', o)
                     return o
         return None
     except Exception as e:
-        logger.exception("find_adapter Exception: %s", e)
+        print("find_adapter Exception: %s", e)

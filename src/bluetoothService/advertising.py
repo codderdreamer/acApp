@@ -51,13 +51,13 @@ class Advertisement(dbus.service.Object):
                 properties['IncludeTxPower'] = dbus.Boolean(self.include_tx_power)
             return {LE_ADVERTISEMENT_IFACE: properties}
         except Exception as e:
-            logger.exception("get_properties Exception:", e)
+            print("get_properties Exception:", e)
 
     def get_path(self):
         try:
             return dbus.ObjectPath(self.path)
         except Exception as e:
-            logger.exception("get_path Exception:", e)
+            print("get_path Exception:", e)
 
     def add_service_uuid(self, uuid):
         try:
@@ -65,7 +65,7 @@ class Advertisement(dbus.service.Object):
                 self.service_uuids = []
             self.service_uuids.append(uuid)
         except Exception as e:
-            logger.exception("add_service_uuid Exception:", e)
+            print("add_service_uuid Exception:", e)
 
     def add_solicit_uuid(self, uuid):
         try:
@@ -73,7 +73,7 @@ class Advertisement(dbus.service.Object):
                 self.solicit_uuids = []
             self.solicit_uuids.append(uuid)
         except Exception as e:
-            logger.exception("add_solicit_uuid Exception:", e)
+            print("add_solicit_uuid Exception:", e)
 
     def add_manufacturer_data(self, manuf_code, data):
         try:
@@ -81,7 +81,7 @@ class Advertisement(dbus.service.Object):
                 self.manufacturer_data = dbus.Dictionary({}, signature='qv')
             self.manufacturer_data[manuf_code] = dbus.Array(data, signature='y')
         except Exception as e:
-            logger.exception("add_manufacturer_data Exception:", e)
+            print("add_manufacturer_data Exception:", e)
 
     def add_service_data(self, uuid, data):
         try:
@@ -89,7 +89,7 @@ class Advertisement(dbus.service.Object):
                 self.service_data = dbus.Dictionary({}, signature='sv')
             self.service_data[uuid] = dbus.Array(data, signature='y')
         except Exception as e:
-            logger.exception("add_service_data Exception:", e)
+            print("add_service_data Exception:", e)
 
     @dbus.service.method(DBUS_PROP_IFACE,
                          in_signature='s',
@@ -101,7 +101,7 @@ class Advertisement(dbus.service.Object):
                 raise exceptions.InvalidArgsException()
             return self.get_properties()[LE_ADVERTISEMENT_IFACE]
         except Exception as e:
-            logger.exception("GetAll Exception:", e)
+            print("GetAll Exception:", e)
 
     @dbus.service.method(LE_ADVERTISEMENT_IFACE,
                          in_signature='',
@@ -120,15 +120,15 @@ class TestAdvertisement(Advertisement):
         self.include_tx_power = True
 
 def register_ad_cb():
-    logger.info('Advertisement registered')
+    print('Advertisement registered')
     pass
 
 def register_ad_error_cb(mainloop, error):
     try:
-        logger.error('Failed to register advertisement: ' + str(error))
+        print('Failed to register advertisement: ' + str(error))
         mainloop.quit()
     except Exception as e:
-        logger.exception("register_ad_error_cb Exception:", e)
+        print("register_ad_error_cb Exception:", e)
 
 
 def advertising_main(mainloop, bus, adapter_name):
@@ -152,4 +152,4 @@ def advertising_main(mainloop, bus, adapter_name):
                                      reply_handler=register_ad_cb,
                                      error_handler=functools.partial(register_ad_error_cb, mainloop))
     except Exception as e:
-        logger.exception("advertising_main Exception:", e)
+        print("advertising_main Exception:", e)

@@ -27,11 +27,11 @@ from src.logger import ac_app_logger as logger
 
 class Application():
     def __init__(self, loop):
-        logger.info("------------------------------------------------------------")
-        logger.info("------------------------------------------------------------")
-        logger.info("------------------------------------------------------------")
-        logger.info("------------------------------------------------------------")
-        logger.info("\n--- Application Run Started ---\n")
+        print("------------------------------------------------------------")
+        print("------------------------------------------------------------")
+        print("------------------------------------------------------------")
+        print("------------------------------------------------------------")
+        print("\n--- Application Run Started ---\n")
         os.system("service bluetooth restart")
         time.sleep(2)
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
@@ -77,19 +77,19 @@ class Application():
         self.process = Process(self)
         
         if self.settings.deviceSettings.externalMidMeter == True:
-            logger.info("----------------------------self.settings.deviceSettings.externalMidMeter %s %s",
+            print("----------------------------self.settings.deviceSettings.externalMidMeter %s %s",
                                self.settings.deviceSettings.externalMidMeter,
                                self.settings.deviceSettings.externalMidMeterSlaveAddress)
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
-            logger.info("----------------------------self.settings.deviceSettings.mid_meter %s %s",
+            print("----------------------------self.settings.deviceSettings.mid_meter %s %s",
                                self.settings.deviceSettings.mid_meter,
                                self.settings.deviceSettings.midMeterSlaveAddress)
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         else:
-            logger.info("----------------------------self.settings.deviceSettings.mid_meter %s %s",
+            print("----------------------------self.settings.deviceSettings.mid_meter %s %s",
                                self.settings.deviceSettings.mid_meter, type(self.settings.deviceSettings.mid_meter))
-            logger.info("----------------------------self.settings.deviceSettings.externalMidMeter %s %s",
+            print("----------------------------self.settings.deviceSettings.externalMidMeter %s %s",
                                self.settings.deviceSettings.externalMidMeter, type(self.settings.deviceSettings.externalMidMeter))
         
         Thread(target=self.read_charge_values_thred, daemon=True).start()
@@ -175,12 +175,12 @@ class Application():
                     if response.returncode == 0:
                         time_start = time.time()
                     else:
-                        logger.error("ocpp_control ping atılamadı...")
+                        print("ocpp_control ping atılamadı...")
                         if time_start == None or time.time() - time_start > 10:
                             self.ocppActive = False
             
             except Exception as e:
-                logger.exception("ocpp_control Exception:", e)
+                print("ocpp_control Exception:", e)
             time.sleep(3)
         
     def read_charge_values_thred(self):
@@ -188,7 +188,7 @@ class Application():
             try:
                 # MID meter veya MCU'den veri alınıyor
                 if (self.settings.deviceSettings.mid_meter or self.settings.deviceSettings.externalMidMeter) and self.modbusModule.connection:
-                    logger.debug("Veriler MID'den alınıyor...")
+                    print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1 if self.modbusModule.current_L1 is not None else 0
                     self.ev.current_L2 = self.modbusModule.current_L2 if self.modbusModule.current_L2 is not None else 0
                     self.ev.current_L3 = self.modbusModule.current_L3 if self.modbusModule.current_L3 is not None else 0
@@ -201,7 +201,7 @@ class Application():
                     self.ev.energy = round(energy - firstEnergy, 2)
                     self.ev.power = self.modbusModule.power if self.modbusModule.power is not None else 0
                 elif not self.settings.deviceSettings.mid_meter and not self.settings.deviceSettings.externalMidMeter:
-                    logger.debug("Veriler MCU'den alınıyor...")
+                    print("Veriler MCU'den alınıyor...")
                     self.ev.current_L1 = self.serialPort.current_L1 if self.serialPort.current_L1 is not None else 0
                     self.ev.current_L2 = self.serialPort.current_L2 if self.serialPort.current_L2 is not None else 0
                     self.ev.current_L3 = self.serialPort.current_L3 if self.serialPort.current_L3 is not None else 0
@@ -225,7 +225,7 @@ class Application():
                 time.sleep(1)
                 
             except Exception as e:
-                logger.exception("read_charge_values_thred Exception: %s", e)
+                print("read_charge_values_thred Exception: %s", e)
     async def ocppStart(self):
         try:
             self.ocppActive = False
@@ -241,16 +241,16 @@ class Application():
                     ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                     
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
-                logger.info("********************************************************ocpp_url:",ocpp_url)
+                print("********************************************************ocpp_url:",ocpp_url)
                 
                 async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
-                    logger.info("Ocpp'ye bağlanmaya çalışıyor...")
+                    print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                         await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId, self.settings.ocppSettings.chargePointId)
         except Exception as e:
-            logger.exception("ocppStart Exception:", e)
+            print("ocppStart Exception:", e)
             self.ocppActive = False
             if self.chargingStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
@@ -262,10 +262,10 @@ class Application():
     def ocpp_task(self):
         while True:
             if self.cardType == CardType.BillingCard:
-                logger.info("-----------------------------------ocpp start--------------------------------------")
+                print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(self.ocppStart())
                 self.ocppActive = False
-                logger.info("-----------------------------------ocpp stop--------------------------------------")
+                print("-----------------------------------ocpp stop--------------------------------------")
             time.sleep(3)
             
 if __name__ == "__main__":
@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
         app.ocpp_task()
     except Exception as e:
-        logger.exception("__main__ Exception:", e)
+        print("__main__ Exception:", e)
           
     while True:
         time.sleep(5)

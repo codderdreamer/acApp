@@ -88,7 +88,7 @@ class Application():
     @deviceState.setter
     def deviceState(self, value):
         if self.__deviceState != value:
-            
+            print(f"{Color.Cyan.value}Device State:",self.__deviceState)
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
                 if self.charge_stopped != True:

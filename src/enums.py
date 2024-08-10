@@ -150,6 +150,8 @@ class Color(Enum):
     Yellow = '\033[33m'
     Blue = '\033[34m'
     Reset = '\033[0m'
+    Macenta = '\033[35m'
+    Cyan = '\033[36m'
     
 def get_enum_member_by_value(enum_class, value):  # enum döndürür
     for member in enum_class:

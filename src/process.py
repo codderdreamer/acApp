@@ -15,19 +15,23 @@ class Process:
     def unlock(self):
         time_start = time.time()
         while True:
+            print("Kilit açılıyor...")
             self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
             time.sleep(0.5)
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
             time.sleep(0.3)
             self.application.serialPort.get_command_pid_locker_control()
             if self.application.ev.pid_locker_control == LockerState.Unlock.value:
+                print(Color.Yellow.value,"Kilit açıldı.")
                 break
             else:
                 time.sleep(1)
                 if time.time() - time_start > 20:
+                    print(Color.Red.value,"20 saniyede kilit açılamadı!")
                     break
 
     def unlock_connector(self):
+        print("Kilit kitleniyor...")
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
         time.sleep(0.7)
         self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
@@ -36,9 +40,11 @@ class Process:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
             if self.application.ev.pid_locker_control == LockerState.Unlock.value:
+                print(Color.Yellow.value,"Kilit açıldı.")
                 return True
             else:
                 if time.time() - time_start > 2:
+                    print(Color.Red.value,"2 saniyede kilit açılamadı!")
                     return False
 
     def set_max_current(self):
@@ -51,6 +57,7 @@ class Process:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
 
     def lock_control(self):
+        print("Kilit kitleniyor...")
         self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
         time.sleep(0.7)
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
@@ -64,6 +71,7 @@ class Process:
                 return True
             else:
                 if time.time() - time_start > 2:
+                    print(Color.Red.value,"2 saniyede kilit açılamadı!")
                     return False
 
     def _lock_connector_set_control_pilot(self):
@@ -169,10 +177,12 @@ class Process:
                     self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
+        print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
         self.application.ev.charge = False
         if self.application.cardType == CardType.StartStopCard:
             time_start = time.time()
             while True:
+                print("...")
                 if self.application.ev.start_stop_authorize:
                     self.id_tag = self.application.ev.card_id
                     self._lock_connector_set_control_pilot()
@@ -184,6 +194,7 @@ class Process:
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
                 time_start = time.time()
                 while True:
+                    print("...")
                     if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                             self.id_tag = self.application.ev.card_id
@@ -198,6 +209,7 @@ class Process:
                     time.sleep(1)  
 
     def waiting_state_c(self):
+        print(Color.Yellow.value,"Cihazın şarja geçmesi bekleniyor... Şarja geçmezse 5 dk sonra sonlanacak...")
         self.application.ev.charge = False
         self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.preparing)
         time.sleep(1)
@@ -207,6 +219,7 @@ class Process:
             if self.application.ev.control_pilot == ControlPlot.stateB.value:
                 if time.time() - time_start > 60*5:
                     self.application.deviceState = DeviceState.STOPPED_BY_EVSE
+                    print(Color.Red.value,"Cihaz 5 dk boyunca şarja geçmediği için sonlandı!")
                     break
             elif self.application.ev.control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING
@@ -226,6 +239,7 @@ class Process:
             time.sleep(10)
             
     def charge_while(self):
+        print(Color.Yellow.value,"Cihaz şarja başlıyor...")
         time_start = time.time()
         self.application.databaseModule.set_charge("True", str(self.id_tag), str(self.transaction_id))
         self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
@@ -241,6 +255,7 @@ class Process:
 
         while True:
             try:
+                print("Cihaz şarjda...")
                 self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
                 if self.application.deviceState != DeviceState.CHARGING:
                     break
@@ -265,12 +280,10 @@ class Process:
                     pass
             except Exception as e:
                 print("**************************************************** charge_while Exception", e)
-                
-
-
             time.sleep(1)
 
     def charging(self):
+        print(Color.Yellow.value,"Cihaz şarja başlayacak...")
         self.set_max_current()
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
@@ -280,6 +293,7 @@ class Process:
                     return
                 
         if self.application.control_A_B_C != True: # A'dan C'ye geçmiş ise
+            print("Cihaz A state'inden C statine geçmiş.")
             self.application.deviceState = DeviceState.CONNECTED
             return
         if self.application.ev.card_id != "" and self.application.ev.card_id != None:

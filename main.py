@@ -54,8 +54,8 @@ class Application():
         self.availability = AvailabilityType.operative
         self.bluetooth_error = None
         
-        self.chargingStatus = ChargePointStatus.available
-        self.error_code = None
+        self.__chargingStatus = ChargePointStatus.available
+        self.__error_code = None
         
         self.__deviceState = None
         self.ocppActive = False
@@ -87,6 +87,26 @@ class Application():
         Thread(target=self.read_charge_values_thred, daemon=True).start()
 
         self.deviceState = DeviceState.IDLE
+
+    @property
+    def chargingStatus(self):
+        return self.__chargingStatus
+
+    @chargingStatus.setter
+    def chargingStatus(self, value):
+        if self.__chargingStatus != value:
+            print(Color.Yellow.value, "Charge Point Status:", value)
+            self.__chargingStatus = value
+
+    @property
+    def error_code(self):
+        return self.__error_code
+
+    @error_code.setter
+    def error_code(self, value):
+        if self.__error_code != value:
+            print(Color.Cyan.value, "Error Code:", value)
+            self.__error_code = value
         
     @property
     def deviceState(self):

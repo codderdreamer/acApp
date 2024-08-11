@@ -151,6 +151,7 @@ class SerialPort():
         '''
         Control Pilot PWM sinyalini set edebilmek(kontrol etmek) için aşağıdaki paket gönderilir
         '''
+        print(Color.Yellow.value,f"Pid CP PWM : {max_current} ")
         max_current = float(max_current)
         digit_100 = int(max_current // 100) % 10
         digit_10 = int(max_current // 10) % 10
@@ -164,7 +165,7 @@ class SerialPort():
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
-        print(Color.Yellow.value,f"Pid CP PWM : {max_current} ")
+        
 
     def get_command_pid_cp_pwm(self):
         self.parameter_data = "001"

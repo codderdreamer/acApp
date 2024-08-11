@@ -108,7 +108,7 @@ class Application():
     @chargingStatus.setter
     def chargingStatus(self, value):
         if self.__chargingStatus != value:
-            print(Color.Yellow.value, "Charge Point Status:", value)
+            print(Color.Macenta.value, "Charge Point Status:", value)
             self.__chargingStatus = value
 
     @property
@@ -118,7 +118,7 @@ class Application():
     @error_code.setter
     def error_code(self, value):
         if self.__error_code != value:
-            print(Color.Cyan.value, "Error Code:", value)
+            print(Color.Macenta.value, "Error Code:", value)
             self.__error_code = value
         
     @property

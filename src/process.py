@@ -139,10 +139,6 @@ class Process:
                 else:
                     self.application.deviceState = DeviceState.WAITING_AUTH
             return
-
-        if self.application.control_C_B:
-            
-        
         else:
             self.application.ev.charge = False
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()

@@ -96,6 +96,7 @@ class Application():
                 x = input()
                 if x == "1":
                     self.serialPort.error_list = [PidErrorList.UnderVoltageFailure]
+                    self.serialPort.error = True
             except Exception as e:
                 print("simu_test Exception:",e)
             time.sleep(1)

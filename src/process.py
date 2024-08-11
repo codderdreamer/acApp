@@ -67,6 +67,7 @@ class Process:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
             if self.application.ev.pid_locker_control == LockerState.Lock.value:
+                print(Color.Yellow.value,"Kilit kitlendi.")
                 self.set_max_current()
                 self.application.deviceState = DeviceState.WAITING_STATE_C
                 return True

@@ -15,7 +15,7 @@ class Process:
     def unlock(self):
         time_start = time.time()
         while True:
-            print("Kilit açılıyor...")
+            print("Kilit açılıyor...",self.application.ev.pid_locker_control)
             self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
             time.sleep(0.5)
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)

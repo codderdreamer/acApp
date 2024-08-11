@@ -106,6 +106,7 @@ class Process:
 
         if self.application.control_C_B:
             self.application.deviceState = DeviceState.SUSPENDED_EV
+            return
 
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()

@@ -258,7 +258,6 @@ class Process:
         while True:
             try:
                 print("Cihaz şarjda...")
-                self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
                 if self.application.deviceState != DeviceState.CHARGING:
                     break
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
@@ -280,6 +279,7 @@ class Process:
                     self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                 elif self.application.modbusModule.connection == True:
                     pass
+                self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
             except Exception as e:
                 print("**************************************************** charge_while Exception", e)
             time.sleep(1)

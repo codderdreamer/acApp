@@ -209,7 +209,7 @@ class SerialPort():
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-        print(Color.Yellow.value,led_state)
+        self.application.ev.led_state = led_state
 
     def get_command_pid_led_control(self):
         self.parameter_data = "001"

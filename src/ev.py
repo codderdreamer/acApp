@@ -45,8 +45,17 @@ class EV():
         self.send_message_thread_start = False
 
         self.start_stop_authorize = False
-
+        self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
+
+    @property
+    def led_state(self):
+        return self.__led_state
+
+    @led_state.setter
+    def led_state(self, value):
+        self.__led_state = value 
+        print(Color.Yellow.value,value)
 
 
     def control_error_list(self):

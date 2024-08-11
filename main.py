@@ -88,6 +88,18 @@ class Application():
 
         self.deviceState = DeviceState.IDLE
 
+        Thread(target=self.simu_test,daemon=True).start()
+
+    def simu_test(self):
+        while True:
+            try:
+                x = input()
+                if x == "1":
+                    self.serialPort.error_list = [PidErrorList.UnderVoltageFailure]
+            except Exception as e:
+                print("simu_test Exception:",e)
+            time.sleep(1)
+
     @property
     def chargingStatus(self):
         return self.__chargingStatus

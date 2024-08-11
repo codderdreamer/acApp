@@ -106,8 +106,6 @@ class Process:
 
         if self.application.control_C_B:
             self.application.deviceState = DeviceState.SUSPENDED_EV
-        else:
-            self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.preparing)
 
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -117,49 +115,29 @@ class Process:
                 self.application.deviceState = DeviceState.FAULT
                 return
 
-        if self.application.ev.control_pilot == ControlPlot.stateC.value:
-            self.application.ev.charge = False
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.preparing)
+        self.application.ev.charge = False
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
 
-            if self.application.cardType == CardType.LocalPnC:
+        if self.application.cardType == CardType.LocalPnC:
+            self._lock_connector_set_control_pilot()
+            self.application.deviceState = DeviceState.WAITING_STATE_C
+
+        elif self.application.cardType == CardType.BillingCard:
+            if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                 self._lock_connector_set_control_pilot()
                 self.application.deviceState = DeviceState.WAITING_STATE_C
+            else:
+                self.application.deviceState = DeviceState.WAITING_AUTH
 
-            elif self.application.cardType == CardType.BillingCard:
-                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-                    self._lock_connector_set_control_pilot()
-                    self.application.deviceState = DeviceState.WAITING_STATE_C
-                else:
-                    self.application.deviceState = DeviceState.WAITING_AUTH
-
-            elif self.application.cardType == CardType.StartStopCard:
-                if self.application.ev.start_stop_authorize:
-                    self._lock_connector_set_control_pilot()
-                    self.application.deviceState = DeviceState.WAITING_STATE_C
-                else:
-                    self.application.deviceState = DeviceState.WAITING_AUTH
-            return
-        else:
-            self.application.ev.charge = False
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Connecting,), daemon= True).start()
+        elif self.application.cardType == CardType.StartStopCard:
+            if self.application.ev.start_stop_authorize:
+                self._lock_connector_set_control_pilot()
+                self.application.deviceState = DeviceState.WAITING_STATE_C
+            else:
+                self.application.deviceState = DeviceState.WAITING_AUTH
+        return
         
-            if self.application.cardType == CardType.LocalPnC:
-                self._lock_connector_set_control_pilot()
-                self.application.deviceState = DeviceState.WAITING_STATE_C
-            
-            elif self.application.cardType == CardType.BillingCard:
-                if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
-                    self._lock_connector_set_control_pilot()
-                    self.application.deviceState = DeviceState.WAITING_STATE_C
-                else:
-                    self.application.deviceState = DeviceState.WAITING_AUTH
-            
-            elif self.application.cardType == CardType.StartStopCard:
-                if self.application.ev.start_stop_authorize:
-                    self._lock_connector_set_control_pilot()
-                    self.application.deviceState = DeviceState.WAITING_STATE_C
-                else:
-                    self.application.deviceState = DeviceState.WAITING_AUTH
             
     def waiting_auth(self):
         print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")

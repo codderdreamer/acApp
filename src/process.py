@@ -31,7 +31,7 @@ class Process:
                     break
 
     def unlock_connector(self):
-        print("Kilit kitleniyor...")
+        print("Kilit açılıyor...")
         self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
         time.sleep(0.7)
         self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)

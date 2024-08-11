@@ -54,6 +54,7 @@ class DeviceState(Enum):
     STOPPED_BY_USER = "STOPPED_BY_USER"
     FAULT = "FAULT"
     SUSPENDED_EVSE = "SUSPENDED_EVSE"
+    SUSPENDED_EV = "SUSPENDED_EV"
     
 class SocketType(Enum):
     Type2 = "Type2"

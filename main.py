@@ -173,6 +173,11 @@ class Application():
                 
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
                 Thread(target=self.process.suspended_evse,daemon=True).start()
+
+            elif self.__deviceState == DeviceState.SUSPENDED_EV:
+                Thread(target=self.process.suspended_ev,daemon=True).start()
+
+
                 
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus, info:str = None):
         if error_code != self.error_code or status != self.chargingStatus:

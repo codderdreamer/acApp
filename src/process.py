@@ -105,7 +105,7 @@ class Process:
             return
 
         if self.application.control_C_B:
-            self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_ev)
+            self.application.deviceState = DeviceState.SUSPENDED_EV
         else:
             self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.preparing)
 
@@ -141,20 +141,7 @@ class Process:
             return
 
         if self.application.control_C_B:
-            self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-            time_start = time.time()
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon=True).start()
-            while True:
-                if self.application.chargingStatus == ChargePointStatus.faulted:
-                    self.application.deviceState = DeviceState.FAULT
-                    break
-                if self.application.ev.control_pilot == ControlPlot.stateB.value:
-                    if time.time() - time_start > 60 * 5:
-                        self.application.deviceState = DeviceState.STOPPED_BY_EVSE
-                        break
-                else:
-                    break
-                time.sleep(0.3)
+            
         
         else:
             self.application.ev.charge = False
@@ -406,6 +393,25 @@ class Process:
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
             self.unlock()
+
+        
+    def suspended_ev(self):
+        print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
+        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        time_start = time.time()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon=True).start()
+        while True:
+            if self.application.chargingStatus == ChargePointStatus.faulted:
+                self.application.deviceState = DeviceState.FAULT
+                break
+            if self.application.ev.control_pilot == ControlPlot.stateB.value:
+                if time.time() - time_start > 60 * 5:
+                    self.application.deviceState = DeviceState.STOPPED_BY_EVSE
+                    break
+            else:
+                break
+            time.sleep(0.3)
+
              
     def stopped_by_evse(self):
         self.application.databaseModule.set_charge("False", "", "")

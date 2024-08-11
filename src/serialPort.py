@@ -180,6 +180,7 @@ class SerialPort():
         Röleyi kontrol etmek için (‘1’ veya ‘0’) paket gönderilir.
         A durumunda gönderilmez. B yada C durumunda olmalı
         '''
+        print(Color.Yellow.value,"Röle:",relay)
         self.parameter_data = "002"
         data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
         checksum = self.calculate_checksum(data)

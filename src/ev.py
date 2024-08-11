@@ -54,8 +54,9 @@ class EV():
 
     @led_state.setter
     def led_state(self, value):
-        self.__led_state = value 
-        print(Color.Yellow.value,value)
+        if self.__led_state != value:
+            self.__led_state = value 
+            print(Color.Yellow.value,value)
 
 
     def control_error_list(self):

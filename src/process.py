@@ -372,6 +372,7 @@ class Process:
         
     def suspended_ev(self):
         print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
+        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_ev)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         time_start = time.time()
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon=True).start()

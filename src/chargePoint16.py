@@ -36,9 +36,7 @@ class ChargePoint16(cp):
     def __init__(self, application, id, connection, loop, response_timeout=5):
         super().__init__(id, connection, response_timeout)
         self.application = application
-        
         self.loop = loop
-        
         self.authorize = None
         self.logger = logger
         self.start_transaction_result = None
@@ -47,14 +45,7 @@ class ChargePoint16(cp):
         time.sleep(7)
         os.system("reboot")
         
-        # Thread(target=self.show,daemon=True).start()
-        
-    def show(self):
-        while True:
-            # print("????????????????????? self.application.request_list", len(self.application.request_list))
-            time.sleep(1)
-            
-            
+
     async def send_data(self,request):
         try:
             print("************************************************** SEND DATA ******************************************* ")

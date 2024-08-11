@@ -14,7 +14,7 @@ class EV():
 
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6
-        self.proximity_pilot_current = None
+        self.__proximity_pilot_current = None
 
         self.pid_cp_pwm = None                  # float
         self.pid_relay_control = None
@@ -47,17 +47,6 @@ class EV():
         self.start_stop_authorize = False
         self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
-
-    @property
-    def led_state(self):
-        return self.__led_state
-
-    @led_state.setter
-    def led_state(self, value):
-        if self.__led_state != value:
-            self.__led_state = value 
-            print(Color.Yellow.value,value)
-
 
     def control_error_list(self):
         time.sleep(5)
@@ -143,7 +132,6 @@ class EV():
                 print("******************************************** control_error_list Exception",e)
             time.sleep(1)
 
-
     def send_message(self):
         self.send_message_thread_start = True
         print("Message sending thread started")
@@ -154,6 +142,26 @@ class EV():
                 print("send_message Exception:", e)
             time.sleep(3)
         print("Message sending thread stopped")
+
+    @property
+    def led_state(self):
+        return self.__led_state
+
+    @led_state.setter
+    def led_state(self, value):
+        if self.__led_state != value:
+            self.__led_state = value 
+            print(Color.Yellow.value,value)
+
+    @property
+    def proximity_pilot_current(self):
+        return self.__proximity_pilot_current
+
+    @proximity_pilot_current.setter
+    def proximity_pilot_current(self, value):
+        if self.__proximity_pilot_current != value:
+            self.__proximity_pilot_current = value
+            print(Color.Yellow.value,"Proximity Pilot Current:",value)
 
     @property
     def proximity_pilot(self):
@@ -184,6 +192,7 @@ class EV():
     def control_pilot(self, value):
         if self.__control_pilot != value:
             self.__control_pilot = value
+            print(Color.Yellow.value,"Control Pilot",value)
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
             elif self.__control_pilot == ControlPlot.stateB.value:
@@ -203,6 +212,8 @@ class EV():
 
     @charge.setter
     def charge(self, value):
+        if self.__charge != value:
+            print(Color.Yellow.value,"Charge:",value)
         self.__charge = value
         if value:
             Thread(target=self.send_message,daemon=True).start()
@@ -217,6 +228,9 @@ class EV():
 
     @card_id.setter
     def card_id(self, value):
+        if self.__card_id != value:
+            print(Color.Yellow.value,"Card Id:",value)
+
         if (value != None) and (value != ""):
             if self.application.masterCard == value:
                 print("Master card detected, resetting settings")

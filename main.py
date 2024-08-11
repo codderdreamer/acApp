@@ -141,12 +141,12 @@ class Application():
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
                 Thread(target=self.process.suspended_evse,daemon=True).start()
                 
-    def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus):
+    def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus, info:str = None):
         if error_code != self.error_code or status != self.chargingStatus:
             self.error_code = error_code
             self.chargingStatus = status
             if self.ocppActive:
-                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargingStatus),self.loop)
+                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargingStatus,info=info),self.loop)
     
     def ocpp_control(self):
         while True:

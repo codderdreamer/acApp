@@ -56,10 +56,10 @@ class EV():
             try:
                 if self.application.serialPort.error:
                     if self.charge:
+                        print("Şarj var hata var.........")
                         if time_start == None:
                             counter += 1
                             time_start = time.time()
-                            
                             for value in self.application.serialPort.error_list:
                                 if value == PidErrorList.RcdTripError:
                                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()

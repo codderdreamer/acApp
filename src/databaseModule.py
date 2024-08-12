@@ -12,6 +12,7 @@ from src.logger import ac_app_logger as logger
 class DatabaseModule():
     def __init__(self, application) -> None:
         self.application = application
+        self.full_configuration = []
         self.get_model()
         self.get_master_card()
         self.get_socket_type()
@@ -29,7 +30,6 @@ class DatabaseModule():
         self.get_max_current()
         self.get_mid_settings()
         self.get_configuration()
-        print("..........................",self.application.settings.configuration.AllowOfflineTxForUnknownId)
         self.user = self.get_user_login()["UserName"]
         
         
@@ -941,7 +941,8 @@ class DatabaseModule():
 
     def get_configuration(self):
         try:
-            full_configuration = []
+            configrations = []
+            self.full_configuration = []
             configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
             cursor = configuration_db.cursor()
             query = "SELECT * FROM configs"
@@ -953,8 +954,23 @@ class DatabaseModule():
                 key = column[0]
                 readonly = column[1]
                 value = column[2]
-                full_configuration.append({"key":key,"readonly":readonly,"value":value})
+                supported = column[3]
+                configrations.append({"key":key,"readonly":readonly,"value":value,"supported":supported})
+                self.full_configuration.append({"key":key,"readonly":readonly,"value":value})
                 setattr(self.application.settings.configuration, key, value)
-            return full_configuration
+            return configrations
         except Exception as e:
             print("get_configuration Exception:", e)
+
+    def set_configration(self,key,value):
+        try:
+            configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
+            cursor = configuration_db.cursor()
+            query = "UPDATE configs SET value = ? WHERE key = ?"
+            value = (str(value),key)
+            cursor.execute(query,value)
+            configuration_db.commit()
+            configuration_db.close()
+            self.get_configuration()
+        except Exception as e:
+            print("set_configration Exception:", e)

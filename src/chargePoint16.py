@@ -642,6 +642,8 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
+            self.application.databaseModule.get_configuration()
+
             full_configuration = [
                 {"key": "AllowOfflineTxForUnknownId", "readonly": True, "value": "false"},
                 {"key": "AuthorizationCacheEnabled", "readonly": True, "value": "true"},

@@ -937,3 +937,15 @@ class DatabaseModule():
             self.application.settings.settings4G.enableModification = str(is_there_4G)
         except Exception as e:
             print("set_enable_4G Exception:", e)
+
+    def get_configuration(self):
+        try:
+            configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
+            cursor = configuration_db.cursor()
+            query = "SELECT * FROM configs"
+            cursor.execute(query)
+            data = cursor.fetchall()
+            configuration_db.close()
+            print(Color.Cyan.value,"get_configuration",data)
+        except Exception as e:
+            print("get_configuration Exception:", e)

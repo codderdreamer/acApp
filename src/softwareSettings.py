@@ -152,6 +152,7 @@ class SoftwareSettings():
 
     def set_eth(self):
         try:
+            print("Set eth")
             ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
             dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
             ip = self.application.settings.ethernetSettings.ip

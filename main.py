@@ -290,7 +290,7 @@ class Application():
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
                 print(Color.Green.value,ocpp_url)
                 
-                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
+                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=1) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)
@@ -305,11 +305,9 @@ class Application():
     def ocpp_task(self):
         while True:
             if self.cardType == CardType.BillingCard:
-                print("-----------------------------------ocpp start--------------------------------------")
                 res = loop.run_until_complete(self.ocppStart())
                 self.ocppActive = False
-                print("-----------------------------------ocpp stop--------------------------------------")
-            time.sleep(3)
+            time.sleep(10)
             
 if __name__ == "__main__":
     try:

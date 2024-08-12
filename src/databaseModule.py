@@ -844,6 +844,7 @@ class DatabaseModule():
             self.settings_database.close()
         except Exception as e:
             print("set_local_list Exception:", e)
+            
     def get_local_list(self):
         id_tag_list = []
         try:

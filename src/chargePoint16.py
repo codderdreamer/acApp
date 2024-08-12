@@ -568,6 +568,7 @@ class ChargePoint16(cp):
             response = call_result.ClearCachePayload(
                 status= ClearCacheStatus.accepted
             )
+            self.application.databaseModule.set_local_list([])
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

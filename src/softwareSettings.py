@@ -35,6 +35,27 @@ class SoftwareSettings():
             print(Color.Yellow.value, "Success Interfaces:", value)
             self.__success_interfaces = value
 
+    def check_ip_exists(self):
+        try:
+            command = ['ip', 'addr', 'show', "eth1"]
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            if "101.101.101.101" in stdout.decode():
+                return True
+            else:
+                return False
+        except Exception as e:
+            print("check_ip_exists Exception:",e)
+
+    def add_ip(self):
+        try:
+            if not self.check_ip_exists():
+                process = subprocess.Popen(['ip', 'addr', 'add', '101.101.101.101/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                stdout, stderr = process.communicate()
+                result = stdout.decode()
+        except Exception as e:
+            print("check_ip_exists Exception:",e)
+
     def check_internet_connection(self):
         interfaces = ["eth1", "wlan0", "ppp0"]
         while True:
@@ -174,13 +195,6 @@ class SoftwareSettings():
                     set_eth = 'nmcli con add con-name "wire" ifname eth1 type ethernet > /dev/null 2>&1'
                     os.system(set_eth)
                     os.system('nmcli con up "wire" ifname eth1 > /dev/null 2>&1')
-                time.sleep(10)
-                process = subprocess.Popen(['ip', 'addr', 'add', '101.101.101.101/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
-                result = stdout.decode()
-                print("ip add ",stdout,stderr)
-            # else:
-            #     self.delete_connection_type("ethernet")
         except Exception as e:
             print("set_eth Exception:",e)
 
@@ -422,6 +436,7 @@ class SoftwareSettings():
                 self.get_active_ips()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
+                self.add_ip()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
                 print("control_device_status Exception:",e)

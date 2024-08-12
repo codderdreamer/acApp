@@ -22,13 +22,9 @@ class SoftwareSettings():
         Thread(target=self.set_wifi, daemon=True).start()
         # Thread(target=self.set_network_priority, daemon=True).start()
         # Thread(target=self.control_device_status, daemon=True).start()
-        print("1")
         self.set_timezoon()
-        print("2")
         self.set_bluetooth_settings()
-        print("3")
         Thread(target=self.check_internet_connection, daemon=True).start()
-        print("4")
 
     @property
     def success_interfaces(self):
@@ -316,7 +312,7 @@ class SoftwareSettings():
                         result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     result = subprocess.run("nmcli connection up wifi_connection", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     if wifidhcpcEnable == "False":
-                        setDns = 'nmcli con modify "wifi_connection" ipv4.dns "{0},{1}" > /dev/null 2>&1'.format(DNS1, DNS2)
+                        setDns = 'nmcli con modify "wifi_connection" ipv4.dns "{0},{1}" > /dev/null 2>&1'.format("8.8.8.8", "8.8.4.4")
                         os.system(setDns)
                         os.system('nmcli con up "wifi_connection" ifname wlan0 > /dev/null 2>&1')
         

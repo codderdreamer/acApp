@@ -72,9 +72,7 @@ class Application():
         self.bluetoothService = BluetoothService(self)
         self.id_tag_list = self.databaseModule.get_local_list()
         self.softwareSettings = SoftwareSettings(self,logger)
-        print("SoftwareSettings")
-        self.flaskModule = FlaskModuleThread(self)
-        print("FlaskModuleThread")
+        self.flaskModule = FlaskModuleThread(self).start()
         self.webSocketServer = WebSocketServer(self,logger)
         self.ev = EV(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16

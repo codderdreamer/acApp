@@ -54,7 +54,7 @@ class Application():
         self.availability = AvailabilityType.operative
         self.bluetooth_error = None
         
-        self.__chargingStatus = ChargePointStatus.available
+        self.__chargingStatus = None
         self.__error_code = None
         
         self.__deviceState = None
@@ -89,6 +89,8 @@ class Application():
         self.deviceState = DeviceState.IDLE
 
         Thread(target=self.simu_test,daemon=True).start()
+
+        self.chargingStatus = ChargePointStatus.available
 
     def simu_test(self):
         while True:

@@ -30,7 +30,6 @@ class DatabaseModule():
         self.get_max_current()
         self.get_mid_settings()
         self.get_configuration()
-        print("..........................",self.application.settings.configuration.AllowOfflineTxForUnknownId)
         self.user = self.get_user_login()["UserName"]
         
         

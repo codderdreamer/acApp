@@ -177,6 +177,7 @@ class SoftwareSettings():
                 process = subprocess.Popen(['ip', 'addr', 'add', '101.101.101.101/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = process.communicate()
                 result = stdout.decode()
+                print("ip add ",stdout,stderr)
             else:
                 self.delete_connection_type("ethernet")
         except Exception as e:

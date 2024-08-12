@@ -179,8 +179,8 @@ class SoftwareSettings():
                 stdout, stderr = process.communicate()
                 result = stdout.decode()
                 print("ip add ",stdout,stderr)
-            else:
-                self.delete_connection_type("ethernet")
+            # else:
+            #     self.delete_connection_type("ethernet")
         except Exception as e:
             print("set_eth Exception:",e)
 

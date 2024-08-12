@@ -290,7 +290,7 @@ class Application():
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
                 print(Color.Green.value,ocpp_url)
                 
-                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=1) as ws:
+                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=5) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)

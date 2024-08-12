@@ -99,12 +99,12 @@ class SoftwareSettings():
             elif self.application.settings.deviceStatus.networkCard == "4G":
                 self.application.settings.websocketIp = self.application.settings.networkip.ppp0
 
-            if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
-                Thread(target=self.set_eth, daemon=True).start()
-            elif self.application.settings.networkPriority.first == "WLAN" and self.application.settings.deviceStatus.networkCard != "Wifi":
-                Thread(target=self.set_wifi, daemon=True).start()
-            elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
-                Thread(target=self.set_4G, daemon=True).start()
+            # if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
+            #     Thread(target=self.set_eth, daemon=True).start()
+            # elif self.application.settings.networkPriority.first == "WLAN" and self.application.settings.deviceStatus.networkCard != "Wifi":
+            #     Thread(target=self.set_wifi, daemon=True).start()
+            # elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
+            #     Thread(target=self.set_4G, daemon=True).start()
         except Exception as e:
             print("control_websocket_ip Exception:",e)
 
@@ -371,10 +371,10 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
             except Exception as e:
                 self.application.settings.deviceStatus.linkStatus = "Offline"
-            if self.application.settings.deviceStatus.linkStatus == "Offline":
-                Thread(target=self.set_eth, daemon=True).start()
-                Thread(target=self.set_4G, daemon=True).start()
-                Thread(target=self.set_wifi, daemon=True).start()
+            # if self.application.settings.deviceStatus.linkStatus == "Offline":
+            #     Thread(target=self.set_eth, daemon=True).start()
+            #     Thread(target=self.set_4G, daemon=True).start()
+            #     Thread(target=self.set_wifi, daemon=True).start()
                 # Thread(target=self.set_network_priority, daemon=True).start()
                 time.sleep(15)
         except Exception as e:
@@ -449,10 +449,10 @@ class SoftwareSettings():
             print("set_timezoon Exception:",e)
 
     def control_device_status(self):
+        time.sleep(10)
         while True:
             try:
-                time.sleep(10)
-                self.ping_google()
+                # self.ping_google()
                 self.find_network()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()

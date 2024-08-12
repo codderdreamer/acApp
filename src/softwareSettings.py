@@ -88,12 +88,12 @@ class SoftwareSettings():
         try:
             self.get_active_ips()
 
-            if self.application.settings.deviceStatus.networkCard == "Ethernet":
-                self.application.settings.websocketIp = self.application.settings.networkip.eth1
-            elif self.application.settings.deviceStatus.networkCard == "Wifi":
-                self.application.settings.websocketIp = self.application.settings.networkip.wlan0
-            elif self.application.settings.deviceStatus.networkCard == "4G":
-                self.application.settings.websocketIp = self.application.settings.networkip.ppp0
+            # if self.application.settings.deviceStatus.networkCard == "Ethernet":
+            #     self.application.settings.websocketIp = self.application.settings.networkip.eth1
+            # elif self.application.settings.deviceStatus.networkCard == "Wifi":
+            #     self.application.settings.websocketIp = self.application.settings.networkip.wlan0
+            # elif self.application.settings.deviceStatus.networkCard == "4G":
+            #     self.application.settings.websocketIp = self.application.settings.networkip.ppp0
 
             # if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
             #     Thread(target=self.set_eth, daemon=True).start()

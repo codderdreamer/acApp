@@ -28,7 +28,8 @@ class DatabaseModule():
         self.get_availability()
         self.get_max_current()
         self.get_mid_settings()
-
+        self.get_configuration()
+        print("..........................",self.application.settings.configuration.AllowOfflineTxForUnknownId)
         self.user = self.get_user_login()["UserName"]
         
         
@@ -940,6 +941,7 @@ class DatabaseModule():
 
     def get_configuration(self):
         try:
+            full_configuration = []
             configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
             cursor = configuration_db.cursor()
             query = "SELECT * FROM configs"
@@ -947,5 +949,12 @@ class DatabaseModule():
             data = cursor.fetchall()
             configuration_db.close()
             print(Color.Cyan.value,"get_configuration",data)
+            for column in data:
+                key = column[0]
+                readonly = column[1]
+                value = column[2]
+                full_configuration.append({"key":key,"readonly":readonly,"value":value})
+                setattr(self.application.settings, key, value)
+            return full_configuration
         except Exception as e:
             print("get_configuration Exception:", e)

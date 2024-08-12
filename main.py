@@ -73,9 +73,6 @@ class Application():
         
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
-        
-        self.databaseModule.get_configuration()
-
         self.bluetoothService = BluetoothService(self)
         self.id_tag_list = self.databaseModule.get_local_list()
         self.softwareSettings = SoftwareSettings(self,logger)

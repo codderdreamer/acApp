@@ -24,6 +24,7 @@ class Settings():
         self.deviceSettings = DeviceSettings()
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
+        self.configuration = Configuration()
         
         self.change_ocpp = False
         self.__websocketIp = None
@@ -527,3 +528,40 @@ class DeviceSettings():
         self.externalMidMeterSlaveAddress = None
         self.username = None
         self.password = None
+
+class Configuration():
+    def __init__(self) -> None:
+        self.AllowOfflineTxForUnknownId = None
+        self.AuthorizationCacheEnabled = None
+        self.AuthorizeRemoteTxRequests = None
+        self.BlinkRepeat = None
+        self.ClockAlignedDataInterval = None
+        self.ConnectionTimeOut = None
+        self.GetConfigurationMaxKeys = None
+        self.HeartbeatInterval = None
+        self.LightIntensity = None
+        self.LocalAuthorizeOffline = None
+        self.LocalPreAuthorize = None
+        self.MaxEnergyOnInvalidId = None
+        self.MeterValuesAlignedData = None
+        self.MeterValuesAlignedDataMaxLength = None
+        self.MeterValuesSampledData = None
+        self.MeterValuesSampledDataMaxLength = None
+        self.MeterValueSampleInterval = None
+        self.MinimumStatusDuration = None
+        self.NumberOfConnectors = None
+        self.ResetRetries = None
+        self.ConnectorPhaseRotation = None
+        self.ConnectorPhaseRotationMaxLength = None
+        self.StopTransactionOnEVSideDisconnect = None
+        self.StopTransactionOnInvalidId = None
+        self.StopTxnAlignedData = None
+        self.StopTxnAlignedDataMaxLength = None
+        self.StopTxnSampledData = None
+        self.StopTxnSampledDataMaxLength = None
+        self.SupportedFeatureProfiles = None
+        self.SupportedFeatureProfilesMaxLength = None
+        self.TransactionMessageAttempts = None
+        self.TransactionMessageRetryInterval = None
+        self.UnlockConnectorOnEVSideDisconnect = None
+        self.WebSocketPingInterval = None

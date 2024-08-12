@@ -269,7 +269,7 @@ class Application():
                     ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                     
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
-                print("********************************************************ocpp_url:",ocpp_url)
+                print(Color.Green.value,ocpp_url)
                 
                 async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=10) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")

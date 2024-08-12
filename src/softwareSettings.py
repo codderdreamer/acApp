@@ -174,10 +174,9 @@ class SoftwareSettings():
                     os.system(set_eth)
                     os.system('nmcli con up "wire" ifname eth1 > /dev/null 2>&1')
                 time.sleep(4)
-                process = subprocess.Popen(['ip', 'addr', '101.101.101.101/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen(['ip', 'addr', 'add', '101.101.101.101/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = process.communicate()
                 result = stdout.decode()
-                # os.system("ip addr add 101.101.101.101/24 dev eth1")
             else:
                 self.delete_connection_type("ethernet")
         except Exception as e:

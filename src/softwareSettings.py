@@ -22,9 +22,13 @@ class SoftwareSettings():
         Thread(target=self.set_wifi, daemon=True).start()
         # Thread(target=self.set_network_priority, daemon=True).start()
         # Thread(target=self.control_device_status, daemon=True).start()
+        print("1")
         self.set_timezoon()
+        print("2")
         self.set_bluetooth_settings()
+        print("3")
         Thread(target=self.check_internet_connection, daemon=True).start()
+        print("4")
 
     @property
     def success_interfaces(self):
@@ -49,7 +53,7 @@ class SoftwareSettings():
                             success_interfaces.append(interface)
                     except Exception as e:
                         print("check_internet_connection ping Exception:",e)
-                
+                self.success_interfaces = success_interfaces
                 if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")
                 else:

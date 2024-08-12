@@ -551,8 +551,17 @@ class ChargePoint16(cp):
                 value
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+
+            for data in self.application.databaseModule.get_configuration():
+                if data["key"] == key:
+                    if data["supported"] == "True":
+                        status = ConfigurationStatus.accepted
+                    else:
+                        status = ConfigurationStatus.not_supported
+
+            self.application.databaseModule.set_configration(key,value)
             response = call_result.ChangeConfigurationPayload(
-                status= ConfigurationStatus.not_supported
+                status= status
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
@@ -642,7 +651,7 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
-            full_configuration = self.application.databaseModule.get_configuration()
+            full_configuration = self.application.databaseModule.full_configuration
 
             if key:
                 filtered_configuration = [config for config in full_configuration if config["key"] in key]

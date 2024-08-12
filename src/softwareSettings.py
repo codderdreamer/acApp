@@ -52,6 +52,7 @@ class SoftwareSettings():
                             success_interfaces.append(interface)
                     except Exception as e:
                         print("check_internet_connection ping Exception:",e)
+                print("success_interfaces",success_interfaces)
                 self.success_interfaces = success_interfaces
                 if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")

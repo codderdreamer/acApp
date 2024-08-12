@@ -45,9 +45,10 @@ class SoftwareSettings():
                     command = ["ping", "-I", interface, "-c", "1", "8.8.8.8"]
                     try:
                         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        # stdout, stderr = process.communicate()
-                        # result = stdout.decode()
-                        # print("stdout",stdout)
+                        stdout, stderr = process.communicate()
+                        result = stdout.decode()
+                        print("stdout",stdout)
+                        print(process.returncode)
                         if process.returncode == 0:
                             success_interfaces.append(interface)
                     except Exception as e:

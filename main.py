@@ -89,12 +89,26 @@ class Application():
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         
         Thread(target=self.read_charge_values_thred, daemon=True).start()
+        Thread(target=self.control_output,daemon=True).start()
 
         self.deviceState = DeviceState.IDLE
 
         Thread(target=self.simu_test,daemon=True).start()
 
         self.chargingStatus = ChargePointStatus.available
+
+    def control_output(self):
+        while True:
+            try:
+                file_size = os.path.getsize("/root/output.txt")
+                print("file size:",file_size)
+                one_mb = 1024*1024
+                if file_size >= one_mb*30:
+                    os.system("rm -r /root/output.txt")
+            except Exception as e:
+                print("control_output Exception:",e)
+            time.sleep(60*10)
+
 
     def simu_test(self):
         while True:

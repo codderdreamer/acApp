@@ -40,7 +40,7 @@ class SoftwareSettings():
             command = ['ip', 'addr', 'show', "eth1"]
             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
-            if "101.101.101.101" in stdout.decode():
+            if "192.168.52.5" in stdout.decode():
                 return True
             else:
                 return False
@@ -50,7 +50,7 @@ class SoftwareSettings():
     def add_ip(self):
         try:
             if not self.check_ip_exists():
-                process = subprocess.Popen(['ip', 'addr', 'add', '101.101.101.101/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen(['ip', 'addr', 'add', '192.168.52.5/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 stdout, stderr = process.communicate()
                 result = stdout.decode()
         except Exception as e:

@@ -20,7 +20,6 @@ class SoftwareSettings():
         Thread(target=self.set_eth, daemon=True).start()
         Thread(target=self.set_4G, daemon=True).start()
         Thread(target=self.set_wifi, daemon=True).start()
-        # Thread(target=self.set_network_priority, daemon=True).start()
         Thread(target=self.control_device_status, daemon=True).start()
         self.set_timezoon()
         self.set_bluetooth_settings()
@@ -47,13 +46,10 @@ class SoftwareSettings():
                         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         stdout, stderr = process.communicate()
                         result = stdout.decode()
-                        # print("stdout",stdout)
-                        # print(process.returncode)
                         if process.returncode == 0:
                             success_interfaces.append(interface)
                     except Exception as e:
                         print("check_internet_connection ping Exception:",e)
-                print("success_interfaces",success_interfaces)
                 self.success_interfaces = success_interfaces
                 if self.turn_interface(self.application.settings.networkPriority.first) in success_interfaces:
                     os.system("ifmetric " + self.turn_interface(self.application.settings.networkPriority.first) + " 100")
@@ -85,26 +81,6 @@ class SoftwareSettings():
                 return "ppp0"
         except Exception as e:
             print("turn_interface Exception:",e)
-
-    def control_websocket_ip(self):
-        try:
-            self.get_active_ips()
-
-            # if self.application.settings.deviceStatus.networkCard == "Ethernet":
-            #     self.application.settings.websocketIp = self.application.settings.networkip.eth1
-            # elif self.application.settings.deviceStatus.networkCard == "Wifi":
-            #     self.application.settings.websocketIp = self.application.settings.networkip.wlan0
-            # elif self.application.settings.deviceStatus.networkCard == "4G":
-            #     self.application.settings.websocketIp = self.application.settings.networkip.ppp0
-
-            # if self.application.settings.networkPriority.first == "ETH" and self.application.settings.deviceStatus.networkCard != "Ethernet":
-            #     Thread(target=self.set_eth, daemon=True).start()
-            # elif self.application.settings.networkPriority.first == "WLAN" and self.application.settings.deviceStatus.networkCard != "Wifi":
-            #     Thread(target=self.set_wifi, daemon=True).start()
-            # elif self.application.settings.networkPriority.first == "4G" and self.application.settings.deviceStatus.networkCard != "4G":
-            #     Thread(target=self.set_4G, daemon=True).start()
-        except Exception as e:
-            print("control_websocket_ip Exception:",e)
 
     def get_active_ips(self):
         try:
@@ -364,19 +340,10 @@ class SoftwareSettings():
 
     def ping_google(self):
         try:
-            try:
-                response = requests.get("http://www.google.com", timeout=5)
-                self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
-            except Exception as e:
-                self.application.settings.deviceStatus.linkStatus = "Offline"
-            # if self.application.settings.deviceStatus.linkStatus == "Offline":
-            #     Thread(target=self.set_eth, daemon=True).start()
-            #     Thread(target=self.set_4G, daemon=True).start()
-            #     Thread(target=self.set_wifi, daemon=True).start()
-                # Thread(target=self.set_network_priority, daemon=True).start()
-                # time.sleep(15)
+            response = requests.get("http://www.google.com", timeout=5)
+            self.application.settings.deviceStatus.linkStatus = "Online" if response.status_code == 200 else "Offline"
         except Exception as e:
-            print("ping_google Exception:",e)
+            self.application.settings.deviceStatus.linkStatus = "Offline"
 
     def find_network(self):
         try:
@@ -399,7 +366,6 @@ class SoftwareSettings():
                 self.application.settings.deviceStatus.networkCard = "Wifi"
             elif min_metric == ppp0_metric:
                 self.application.settings.deviceStatus.networkCard = "4G"
-            self.control_websocket_ip()
         except Exception as e:
             print("find_network Exception:",e)
 
@@ -452,9 +418,9 @@ class SoftwareSettings():
             try:
                 self.ping_google()
                 self.find_network()
+                self.get_active_ips()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
-                # Thread(target=self.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
                 print("control_device_status Exception:",e)

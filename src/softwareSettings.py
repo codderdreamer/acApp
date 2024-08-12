@@ -46,10 +46,13 @@ class SoftwareSettings():
             try:
                 success_interfaces = []
                 for interface in interfaces:
-                    command = f"ping -I {interface} -c 3 8.8.8.8"
+                    command = ["ping", "-I", interface, "-c", "3", "8.8.8.8"]
                     try:
-                        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        if result.returncode == 0:
+                        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        # stdout, stderr = process.communicate()
+                        # result = stdout.decode()
+                        # print("stdout",stdout)
+                        if process.returncode == 0:
                             success_interfaces.append(interface)
                     except Exception as e:
                         print("check_internet_connection ping Exception:",e)
@@ -312,6 +315,11 @@ class SoftwareSettings():
                         result = subprocess.run(f"nmcli con modify wifi_connection ipv4.gateway {gateway}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                         result = subprocess.run("nmcli con modify wifi_connection ipv4.method manual", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     result = subprocess.run("nmcli connection up wifi_connection", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    if wifidhcpcEnable == "False":
+                        setDns = 'nmcli con modify "wifi_connection" ipv4.dns "{0},{1}" > /dev/null 2>&1'.format(DNS1, DNS2)
+                        os.system(setDns)
+                        os.system('nmcli con up "wifi_connection" ifname wlan0 > /dev/null 2>&1')
+        
         except Exception as e:
             print("set_wifi Exception:",e)
 

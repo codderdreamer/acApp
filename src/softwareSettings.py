@@ -46,7 +46,7 @@ class SoftwareSettings():
             try:
                 success_interfaces = []
                 for interface in interfaces:
-                    command = ["ping", "-I", interface, "-c", "3", "8.8.8.8"]
+                    command = ["ping", "-I", interface, "-c", "1", "8.8.8.8"]
                     try:
                         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         # stdout, stderr = process.communicate()

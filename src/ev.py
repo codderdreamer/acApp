@@ -251,29 +251,53 @@ class EV():
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag=value), self.application.loop)
             elif self.application.cardType == CardType.StartStopCard:
                 # Local cardlarda var mı database bak...
-                finded = False
-                card_id_list = self.application.databaseModule.get_local_list()
-                for id in card_id_list:
-                    if value == id:
-                        if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
-                            self.start_stop_authorize = False
-                        else:
-                            self.start_stop_authorize = True
-                        finded = True
+                if self.application.settings.configuration.AllowOfflineTxForUnknownId == "false":
+                    print(Color.Yellow.value,"AllowOfflineTxForUnknownId : false, Bilinmeyen kullanıcıya şarja izin verilmez.")
+                    finded = False
+                    card_id_list = self.application.databaseModule.get_local_list()
+                    for id in card_id_list:
+                        if value == id:
+                            if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
+                                self.start_stop_authorize = False
+                            else:
+                                self.start_stop_authorize = True
+                            finded = True
 
-                        if self.charge and (self.application.process.id_tag == value):
-                            self.application.deviceState = DeviceState.STOPPED_BY_USER
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                        elif self.charge == False:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                            if self.__control_pilot != "B":
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
-                        else:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                            if self.charge and (self.application.process.id_tag == value):
+                                self.application.deviceState = DeviceState.STOPPED_BY_USER
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                            elif self.charge == False:
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                                if self.__control_pilot != "B":
+                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+                            else:
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
 
-                if finded == False:
-                    self.start_stop_authorize = False
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                    if finded == False:
+                        self.start_stop_authorize = False
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                # Local Kartlarda olmayan kullanıcıya izin ver
+                else:
+                    print(Color.Yellow.value,"AllowOfflineTxForUnknownId : true, Bilinmeyen kullanıcıya şarja izin verilir.")
+                    if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
+                        self.start_stop_authorize = False
+                    else:
+                        self.start_stop_authorize = True
+                    finded = True
+
+                    if self.charge and (self.application.process.id_tag == value):
+                        self.application.deviceState = DeviceState.STOPPED_BY_USER
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                    elif self.charge == False:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                        if self.__control_pilot != "B":
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+                    else:
+                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+
+        
+        
+        
         self.__card_id = value
 
     @property

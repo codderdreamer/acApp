@@ -954,6 +954,7 @@ class DatabaseModule():
                 readonly = column[1]
                 value = column[2]
                 full_configuration.append({"key":key,"readonly":readonly,"value":value})
+                print(key,value)
                 setattr(self.application.settings, key, value)
             return full_configuration
         except Exception as e:

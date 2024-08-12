@@ -181,6 +181,7 @@ class SoftwareSettings():
                     set_eth = 'nmcli con add con-name "wire" ifname eth1 type ethernet > /dev/null 2>&1'
                     os.system(set_eth)
                     os.system('nmcli con up "wire" ifname eth1 > /dev/null 2>&1')
+                os.system("ip addr add 101.101.101.101/24 dev eth1")
             else:
                 self.delete_connection_type("ethernet")
         except Exception as e:

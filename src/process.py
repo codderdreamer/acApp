@@ -399,8 +399,7 @@ class Process:
             self.unlock()
         self.application.ev.charge = False
         self.application.meter_values_on = False
-        time_start = time.time()
-        time.sleep(5)
+        time.sleep(10)
         if self.application.deviceState == DeviceState.SUSPENDED_EVSE:
             if self.application.ev.control_pilot == ControlPlot.stateB.value:
                 self.application.deviceState = DeviceState.CONNECTED

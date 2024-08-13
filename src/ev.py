@@ -99,61 +99,6 @@ class EV():
             time.sleep(1)
 
 
-
-    # def control_error_list(self):
-    #     time.sleep(5)
-    #     counter = 0
-    #     time_start = None
-    #     while True:
-    #         try:
-    #             if self.application.serialPort.error:
-    #                 if self.charge:
-    #                     print(Color.Yellow.value,"Cihaz şarjda hata algılandı.")
-    #                     if time_start == None:
-    #                         counter += 1
-    #                         time_start = time.time()
-    #                         for value in self.application.serialPort.error_list:
-    #                             if value == PidErrorList.RcdTripError:
-    #                                 counter = 0
-    #                                 self.application.deviceState = DeviceState.FAULT
-    #                             else:
-    #                                 self.charging_again = True
-    #                                 self.application.deviceState = DeviceState.SUSPENDED_EVSE
-    #                 else:
-    #                     if counter == 0:
-    #                         self.application.deviceState = DeviceState.FAULT
-    #                     elif counter>0:
-    #                         pass
-                    
-    #                 self.application.serialPort.error = False
-                    
-
-    #             if counter <= 3 and counter != 0:
-    #                 print(Color.Cyan.value, "30 saniye sonra şarj denemesi yapılacak counter",counter,"timestart",time_start)
-    #                 if time_start != None:
-    #                     if time.time() - time_start > 30:
-    #                         print(Color.Cyan.value, "30 saniye doldu.")
-    #                         time_start = None
-    #                         if self.control_pilot == ControlPlot.stateB.value:
-    #                             self.application.deviceState = DeviceState.CONNECTED
-    #                         elif self.control_pilot == ControlPlot.stateC.value:
-    #                             self.application.deviceState = DeviceState.CHARGING
-
-    #             elif counter == 4:
-    #                 if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
-    #                     self.application.deviceState = DeviceState.FAULT
-    #                     self.charging_again = False
-
-    #             if self.control_pilot == ControlPlot.stateA.value:
-    #                 counter = 0
-    #                 time_start = None
-    #                 self.charging_again = False
-
-             
-    #         except Exception as e:
-    #             print("******************************************** control_error_list Exception",e)
-    #         time.sleep(1)
-
     def send_message(self):
         self.send_message_thread_start = True
         while self.send_message_thread_start:

@@ -88,6 +88,7 @@ class Process:
                     result = self.lock_control()
                     control_counter += 1
                 if not result:
+                    print(Color.Red.value, "Locker Error")
                     self.locker_error = True
                     self.application.deviceState = DeviceState.FAULT
             self.application.testWebSocket.send_locker_state_lock(result)
@@ -344,9 +345,13 @@ class Process:
         elif not self.application.ev.pid_relay_control:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"RelayError")
+        elif self.application.ev.proximity_pilot_current == 0:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"proximity_pilot_current = 0")
         else:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted)
+        
         self.application.databaseModule.set_charge("False", "", "")
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):

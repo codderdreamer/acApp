@@ -205,12 +205,17 @@ class Process:
             
     def charge_while(self):
         print(Color.Yellow.value,"Cihaz şarja başlıyor...")
+        if self.application.deviceState != DeviceState.CHARGING:
+            return
         time_start = time.time()
         self.application.databaseModule.set_charge("True", str(self.id_tag), str(self.transaction_id))
         self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
         self.application.serialPort.get_command_pid_relay_control()
         time.sleep(1)
         self.application.testWebSocket.send_relay_control_on(self.application.ev.pid_relay_control)
+
+        if self.application.deviceState != DeviceState.CHARGING:
+            return
 
         if not self.application.ev.pid_relay_control:
             print("if not self.application.ev.pid_relay_control")

@@ -399,7 +399,7 @@ class Process:
         self.application.ev.charge = False
         self.application.meter_values_on = False
         time_start = time.time()
-        time.sleep(30)
+        time.sleep(5)
         if self.application.deviceState == DeviceState.SUSPENDED_EVSE:
             self.application.deviceState = DeviceState.CHARGING
 

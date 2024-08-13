@@ -219,7 +219,7 @@ class Process:
 
         while True:
             try:
-                if self.application.deviceState != DeviceState.CHARGING:
+                if self.application.deviceState != DeviceState.CHARGING and self.application.ev.charge == False:
                     break
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:

@@ -389,6 +389,7 @@ class Process:
         print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
         if self.charge_try_counter == 4:
             self.application.deviceState = DeviceState.FAULT
+            self.charge_try_counter = 0
         for value in self.application.serialPort.error_list:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()

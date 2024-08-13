@@ -367,6 +367,7 @@ class Process:
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
             self.unlock()
+        self.application.ev.charge = False
 
         
     def suspended_ev(self):

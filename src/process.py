@@ -12,6 +12,7 @@ class Process:
         self.id_tag = None
         self.transaction_id = None
         self.locker_error = False
+        self.charge_try_counter = 0
 
     def unlock(self):
         time_start = time.time()
@@ -373,6 +374,7 @@ class Process:
         print("Suspended evse function")
         for value in self.application.serialPort.error_list:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.value)
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)

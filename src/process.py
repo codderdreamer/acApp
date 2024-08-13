@@ -368,6 +368,7 @@ class Process:
         if self.application.socketType == SocketType.Type2:
             self.unlock()
         self.application.ev.charge = False
+        self.application.meter_values_on = False
 
         
     def suspended_ev(self):

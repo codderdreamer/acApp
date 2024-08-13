@@ -48,6 +48,8 @@ class EV():
         self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
 
+        self.charging_again = False
+
     def control_error_list(self):
         time.sleep(5)
         counter = 0
@@ -56,7 +58,7 @@ class EV():
             try:
                 if self.application.serialPort.error:
                     if self.charge:
-                        print("Şarj var hata var.........")
+                        print(Color.Yellow.value,"Cihaz şarjda hata algılandı.")
                         if time_start == None:
                             counter += 1
                             time_start = time.time()
@@ -66,6 +68,7 @@ class EV():
                                     counter = 0
                                     self.application.deviceState = DeviceState.FAULT
                                 else:
+                                    self.charging_again = True
                                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     else:
@@ -83,25 +86,26 @@ class EV():
                     
                 else:
                     if counter <= 3 and counter != 0:
+                        print(Color.Cyan.value, "30 saniye sonra şarj denemesi yapılacak. Saniye:",int(time.time() - time_start))
                         if time_start != None:
                             if time.time() - time_start > 30:
+                                print(Color.Cyan.value, "30 saniye doldu.")
                                 time_start = None
                                 if self.control_pilot == ControlPlot.stateB.value:
                                     self.application.deviceState = DeviceState.CONNECTED
                                 elif self.control_pilot == ControlPlot.stateC.value:
                                     self.application.deviceState = DeviceState.CHARGING
-                        else:
-                            pass
 
                     elif counter == 4:
                         if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT
+                            self.charging_again = False
 
                     if self.control_pilot == ControlPlot.stateA.value:
                         counter = 0
                         time_start = None
-
+                        self.charging_again = False
 
                     if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()

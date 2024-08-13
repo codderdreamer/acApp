@@ -221,7 +221,6 @@ class Process:
             print("if not self.application.ev.pid_relay_control")
             self.application.deviceState = DeviceState.FAULT
             return
-
         while True:
             try:
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
@@ -247,6 +246,8 @@ class Process:
                     pass
                 self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
                 print("Cihaz şarjda...")
+                if time.time() - time_start > 20:
+                    self.charge_try_counter = 0
             except Exception as e:
                 print("**************************************************** charge_while Exception", e)
             time.sleep(1)
@@ -401,8 +402,10 @@ class Process:
         time_start = time.time()
         time.sleep(5)
         if self.application.deviceState == DeviceState.SUSPENDED_EVSE:
-            self.application.deviceState = DeviceState.CHARGING
-
+            if self.application.ev.control_pilot == ControlPlot.stateB.value:
+                self.application.deviceState = DeviceState.CONNECTED
+            elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+                self.application.deviceState = DeviceState.CHARGING
 
         
     def suspended_ev(self):

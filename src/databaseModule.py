@@ -955,7 +955,7 @@ class DatabaseModule():
                 readonly = column[1]
                 value = column[2]
                 supported = column[3]
-                configrations.append({"key":key,"readonly":readonly,"value":value,"supported":supported})
+                configrations.append({"key":key,"readonly":bool(readonly=="True"),"value":value,"supported":supported})
                 self.full_configuration.append({"key":key,"readonly":readonly,"value":value})
                 setattr(self.application.settings.configuration, key, value)
             return configrations

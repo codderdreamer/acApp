@@ -24,14 +24,6 @@ from src.logger import ac_app_logger as logger
 from src.logger import LOGGER_CHARGE_POINT, LOGGER_CENTRAL_SYSTEM
 
 
-
-
-
-
-
-
-
-
 class ChargePoint16(cp):
     def __init__(self, application, id, connection, loop, response_timeout=5):
         super().__init__(id, connection, response_timeout)

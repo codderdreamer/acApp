@@ -86,7 +86,7 @@ class EV():
                     
 
                 if counter <= 3 and counter != 0:
-                    print(Color.Cyan.value, "30 saniye sonra şarj denemesi yapılacak counter",counter)
+                    print(Color.Cyan.value, "30 saniye sonra şarj denemesi yapılacak counter",counter,"timestart",time_start)
                     if time_start != None:
                         if time.time() - time_start > 30:
                             print(Color.Cyan.value, "30 saniye doldu.")

@@ -194,6 +194,7 @@ class Application():
         if error_code != self.error_code or status != self.chargePointStatus:
             self.error_code = error_code
             self.chargePointStatus = status
+            print("Error info:",info)
             if self.ocppActive:
                 asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=info),self.loop)
     

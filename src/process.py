@@ -362,7 +362,6 @@ class Process:
                 break
             
     def suspended_evse(self):
-        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_evse)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)

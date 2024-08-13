@@ -363,6 +363,7 @@ class SerialPort():
     def get_response_pid_relay_control(self, data):
         if data[2] == self.pid_relay_control:
             self.application.ev.pid_relay_control = bool(int(data[7]))
+            print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
 
     def set_response_pid_led_control(self, data):
         if data[2] == self.pid_led_control:

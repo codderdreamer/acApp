@@ -213,6 +213,7 @@ class Process:
         self.application.testWebSocket.send_relay_control_on(self.application.ev.pid_relay_control)
 
         if not self.application.ev.pid_relay_control:
+            print("if not self.application.ev.pid_relay_control")
             self.application.deviceState = DeviceState.FAULT
             return
 
@@ -223,6 +224,7 @@ class Process:
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         if time.time() - time_start > 6:
+                            print("if time.time() - time_start > 6:")
                             self.application.deviceState = DeviceState.FAULT
                             self.application.testWebSocket.send_mid_meter_state(False)
                             break
@@ -336,7 +338,7 @@ class Process:
         if PidErrorList.RcdTripError in self.application.serialPort.error_list:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
-        elif self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
+        elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")
         elif self.locker_error:

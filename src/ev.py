@@ -214,7 +214,7 @@ class EV():
             print(Color.Yellow.value,"Control Pilot",value)
             if self.__control_pilot == ControlPlot.stateA.value:
                 self.application.deviceState = DeviceState.IDLE
-            elif self.__control_pilot == ControlPlot.stateB.value:
+            elif self.__control_pilot == ControlPlot.stateB.value and self.application.deviceState != DeviceState.SUSPENDED_EVSE:
                 self.application.deviceState = DeviceState.CONNECTED
             elif self.__control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING

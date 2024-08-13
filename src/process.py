@@ -371,6 +371,8 @@ class Process:
             
     def suspended_evse(self):
         print("Suspended evse function")
+        for value in self.application.serialPort.error_list:
+            self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.value)
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)

@@ -57,10 +57,8 @@ class Application():
         self.masterCard = None
         self.availability = AvailabilityType.operative
         self.bluetooth_error = None
-        
-        self.__chargingStatus = None
+        self.__chargePointStatus = None
         self.__error_code = None
-        
         self.__deviceState = None
         self.ocppActive = False
         self.cardType: CardType = None
@@ -70,7 +68,6 @@ class Application():
         self.control_C_B = False
         self.control_A_C = False
         self.meter_values_on = False
-        
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
         self.bluetoothService = BluetoothService(self)
@@ -82,20 +79,25 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self,logger)
         self.process = Process(self)
-        
         if self.settings.deviceSettings.externalMidMeter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
-        
         Thread(target=self.read_charge_values_thred, daemon=True).start()
         Thread(target=self.control_output,daemon=True).start()
-
         self.deviceState = DeviceState.IDLE
+        self.chargePointStatus = ChargePointStatus.available
 
-        Thread(target=self.simu_test,daemon=True).start()
+        self.create_error = False
 
-        self.chargingStatus = ChargePointStatus.available
+    def simu_test(self):
+        while True:
+            x = input()
+            if x == "1":
+                self.create_error = True
+            elif x == "2":
+                self.create_error = False
+            time.sleep(1)
 
     def control_output(self):
         while True:
@@ -109,28 +111,15 @@ class Application():
                 print("control_output Exception:",e)
             time.sleep(60*10)
 
-
-    def simu_test(self):
-        while True:
-            try:
-                x = input()
-                if x == "1":
-                    self.serialPort.error_list = [PidErrorList.UnderVoltageFailure]
-                    self.serialPort.error = True
-                    print("hereeeeeeee")
-            except Exception as e:
-                print("simu_test Exception:",e)
-            time.sleep(1)
-
     @property
-    def chargingStatus(self):
-        return self.__chargingStatus
+    def chargePointStatus(self):
+        return self.__chargePointStatus
 
-    @chargingStatus.setter
-    def chargingStatus(self, value):
-        if self.__chargingStatus != value:
+    @chargePointStatus.setter
+    def chargePointStatus(self, value):
+        if self.__chargePointStatus != value:
             print(Color.Macenta.value, "Charge Point Status:", value)
-            self.__chargingStatus = value
+            self.__chargePointStatus = value
 
     @property
     def error_code(self):
@@ -201,11 +190,11 @@ class Application():
 
                 
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus, info:str = None):
-        if error_code != self.error_code or status != self.chargingStatus:
+        if error_code != self.error_code or status != self.chargePointStatus:
             self.error_code = error_code
-            self.chargingStatus = status
+            self.chargePointStatus = status
             if self.ocppActive:
-                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargingStatus,info=info),self.loop)
+                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=info),self.loop)
     
     def ocpp_control(self):
         while True:
@@ -299,7 +288,7 @@ class Application():
         except Exception as e:
             print("ocppStart Exception:", e)
             self.ocppActive = False
-            if self.chargingStatus == ChargePointStatus.charging:
+            if self.chargePointStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             
     def ocpp_task(self):

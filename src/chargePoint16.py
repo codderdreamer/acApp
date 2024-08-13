@@ -243,11 +243,7 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_heartbeat Exception:",e)
             self.application.ocppActive = False
-            if self.application.chargingStatus == ChargePointStatus.charging:
-                pass
-            # else:
-            #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon= True).start()
-            #     self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted)
+
 
     # 7. METER VALUES
     async def send_meter_values(
@@ -816,7 +812,7 @@ class ChargePoint16(cp):
                 reservation_id,
                 parent_id_tag
             )
-            if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargingStatus == ChargePointStatus.available:
+            if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargePointStatus == ChargePointStatus.available:
                 self.application.ev.reservation_id_tag = id_tag
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.reservation_id = reservation_id
@@ -848,13 +844,13 @@ class ChargePoint16(cp):
                     status = ReservationStatus.rejected
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.chargingStatus == ChargePointStatus.faulted:
+            elif self.application.chargePointStatus == ChargePointStatus.faulted:
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.faulted
                 )
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.chargingStatus != ChargePointStatus.available:
+            elif self.application.chargePointStatus != ChargePointStatus.available:
                 LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected

@@ -11,6 +11,7 @@ class Process:
         self.application = application
         self.id_tag = None
         self.transaction_id = None
+        self.locker_error = False
 
     def unlock(self):
         time_start = time.time()
@@ -86,7 +87,7 @@ class Process:
                     result = self.lock_control()
                     control_counter += 1
                 if not result:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon=True).start()
+                    self.locker_error = True
                     self.application.deviceState = DeviceState.FAULT
             self.application.testWebSocket.send_locker_state_lock(result)
         elif self.application.socketType == SocketType.TetheredType:
@@ -101,7 +102,7 @@ class Process:
                 if value == PidErrorList.RcdInitializeError:
                     return
 
-        if self.application.chargingStatus == ChargePointStatus.faulted:
+        if self.application.chargePointStatus == ChargePointStatus.faulted:
             return
 
         if self.application.control_C_B:
@@ -112,7 +113,6 @@ class Process:
             self.application.serialPort.get_command_pid_proximity_pilot()
             time.sleep(0.5)
             if self.application.ev.proximity_pilot_current == 0:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                 self.application.deviceState = DeviceState.FAULT
                 return
 
@@ -139,7 +139,6 @@ class Process:
                 self.application.deviceState = DeviceState.WAITING_AUTH
         return
         
-            
     def waiting_auth(self):
         print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
         self.application.ev.charge = False
@@ -213,8 +212,6 @@ class Process:
 
         if not self.application.ev.pid_relay_control:
             self.application.deviceState = DeviceState.FAULT
-            self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.faulted)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
             return
 
         while True:
@@ -224,7 +221,6 @@ class Process:
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         if time.time() - time_start > 6:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT
                             self.application.testWebSocket.send_mid_meter_state(False)
                             break
@@ -290,11 +286,9 @@ class Process:
                                 self.application.ev.reservation_id = None
                                 self.application.ev.reservation_id_tag = None
                                 self.application.ev.expiry_date = None
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                                 self.application.deviceState = DeviceState.FAULT
                                 return
                         else:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                             self.application.deviceState = DeviceState.FAULT
                             return
                     else:
@@ -309,7 +303,6 @@ class Process:
                 if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
                     pass
                 else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon= True).start()
                     self.application.deviceState = DeviceState.FAULT
                     return
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
@@ -338,6 +331,21 @@ class Process:
                 self.application.deviceState = DeviceState.WAITING_AUTH
 
     def fault(self):
+        if PidErrorList.RcdTripError in self.application.serialPort.error_list:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
+            self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
+        elif self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")
+        elif self.locker_error:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon=True).start()
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"LockerError")
+        elif not self.application.ev.pid_relay_control:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"RelayError")
+        else:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted)
         self.application.databaseModule.set_charge("False", "", "")
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
@@ -362,6 +370,7 @@ class Process:
                 break
             
     def suspended_evse(self):
+        print("Suspended evse function")
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
@@ -369,6 +378,11 @@ class Process:
             self.unlock()
         self.application.ev.charge = False
         self.application.meter_values_on = False
+        time_start = time.time()
+        time.sleep(30)
+        if self.application.deviceState == DeviceState.SUSPENDED_EVSE:
+            self.application.deviceState = DeviceState.CHARGING
+
 
         
     def suspended_ev(self):
@@ -378,7 +392,7 @@ class Process:
         time_start = time.time()
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.ChargingStopped,), daemon=True).start()
         while True:
-            if self.application.chargingStatus == ChargePointStatus.faulted:
+            if self.application.chargePointStatus == ChargePointStatus.faulted:
                 self.application.deviceState = DeviceState.FAULT
                 break
             if self.application.ev.control_pilot == ControlPlot.stateB.value:
@@ -415,6 +429,7 @@ class Process:
             self.unlock()
             
     def idle(self):
+        self.locker_error = False
         self.application.databaseModule.set_charge("False","","")
         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
         if self.application.ev.reservation_id != None:

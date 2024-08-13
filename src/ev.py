@@ -50,102 +50,117 @@ class EV():
 
         self.charging_again = False
 
+    def ocpp_offline(self):
+        print(Color.Red.value, "Ocpp Offline")
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
+        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
+
+    def ocpp_online(self):
+        if time.time() - time_value > 5:
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+            time_value = time.time()
+        if self.application.availability == AvailabilityType.operative:
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+        else:
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
+
+    def is_there_rcd_trip_error(self):
+        if PidErrorList.RcdTripError in self.application.serialPort.error_list:
+            return True
+        else:
+            return False
+        
+    def is_there_other_error(self):
+        if len(self.application.serialPort.error_list) > 0:
+            for value in self.application.serialPort.error_list:
+                if value != PidErrorList.RcdTripError:
+                    return True
+        return False
+
     def control_error_list(self):
-        time.sleep(5)
+        time.sleep(10)
         counter = 0
         time_start = None
+        time_value = time.time()
         while True:
             try:
-                if self.application.serialPort.error:
-                    if self.charge:
-                        print(Color.Yellow.value,"Cihaz şarjda hata algılandı.")
-                        if time_start == None:
-                            counter += 1
-                            time_start = time.time()
-                            for value in self.application.serialPort.error_list:
-                                if value == PidErrorList.RcdTripError:
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-                                    counter = 0
-                                    self.application.deviceState = DeviceState.FAULT
-                                else:
-                                    self.charging_again = True
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
-                                    self.application.deviceState = DeviceState.SUSPENDED_EVSE
-                    else:
-                        if counter == 0:
-                            self.application.deviceState = DeviceState.FAULT
-                            for value in self.application.serialPort.error_list:
-                                if value == PidErrorList.RcdTripError:
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-                                else:
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
-                        elif counter>0:
-                            pass
-                    
-                    self.application.serialPort.error = False
-                    
-
-                if counter <= 3 and counter != 0:
-                    print(Color.Cyan.value, "30 saniye sonra şarj denemesi yapılacak counter",counter,"timestart",time_start)
-                    if time_start != None:
-                        if time.time() - time_start > 30:
-                            print(Color.Cyan.value, "30 saniye doldu.")
-                            time_start = None
-                            if self.control_pilot == ControlPlot.stateB.value:
-                                self.application.deviceState = DeviceState.CONNECTED
-                            elif self.control_pilot == ControlPlot.stateC.value:
-                                self.application.deviceState = DeviceState.CHARGING
-
-                elif counter == 4:
-                    if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
-                        self.application.deviceState = DeviceState.FAULT
-                        self.charging_again = False
-
-                if self.control_pilot == ControlPlot.stateA.value:
-                    counter = 0
-                    time_start = None
-                    self.charging_again = False
-
-                if self.control_pilot == ControlPlot.stateA.value and self.application.cardType != CardType.BillingCard and self.application.chargingStatus != ChargePointStatus.preparing:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                    if self.application.availability == AvailabilityType.operative:
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-                    else:
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
-
-                if self.control_pilot == ControlPlot.stateA.value and self.application.cardType == CardType.BillingCard and self.application.ocppActive == True and self.application.chargingStatus != ChargePointStatus.preparing:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                    if self.application.availability == AvailabilityType.operative:
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
-                    else:
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
-
-                if self.application.ocppActive == False and self.application.cardType == CardType.BillingCard:
-                    if self.application.chargingStatus == ChargePointStatus.charging:
-                        pass
-                    else:
-                        if len(self.application.serialPort.error_list) > 0:
-                            for value in self.application.serialPort.error_list:
-                                if value == PidErrorList.RcdTripError:
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-                        else:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
-                            self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
+                time_value = time.time()
+                if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
+                    self.ocpp_offline()
+                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.serialPort.error == False):
+                    self.ocpp_online()
+                elif self.is_there_rcd_trip_error():
+                    self.application.deviceState = DeviceState.FAULT
+                elif self.is_there_other_error():
+                    self.application.deviceState = DeviceState.SUSPENDED_EVSE
             except Exception as e:
                 print("******************************************** control_error_list Exception",e)
             time.sleep(1)
 
+
+
+    # def control_error_list(self):
+    #     time.sleep(5)
+    #     counter = 0
+    #     time_start = None
+    #     while True:
+    #         try:
+    #             if self.application.serialPort.error:
+    #                 if self.charge:
+    #                     print(Color.Yellow.value,"Cihaz şarjda hata algılandı.")
+    #                     if time_start == None:
+    #                         counter += 1
+    #                         time_start = time.time()
+    #                         for value in self.application.serialPort.error_list:
+    #                             if value == PidErrorList.RcdTripError:
+    #                                 counter = 0
+    #                                 self.application.deviceState = DeviceState.FAULT
+    #                             else:
+    #                                 self.charging_again = True
+    #                                 self.application.deviceState = DeviceState.SUSPENDED_EVSE
+    #                 else:
+    #                     if counter == 0:
+    #                         self.application.deviceState = DeviceState.FAULT
+    #                     elif counter>0:
+    #                         pass
+                    
+    #                 self.application.serialPort.error = False
+                    
+
+    #             if counter <= 3 and counter != 0:
+    #                 print(Color.Cyan.value, "30 saniye sonra şarj denemesi yapılacak counter",counter,"timestart",time_start)
+    #                 if time_start != None:
+    #                     if time.time() - time_start > 30:
+    #                         print(Color.Cyan.value, "30 saniye doldu.")
+    #                         time_start = None
+    #                         if self.control_pilot == ControlPlot.stateB.value:
+    #                             self.application.deviceState = DeviceState.CONNECTED
+    #                         elif self.control_pilot == ControlPlot.stateC.value:
+    #                             self.application.deviceState = DeviceState.CHARGING
+
+    #             elif counter == 4:
+    #                 if self.control_pilot == ControlPlot.stateB.value or self.control_pilot == ControlPlot.stateC.value:
+    #                     self.application.deviceState = DeviceState.FAULT
+    #                     self.charging_again = False
+
+    #             if self.control_pilot == ControlPlot.stateA.value:
+    #                 counter = 0
+    #                 time_start = None
+    #                 self.charging_again = False
+
+             
+    #         except Exception as e:
+    #             print("******************************************** control_error_list Exception",e)
+    #         time.sleep(1)
+
     def send_message(self):
         self.send_message_thread_start = True
-        print("Message sending thread started")
         while self.send_message_thread_start:
             try:
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
             except Exception as e:
                 print("send_message Exception:", e)
             time.sleep(3)
-        print("Message sending thread stopped")
 
     @property
     def led_state(self):
@@ -174,7 +189,6 @@ class EV():
     @proximity_pilot.setter
     def proximity_pilot(self, value):
         self.__proximity_pilot = value
-
         if self.__proximity_pilot == ProximityPilot.CableNotPlugged.value:
             self.proximity_pilot_current = 0
         elif self.__proximity_pilot == ProximityPilot.Error.value:
@@ -204,10 +218,8 @@ class EV():
             elif self.__control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
             else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
                 self.application.deviceState = DeviceState.FAULT
 
     @property
@@ -234,7 +246,6 @@ class EV():
     def card_id(self, value):
         if (self.__card_id != value) and (value != None) and (value != ""):
             print(Color.Yellow.value,"Card Id:",value)
-
         if (value != None) and (value != ""):
             if self.application.masterCard == value:
                 print("Master card detected, resetting settings")
@@ -298,10 +309,6 @@ class EV():
                             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
                     else:
                         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-
-        
-        
-        
         self.__card_id = value
 
     @property

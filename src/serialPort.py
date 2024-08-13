@@ -494,6 +494,7 @@ class SerialPort():
             if (int(data[11]) == 1):
                 error_list.append(PidErrorList.RcdTripError)
                 self.application.change_status_notification(ChargePointErrorCode.ground_failure,status,"RcdTripError")
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
             if (int(data[12]) == 1):
                 error_list.append(PidErrorList.HighTemperatureFailure)
                 self.application.change_status_notification(ChargePointErrorCode.high_temperature,status,"HighTemperatureFailure")
@@ -524,6 +525,10 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
                 self.application.change_status_notification(ChargePointErrorCode.other_error,status,"OverPowerFailure")
+            if (self.application.create_error):
+                error_list.append(PidErrorList.OverVoltageFailure)
+                self.application.change_status_notification(ChargePointErrorCode.over_voltage,status,"OverVoltageFailure")
+
 
             if len(error_list) > 0:
                 print(Color.Red.value,error_list)

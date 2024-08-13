@@ -220,8 +220,6 @@ class EV():
                 self.application.deviceState = DeviceState.CHARGING
             elif (self.__control_pilot == ControlPlot.stateD.value) or (self.__control_pilot == ControlPlot.stateE.value) or (self.__control_pilot == ControlPlot.stateF.value):
                 self.application.deviceState = DeviceState.FAULT
-            else:
-                self.application.deviceState = DeviceState.FAULT
 
     @property
     def charge(self):

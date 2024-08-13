@@ -546,7 +546,7 @@ class ChargePoint16(cp):
 
             for data in self.application.databaseModule.full_configuration:
                 if data["key"] == key:
-                    if data["readonly"] == "False":
+                    if data["readonly"] == False:
                         status = ConfigurationStatus.accepted
                     else:
                         status = ConfigurationStatus.not_supported

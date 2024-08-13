@@ -956,7 +956,7 @@ class DatabaseModule():
                 value = column[2]
                 supported = column[3]
                 configrations.append({"key":key,"readonly":bool(readonly=="True"),"value":value,"supported":supported})
-                self.full_configuration.append({"key":key,"readonly":readonly,"value":value})
+                self.full_configuration.append({"key":key,"readonly":(readonly=="True"),"value":value})
                 setattr(self.application.settings.configuration, key, value)
             return configrations
         except Exception as e:

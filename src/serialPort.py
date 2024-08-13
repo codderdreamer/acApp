@@ -473,7 +473,7 @@ class SerialPort():
 
     def get_response_pid_error_list(self, data):
         error_list = []
-        if self.application.ev.charging_again or self.application.charge:
+        if self.application.ev.charging_again or self.application.ev.charge:
             status = ChargePointStatus.suspended_evse
         else:
             status = ChargePointStatus.faulted

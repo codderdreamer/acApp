@@ -23,7 +23,6 @@ import subprocess
 import os
 from src.webSocket import *
 import builtins
-import inspect
 from src.logger import ac_app_logger as logger
 
 
@@ -32,11 +31,7 @@ file = open("/root/output.txt", "a")
 original_print = builtins.print
 def timestamped_print(color = "",*args, **kwargs):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    frame = inspect.currentframe()
-    caller_frame = inspect.getouterframes(frame)[1]
-    caller_filename = caller_frame.filename
-    caller_lineno = caller_frame.lineno
-    args = (f"[{current_time}] {caller_filename}:{caller_lineno}", color) + args + ("\033[0m",)
+    args = (f"[{current_time}]",) + (color,) + args + ("\033[0m",)
     original_print(*args, **kwargs)
     file.write(" ".join(map(str, args)) + "\n")
 builtins.print = timestamped_print

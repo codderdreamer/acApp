@@ -380,8 +380,11 @@ class Process:
     def suspended_evse(self):
         print("Suspended evse function")
         self.charge_try_counter += 1
+        print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
+        if self.charge_try_counter == 4:
+            self.application.deviceState = DeviceState.FAULT
         for value in self.application.serialPort.error_list:
-            self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.value)
+            self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)

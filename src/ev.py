@@ -93,6 +93,7 @@ class EV():
                     self.application.deviceState = DeviceState.FAULT
                 elif self.is_there_other_error():
                     self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                self.application.serialPort.error = False
             except Exception as e:
                 print("******************************************** control_error_list Exception",e)
             time.sleep(1)

@@ -470,7 +470,6 @@ class SerialPort():
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)
-            # print(f"Temperature: {self.application.ev.temperature}")
 
     def get_response_pid_error_list(self, data):
         error_list = []
@@ -527,7 +526,6 @@ class SerialPort():
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    # print(f"Incoming data: {incoming}")
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

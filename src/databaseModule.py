@@ -167,6 +167,7 @@ class DatabaseModule():
             self.application.settings.ocppSettings.authorizationKey = data_dict["authorizationKey"]
             self.application.settings.ocppSettings.path = data_dict["path"]
             self.application.settings.ocppSettings.chargePointId = data_dict["chargePointId"]
+            self.application.settings.ocppSettings.certFileName = data_dict["certFileName"]
         except Exception as e:
             print("get_ocpp_settings Exception:", e)
         return data_dict
@@ -578,7 +579,7 @@ class DatabaseModule():
         except Exception as e:
             print("set_wifi_settings Exception:", e)
 
-    def set_ocpp_settings(self, domainName, port, sslEnable, authorizationKey, path, chargePointId):
+    def set_ocpp_settings(self, domainName, port, sslEnable, authorizationKey, path, chargePointId, certFileName):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
@@ -607,6 +608,10 @@ class DatabaseModule():
             value = (chargePointId,"chargePointId")
             self.cursor.execute(query,value)
             self.settings_database.commit()
+
+            value = (certFileName,"certFileName")
+            self.cursor.execute(query,value)
+            self.settings_database.commit()
             
             self.settings_database.close()
             
@@ -616,6 +621,7 @@ class DatabaseModule():
             self.application.settings.ocppSettings.authorizationKey = authorizationKey
             self.application.settings.ocppSettings.path = path
             self.application.settings.ocppSettings.chargePointId = chargePointId
+            self.application.settings.ocppSettings.certFileName = certFileName
         except Exception as e:
             print("set_ocpp_settings Exception:", e)
 
@@ -975,3 +981,16 @@ class DatabaseModule():
             self.get_configuration()
         except Exception as e:
             print("set_configration Exception:", e)
+
+
+    def clear_certificate_name(self):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+            query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
+            value = ("","certFileName")
+            self.cursor.execute(query, value)
+            self.settings_database.commit()
+            self.settings_database.close()
+        except Exception as e:
+            print("clear_certificate_name Exception:", e)

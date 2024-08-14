@@ -24,7 +24,8 @@ import os
 from src.webSocket import *
 import builtins
 from src.logger import ac_app_logger as logger
-
+import ssl
+import base64
 
 file = open("/root/output.txt", "a")
 
@@ -288,9 +289,26 @@ class Application():
                     ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                     
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
-                print(Color.Green.value,ocpp_url)
+                print(Color.Green.value,"Ocpp URL:",ocpp_url)
+
+                ssl_context = None
+                certs_dir = '/etc/acApp/certs'
+                cert_file_path = os.path.join(certs_dir, "local_certificate.pem")
+
+                if os.path.exists(cert_file_path) and self.settings.ocppSettings.certFileName:
+                    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                    ssl_context.load_verify_locations(cert_file_path)
+                    ssl_context.load_cert_chain(certfile=cert_file_path)
+                    print("Using verified SSL with certificate:", cert_file_path)
+                else:
+                    print("Using SSL without certificate")
+
+                auth_header = None
+                if self.settings.ocppSettings.authorizationKey:
+                    auth_header = {'Authorization': f'Basic {base64.b64encode(f"{self.settings.ocppSettings.chargePointId}:{self.settings.ocppSettings.authorizationKey}".encode()).decode()}'}
+
                 
-                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=5) as ws:
+                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value], ssl=ssl_context, extra_headers=auth_header, compression=None, timeout=10) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)

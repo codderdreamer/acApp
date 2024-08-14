@@ -425,8 +425,10 @@ class Process:
             
     def suspended_evse(self):
         print("Suspended evse function")
+        time_start = time.time()
         self.charge_try_counter += 1
         print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
+        self.application.meter_values_on = False
         if self.charge_try_counter == 4:
             self.application.deviceState = DeviceState.FAULT
             self.charge_try_counter = 0
@@ -440,8 +442,13 @@ class Process:
         if self.application.socketType == SocketType.Type2:
             self.unlock()
         self.application.ev.charge = False
-        self.application.meter_values_on = False
-        time.sleep(10)
+        while True:
+            time.sleep(1)
+            if time.time() - time_start > 30:
+                print(Color.Yellow.value,"30 saniye doldu.")
+                break
+            if self.application.deviceState != DeviceState.SUSPENDED_EVSE:
+                return
         if self.application.deviceState == DeviceState.SUSPENDED_EVSE:
             if self.application.ev.control_pilot == ControlPlot.stateB.value:
                 self.application.deviceState = DeviceState.CONNECTED

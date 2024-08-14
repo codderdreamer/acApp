@@ -42,12 +42,12 @@ class ModbusModule:
     @connection.setter
     def connection(self, value):
         if self.__connection != value:
-            self.__connection = value
             if value:
                 print(Color.Yellow.value,"Mid Meter bağlandı.")
                 self.application.testWebSocket.send_mid_meter_state(True)
                 first_energy = self.read_input_float(register_address=73)
                 self.firstEnergy = round(first_energy / 1000, 2) if first_energy is not None else None
+        self.__connection = value
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
         result = self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)

@@ -226,7 +226,7 @@ class Application():
                     self.ev.voltage_L1 = self.modbusModule.voltage_L1
                     self.ev.voltage_L2 = self.modbusModule.voltage_L2
                     self.ev.voltage_L3 = self.modbusModule.voltage_L3
-                    self.ev.energy = round(self.modbusModule.energy - self.modbusModule.firstEnergy,2)
+                    self.ev.energy = round((self.modbusModule.energy - self.modbusModule.firstEnergy)/1000,3)
                     self.ev.power =  self.modbusModule.power
                 elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
                     print("Veriler MCU'dan alınıyor...")

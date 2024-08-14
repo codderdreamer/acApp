@@ -82,6 +82,7 @@ class ModbusModule:
                 # print("MID METER self.current_l2",self.current_l2)
                 # print("MID METER self.current_l3",self.current_l3)
                 # print("MID METER self.power",self.power)
+                print("MID METER ********************* energy",round(self.read_input_float(register_address=73)))
                 print("MID METER self.energy",self.energy)
                 print("MID METER self.firstEnergy",self.firstEnergy)
                 self.connection = True

@@ -42,47 +42,24 @@ class ModbusModule:
     @connection.setter
     def connection(self, value):
         if self.__connection != value:
-            self.__connection = value
-            if value:
-                print(Color.Yellow.value,"Mid Meter bağlandı.")
+            if value == True:
+                print(Color.Blue.value,"Mid Meter Bağlandı")
                 self.application.testWebSocket.send_mid_meter_state(True)
-                first_energy = self.read_input_float(register_address=73)
-                self.firstEnergy = round(first_energy / 1000, 2) if first_energy is not None else None
+                self.firstEnergy = self.read_input_float(register_address=73)
+        self.__connection = value
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
-        try:
-            result = self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
-            return result
-        except minimalmodbus.NoResponseError:
-            # print("No response from instrument at register", register_address)
-            return None
-        except Exception as e:
-            # print("Exception in read_float:", e)
-            return None
+        return self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
+        
 
     def write_float(self, register_address, value, number_of_registers=2, byteorder=0):
-        try:
-            self.instrument.write_float(register_address, value, functioncode=16, number_of_registers=number_of_registers, byteorder=byteorder)
-        except minimalmodbus.NoResponseError:
-            # print("No response from instrument when writing to register", register_address)
-            pass
-        except Exception as e:
-            pass
-            # print("Exception in write_float:", e)
+        self.instrument.write_float(register_address, value, functioncode=16, number_of_registers=number_of_registers, byteorder=byteorder)
 
     def read_input_float(self, register_address):
         adjusted_address = register_address - 1
-        try:
-            float_val = self.read_float(adjusted_address, number_of_registers=2)
-            if float_val is not None:
-                result = round(float_val, 2)
-                return result
-            else:
-                # print("Failed to read input float from register %s", register_address)
-                return None
-        except Exception as e:
-            # print("Exception in read_input_float: %s", e)
-            return None
+        float_val = self.read_float(adjusted_address, number_of_registers=2)
+        return round(float_val,2)
+            
     
     def read_all_data(self):
         counter = 0
@@ -94,11 +71,20 @@ class ModbusModule:
                 self.current_L1 = self.read_input_float(register_address=7)
                 self.current_L2 = self.read_input_float(register_address=9)
                 self.current_L3 = self.read_input_float(register_address=11)
-                power_reading = self.read_input_float(register_address=53)
-                self.power = round(power_reading / 1000, 2) if power_reading is not None else None
-                energy_reading = self.read_input_float(register_address=73)
-                self.energy = round(energy_reading / 1000, 2) if energy_reading is not None else None
+                self.power = round(self.read_input_float(register_address=53)/1000,2)
+                self.energy = self.read_input_float(register_address=73)
                 counter = 0
+                # print("-----------MID METER-----------------")
+                # print("MID METER self.volt_l1",self.volt_l1)
+                # print("MID METER self.volt_l2",self.volt_l2)
+                # print("MID METER self.volt_l3",self.volt_l3)
+                # print("MID METER self.current_l1",self.current_l1)
+                # print("MID METER self.current_l2",self.current_l2)
+                # print("MID METER self.current_l3",self.current_l3)
+                # print("MID METER self.power",self.power)
+                print("MID METER ********************* energy",self.read_input_float(register_address=73))
+                print("MID METER self.energy",self.energy)
+                print("MID METER self.firstEnergy",self.firstEnergy)
                 self.connection = True
             except Exception as e:
                 counter += 1

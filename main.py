@@ -216,30 +216,29 @@ class Application():
     def read_charge_values_thred(self):
         while True:
             try:
-                # MID meter veya MCU'den veri alınıyor
-                if (self.settings.deviceSettings.mid_meter or self.settings.deviceSettings.externalMidMeter) and self.modbusModule.connection:
-                    self.ev.current_L1 = self.modbusModule.current_L1 if self.modbusModule.current_L1 is not None else 0
-                    self.ev.current_L2 = self.modbusModule.current_L2 if self.modbusModule.current_L2 is not None else 0
-                    self.ev.current_L3 = self.modbusModule.current_L3 if self.modbusModule.current_L3 is not None else 0
-                    self.ev.voltage_L1 = self.modbusModule.voltage_L1 if self.modbusModule.voltage_L1 is not None else 0
-                    self.ev.voltage_L2 = self.modbusModule.voltage_L2 if self.modbusModule.voltage_L2 is not None else 0
-                    self.ev.voltage_L3 = self.modbusModule.voltage_L3 if self.modbusModule.voltage_L3 is not None else 0
-                    # Güvenli bir çıkarma işlemi için None kontrolü ekleyin
-                    energy = self.modbusModule.energy if self.modbusModule.energy is not None else 0
-                    firstEnergy = self.modbusModule.firstEnergy if self.modbusModule.firstEnergy is not None else 0
-                    self.ev.energy = round(energy - firstEnergy, 2)
-                    self.ev.power = self.modbusModule.power if self.modbusModule.power is not None else 0
-                elif not self.settings.deviceSettings.mid_meter and not self.settings.deviceSettings.externalMidMeter:
-                    self.ev.current_L1 = self.serialPort.current_L1 if self.serialPort.current_L1 is not None else 0
-                    self.ev.current_L2 = self.serialPort.current_L2 if self.serialPort.current_L2 is not None else 0
-                    self.ev.current_L3 = self.serialPort.current_L3 if self.serialPort.current_L3 is not None else 0
-                    self.ev.voltage_L1 = self.serialPort.voltage_L1 if self.serialPort.voltage_L1 is not None else 0
-                    self.ev.voltage_L2 = self.serialPort.voltage_L2 if self.serialPort.voltage_L2 is not None else 0
-                    self.ev.voltage_L3 = self.serialPort.voltage_L3 if self.serialPort.voltage_L3 is not None else 0
-                    self.ev.energy = round(self.serialPort.energy if self.serialPort.energy is not None else 0, 2)
-                    self.ev.power = self.serialPort.power if self.serialPort.power is not None else 0
+
+                # print("-------------CHARGE VALUES------------")
+                if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
+                    print("Veriler MID'den alınıyor...")
+                    self.ev.current_L1 = self.modbusModule.current_L1
+                    self.ev.current_L2 = self.modbusModule.current_L2
+                    self.ev.current_L3 = self.modbusModule.current_L3
+                    self.ev.voltage_L1 = self.modbusModule.voltage_L1
+                    self.ev.voltage_L2 = self.modbusModule.voltage_L2
+                    self.ev.voltage_L3 = self.modbusModule.voltage_L3
+                    self.ev.energy = round(self.modbusModule.energy - self.modbusModule.firstEnergy,2)
+                    self.ev.power =  self.modbusModule.power
+                elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
+                    print("Veriler MCU'dan alınıyor...")
+                    self.ev.current_L1 = self.serialPort.current_L1
+                    self.ev.current_L2 = self.serialPort.current_L2
+                    self.ev.current_L3 = self.serialPort.current_L3
+                    self.ev.voltage_L1 = self.serialPort.voltage_L1
+                    self.ev.voltage_L2 = self.serialPort.voltage_L2
+                    self.ev.voltage_L3 = self.serialPort.voltage_L3
+                    self.ev.energy = round(self.serialPort.energy,2)
+                    self.ev.power =  self.serialPort.power
                 else:
-                    # Veriler geçerli değilse sıfırla
                     self.ev.current_L1 = 0
                     self.ev.current_L2 = 0
                     self.ev.current_L3 = 0
@@ -247,13 +246,23 @@ class Application():
                     self.ev.voltage_L2 = 0
                     self.ev.voltage_L3 = 0
                     self.ev.energy = 0
-                    self.ev.power = 0
+                    self.ev.power =  0
                     
-                # Her saniye verileri güncelle
+                # print("self.ev.current_L1",self.ev.current_L1)
+                # print("self.ev.current_L2",self.ev.current_L2)
+                # print("self.ev.current_L3",self.ev.current_L3)
+                # print("self.ev.voltage_L1",self.ev.voltage_L1)
+                # print("self.ev.voltage_L2",self.ev.voltage_L2)
+                # print("self.ev.voltage_L3",self.ev.voltage_L3)
+                print("self.ev.energy",self.ev.energy)
+                # print("self.ev.power",self.ev.power)
                 time.sleep(1)
                 
             except Exception as e:
-                print("read_charge_values_thred Exception:", e)
+                print("read_charge_values_thred",e)
+
+
+
     async def ocppStart(self):
         try:
             self.ocppActive = False

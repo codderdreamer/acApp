@@ -42,11 +42,11 @@ class ModbusModule:
     @connection.setter
     def connection(self, value):
         if self.__connection != value:
-            self.__connection = value
             if value == True:
                 print(Color.Blue.value,"Mid Meter Bağlandı")
                 self.application.testWebSocket.send_mid_meter_state(True)
                 self.firstEnergy = round(self.read_input_float(register_address=73)/1000,2)
+        self.__connection = value
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
         return self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
@@ -82,7 +82,8 @@ class ModbusModule:
                 # print("MID METER self.current_l2",self.current_l2)
                 # print("MID METER self.current_l3",self.current_l3)
                 # print("MID METER self.power",self.power)
-                # print("MID METER self.energy",self.energy)
+                print("MID METER self.energy",self.energy)
+                print("MID METER self.firstEnergy",self.firstEnergy)
                 self.connection = True
             except Exception as e:
                 counter += 1

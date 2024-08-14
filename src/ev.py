@@ -56,9 +56,7 @@ class EV():
         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
 
     def ocpp_online(self):
-        if time.time() - time_value > 5:
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-            time_value = time.time()
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
         if self.application.availability == AvailabilityType.operative:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
         else:

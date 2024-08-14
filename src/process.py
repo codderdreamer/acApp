@@ -422,7 +422,7 @@ class Process:
         print("Suspended evse function")
         time_start = time.time()
         self.charge_try_counter += 1
-        self.application.meter_values_on = False
+        self.application.meter_values_on = True
         if self.charge_try_counter == 4:
             self.application.deviceState = DeviceState.FAULT
             return

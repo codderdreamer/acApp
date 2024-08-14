@@ -384,6 +384,7 @@ class Process:
                     self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"OverPowerFailure")
                 elif value == PidErrorList.OverVoltageFailure:
                     self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
         elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")
@@ -454,7 +455,6 @@ class Process:
             elif self.application.ev.control_pilot == ControlPlot.stateC.value:
                 self.application.deviceState = DeviceState.CHARGING
 
-        
     def suspended_ev(self):
         print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
         self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_ev)
@@ -472,8 +472,7 @@ class Process:
             else:
                 break
             time.sleep(0.3)
-
-             
+       
     def stopped_by_evse(self):
         self.application.databaseModule.set_charge("False", "", "")
         self.application.ev.start_stop_authorize = False

@@ -88,8 +88,12 @@ class EV():
                 elif self.is_there_other_error():
                     if self.application.process.charge_try_counter > 3:
                         self.application.deviceState = DeviceState.FAULT
-                    else:
+                    elif (self.control_pilot == ControlPlot.stateB.value) or (self.control_pilot == ControlPlot.stateC.value):
                         self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                    elif (self.control_pilot == ControlPlot.stateA.value):
+                        self.application.deviceState = DeviceState.FAULT
+                    else:
+                        self.application.deviceState = DeviceState.FAULT
                 self.application.serialPort.error = False
             except Exception as e:
                 print("******************************************** control_error_list Exception",e)

@@ -17,10 +17,13 @@ class Process:
     def relay_control(self,relay:Relay):
         counter = 0
         while True:
+            if self.application.ev.pid_relay_control == relay:
+                return True
             self.application.serialPort.set_command_pid_relay_control(relay)
-            time.sleep(1)
+            time.sleep(0.5)
             self.application.serialPort.get_command_pid_relay_control()
-            if self.application.ev.pid_relay_control == relay.value:
+            time.sleep(0.5)
+            if self.application.ev.pid_relay_control == relay:
                 return True
             else:
                 counter += 1
@@ -220,9 +223,8 @@ class Process:
         time_start = time.time()
         self.application.databaseModule.set_charge("True", str(self.id_tag), str(self.transaction_id))
         self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
-        self.application.serialPort.get_command_pid_relay_control()
-        time.sleep(1)
-        self.application.testWebSocket.send_relay_control_on(self.application.ev.pid_relay_control)
+        # self.application.serialPort.get_command_pid_relay_control()
+        # time.sleep(1)
 
         if self.application.deviceState != DeviceState.CHARGING:
             return
@@ -399,9 +401,9 @@ class Process:
         elif self.locker_error:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"LockerError")
-        elif not self.application.ev.pid_relay_control:
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
-            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"RelayError")
+        # elif not self.application.ev.pid_relay_control:
+        #     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
+        #     self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"RelayError")
         elif self.application.ev.proximity_pilot_current == 0:
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"proximity_pilot_current = 0")

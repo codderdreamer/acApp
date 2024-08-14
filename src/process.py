@@ -356,49 +356,34 @@ class Process:
                     self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")
                 elif value == PidErrorList.EVCommunicationPortError:
                     self.application.change_status_notification(ChargePointErrorCode.ev_communication_error,ChargePointStatus.faulted,"EVCommunicationPortError")
-            if (int(data[9]) == 1):
-                error_list.append(PidErrorList.EarthDisconnectFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.ground_failure,status,"EarthDisconnectFailure")
-            if (int(data[10]) == 1):
-                error_list.append(PidErrorList.RcdInitializeError)
-                # self.application.change_status_notification(ChargePointErrorCode.ground_failure,status,"RcdInitializeError")
-            if (int(data[11]) == 1):
-                error_list.append(PidErrorList.RcdTripError)
-                # self.application.change_status_notification(ChargePointErrorCode.ground_failure,status,"RcdTripError")
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon=True).start()
-            if (int(data[12]) == 1):
-                error_list.append(PidErrorList.HighTemperatureFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.high_temperature,status,"HighTemperatureFailure")
-            if (int(data[13]) == 1):
-                error_list.append(PidErrorList.OverCurrentFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.over_current_failure,status,"OverCurrentFailure")
-            if (int(data[14]) == 1):
-                error_list.append(PidErrorList.OverVoltageFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.over_voltage,status,"OverVoltageFailure")
-            if (int(data[15]) == 1):
-                error_list.append(PidErrorList.InternalEnergyMeterFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.power_meter_failure,status,"InternalEnergyMeterFailure")
-            if (int(data[16]) == 1):
-                error_list.append(PidErrorList.PowerSwitchFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.power_switch_failure,status,"PowerSwitchFailure")
-            if (int(data[17]) == 1):
-                error_list.append(PidErrorList.RFIDReaderFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.reader_failure,status,"RFIDReaderFailure")
-            if (int(data[18]) == 1):
-                error_list.append(PidErrorList.UnderVoltageFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.under_voltage,status,"UnderVoltageFailure")
-            if (int(data[19]) == 1):
-                error_list.append(PidErrorList.FrequencyFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.other_error,status,"FrequencyFailure")
-            if (int(data[20]) == 1):
-                error_list.append(PidErrorList.PhaseSequenceFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.other_error,status,"PhaseSequenceFailure")
-            if (int(data[21]) == 1):
-                error_list.append(PidErrorList.OverPowerFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.other_error,status,"OverPowerFailure")
-            if (self.application.create_error):
-                error_list.append(PidErrorList.OverVoltageFailure)
-                # self.application.change_status_notification(ChargePointErrorCode.over_voltage,status,"OverVoltageFailure")
+                elif value == PidErrorList.EarthDisconnectFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"EarthDisconnectFailure")
+                elif value == PidErrorList.RcdInitializeError:
+                    self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdInitializeError")
+                elif value == PidErrorList.RcdTripError:
+                    self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
+                elif value == PidErrorList.HighTemperatureFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.high_temperature,ChargePointStatus.faulted,"HighTemperatureFailure")
+                elif value == PidErrorList.OverCurrentFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.over_current_failure,ChargePointStatus.faulted,"OverCurrentFailure")
+                elif value == PidErrorList.OverVoltageFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
+                elif value == PidErrorList.InternalEnergyMeterFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.power_meter_failure,ChargePointStatus.faulted,"InternalEnergyMeterFailure")
+                elif value == PidErrorList.PowerSwitchFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.power_switch_failure,ChargePointStatus.faulted,"PowerSwitchFailure")
+                elif value == PidErrorList.RFIDReaderFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.reader_failure,ChargePointStatus.faulted,"RFIDReaderFailure")
+                elif value == PidErrorList.UnderVoltageFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.under_voltage,ChargePointStatus.faulted,"UnderVoltageFailure")
+                elif value == PidErrorList.FrequencyFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.under_voltage,ChargePointStatus.faulted,"FrequencyFailure")
+                elif value == PidErrorList.PhaseSequenceFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"PhaseSequenceFailure")
+                elif value == PidErrorList.OverPowerFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"OverPowerFailure")
+                elif value == PidErrorList.OverVoltageFailure:
+                    self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
         elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.NeedReplugging,), daemon=True).start()
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")

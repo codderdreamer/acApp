@@ -229,7 +229,7 @@ class Application():
 
                 # print("-------------CHARGE VALUES------------")
                 if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
-                    print("Veriler MID'den alınıyor...")
+                    # print("Veriler MID'den alınıyor...")
                     self.ev.current_L1 = self.modbusModule.current_L1
                     self.ev.current_L2 = self.modbusModule.current_L2
                     self.ev.current_L3 = self.modbusModule.current_L3
@@ -239,7 +239,7 @@ class Application():
                     self.ev.energy = round((self.modbusModule.energy - self.modbusModule.firstEnergy),3)
                     self.ev.power =  self.modbusModule.power
                 elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
-                    print("Veriler MCU'dan alınıyor...")
+                    # print("Veriler MCU'dan alınıyor...")
                     self.ev.current_L1 = self.serialPort.current_L1
                     self.ev.current_L2 = self.serialPort.current_L2
                     self.ev.current_L3 = self.serialPort.current_L3
@@ -264,7 +264,7 @@ class Application():
                 # print("self.ev.voltage_L1",self.ev.voltage_L1)
                 # print("self.ev.voltage_L2",self.ev.voltage_L2)
                 # print("self.ev.voltage_L3",self.ev.voltage_L3)
-                print("self.ev.energy",self.ev.energy)
+                # print("self.ev.energy",self.ev.energy)
                 # print("self.ev.power",self.ev.power)
                 time.sleep(1)
                 

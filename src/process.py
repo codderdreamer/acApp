@@ -52,6 +52,8 @@ class Process:
 
     def set_max_current(self):
         if self.application.socketType == SocketType.Type2:
+            if self.application.max_current==None or self.application.ev.proximity_pilot_current==None:
+                time.sleep(3)
             if int(self.application.max_current) > int(self.application.ev.proximity_pilot_current):
                 self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))
             else:
@@ -225,10 +227,14 @@ class Process:
             try:
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
                     break
+                if self.application.settings.deviceSettings.mid_meter:
+                    print(Color.Blue.value,"Mid Meter aktif.")
+                elif self.application.settings.deviceSettings.externalMidMeter:
+                    print(Color.Blue.value,"Mid Meter aktif.")
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         if time.time() - time_start > 6:
-                            print("if time.time() - time_start > 6:")
+                            print(Color.Red.value,"Mid Meter bağlanamadı!")
                             self.application.deviceState = DeviceState.FAULT
                             self.application.testWebSocket.send_mid_meter_state(False)
                             break

@@ -289,6 +289,7 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
+            print(data_dict)
             self.application.settings.deviceSettings.mid_meter = (data_dict["midMeter"] == "True")
             self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
             self.application.settings.deviceSettings.externalMidMeter = (data_dict["externalMidMeter"]=="True")

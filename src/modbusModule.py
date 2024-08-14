@@ -52,19 +52,21 @@ class ModbusModule:
             result = self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
             return result
         except minimalmodbus.NoResponseError:
-            print("No response from instrument at register", register_address)
+            # print("No response from instrument at register", register_address)
             return None
         except Exception as e:
-            print("Exception in read_float:", e)
+            # print("Exception in read_float:", e)
             return None
 
     def write_float(self, register_address, value, number_of_registers=2, byteorder=0):
         try:
             self.instrument.write_float(register_address, value, functioncode=16, number_of_registers=number_of_registers, byteorder=byteorder)
         except minimalmodbus.NoResponseError:
-            print("No response from instrument when writing to register", register_address)
+            # print("No response from instrument when writing to register", register_address)
+            pass
         except Exception as e:
-            print("Exception in write_float:", e)
+            pass
+            # print("Exception in write_float:", e)
 
     def read_input_float(self, register_address):
         adjusted_address = register_address - 1
@@ -74,10 +76,10 @@ class ModbusModule:
                 result = round(float_val, 2)
                 return result
             else:
-                print("Failed to read input float from register %s", register_address)
+                # print("Failed to read input float from register %s", register_address)
                 return None
         except Exception as e:
-            print("Exception in read_input_float: %s", e)
+            # print("Exception in read_input_float: %s", e)
             return None
     
     def read_all_data(self):

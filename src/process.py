@@ -14,6 +14,20 @@ class Process:
         self.locker_error = False
         self.charge_try_counter = 0
 
+    def relay_control(self,relay:Relay):
+        counter = 0
+        while True:
+            self.application.serialPort.set_command_pid_relay_control(relay)
+            time.sleep(1)
+            self.application.serialPort.get_command_pid_relay_control()
+            if self.application.ev.pid_relay_control == relay.value:
+                return True
+            else:
+                counter += 1
+            if counter == 3:
+                return False
+
+
     def unlock(self):
         time_start = time.time()
         while True:
@@ -213,7 +227,7 @@ class Process:
         if self.application.deviceState != DeviceState.CHARGING:
             return
 
-        if not self.application.ev.pid_relay_control:
+        if self.relay_control() == False:
             print("if not self.application.ev.pid_relay_control self.application.ev.control_pilot",self.application.ev.control_pilot)
             self.application.deviceState = DeviceState.FAULT
             return

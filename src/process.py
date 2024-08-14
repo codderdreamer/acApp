@@ -435,7 +435,7 @@ class Process:
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         if self.application.socketType == SocketType.Type2:
             self.unlock()
-        self.application.ev.charge = False
+        # self.application.ev.charge = False
         while True:
             time.sleep(1)
             if time.time() - time_start > 30:

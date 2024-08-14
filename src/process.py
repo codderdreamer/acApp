@@ -230,7 +230,7 @@ class Process:
                 if self.application.settings.deviceSettings.mid_meter:
                     print(Color.Blue.value,"Mid Meter aktif.")
                 elif self.application.settings.deviceSettings.externalMidMeter:
-                    print(Color.Blue.value,"Mid Meter aktif.")
+                    print(Color.Blue.value,"External Mid Meter aktif.")
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         if time.time() - time_start > 6:

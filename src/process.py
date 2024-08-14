@@ -422,7 +422,7 @@ class Process:
         print("Suspended evse function")
         time_start = time.time()
         self.charge_try_counter += 1
-        self.application.meter_values_on = True
+        self.application.meter_values_on = False
         if self.charge_try_counter == 4:
             self.application.deviceState = DeviceState.FAULT
             return
@@ -510,7 +510,7 @@ class Process:
                 if value == PidErrorList.RcdInitializeError:
                     return
                 
-        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+        if (self.application.cardType == CardType.BillingCard) and self.application.ev.charge:
             self.application.meter_values_on = False
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)

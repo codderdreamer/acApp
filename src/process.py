@@ -220,7 +220,7 @@ class Process:
             return
 
         if not self.application.ev.pid_relay_control:
-            print("if not self.application.ev.pid_relay_control")
+            print("if not self.application.ev.pid_relay_control self.application.ev.control_pilot",self.application.ev.control_pilot)
             self.application.deviceState = DeviceState.FAULT
             return
         while True:

@@ -27,7 +27,7 @@ class Process:
                 return True
             else:
                 counter += 1
-            if counter == 3:
+            if counter == 4:
                 return False
 
 

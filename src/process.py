@@ -427,12 +427,11 @@ class Process:
         print("Suspended evse function")
         time_start = time.time()
         self.charge_try_counter += 1
-        print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
         self.application.meter_values_on = False
         if self.charge_try_counter == 4:
             self.application.deviceState = DeviceState.FAULT
-            self.charge_try_counter = 0
             return
+        print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
         for value in self.application.serialPort.error_list:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.Fault,), daemon=True).start()
@@ -500,6 +499,7 @@ class Process:
             self.unlock()
             
     def idle(self):
+        self.charge_try_counter = 0
         self.locker_error = False
         self.application.databaseModule.set_charge("False","","")
         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)

@@ -42,16 +42,14 @@ class ModbusModule:
     @connection.setter
     def connection(self, value):
         if self.__connection != value:
-            if value:
-                print(Color.Yellow.value,"Mid Meter bağlandı.")
+            self.__connection = value
+            if value == True:
+                print(Color.Blue.value,"Mid Meter Bağlandı")
                 self.application.testWebSocket.send_mid_meter_state(True)
-                first_energy = self.read_input_float(register_address=73)
-                self.firstEnergy = round(first_energy / 1000, 2) if first_energy is not None else None
-        self.__connection = value
+                self.firstEnergy = round(self.read_input_float(register_address=73)/1000,2)
 
     def read_float(self, register_address, number_of_registers=2, byteorder=0):
-        result = self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
-        return result
+        return self.instrument.read_float(register_address, functioncode=4, number_of_registers=number_of_registers, byteorder=byteorder)
         
 
     def write_float(self, register_address, value, number_of_registers=2, byteorder=0):
@@ -60,9 +58,7 @@ class ModbusModule:
     def read_input_float(self, register_address):
         adjusted_address = register_address - 1
         float_val = self.read_float(adjusted_address, number_of_registers=2)
-        if float_val is not None:
-            result = round(float_val, 2)
-            return result
+        return round(float_val,2)
             
     
     def read_all_data(self):
@@ -75,11 +71,18 @@ class ModbusModule:
                 self.current_L1 = self.read_input_float(register_address=7)
                 self.current_L2 = self.read_input_float(register_address=9)
                 self.current_L3 = self.read_input_float(register_address=11)
-                power_reading = self.read_input_float(register_address=53)
-                self.power = round(power_reading / 1000, 2) if power_reading is not None else None
-                energy_reading = self.read_input_float(register_address=73)
-                self.energy = round(energy_reading / 1000, 2) if energy_reading is not None else None
+                self.power = round(self.read_input_float(register_address=53)/1000,2)
+                self.energy = round(self.read_input_float(register_address=73)/1000,2)
                 counter = 0
+                # print("-----------MID METER-----------------")
+                # print("MID METER self.volt_l1",self.volt_l1)
+                # print("MID METER self.volt_l2",self.volt_l2)
+                # print("MID METER self.volt_l3",self.volt_l3)
+                # print("MID METER self.current_l1",self.current_l1)
+                # print("MID METER self.current_l2",self.current_l2)
+                # print("MID METER self.current_l3",self.current_l3)
+                # print("MID METER self.power",self.power)
+                # print("MID METER self.energy",self.energy)
                 self.connection = True
             except Exception as e:
                 counter += 1

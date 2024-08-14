@@ -227,7 +227,7 @@ class Process:
         if self.application.deviceState != DeviceState.CHARGING:
             return
 
-        if self.relay_control() == False:
+        if self.relay_control(Relay.On) == False:
             print("if not self.application.ev.pid_relay_control self.application.ev.control_pilot",self.application.ev.control_pilot)
             self.application.deviceState = DeviceState.FAULT
             return

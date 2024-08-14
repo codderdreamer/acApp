@@ -79,12 +79,8 @@ class EV():
 
     def control_error_list(self):
         time.sleep(10)
-        counter = 0
-        time_start = None
-        time_value = time.time()
         while True:
             try:
-                time_value = time.time()
                 if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
                     self.ocpp_offline()
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.serialPort.error == False):

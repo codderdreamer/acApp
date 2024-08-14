@@ -3,6 +3,7 @@ import serial
 import time
 from threading import Thread
 from src.logger import ac_app_logger as logger
+from src.enums import *
 
 class ModbusModule:
     def __init__(self, application, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
@@ -43,6 +44,7 @@ class ModbusModule:
         if self.__connection != value:
             self.__connection = value
             if value:
+                print(Color.Yellow.value,"Mid Meter bağlandı.")
                 self.application.testWebSocket.send_mid_meter_state(True)
                 first_energy = self.read_input_float(register_address=73)
                 self.firstEnergy = round(first_energy / 1000, 2) if first_energy is not None else None

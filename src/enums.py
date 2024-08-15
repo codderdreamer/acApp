@@ -162,4 +162,3 @@ def get_enum_member_by_value(enum_class, value):  # enum döndürür
 
 
 
-

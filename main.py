@@ -29,9 +29,6 @@ import base64
 
 file = open("/root/output.txt", "a")
 
-
-file = open("/root/output.txt", "a")
-
 original_print = builtins.print
 def timestamped_print(color = "",*args, **kwargs):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -94,19 +91,6 @@ class Application():
         self.chargePointStatus = ChargePointStatus.available
 
         self.create_error = False
-
-    def control_output(self):
-        while True:
-            try:
-                file_size = os.path.getsize("/root/output.txt")
-                print("file size:",file_size)
-                one_mb = 1024*1024
-                if file_size >= one_mb*30:
-                    os.system("rm -r /root/output.txt")
-            except Exception as e:
-                print("control_output Exception:",e)
-            time.sleep(60*10)
-
 
     def simu_test(self):
         while True:

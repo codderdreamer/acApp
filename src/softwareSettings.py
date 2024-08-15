@@ -389,7 +389,6 @@ class SoftwareSettings():
         except Exception as e:
             print("find_stateOfOcpp Exception:",e)
 
-
     def strenghtOf4G(self):
         try:
             enableModification = self.application.settings.settings4G.enableModification

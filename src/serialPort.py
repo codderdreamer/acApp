@@ -8,7 +8,7 @@ import asyncio
 from ocpp.v16.enums import *
 
 class SerialPort():
-    def __init__(self, application, logger) -> None:
+    def __init__(self, application) -> None:
         self.application = application
         self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
         self.send_data_list = []

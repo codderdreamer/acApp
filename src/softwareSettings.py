@@ -449,6 +449,8 @@ class SoftwareSettings():
             name = output.split("\n")[0]
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
             if name != new_bluetooth_name:
+                os.system("hostnamectl set-hostname " + new_bluetooth_name)
+                time.sleep(1)
                 os.system("reboot")
         except Exception as e:
             print("Exception in set_bluetooth_settings")

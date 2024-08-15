@@ -2,7 +2,6 @@ import minimalmodbus
 import serial
 import time
 from threading import Thread
-from src.logger import ac_app_logger as logger
 from src.enums import *
 
 class ModbusModule:

@@ -6,7 +6,6 @@ from datetime import datetime
 from src.enums import *
 from threading import Thread
 import os
-from src.logger import ac_app_logger as logger
 
 
 class DatabaseModule():

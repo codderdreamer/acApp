@@ -8,7 +8,6 @@ from src.bluetoothService import exceptions
 from src.bluetoothService import adapters
 from datetime import datetime
 
-from src.logger import ac_app_logger as logger
 
 
 BLUEZ_SERVICE_NAME = 'org.bluez'

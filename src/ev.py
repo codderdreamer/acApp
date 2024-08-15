@@ -6,7 +6,6 @@ from datetime import datetime
 from ocpp.v16.datatypes import *
 from ocpp.v16.enums import *
 import os
-from src.logger import ac_app_logger as logger
 
 class EV():
     def __init__(self, application):

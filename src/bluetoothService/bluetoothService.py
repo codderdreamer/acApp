@@ -15,7 +15,6 @@ from src.bluetoothService import gatt_server
 import time
 from datetime import datetime
 
-from src.logger import ac_app_logger as logger
 
 
 class BluetoothService():

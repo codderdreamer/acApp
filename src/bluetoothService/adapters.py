@@ -16,7 +16,6 @@ GATT_SERVICE_IFACE = 'org.bluez.GattService1'
 GATT_CHRC_IFACE =    'org.bluez.GattCharacteristic1'
 GATT_DESC_IFACE =    'org.bluez.GattDescriptor1'
 
-from src.logger import ac_app_logger as logger
 
 def find_adapter(bus, adapter_interface_name, adapter_name):
     try:

@@ -4,7 +4,6 @@ import time
 from threading import Thread
 from src.enums import *
 from src.modbusModule import ModbusModule
-from src.logger import ac_app_logger as logger
 import os
 import base64 
 

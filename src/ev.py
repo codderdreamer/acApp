@@ -11,16 +11,13 @@ from src.logger import ac_app_logger as logger
 class EV():
     def __init__(self, application):
         self.application = application
-
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6
         self.__proximity_pilot_current = None
-
         self.pid_cp_pwm = None                  # float
         self.pid_relay_control = None
         self.pid_led_control = None
         self.pid_locker_control = None
-
         self.current_L1 = 0
         self.current_L2 = 0
         self.current_L3 = 0
@@ -29,25 +26,18 @@ class EV():
         self.voltage_L3 = 0
         self.power = 0
         self.energy = 0
-
         self.temperature = None
-
         self.start_date = None
-
         self.__charge = False
         self.__card_id = None
         self.__id_tag = None
-
         self.reservation_id = None
         self.reservation_id_tag =  None
         self.expiry_date = None
-
         self.send_message_thread_start = False
-
         self.start_stop_authorize = False
         self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
-
         self.charging_again = False
 
     def ocpp_offline(self):

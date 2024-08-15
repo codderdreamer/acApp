@@ -24,6 +24,10 @@ import os
 from src.webSocket import *
 import builtins
 from src.logger import ac_app_logger as logger
+import ssl
+import base64
+
+file = open("/root/output.txt", "a")
 
 
 file = open("/root/output.txt", "a")
@@ -57,10 +61,8 @@ class Application():
         self.masterCard = None
         self.availability = AvailabilityType.operative
         self.bluetooth_error = None
-        
-        self.__chargingStatus = None
+        self.__chargePointStatus = None
         self.__error_code = None
-        
         self.__deviceState = None
         self.ocppActive = False
         self.cardType: CardType = None
@@ -70,7 +72,6 @@ class Application():
         self.control_C_B = False
         self.control_A_C = False
         self.meter_values_on = False
-        
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
         self.bluetoothService = BluetoothService(self)
@@ -82,20 +83,17 @@ class Application():
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self,logger)
         self.process = Process(self)
-        
         if self.settings.deviceSettings.externalMidMeter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
-        
         Thread(target=self.read_charge_values_thred, daemon=True).start()
         Thread(target=self.control_output,daemon=True).start()
-
-        self.deviceState = DeviceState.IDLE
-
         Thread(target=self.simu_test,daemon=True).start()
+        self.deviceState = DeviceState.IDLE
+        self.chargePointStatus = ChargePointStatus.available
 
-        self.chargingStatus = ChargePointStatus.available
+        self.create_error = False
 
     def control_output(self):
         while True:
@@ -112,25 +110,34 @@ class Application():
 
     def simu_test(self):
         while True:
-            try:
-                x = input()
-                if x == "1":
-                    self.serialPort.error_list = [PidErrorList.UnderVoltageFailure]
-                    self.serialPort.error = True
-                    print("hereeeeeeee")
-            except Exception as e:
-                print("simu_test Exception:",e)
+            x = input()
+            if x == "1":
+                self.create_error = True
+            elif x == "2":
+                self.create_error = False
             time.sleep(1)
 
-    @property
-    def chargingStatus(self):
-        return self.__chargingStatus
+    def control_output(self):
+        while True:
+            try:
+                file_size = os.path.getsize("/root/output.txt")
+                print("file size:",file_size)
+                one_mb = 1024*1024
+                if file_size >= one_mb*30:
+                    os.system("rm -r /root/output.txt")
+            except Exception as e:
+                print("control_output Exception:",e)
+            time.sleep(60*10)
 
-    @chargingStatus.setter
-    def chargingStatus(self, value):
-        if self.__chargingStatus != value:
+    @property
+    def chargePointStatus(self):
+        return self.__chargePointStatus
+
+    @chargePointStatus.setter
+    def chargePointStatus(self, value):
+        if self.__chargePointStatus != value:
             print(Color.Macenta.value, "Charge Point Status:", value)
-            self.__chargingStatus = value
+            self.__chargePointStatus = value
 
     @property
     def error_code(self):
@@ -201,11 +208,12 @@ class Application():
 
                 
     def change_status_notification(self, error_code : ChargePointErrorCode, status : ChargePointStatus, info:str = None):
-        if error_code != self.error_code or status != self.chargingStatus:
+        if error_code != self.error_code or status != self.chargePointStatus:
             self.error_code = error_code
-            self.chargingStatus = status
+            self.chargePointStatus = status
+            print("Error info:",info)
             if self.ocppActive:
-                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargingStatus,info=info),self.loop)
+                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=info),self.loop)
     
     def ocpp_control(self):
         while True:
@@ -235,30 +243,29 @@ class Application():
     def read_charge_values_thred(self):
         while True:
             try:
-                # MID meter veya MCU'den veri alınıyor
-                if (self.settings.deviceSettings.mid_meter or self.settings.deviceSettings.externalMidMeter) and self.modbusModule.connection:
-                    self.ev.current_L1 = self.modbusModule.current_L1 if self.modbusModule.current_L1 is not None else 0
-                    self.ev.current_L2 = self.modbusModule.current_L2 if self.modbusModule.current_L2 is not None else 0
-                    self.ev.current_L3 = self.modbusModule.current_L3 if self.modbusModule.current_L3 is not None else 0
-                    self.ev.voltage_L1 = self.modbusModule.voltage_L1 if self.modbusModule.voltage_L1 is not None else 0
-                    self.ev.voltage_L2 = self.modbusModule.voltage_L2 if self.modbusModule.voltage_L2 is not None else 0
-                    self.ev.voltage_L3 = self.modbusModule.voltage_L3 if self.modbusModule.voltage_L3 is not None else 0
-                    # Güvenli bir çıkarma işlemi için None kontrolü ekleyin
-                    energy = self.modbusModule.energy if self.modbusModule.energy is not None else 0
-                    firstEnergy = self.modbusModule.firstEnergy if self.modbusModule.firstEnergy is not None else 0
-                    self.ev.energy = round(energy - firstEnergy, 2)
-                    self.ev.power = self.modbusModule.power if self.modbusModule.power is not None else 0
-                elif not self.settings.deviceSettings.mid_meter and not self.settings.deviceSettings.externalMidMeter:
-                    self.ev.current_L1 = self.serialPort.current_L1 if self.serialPort.current_L1 is not None else 0
-                    self.ev.current_L2 = self.serialPort.current_L2 if self.serialPort.current_L2 is not None else 0
-                    self.ev.current_L3 = self.serialPort.current_L3 if self.serialPort.current_L3 is not None else 0
-                    self.ev.voltage_L1 = self.serialPort.voltage_L1 if self.serialPort.voltage_L1 is not None else 0
-                    self.ev.voltage_L2 = self.serialPort.voltage_L2 if self.serialPort.voltage_L2 is not None else 0
-                    self.ev.voltage_L3 = self.serialPort.voltage_L3 if self.serialPort.voltage_L3 is not None else 0
-                    self.ev.energy = round(self.serialPort.energy if self.serialPort.energy is not None else 0, 2)
-                    self.ev.power = self.serialPort.power if self.serialPort.power is not None else 0
+
+                # print("-------------CHARGE VALUES------------")
+                if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
+                    # print("Veriler MID'den alınıyor...")
+                    self.ev.current_L1 = self.modbusModule.current_L1
+                    self.ev.current_L2 = self.modbusModule.current_L2
+                    self.ev.current_L3 = self.modbusModule.current_L3
+                    self.ev.voltage_L1 = self.modbusModule.voltage_L1
+                    self.ev.voltage_L2 = self.modbusModule.voltage_L2
+                    self.ev.voltage_L3 = self.modbusModule.voltage_L3
+                    self.ev.energy = round((self.modbusModule.energy - self.modbusModule.firstEnergy),3)
+                    self.ev.power =  self.modbusModule.power
+                elif (self.settings.deviceSettings.mid_meter == False and self.settings.deviceSettings.externalMidMeter == False):
+                    # print("Veriler MCU'dan alınıyor...")
+                    self.ev.current_L1 = self.serialPort.current_L1
+                    self.ev.current_L2 = self.serialPort.current_L2
+                    self.ev.current_L3 = self.serialPort.current_L3
+                    self.ev.voltage_L1 = self.serialPort.voltage_L1
+                    self.ev.voltage_L2 = self.serialPort.voltage_L2
+                    self.ev.voltage_L3 = self.serialPort.voltage_L3
+                    self.ev.energy = round(self.serialPort.energy,2)
+                    self.ev.power =  self.serialPort.power
                 else:
-                    # Veriler geçerli değilse sıfırla
                     self.ev.current_L1 = 0
                     self.ev.current_L2 = 0
                     self.ev.current_L3 = 0
@@ -266,13 +273,23 @@ class Application():
                     self.ev.voltage_L2 = 0
                     self.ev.voltage_L3 = 0
                     self.ev.energy = 0
-                    self.ev.power = 0
+                    self.ev.power =  0
                     
-                # Her saniye verileri güncelle
+                # print("self.ev.current_L1",self.ev.current_L1)
+                # print("self.ev.current_L2",self.ev.current_L2)
+                # print("self.ev.current_L3",self.ev.current_L3)
+                # print("self.ev.voltage_L1",self.ev.voltage_L1)
+                # print("self.ev.voltage_L2",self.ev.voltage_L2)
+                # print("self.ev.voltage_L3",self.ev.voltage_L3)
+                # print("self.ev.energy",self.ev.energy)
+                # print("self.ev.power",self.ev.power)
                 time.sleep(1)
                 
             except Exception as e:
-                print("read_charge_values_thred Exception:", e)
+                print("read_charge_values_thred",e)
+
+
+
     async def ocppStart(self):
         try:
             self.ocppActive = False
@@ -288,9 +305,26 @@ class Application():
                     ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                     
                 # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
-                print(Color.Green.value,ocpp_url)
+                print(Color.Green.value,"Ocpp URL:",ocpp_url)
+
+                ssl_context = None
+                certs_dir = '/etc/acApp/certs'
+                cert_file_path = os.path.join(certs_dir, "local_certificate.pem")
+
+                if os.path.exists(cert_file_path) and self.settings.ocppSettings.certFileName:
+                    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                    ssl_context.load_verify_locations(cert_file_path)
+                    ssl_context.load_cert_chain(certfile=cert_file_path)
+                    print("Using verified SSL with certificate:", cert_file_path)
+                else:
+                    print("Using SSL without certificate")
+
+                auth_header = None
+                if self.settings.ocppSettings.authorizationKey:
+                    auth_header = {'Authorization': f'Basic {base64.b64encode(f"{self.settings.ocppSettings.chargePointId}:{self.settings.ocppSettings.authorizationKey}".encode()).decode()}'}
+
                 
-                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value],compression=None,timeout=5) as ws:
+                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value], ssl=ssl_context, extra_headers=auth_header, compression=None, timeout=10) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)
@@ -299,7 +333,7 @@ class Application():
         except Exception as e:
             print("ocppStart Exception:", e)
             self.ocppActive = False
-            if self.chargingStatus == ChargePointStatus.charging:
+            if self.chargePointStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
             
     def ocpp_task(self):

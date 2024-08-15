@@ -5,7 +5,8 @@ from threading import Thread
 from src.enums import *
 from src.modbusModule import ModbusModule
 from src.logger import ac_app_logger as logger
-
+import os
+import base64 
 
 
 class Settings():
@@ -133,7 +134,8 @@ class Settings():
                 "sslEnable": self.ocppSettings.sslEnable,
                 "authorizationKey": self.ocppSettings.authorizationKey,
                 "path": self.ocppSettings.path,
-                "chargePointId": self.ocppSettings.chargePointId
+                "chargePointId": self.ocppSettings.chargePointId,
+                "certFileName": self.ocppSettings.certFileName
             }
         }
         json_string = json.dumps(command)
@@ -346,11 +348,39 @@ class Settings():
                 authorizationKey = sjon["Data"]["authorizationKey"]
                 path = sjon["Data"]["path"]
                 chargePointId = sjon["Data"]["chargePointId"]
-                self.application.databaseModule.set_ocpp_settings(domainName, port, sslEnable, authorizationKey, path, chargePointId)
+                certFileName = sjon["Data"]["certFileName"]
+                self.application.databaseModule.set_ocpp_settings(domainName, port, sslEnable, authorizationKey, path, chargePointId, certFileName)
+                if "certificate" in sjon["Data"]:
+                    certificate_base64 = sjon["Data"]["certificate"]
+                    self.save_certificate(certificate_base64)
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_ocpp_settings())
                 self.change_ocpp = True
         except Exception as e:
             print("set_ocpp_settings Exception:",e)
+
+    def save_certificate(self, certificate_base64):
+        try:
+            certs_dir = '/etc/acApp/certs'
+            create_file_name = "local_certificate.pem"
+            file_path = os.path.join(certs_dir, create_file_name)
+            if not os.path.exists(certs_dir):
+                os.makedirs(certs_dir)
+            if not certificate_base64:
+                self.application.databaseModule.clear_certificate_name()
+                print("Certificate name removed from the database.")
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"Certificate file {file_path} deleted.")
+            else:
+                certificate_bytes = base64.b64decode(certificate_base64)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    print(f"Old certificate file {file_path} deleted.")
+                with open(file_path, 'wb') as cert_file:
+                    cert_file.write(certificate_bytes)
+                print(f"Certificate saved as {file_path}")
+        except Exception as e:
+            print(f"save_certificate Exception: {e}")
 
     def set_functions_enable(self, sjon):
         try:
@@ -479,6 +509,7 @@ class OcppSettings():
         self.authorizationKey = None
         self.path = None
         self.chargePointId = None
+        self.certFileName = None
         
 class FunctionsEnable():
     def __init__(self) -> None:

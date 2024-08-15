@@ -362,7 +362,11 @@ class SerialPort():
 
     def get_response_pid_relay_control(self, data):
         if data[2] == self.pid_relay_control:
-            self.application.ev.pid_relay_control = bool(int(data[7]))
+            if data[7] == "1":
+                self.application.ev.pid_relay_control = Relay.On
+            elif data[7] == "0":
+                self.application.ev.pid_relay_control = Relay.Off
+            print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
 
     def set_response_pid_led_control(self, data):
         if data[2] == self.pid_led_control:
@@ -469,57 +473,42 @@ class SerialPort():
             temp_sign = data[8]
             temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
             self.application.ev.temperature = temp_sign + str(temp)
-            # print(f"Temperature: {self.application.ev.temperature}")
 
     def get_response_pid_error_list(self, data):
         error_list = []
         if data[2] == self.pid_error_list:
-            # print("data:", data)
             if (int(data[7]) == 1):
                 error_list.append(PidErrorList.LockerInitializeError)
-                self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")
             if (int(data[8]) == 1):
                 error_list.append(PidErrorList.EVCommunicationPortError)
-                self.application.change_status_notification(ChargePointErrorCode.ev_communication_error,ChargePointStatus.faulted,"EVCommunicationPortError")
             if (int(data[9]) == 1):
                 error_list.append(PidErrorList.EarthDisconnectFailure)
-                self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"EarthDisconnectFailure")
             if (int(data[10]) == 1):
                 error_list.append(PidErrorList.RcdInitializeError)
-                self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdInitializeError")
             if (int(data[11]) == 1):
                 error_list.append(PidErrorList.RcdTripError)
-                self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
             if (int(data[12]) == 1):
                 error_list.append(PidErrorList.HighTemperatureFailure)
-                self.application.change_status_notification(ChargePointErrorCode.high_temperature,ChargePointStatus.faulted,"HighTemperatureFailure")
             if (int(data[13]) == 1):
                 error_list.append(PidErrorList.OverCurrentFailure)
-                self.application.change_status_notification(ChargePointErrorCode.over_current_failure,ChargePointStatus.faulted,"OverCurrentFailure")
             if (int(data[14]) == 1):
                 error_list.append(PidErrorList.OverVoltageFailure)
-                self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
             if (int(data[15]) == 1):
                 error_list.append(PidErrorList.InternalEnergyMeterFailure)
-                self.application.change_status_notification(ChargePointErrorCode.power_meter_failure,ChargePointStatus.faulted,"InternalEnergyMeterFailure")
             if (int(data[16]) == 1):
                 error_list.append(PidErrorList.PowerSwitchFailure)
-                self.application.change_status_notification(ChargePointErrorCode.power_switch_failure,ChargePointStatus.faulted,"PowerSwitchFailure")
             if (int(data[17]) == 1):
                 error_list.append(PidErrorList.RFIDReaderFailure)
-                self.application.change_status_notification(ChargePointErrorCode.reader_failure,ChargePointStatus.faulted,"RFIDReaderFailure")
             if (int(data[18]) == 1):
                 error_list.append(PidErrorList.UnderVoltageFailure)
-                self.application.change_status_notification(ChargePointErrorCode.under_voltage,ChargePointStatus.faulted,"UnderVoltageFailure")
             if (int(data[19]) == 1):
                 error_list.append(PidErrorList.FrequencyFailure)
-                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"FrequencyFailure")
             if (int(data[20]) == 1):
                 error_list.append(PidErrorList.PhaseSequenceFailure)
-                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"PhaseSequenceFailure")
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
-                self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"OverPowerFailure")
+            if (self.application.create_error):
+                error_list.append(PidErrorList.OverVoltageFailure)
 
             if len(error_list) > 0:
                 print(Color.Red.value,error_list)
@@ -540,7 +529,6 @@ class SerialPort():
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
-                    # print(f"Incoming data: {incoming}")
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

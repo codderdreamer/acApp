@@ -430,12 +430,13 @@ class SoftwareSettings():
         time.sleep(10)
         while True:
             try:
+                print("control_device_status")
                 self.ping_google()
                 self.find_network()
                 self.get_active_ips()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
-                # self.add_ip()
+                self.add_ip()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
                 print("control_device_status Exception:",e)

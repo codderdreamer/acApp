@@ -12,9 +12,8 @@ from subprocess import Popen, PIPE, STDOUT
 
 
 class SoftwareSettings():
-    def __init__(self, application, logger) -> None:
+    def __init__(self, application) -> None:
         self.application = application
-        self.logger = logger
         self.__success_interfaces = []
         self.set_functions_enable()
         Thread(target=self.set_eth, daemon=True).start()

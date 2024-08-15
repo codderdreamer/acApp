@@ -20,30 +20,24 @@ import requests
 import subprocess
 import zipfile
 
-from src.logger import ac_app_logger as logger
-from src.logger import LOGGER_CHARGE_POINT, LOGGER_CENTRAL_SYSTEM
-
-
 class ChargePoint16(cp):
     def __init__(self, application, id, connection, loop, response_timeout=5):
         super().__init__(id, connection, response_timeout)
         self.application = application
         self.loop = loop
         self.authorize = None
-        self.logger = logger
         self.start_transaction_result = None
 
     def reboot(self):
         time.sleep(7)
         os.system("reboot")
         
-
     async def send_data(self,request):
         try:
             print("************************************************** SEND DATA ******************************************* ")
-            LOGGER_CHARGE_POINT.info("\n???????????????????????????????? Request:%s", request)
+            print("\n???????????????????????????????? Request:", request)
             response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("\n????????????????????????????????Response:%s", response)
+            print("\n????????????????????????????????Response:", response)
             return response
         except Exception as e:
             print("******************************************************************************************send_data Exception:",e)
@@ -62,9 +56,9 @@ class ChargePoint16(cp):
                 id_tag = id_tag,
             )
             if self.application.ocppActive == True:
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                print("Request:", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                print("Response:", response)
                 self.authorize = response.id_tag_info['status']
                 if self.authorize == AuthorizationStatus.accepted:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
@@ -79,7 +73,6 @@ class ChargePoint16(cp):
                 return response
             else:
                 self.application.request_list.append(request)
-                
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
@@ -91,7 +84,6 @@ class ChargePoint16(cp):
                         self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
                     Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-        
         except Exception as e:
             print("send_authorize Exception:",e)
 
@@ -131,9 +123,9 @@ class ChargePoint16(cp):
                 meter_serial_number,
                 meter_type
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            print("Request:", request)
             response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            print("Response:", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
                 self.application.ocppActive = True
@@ -164,9 +156,9 @@ class ChargePoint16(cp):
                 message_id,
                 data
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            print("Request:", request)
             response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("send_data_transfer Exception:",e)
@@ -183,9 +175,9 @@ class ChargePoint16(cp):
             request = call.DiagnosticsStatusNotificationPayload(
                 status
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            print("Request:", request)
             response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("send_diagnostics_status_notification Exception:",e)
@@ -202,9 +194,9 @@ class ChargePoint16(cp):
             request = call.FirmwareStatusNotificationPayload(
                 status
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            print("Request:", request)
             response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("send_firmware_status_notification Exception:",e)
@@ -229,15 +221,14 @@ class ChargePoint16(cp):
                     asyncio.run_coroutine_threadsafe(self.send_data(request),self.loop)
                 self.application.request_list = []
                 print("\n \n--------------------------------------------------run_coroutine_threadsafe finish ---------------------------\n")
-                
             request = call.HeartbeatPayload()
             while self.application.cardType == CardType.BillingCard:
                 if self.application.settings.change_ocpp:
                     self.application.settings.change_ocpp = False
                     break
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                print("Request:", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                print("Response:", response)
                 self.application.ocppActive = True
                 await asyncio.sleep(5)
         except Exception as e:
@@ -347,9 +338,9 @@ class ChargePoint16(cp):
                     }
                 ])
             if self.application.ocppActive == True:
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                print("Request:", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                print("Response:", response)
                 return response
             else:
                 self.application.request_list.append(request)
@@ -381,9 +372,9 @@ class ChargePoint16(cp):
                 timestamp,
                 reservation_id
             )
-            LOGGER_CHARGE_POINT.info("Request:%s", request)
+            print("Request:", request)
             response = await self.call(request)
-            LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+            print("Response:", response)
             self.application.process.transaction_id = response.transaction_id
             self.start_transaction_result = response.id_tag_info['status']
             return response
@@ -413,7 +404,6 @@ class ChargePoint16(cp):
             
             if self.application.availability == AvailabilityType.inoperative:
                 status = ChargePointStatus.unavailable
-            
             request = call.StatusNotificationPayload(
                 connector_id,
                 error_code,
@@ -424,9 +414,9 @@ class ChargePoint16(cp):
                 vendor_error_code
             )
             if self.application.ocppActive == True:
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                print("Request:", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                print("Response:", response)
                 return response
             else:
                 self.application.request_list.append(request)
@@ -462,9 +452,9 @@ class ChargePoint16(cp):
                 transaction_data
                 )
             if self.application.ocppActive == True:
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                print("Request:", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                print("Response:", response)
                 return response
             else:
                 self.application.request_list.append(request)
@@ -481,7 +471,7 @@ class ChargePoint16(cp):
             request = call.CancelReservationPayload(
                 reservation_id
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             if reservation_id == self.application.ev.reservation_id:
                 self.application.ev.reservation_id = None
                 self.application.ev.reservation_id_tag = None
@@ -493,7 +483,7 @@ class ChargePoint16(cp):
             response = call_result.CancelReservationPayload(
                 status = CancelReservationStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_cancel_reservation Exception:",e)
@@ -507,11 +497,11 @@ class ChargePoint16(cp):
                 connector_id,
                 type
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.ChangeAvailabilityPayload(
                 status = AvailabilityStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_change_availability Exception:",e)
@@ -538,20 +528,18 @@ class ChargePoint16(cp):
                 key,
                 value
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-
+            print("Request:", request)
             for data in self.application.databaseModule.full_configuration:
                 if data["key"] == key:
                     if data["readonly"] == False:
                         status = ConfigurationStatus.accepted
                     else:
                         status = ConfigurationStatus.not_supported
-
             self.application.databaseModule.set_configration(key,value)
             response = call_result.ChangeConfigurationPayload(
                 status= status
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_change_configration Exception:",e)
@@ -561,12 +549,12 @@ class ChargePoint16(cp):
     def on_clear_cache(self):
         try :
             request = call.ClearCachePayload()
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.ClearCachePayload(
                 status= ClearCacheStatus.accepted
             )
             self.application.databaseModule.set_local_list([])
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_clear_cache Exception:",e)
@@ -581,11 +569,11 @@ class ChargePoint16(cp):
                 charging_profile_purpose,
                 stack_level
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.ClearChargingProfilePayload(
                 status=ClearChargingProfileStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_clear_charging_profile Exception:",e)
@@ -599,12 +587,12 @@ class ChargePoint16(cp):
                 message_id,
                 data
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.DataTransferPayload(
                 status= DataTransferStatus.unknown_message_id,
                 data = data
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_data_transfer Exception:",e)
@@ -618,14 +606,14 @@ class ChargePoint16(cp):
                 duration,
                 charging_rate_unit
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.GetCompositeSchedulePayload(
                 status= GetCompositeScheduleStatus.rejected,
                 connector_id = connector_id,
                 schedule_start = None,
                 charging_schedule = None
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_get_composite_schedule Exception:",e)
@@ -637,10 +625,8 @@ class ChargePoint16(cp):
             request = call.GetConfigurationPayload(
                 key
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-
+            print("Request:", request)
             full_configuration = self.application.databaseModule.full_configuration
-
             if key:
                 filtered_configuration = [config for config in full_configuration if config["key"] in key]
                 response_payload = call_result.GetConfigurationPayload(
@@ -652,8 +638,7 @@ class ChargePoint16(cp):
                     configuration_key=full_configuration,
                     unknown_key=None
                 )
-
-            LOGGER_CHARGE_POINT.info("Response:%s", response_payload)
+            print("Response:", response_payload)
             return response_payload
         except Exception as e:
             print("on_get_configration Exception:",e)
@@ -669,11 +654,11 @@ class ChargePoint16(cp):
                 start_time,
                 stop_time
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.GetDiagnosticsPayload(
                 file_name = None
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_get_diagnostics Exception:",e)
@@ -683,11 +668,11 @@ class ChargePoint16(cp):
     def on_get_local_list_version(self):
         try :
             request = call.GetLocalListVersionPayload()
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.GetLocalListVersionPayload(
                 list_version=-1
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_get_local_list_version Exception:",e)
@@ -701,7 +686,7 @@ class ChargePoint16(cp):
                 connector_id,
                 charging_profile
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
 
             if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
                 print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
@@ -742,7 +727,7 @@ class ChargePoint16(cp):
                 print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
 
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_remote_start_transaction Exception:",e)
@@ -786,11 +771,11 @@ class ChargePoint16(cp):
             request = call.RemoteStopTransactionPayload(
                 transaction_id = transaction_id
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.RemoteStopTransactionPayload(
                 status= RemoteStartStopStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_remote_stop_transaction Exception:",e)
@@ -816,46 +801,46 @@ class ChargePoint16(cp):
                 self.application.ev.reservation_id_tag = id_tag
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.reservation_id = reservation_id
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                print("Request:", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.accepted
                 )
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                print("Response:", response)
             elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
                 self.application.ev.reservation_id_tag = id_tag
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.reservation_id = reservation_id
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                print("Request:", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.accepted
                 )
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                print("Response:", response)
             elif self.application.ev.reservation_id != None and self.application.availability == AvailabilityType.operative:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                print("Request:", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.occupied
                 )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                print("Response:", response)
             elif self.application.availability == AvailabilityType.inoperative:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                print("Request:", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
                 )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                print("Response:", response)
             elif self.application.chargePointStatus == ChargePointStatus.faulted:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                print("Request:", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.faulted
                 )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                print("Response:", response)
             elif self.application.chargePointStatus != ChargePointStatus.available:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+                print("Request:", request)
                 response = call_result.ReserveNowPayload(
                     status = ReservationStatus.rejected
                 )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                print("Response:", response)
             return response
         except Exception as e:
             print("on_reserve_now Exception:",e)
@@ -878,7 +863,7 @@ class ChargePoint16(cp):
             request = call.ResetPayload(
                 type
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             # Şarj Noktasında bir reservasyon yok ise ve bir şarj yok ise resetlenebilir
             
             response = call_result.ResetPayload(
@@ -886,7 +871,7 @@ class ChargePoint16(cp):
                 )
             
             
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_reset Exception:",e)
@@ -913,11 +898,11 @@ class ChargePoint16(cp):
                 update_type,
                 local_authorization_list
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.SendLocalListPayload(
                 status = UpdateStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_send_local_list Exception:",e)
@@ -941,11 +926,11 @@ class ChargePoint16(cp):
                 connector_id,
                 cs_charging_profiles
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.SetChargingProfilePayload(
                 status= ChargingProfileStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_set_charging_profile Exception:",e)
@@ -958,11 +943,11 @@ class ChargePoint16(cp):
                 requested_message,
                 connector_id
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             response = call_result.TriggerMessagePayload(
                 status= TriggerMessageStatus.accepted
             )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_trigger_message Exception:",e)
@@ -982,7 +967,7 @@ class ChargePoint16(cp):
             request = call.UnlockConnectorPayload(
                 connector_id = connector_id
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
             if self.application.ev.charge:
                 self.application.deviceState = DeviceState.STOPPED_BY_USER
                 response = call_result.UnlockConnectorPayload(
@@ -997,7 +982,7 @@ class ChargePoint16(cp):
                     response = call_result.UnlockConnectorPayload(
                         status = UnlockStatus.unlock_failed
                     )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_unlock_connector Exception:",e)
@@ -1012,10 +997,10 @@ class ChargePoint16(cp):
                 retries,
                 retry_interval
             )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            print("Request:", request)
 
             response = call_result.UpdateFirmwarePayload()
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            print("Response:", response)
             return response
         except Exception as e:
             print("on_update_firmware Exception:",e)

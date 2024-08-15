@@ -23,7 +23,6 @@ import subprocess
 import os
 from src.webSocket import *
 import builtins
-from src.logger import ac_app_logger as logger
 import ssl
 import base64
 
@@ -49,7 +48,6 @@ class Application():
         self.test_led = False
         self.test_charge = False
         self.testWebSocket = None
-        self.logger = logger
         self.loop = loop
         self.charge_stopped = False
         self.chargePoint = None
@@ -73,12 +71,12 @@ class Application():
         self.databaseModule = DatabaseModule(self)
         self.bluetoothService = BluetoothService(self)
         self.id_tag_list = self.databaseModule.get_local_list()
-        self.softwareSettings = SoftwareSettings(self,logger)
+        self.softwareSettings = SoftwareSettings(self)
         self.flaskModule = FlaskModuleThread(self).start()
-        self.webSocketServer = WebSocketServer(self,logger)
+        self.webSocketServer = WebSocketServer(self)
         self.ev = EV(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
-        self.serialPort = SerialPort(self,logger)
+        self.serialPort = SerialPort(self)
         self.process = Process(self)
         if self.settings.deviceSettings.externalMidMeter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
@@ -331,7 +329,7 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        app.testWebSocket = TestWebSocketModule(app,logger)
+        app.testWebSocket = TestWebSocketModule(app)
 
         app.ocpp_task()
     except Exception as e:

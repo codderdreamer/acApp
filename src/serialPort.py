@@ -10,22 +10,16 @@ from ocpp.v16.enums import *
 class SerialPort():
     def __init__(self, application, logger) -> None:
         self.application = application
-        self.logger = logger
         self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
         self.send_data_list = []
-
         self.error = False
-        
         self.error_list = []
-
         self.stx = b'\x02'
         self.lf = b'\n'
-
         self.get_command    = 'G'           # Bilgisayar tarafından bir verinin okunması için gönderilecektir.
         self.get_response   = 'g'           # Bilgisayar tarafından bir verinin okunması için gönderilecektir.
         self.set_command    = 'S'           # Bilgisayar tarafından bir verinin değiştirilmesi için gönderilecektir.
         self.set_response   = 's'           # MCU tarafından ilgili veri set edildikten sonra cevap olarak dönecektir.
-
         self.pid_control_pilot      = "C"   # PID_CONTROL_PILOT	    ('C')
         self.pid_proximity_pilot    = "X"   # PID_PROXIMITY_PILOT   ('X')
         self.pid_relay_control      = "R"   # PID_RELAY_CONTROL	    ('R')
@@ -39,7 +33,6 @@ class SerialPort():
         self.pid_evse_temp          = "T"   # PID_EVSE_TEMP		    ('T')
         self.pid_rfid               = "N"   # PID_RFID              ('N')
         self.pid_error_list         = "H"   # PID_ERROR_LİST        ('H')
-        
         self.current_L1 = 0
         self.current_L2 = 0
         self.current_L3 = 0
@@ -49,16 +42,12 @@ class SerialPort():
         self.power = 0
         self.energy = 0
         self.firstEnergy = 0
-        
         self.parameter_data = "001"
         self.connector_id = "1"
-        
         self.led_state = LedState.StandBy
-        
         os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
         time.sleep(0.5)
         os.system("gpio-test.64 w e 10 0 > /dev/null 2>&1")
-
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
@@ -67,11 +56,7 @@ class SerialPort():
         Thread(target=self.get_command_pid_error_list_init,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         Thread(target=self.get_energy_thread,daemon=True).start()
-
         self.set_command_pid_rfid()
-
-        
-
 
     def get_energy_thread(self):
         while True:
@@ -166,7 +151,6 @@ class SerialPort():
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
         
-
     def get_command_pid_cp_pwm(self):
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -332,7 +316,6 @@ class SerialPort():
         '''
         if data[2] == self.pid_control_pilot:
             self.application.ev.control_pilot = data[7]
-
 
     def get_response_pid_proximity_pilot(self, data):
         if data[2] == self.pid_proximity_pilot:

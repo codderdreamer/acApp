@@ -11,9 +11,8 @@ import os
 import time
 
 class TestWebSocketModule():
-    def __init__(self, application, logger) -> None:
+    def __init__(self, application) -> None:
         self.application = application
-        self.logger = logger
         self.client = None
         self.slave1 = None
         self.slave2 = None

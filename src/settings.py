@@ -26,6 +26,7 @@ class Settings():
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
         self.configuration = Configuration()
+        self.diagnosticsStatusSettings = DiagnosticsStatusSettings()  # Yeni eklendi
         
         self.change_ocpp = False
         self.__websocketIp = None
@@ -459,6 +460,16 @@ class Settings():
         except Exception as e:
             print("set_unlock Exception:",e)
 
+    def set_diagnostics_status(self, status: str):
+        self.diagnosticsStatusSettings.set_status(status)
+        self.application.databaseModule.set_diagnostics_status(status)
+
+    def get_diagnostics_status(self) -> str:
+        return self.diagnosticsStatusSettings.get_status()
+    
+    def get_diagnostics_last_update_time(self) -> str:
+        return self.diagnosticsStatusSettings.get_last_update_time()
+
 # Definition of other classes used in Settings class
 class NetworkPriority():
     def __init__(self) -> None:
@@ -596,3 +607,27 @@ class Configuration():
         self.TransactionMessageRetryInterval = None
         self.UnlockConnectorOnEVSideDisconnect = None
         self.WebSocketPingInterval = None
+
+class DiagnosticsStatusSettings():
+    def __init__(self) -> None:
+        self.status = None
+        self.last_update_time = None
+
+    def load_diagnostics_status(self, databaseModule):
+        diagnostics_data = self.databaseModule.get_diagnostics_status()
+        if diagnostics_data:
+            self.status = diagnostics_data['status']
+            self.last_update_time = diagnostics_data['last_update_time']
+
+    def set_status(self, status: str):
+        self.status = status
+        self.last_update_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+        self.databaseModule.set_diagnostics_status(self.status, self.last_update_time)
+
+    def get_status(self) -> str:
+        self.load_diagnostics_status()
+        return self.status
+
+    def get_last_update_time(self) -> str:
+        self.load_diagnostics_status()
+        return self.last_update_time

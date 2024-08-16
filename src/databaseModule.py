@@ -8,7 +8,6 @@ from threading import Thread
 import os
 from src.logger import ac_app_logger as logger
 
-
 class DatabaseModule():
     def __init__(self, application) -> None:
         self.application = application
@@ -994,3 +993,40 @@ class DatabaseModule():
             self.settings_database.close()
         except Exception as e:
             print("clear_certificate_name Exception:", e)
+
+    def get_diagnostics_status(self):
+        data_dict = {}
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+
+            query = "SELECT * FROM diagnostics_status ORDER BY id DESC LIMIT 1"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+
+            if data:
+                for row in data:
+                    data_dict['status'] = row[1]
+                    data_dict['last_update_time'] = row[2]
+            else:
+                print("No diagnostics status found in the database.")
+                return None
+
+        except Exception as e:
+            print("get_diagnostics_status Exception:", e)
+        
+        return data_dict
+
+    def set_diagnostics_status(self, status: str, last_update_time: str):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+
+            query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+            self.cursor.execute(query, (status, last_update_time))
+            self.settings_database.commit()
+            self.settings_database.close()
+
+        except Exception as e:
+            print("set_diagnostics_status Exception:", e)

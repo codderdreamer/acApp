@@ -13,6 +13,8 @@ from ocpp.routing import *
 from datetime import datetime
 from src.enums import *
 from ocpp.v16.datatypes import *
+from ocpp.v16.enums import DiagnosticsStatus
+
 import os
 from threading import Thread
 import time
@@ -172,23 +174,19 @@ class ChargePoint16(cp):
             print("send_data_transfer Exception:",e)
 
     # 4. DIAGNOSTICS STATUS NOTIFICATION
-    async def send_diagnostics_status_notification(
-                                                    self,
-                                                    status : DiagnosticsStatus
-                                                    ):
+    async def send_diagnostics_status_notification(self, status: DiagnosticsStatus):
         """
         status: DiagnosticsStatus
         """
         try:
-            request = call.DiagnosticsStatusNotificationPayload(
-                status
-            )
+            # Diagnostics status bildirimi gönder
+            request = call.DiagnosticsStatusNotificationPayload(status)
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             return response
         except Exception as e:
-            print("send_diagnostics_status_notification Exception:",e)
+            print("send_diagnostics_status_notification Exception:", e)
 
     # 5. FIRMWARE STATUS NOTIFICATION
     async def send_firmware_status_notification(
@@ -660,24 +658,97 @@ class ChargePoint16(cp):
 
     # 9. GET DIAGNOSTICS
     @on(Action.GetDiagnostics)
-    def on_get_diagnostics(self,location:str, retries:int = None, retry_interval:int = None, start_time:str = None, stop_time:str = None):
-        try :
+    def on_get_diagnostics(self, location: str, retries: int = None, retry_interval: int = None, start_time: str = None, stop_time: str = None):
+        try:
+            # Hemen Uploading durumunu döndür
             request = call.GetDiagnosticsPayload(
-                location,
-                retries,
-                retry_interval,
-                start_time,
-                stop_time
+                location=location,
+                retries=retries,
+                retry_interval=retry_interval,
+                start_time=start_time,
+                stop_time=stop_time
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            
+            # Uploading yanıtını hemen gönder
             response = call_result.GetDiagnosticsPayload(
-                file_name = None
+                file_name=None  # İlk başta boş, işlemin sonucunda doldurulacak
             )
+            
+            # DiagnosticStatus'ı Uploading olarak ayarla
+            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            self.application.databaseModule.set_diagnostics_status(DiagnosticsStatus.uploading.value, current_time)
+
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print("on_get_diagnostics Exception:",e)
+            print("on_get_diagnostics Exception:", e)
 
+    @after(Action.GetDiagnostics)
+    def after_get_diagnostics(self, location: str, retries: int = None, retry_interval: int = None, start_time: str = None, stop_time: str = None):
+        try:
+            # İşlemi thread olarak başlat
+            Thread(target=self.run_diagnostics_thread, args=(location, retries, retry_interval, start_time, stop_time), daemon=True).start()
+        except Exception as e:
+            print("after_get_diagnostics Exception:", e)
+
+    def run_diagnostics_thread(self, location: str, retries: int = None, retry_interval: int = None, start_time: str = None, stop_time: str = None):
+        try:
+            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+
+            log_files = [
+                '/root/output.txt',
+                '/tmp/acApp/logs/central_system.log',
+                '/tmp/acApp/logs/charge_point.log'
+            ]
+
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            zip_file_name = f"/root/diagnostics_{timestamp}.zip"
+
+            with zipfile.ZipFile(zip_file_name, 'w') as diagnostics_zip:
+                for log_file in log_files:
+                    if os.path.exists(log_file):
+                        diagnostics_zip.write(log_file, os.path.basename(log_file))
+
+            with open(zip_file_name, 'rb') as file_to_upload:
+                response = None
+                for attempt in range(retries if retries else 1):
+                    try:
+                        response = requests.post(location, files={'file': file_to_upload})
+                        if response.status_code == 200:
+                            break
+                        else:
+                            print(f"Upload attempt {attempt + 1} failed with status code: {response.status_code}")
+                    except requests.exceptions.RequestException as e:
+                        print(f"Upload attempt {attempt + 1} failed with error: {e}")
+                    time.sleep(retry_interval if retry_interval else 0)
+
+            if response and response.status_code == 200:
+                # Set diagnostics status to "Uploaded"
+                self.application.databaseModule.set_diagnostics_status(DiagnosticsStatus.uploaded.value, current_time)
+                # Send DiagnosticsStatusNotification
+                asyncio.run_coroutine_threadsafe(
+                    self.send_diagnostics_status_notification(DiagnosticsStatus.uploaded),
+                    self.application.loop
+                )
+            else:
+                # Set diagnostics status to "UploadFailed"
+                self.application.databaseModule.set_diagnostics_status(DiagnosticsStatus.upload_failed.value, current_time)
+                # Send DiagnosticsStatusNotification
+                asyncio.run_coroutine_threadsafe(
+                    self.send_diagnostics_status_notification(DiagnosticsStatus.upload_failed),
+                    self.application.loop
+                )
+                LOGGER_CENTRAL_SYSTEM.info("Diagnostics upload failed after %d attempts.", retries if retries else 1)
+        except Exception as e:
+            print("run_diagnostics_thread Exception:", e)
+            # Set diagnostics status to "UploadFailed" in case of an exception
+            self.application.databaseModule.set_diagnostics_status(DiagnosticsStatus.upload_failed.value, current_time)
+            # Send DiagnosticsStatusNotification
+            asyncio.run_coroutine_threadsafe(
+                self.send_diagnostics_status_notification(DiagnosticsStatus.upload_failed),
+                self.application.loop
+            )
     # 10. GET LOCAL LIST VERSION
     @on(Action.GetLocalListVersion)
     def on_get_local_list_version(self):

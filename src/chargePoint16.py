@@ -1051,13 +1051,60 @@ class ChargePoint16(cp):
             print("on_trigger_message Exception:",e)
         
     @after(Action.TriggerMessage)
-    def after_trigger_message(self,requested_message,connector_id = None):
-        try :
-            if requested_message == MessageTrigger.bootNotification:
-                pass
+    def after_trigger_message(self, requested_message, connector_id=None):
+        try:
+            if requested_message == MessageTrigger.boot_notification:
+                asyncio.run_coroutine_threadsafe(
+                    self.send_boot_notification(
+                        charge_point_model="ChargePack Smart", 
+                        charge_point_vendor="Hera Charge"
+                    ),
+                    self.application.loop
+                )
+            elif requested_message == MessageTrigger.status_notification:
+                asyncio.run_coroutine_threadsafe(
+                    self.send_status_notification(
+                        connector_id=connector_id or 1,
+                        error_code=ChargePointErrorCode.noError,
+                        status=self.application.chargePointStatus
+                    ),
+                    self.application.loop
+                )
+            elif requested_message == MessageTrigger.heartbeat:
+                asyncio.run_coroutine_threadsafe(
+                    self.send_heartbeat(
+                        interval=self.application.settings.heartbeatInterval
+                    ),
+                    self.application.loop
+                )
+            elif requested_message == MessageTrigger.meter_values:
+                asyncio.run_coroutine_threadsafe(
+                    self.send_meter_values(),
+                    self.application.loop
+                )
+            elif requested_message == MessageTrigger.diagnostics_status_notification:
+                diagnostics_status = self.application.databaseModule.get_diagnostics_status()['status']
+                print("diagnostics_status:",diagnostics_status)
+                if diagnostics_status:
+                    asyncio.run_coroutine_threadsafe(
+                        self.send_diagnostics_status_notification(
+                            DiagnosticsStatus(diagnostics_status)
+                        ),
+                        self.application.loop
+                    )
+            elif requested_message == MessageTrigger.firmware_status_notification:
+                firmware_status = self.application.databaseModule.get_firmware_status()
+                if firmware_status:
+                    asyncio.run_coroutine_threadsafe(
+                        self.send_firmware_status_notification(
+                            FirmwareStatus(firmware_status['status'])
+                        ),
+                        self.application.loop
+                    )
+            else :
+                print("requested_message not found")
         except Exception as e:
-            print("after_trigger_message Exception:",e)
-
+            print("after_trigger_message Exception:", e)
     # 18. UNLOCK CONNECTOR 
     @on(Action.UnlockConnector)
     def on_unlock_connector(self, connector_id: int):
@@ -1087,8 +1134,8 @@ class ChargePoint16(cp):
 
     # 19. UPDATE FIRMWARE
     @on(Action.UpdateFirmware)
-    def on_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
-        try :
+    def on_update_firmware(self, location: str, retrieve_date: str, retries: int = None, retry_interval: int = None):
+        try:
             request = call.UpdateFirmwarePayload(
                 location,
                 retrieve_date,
@@ -1101,36 +1148,41 @@ class ChargePoint16(cp):
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
-            print("on_update_firmware Exception:",e)
-            
-    def download_firmware(self,location):
+            print("on_update_firmware Exception:", e)
+
+    def download_firmware(self, location):
         print("Update firmware")
-        asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading),self.application.loop)
-        # await self.send_firmware_status_notification(FirmwareStatus.downloading)
+        # Set status to 'downloading'
+        self.application.databaseModule.set_firmware_status(FirmwareStatus.downloading.value, str(datetime.now()))
+        
+        asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading), self.application.loop)
         filename = "/root/new_firmware.zip"
         exit_status = os.system(f"curl {location} --output {filename}")
         if exit_status == 0:
             print("Dosya başarıyla indirildi.")
             with zipfile.ZipFile(filename, 'r') as zip_ref:
-                # password = b'sifreniz' 
-                # zip_ref.setpassword(password)
                 zip_ref.extractall('/root')
             print("Dosya başarıyla unzip yapıldı.")
             subprocess.run(["/bin/bash", "/root/update.sh"])
-            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloaded),self.application.loop)
-            # await self.send_firmware_status_notification(FirmwareStatus.downloaded)
+            
+            # Set status to 'downloaded'
+            self.application.databaseModule.set_firmware_status(FirmwareStatus.downloaded.value, str(datetime.now()))
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloaded), self.application.loop)
         else:
             print("Hata: Dosya indirilirken bir sorun oluştu.")
-            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed),self.application.loop)
-            # await self.send_firmware_status_notification(FirmwareStatus.download_failed)
             
-    def update_firmware(self,location):
-        try :
+            # Set status to 'download_failed'
+            self.application.databaseModule.set_firmware_status(FirmwareStatus.download_failed.value, str(datetime.now()))
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed), self.application.loop)
+
+    def update_firmware(self, location):
+        try:
             if self.application.ev.charge == False:
                 self.download_firmware(location)
             else:
-                asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading),self.application.loop)
-                # await self.send_firmware_status_notification(FirmwareStatus.downloading)
+                # Set status to 'downloading'
+                self.application.databaseModule.set_firmware_status(FirmwareStatus.downloading.value, str(datetime.now()))
+                asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading), self.application.loop)
                 while True:
                     print("Firmware güncelleme için bekleniyor..............................................................")
                     if self.application.ev.charge == False:
@@ -1139,14 +1191,16 @@ class ChargePoint16(cp):
                     else:
                         time.sleep(1)
         except Exception as e:
-            print("update_firmware Exception:",e)
-            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed),self.application.loop)
-            # await self.send_firmware_status_notification(FirmwareStatus.download_failed)
+            print("update_firmware Exception:", e)
             
+            # Set status to 'download_failed'
+            self.application.databaseModule.set_firmware_status(FirmwareStatus.download_failed.value, str(datetime.now()))
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed), self.application.loop)
+
     @after(Action.UpdateFirmware)
-    async def after_update_firmware(self,location: str,retrieve_date: str, retries: int = None, retry_interval: int = None):
-        try :
-            Thread(target=self.update_firmware,args=(location,),daemon=True).start()
+    async def after_update_firmware(self, location: str, retrieve_date: str, retries: int = None, retry_interval: int = None):
+        try:
+            Thread(target=self.update_firmware, args=(location,), daemon=True).start()
         except Exception as e:
-            print("after_update_firmware Exception:",e)
-        
+            print("after_update_firmware Exception:", e)
+

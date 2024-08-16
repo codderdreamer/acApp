@@ -32,6 +32,7 @@ class DatabaseModule():
         self.user = self.get_user_login()["UserName"]
         self.set_diagnostics_status('None', str(datetime.now()))
         self.reset_diagnostics_status()
+        self.reset_firmware_status()
         
         
     def get_charge(self):
@@ -1012,8 +1013,10 @@ class DatabaseModule():
                     data_dict['status'] = row[1]
                     data_dict['last_update_time'] = row[2]
             else:
+                data_dict['status'] = "Idle"
+                data_dict['last_update_time'] = str(datetime.now())
                 print("No diagnostics status found in the database.")
-                return None
+                return data_dict
 
         except Exception as e:
             print("get_diagnostics_status Exception:", e)
@@ -1038,11 +1041,9 @@ class DatabaseModule():
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            # diagnostics_status tablosundaki status değerini boş bir string olarak güncelle
-            update_query = """
-                UPDATE diagnostics_status
-                SET status = '', last_update_time = ?
-            """
+            update_query = "UPDATE diagnostics_status SET status = ?"
+            self.cursor.execute(update_query, ("Idle",))
+            update_query = "UPDATE diagnostics_status SET last_update_time = ?"
             self.cursor.execute(update_query, (str(datetime.now()),))
 
             self.settings_database.commit()
@@ -1050,3 +1051,58 @@ class DatabaseModule():
             print("Diagnostics status has been reset.")
         except Exception as e:
             print("reset_diagnostics_status Exception:", e)
+
+
+    def get_firmware_status(self):
+        data_dict = {}
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+
+            query = "SELECT * FROM firmware_status ORDER BY id DESC LIMIT 1"
+            self.cursor.execute(query)
+            data = self.cursor.fetchall()
+            self.settings_database.close()
+
+            if data:
+                for row in data:
+                    data_dict['status'] = row[1]
+                    data_dict['last_update_time'] = row[2]
+            else:
+                data_dict = {'status': "Idle", 'last_update_time': str(datetime.now())}
+                print("No firmware status found in the database.")
+                return data_dict
+
+        except Exception as e:
+            print("get_firmware_status Exception:", e)
+        
+        return data_dict
+
+    def set_firmware_status(self, status: str, last_update_time: str):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+
+            query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+            self.cursor.execute(query, (status, last_update_time))
+            self.settings_database.commit()
+            self.settings_database.close()
+
+        except Exception as e:
+            print("set_firmware_status Exception:", e)
+
+    def reset_firmware_status(self):
+        try:
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.cursor = self.settings_database.cursor()
+
+            update_query = "UPDATE firmware_status SET status = ?"
+            self.cursor.execute(update_query, ("Idle",))
+            update_query = "UPDATE firmware_status SET last_update_time = ?"
+            self.cursor.execute(update_query, (str(datetime.now()),))
+
+            self.settings_database.commit()
+            self.settings_database.close()
+            print("Firmware status has been reset.")
+        except Exception as e:
+            print("reset_firmware_status Exception:", e)

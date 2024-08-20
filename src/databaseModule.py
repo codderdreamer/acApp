@@ -841,26 +841,26 @@ class DatabaseModule():
         except Exception as e:
             print("set_max_current Exception:", e)
 
-    def set_local_list(self, local_list: list):
+    def set_default_local_list(self, local_list: list):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            self.cursor.execute('DELETE FROM local_list;')
+            self.cursor.execute('DELETE FROM default_local_list;')
             self.settings_database.commit()
             for idTag in local_list:
-                query = '''INSERT INTO local_list (idTag) VALUES (?);'''
+                query = '''INSERT INTO default_local_list (idTag) VALUES (?);'''
                 self.cursor.execute(query, (idTag,))
                 self.settings_database.commit()
             self.settings_database.close()
         except Exception as e:
-            print("set_local_list Exception:", e)
+            print("set_default_local_list Exception:", e)
             
-    def get_local_list(self):
+    def get_default_local_list(self):
         id_tag_list = []
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            query = "SELECT * FROM local_list"
+            query = "SELECT * FROM default_local_list"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
             self.settings_database.close()
@@ -868,7 +868,7 @@ class DatabaseModule():
                 id_tag_list.append(id[0])
             return id_tag_list
         except Exception as e:
-            print("get_local_list Exception:", e)
+            print("get_default_local_list Exception:", e)
 
     def get_user_login(self):
         try:
@@ -952,7 +952,7 @@ class DatabaseModule():
         try:
             configrations = []
             self.full_configuration = []
-            configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
+            configuration_db = sqlite3.connect('/root/configuration.db')
             cursor = configuration_db.cursor()
             query = "SELECT * FROM configs"
             cursor.execute(query)
@@ -971,9 +971,9 @@ class DatabaseModule():
         except Exception as e:
             print("get_configuration Exception:", e)
 
-    def set_configration(self,key,value):
+    def set_configuration(self,key,value):
         try:
-            configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
+            configuration_db = sqlite3.connect('/root/configuration.db')
             cursor = configuration_db.cursor()
             query = "UPDATE configs SET value = ? WHERE key = ?"
             value = (str(value),key)
@@ -982,8 +982,47 @@ class DatabaseModule():
             configuration_db.close()
             self.get_configuration()
         except Exception as e:
-            print("set_configration Exception:", e)
+            print("set_configuration Exception:", e)
 
+    def configuration_change(self,key,value):
+        try:
+            configuration_db = sqlite3.connect('/root/configuration.db')
+            cursor = configuration_db.cursor()
+            query = "SELECT * FROM configs WHERE key = ?"
+            cursor.execute(query,(key,))
+            data = cursor.fetchall()
+            configuration_db.close()
+            for column in data:
+                supported = column[3]
+                readonly = column[1]
+
+            #  Accepted
+            #  Configuration key is supported and setting has been changed.
+            #  Rejected
+            #  Configuration key is supported, but setting could not be changed.
+            #  RebootRequired
+            #  Configuration key is supported and setting has been changed, but change will be available after reboot (Charge Point will not
+            #  reboot itself)
+            #  NotSupported
+            #  Configuration key is not supported.
+
+            if supported == "True":
+                if readonly == "True":
+                    return "Rejected"
+                else:
+                    self.set_configuration(key,value)
+                    return "Accepted"
+            else:
+                return "NotSupported"
+            
+        except Exception as e:
+            print("check_configuration_change_availability Exception:", e)
+          
+               
+            # return True supported and read_only 
+        except Exception as e:
+            print("is_configuration_supported Exception:", e)
+           
 
     def clear_certificate_name(self):
         try:
@@ -1106,3 +1145,101 @@ class DatabaseModule():
             print("Firmware status has been reset.")
         except Exception as e:
             print("reset_firmware_status Exception:", e)
+
+
+   
+
+    def add_auth_cache_tag(ocpp_tag, expire_date):
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            insert_query = "INSERT INTO auth_cache_list (ocpp_tag, expire_date) VALUES (?, ?)"
+            cursor.execute(insert_query, (ocpp_tag, expire_date))
+            settings_database.commit()
+            settings_database.close()
+            print(f"Added auth cache tag: {ocpp_tag}")
+        except sqlite3.IntegrityError as e:
+            print(f"Error adding auth cache tag: {e}")
+
+    def update_auth_cache_tag(ocpp_tag, new_expire_date):
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            update_query = "UPDATE auth_cache_list SET expire_date = ?, updated_at = ? WHERE ocpp_tag = ?"
+            cursor.execute(update_query, (new_expire_date, str(datetime.now()), ocpp_tag))
+            settings_database.commit()
+            settings_database.close()
+            if cursor.rowcount:
+                print(f"Updated auth cache tag: {ocpp_tag}")
+            else:
+                print(f"No auth cache tag found to update: {ocpp_tag}")
+        except sqlite3.Error as e:
+            print(f"Error updating auth cache tag: {e}")
+
+
+    def delete_auth_cache_tag(ocpp_tag):
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            delete_query = "DELETE FROM auth_cache_list WHERE ocpp_tag = ?"
+            cursor.execute(delete_query, (ocpp_tag,))
+            settings_database.commit()
+            settings_database.close()
+            if cursor.rowcount:
+                print(f"Deleted auth cache tag: {ocpp_tag}")
+            else:
+                print(f"No auth cache tag found to delete: {ocpp_tag}")
+        except sqlite3.Error as e:
+            print(f"Error deleting auth cache tag: {e}")
+
+    def get_card_status_from_local_list(self, ocpp_tag):
+        """
+        Verilen ocpp_tag için local_auth_list tablosunda durumu döner.
+        Durum `expire_date` kontrol edilerek belirlenir. Eğer tarih geçmişse 'Expired' olarak döner.
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            select_query = "SELECT expire_date FROM local_auth_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+            settings_database.close()
+
+            if result:
+                expire_date = result[0]
+                if datetime.strptime(expire_date, '%Y-%m-%d').date() < datetime.now().date():
+                    return "Expired"
+                else:
+                    return "Accepted"
+            else:
+                print(f"No entry found for ocpp_tag: {ocpp_tag}")
+                return "Invalid"
+        except sqlite3.Error as e:
+            print(f"Error retrieving card status for ocpp_tag {ocpp_tag}: {e}")
+            return "Invalid"
+        
+    def get_card_status_from_auth_cache(self, ocpp_tag):
+        """
+        Verilen ocpp_tag için auth_cache_list tablosunda durumu döner.
+        Durum `expire_date` kontrol edilerek belirlenir. Eğer tarih geçmişse 'Expired' olarak döner.
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            select_query = "SELECT expire_date FROM auth_cache_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+            settings_database.close()
+
+            if result:
+                expire_date = result[0]
+                if datetime.strptime(expire_date, '%Y-%m-%d').date() < datetime.now().date():
+                    return "Expired"
+                else:
+                    return "Accepted"
+            else:
+                print(f"No entry found for ocpp_tag: {ocpp_tag}")
+                return None
+        except sqlite3.Error as e:
+            print(f"Error retrieving cache status for ocpp_tag {ocpp_tag}: {e}")
+            return None

@@ -2,7 +2,7 @@ from src.enums import *
 from threading import Thread
 import time
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from ocpp.v16.datatypes import *
 from ocpp.v16.enums import *
 import os
@@ -182,11 +182,185 @@ class EV():
             self.send_message_thread_start = False
             self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
 
+    def update_authorization_cache(self, ocpp_tag, expire_date):
+        """
+        Authorization Cache veritabanına yetkilendirilmiş tag'i kaydeder.
+        Eğer tag zaten mevcutsa, expire_date ve updated_at alanlarını günceller.
+        """
+        try:
+            # Önce, tag'in veritabanında mevcut olup olmadığını kontrol edin
+            existing_tag = self.application.databaseModule.get_card_status_from_auth_cache(ocpp_tag)
+
+            if existing_tag == AuthorizationStatus.expired.value:
+                # Mevcut ise, expire_date ve updated_at alanlarını güncelle
+                self.application.databaseModule.update_auth_cache_tag(ocpp_tag, expire_date)
+                print(f"Authorization cache for {ocpp_tag} updated with new expiration date {expire_date}.")
+            elif existing_tag is None:
+                # Mevcut değilse, yeni kayıt ekle
+                self.application.databaseModule.add_auth_cache_tag(ocpp_tag, expire_date)
+                print(f"Authorization cache for {ocpp_tag} added with expiration date {expire_date}.")
+            else:
+                print(f"Authorization cache for {ocpp_tag} is in {existing_tag} status and will not be updated.")
+
+        except Exception as e:
+            print(f"Error updating authorization cache for {ocpp_tag}: {e}")
+
+    def send_authorization_request(self, value):
+        """
+        Merkezi sisteme yetkilendirme talebi gönderir.
+        """
+        try:
+            # Yetkilendirme talebini merkezi sisteme gönder
+            request = asyncio.run_coroutine_threadsafe(
+                self.application.chargePoint.send_authorize(id_tag=value), 
+                self.application.loop
+            )
+            response = request.result()  # Asenkron sonucu bekleyin
+
+            # Yetkilendirme talebinin yanıtını kontrol et
+            id_tag_info = response.id_tag_info
+            status = id_tag_info['status']
+
+            if status == AuthorizationStatus.accepted.value:
+                # Yetkilendirme başarılı ise ve AuthorizationCacheEnabled True ise
+                if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+                    # Merkezi sistemden gelen expire_date bilgisi
+                    expiry_date = id_tag_info.get('expiry_date')
+                    
+                    # Eğer expiry_date merkezi sistemden gelmezse, bugünden itibaren 1 yıl sonrasını baz alarak ayarla
+                    if not expiry_date:
+                        expiry_date = (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
+                    
+                    # authorizationCache veritabanına bu tag'i kaydet
+                    self.update_authorization_cache(value, expiry_date)
+                
+                print("Authorized")
+                return AuthorizationStatus.accepted
+            else:
+                # Yetkilendirme başarısız ise, Rejected olarak geri dön
+                return AuthorizationStatus.rejected
+
+        except Exception as e:
+            # Hata durumunda, hata mesajını logla ve Rejected olarak geri dön
+            print("Error:", e)
+            return AuthorizationStatus.rejected
+        
+    def check_online_authorization(self, value):
+        """
+        Cihaz online olduğunda yetkilendirme sürecini yönetir.
+        Sırasıyla LocalPreAuthorize, Local Authorization List, Authorization Cache,
+        ve merkezi sistem yetkilendirme taleplerini kontrol eder.
+        """
+        # LocalPreAuthorize bayrağını kontrol edin
+        if self.application.settings.configuration.LocalPreAuthorize == "true":
+            # Eğer LocalPreAuthorize True ise, LocalAuthListEnabled bayrağını kontrol edin
+            local_auth_result = self.check_local_auth_list(value)
+            if local_auth_result == AuthorizationStatus.accepted:
+                return local_auth_result  
+            
+            # Eğer ocppTag localAuthList içinde bulunmazsa ve AuthorizationCacheEnabled True ise
+            if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+                cache_auth_result = self.check_authorization_cache(value)
+                if cache_auth_result == AuthorizationStatus.accepted:
+                    return cache_auth_result  # Eğer ocppTag authorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
+            
+        else:
+            # Eğer LocalPreAuthorize False ise, doğrudan merkezi sisteme yetkilendirme talebi yapın.
+            return self.send_authorization_request(value)
+
+        # Merkezi Sistem Yetkilendirme Talebi
+        return self.send_authorization_request(value)
+
+    def check_offline_authorization(self, value):
+        """
+        Cihaz offline durumda iken yetkilendirme kontrolü yapar.
+        Sırasıyla LocalAuthorizeOffline, LocalAuthList, AuthorizationCache ve bilinmeyen kimlik 
+        doğrulayıcılar için izin verilmesi kontrollerini gerçekleştirir.
+        """
+        # LocalAuthorizeOffline bayrağını kontrol edin
+        if self.application.settings.configuration.LocalAuthorizeOffline == "false":
+            return AuthorizationStatus.rejected  # LocalAuthorizeOffline False ise, Red olarak geri dön.
+
+        # LocalAuthList kontrolü
+        local_auth_result = self.check_local_auth_list(value)
+        if local_auth_result == AuthorizationStatus.accepted:
+            return local_auth_result  # LocalAuthList içinde bulunursa ve Accepted durumundaysa, Yetkilendirildi olarak geri dön.
+
+        # Authorization Cache kontrolü
+        if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+            cache_auth_result = self.check_authorization_cache(value)
+            if cache_auth_result == AuthorizationStatus.accepted:
+                return cache_auth_result  # AuthorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
+
+        # Bilinmeyen Kimlik Doğrulayıcıların Yetkilendirilmesi
+        if self.application.settings.configuration.allowOfflineTxForUnknownId == "true":
+            return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
+        
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
+        return AuthorizationStatus.rejected  # allowOfflineTxForUnknownId False ise, Red olarak geri dön.
+
+    def check_local_auth_list(self, value):
+        """
+        Local Authorization List içinde verilen id_tag'i kontrol eder.
+        Accepted durumunda "Authorized", diğer durumlarda None döner.
+        """
+        if self.application.settings.configuration.LocalAuthListEnabled == "true":
+            card_status = self.application.databaseModule.get_card_status_from_local_list(value)
+            if card_status == AuthorizationStatus.accepted.value:
+                return AuthorizationStatus.accepted
+            elif card_status == AuthorizationStatus.expired.value:
+                print(f"Card {value} is expired.")
+            elif card_status == AuthorizationStatus.blocked.value:
+                print(f"Card {value} is blocked.")
+            elif card_status == AuthorizationStatus.invalid.value:
+                print(f"Card {value} is invalid.")
+        return None
+
+    def check_authorization_cache(self, value):
+        """
+        Authorization Cache içinde verilen id_tag'i kontrol eder.
+        Accepted durumunda "Authorized", diğer durumlarda None döner.
+        """
+        cache_status = self.application.databaseModule.get_card_status_from_auth_cache(value)
+        if cache_status == AuthorizationStatus.accepted.value:
+            return AuthorizationStatus.accepted
+        return None
+
+    def authorize_billing_card(self, value):
+        """
+        BillingCard tipi için yetkilendirme kontrolü yapar.
+        Cihaz online olduğunda sırasıyla LocalPreAuthorize, LocalAuthList, AuthorizationCache,
+        ve merkezi sistem yetkilendirme talebi kontrolleri yapılır.
+        Cihaz offline olduğunda offline yetkilendirme süreçleri kontrol edilir.
+        """
+        print("Billing Card Detected :", value)
+        if self.application.ocppActive:  # Cihaz online ise
+            print("Device is online")
+            authorization_result =  self.check_online_authorization(value)
+            print("Authorization Result:", authorization_result)
+            if authorization_result == AuthorizationStatus.accepted:
+                print("Authorized for billing card: ", value)
+                self.start_stop_authorize = True
+            else:
+                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
+                print("Unauthorized for billing card: ", value)
+                self.start_stop_authorize = False
+
+        else:  # Cihaz offline ise
+            authorization_result = self.check_offline_authorization(value)
+            print("Authorization Result:", authorization_result)
+            if authorization_result == AuthorizationStatus.accepted:
+                print("Authorized for billing card: ", value)
+                self.start_stop_authorize = True
+            else:
+                print("Unauthorized for billing card :", value)
+                self.start_stop_authorize = False
+        
 
     @property
     def card_id(self):
         return self.__card_id
-
+    
     @card_id.setter
     def card_id(self, value):
         if (self.__card_id != value) and (value != None) and (value != ""):
@@ -203,57 +377,39 @@ class EV():
                 if self.charge:
                     if self.application.process.id_tag == value:
                         self.application.chargePoint.authorize = None
-                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
-                    else:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag=value), self.application.loop)
                 else:
                     self.application.chargePoint.authorize = None
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag=value), self.application.loop)
+                    authorization_result = self.authorize_billing_card(value)
+                    if authorization_result == "Authorized":
+                        self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                        
             elif self.application.cardType == CardType.StartStopCard:
-                # Local cardlarda var mı database bak...
-                if self.application.settings.configuration.AllowOfflineTxForUnknownId == "false":
-                    print(Color.Yellow.value,"AllowOfflineTxForUnknownId : false, Bilinmeyen kullanıcıya şarja izin verilmez.")
-                    finded = False
-                    card_id_list = self.application.databaseModule.get_local_list()
-                    for id in card_id_list:
-                        if value == id:
-                            if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
-                                self.start_stop_authorize = False
-                            else:
-                                self.start_stop_authorize = True
-                            finded = True
+                print("Start Stop Card Detected :", value)
+                finded = False
+                card_id_list = self.application.databaseModule.get_default_local_list()
+                for id in card_id_list:
+                    if value == id:
+                        if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
+                            self.start_stop_authorize = False
+                        else:
+                            self.start_stop_authorize = True
+                        finded = True
 
-                            if self.charge and (self.application.process.id_tag == value):
-                                self.application.deviceState = DeviceState.STOPPED_BY_USER
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                            elif self.charge == False:
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                                if self.__control_pilot != "B":
-                                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
-                            else:
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-
-                    if finded == False:
-                        self.start_stop_authorize = False
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
-                # Local Kartlarda olmayan kullanıcıya izin ver
-                else:
-                    print(Color.Yellow.value,"AllowOfflineTxForUnknownId : true, Bilinmeyen kullanıcıya şarja izin verilir.")
-                    if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
-                        self.start_stop_authorize = False
-                    else:
-                        self.start_stop_authorize = True
-                    finded = True
-
-                    if self.charge and (self.application.process.id_tag == value):
-                        self.application.deviceState = DeviceState.STOPPED_BY_USER
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                    elif self.charge == False:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                        if self.__control_pilot != "B":
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
-                    else:
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                        if self.charge and (self.application.process.id_tag == value):
+                            self.application.deviceState = DeviceState.STOPPED_BY_USER
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                        elif self.charge == False:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                            if self.__control_pilot != "B":
+                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+                        else:
+                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                        break
+                if finded == False:
+                    self.start_stop_authorize = False
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+        
         self.__card_id = value
 
     @property

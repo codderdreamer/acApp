@@ -212,9 +212,14 @@ class Process:
             time.sleep(0.3)
             
     def meter_values_thread(self):
+        interval = int(self.application.settings.configuration.MeterValueSampleInterval)
         while self.application.meter_values_on:
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_meter_values(),self.application.loop)
-            time.sleep(10)
+            try:
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_meter_values(), self.application.loop)
+                time.sleep(interval)
+            except Exception as e:
+                print("meter_values_thread Exception:", e)
+
             
     def charge_while(self):
         print(Color.Yellow.value,"Cihaz şarja başlıyor...")

@@ -245,7 +245,7 @@ class TestWebSocketModule():
                     }
                     self.websocket.send_message(client, json.dumps(message))
                     self.slave2 = self.application.ev.card_id
-                    self.application.databaseModule.set_local_list([self.slave1, self.application.ev.card_id])
+                    self.application.databaseModule.set_default_local_list([self.slave1, self.application.ev.card_id])
                     self.application.ev.card_id = ""
                     return
             except Exception as e:

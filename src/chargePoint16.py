@@ -143,7 +143,8 @@ class ChargePoint16(cp):
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
-                await self.send_heartbeat(response.interval)
+
+                await self.send_heartbeat()
             return response
         except Exception as e:
             print("send_boot_notification Exception:",e)
@@ -208,7 +209,7 @@ class ChargePoint16(cp):
             print("send_firmware_status_notification Exception:",e)
 
     # 6. HEARTBEAT
-    async def send_heartbeat(self, interval):
+    async def send_heartbeat(self):
         """
         interval: int
         """
@@ -237,123 +238,121 @@ class ChargePoint16(cp):
                 response = await self.call(request)
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.application.ocppActive = True
-                await asyncio.sleep(5)
+                interval = int(self.application.settings.configuration.HeartbeatInterval)
+                await asyncio.sleep(interval)
+
         except Exception as e:
             print("send_heartbeat Exception:",e)
             self.application.ocppActive = False
 
+    async def send_heartbeat_once(self):
+        try:
+            request = call.HeartbeatPayload()
+            LOGGER_CHARGE_POINT.info("Sending Heartbeat: %s", request)
+            response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Received Heartbeat Response: %s", response)
+            return response
+        except Exception as e:
+            print("send_heartbeat_once Exception:", e)
+            self.application.ocppActive = False    
 
     # 7. METER VALUES
-    async def send_meter_values(
-                                self
-                                ):
-        """
-        connector_id: int,
-        meter_value: List = list,
-        transaction_id: int | None = None
-        """
-        try :
+    async def send_meter_values(self):
+        try:
+            # Configurations
+            sampled_data = []
+            measurands = self.application.settings.configuration.MeterValuesSampledData.split(",")
+            print("measurands:",measurands)
+            max_length = int(self.application.settings.configuration.MeterValuesSampledDataMaxLength)
+            print("max_length:",max_length)
+            # Map the measurand strings to actual data
+            measurand_mapping = {
+                "Energy.Active.Import.Register": {
+                    "value": str(self.application.ev.energy),
+                    "measurand": Measurand.energy_active_import_register,
+                    "unit": UnitOfMeasure.kwh
+                },
+                "Voltage.L1": {
+                    "value": str(self.application.ev.voltage_L1),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L2": {
+                    "value": str(self.application.ev.voltage_L2),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L3": {
+                    "value": str(self.application.ev.voltage_L3),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.v
+                },
+                "Current.Import.L1": {
+                    "value": str(self.application.ev.current_L1),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L2": {
+                    "value": str(self.application.ev.current_L2),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L3": {
+                    "value": str(self.application.ev.current_L3),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.a
+                },
+                "Power.Active.Import": {
+                    "value": str(self.application.ev.power),
+                    "measurand": Measurand.power_active_import,
+                    "unit": UnitOfMeasure.kw
+                },
+                "Temperature": {
+                    "value": str(self.application.ev.temperature),
+                    "measurand": Measurand.temperature,
+                    "unit": UnitOfMeasure.celsius
+                }
+            }
+
+            # Add measurands to the sampled data list according to the configuration
+            for measurand in measurands:
+                if measurand in measurand_mapping and len(sampled_data) < max_length:
+                    sampled_data.append({
+                        "value": measurand_mapping[measurand]["value"],
+                        "context": ReadingContext.sample_periodic,
+                        "format": ValueFormat.raw,
+                        "measurand": measurand_mapping[measurand]["measurand"],
+                        "phase": measurand_mapping[measurand].get("phase", None),
+                        "location": Location.cable,
+                        "unit": measurand_mapping[measurand]["unit"]
+                    })
+
+            # Prepare and send the MeterValues request
             request = call.MeterValuesPayload(
-                connector_id = 1,
-                transaction_id = self.application.process.transaction_id,
-                meter_value = [
-                    {
-                        "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
-                        "sampledValue": [
-                            {
-                                "value": str(self.application.ev.energy),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.energy_active_import_register,
-                                "phase" : None,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.kwh
-                            },
-                            {
-                                "value": str(self.application.ev.voltage_L1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l1,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.ev.voltage_L2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l2,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.ev.voltage_L3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l3,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.ev.current_L1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l1,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.ev.current_L2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l2,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.ev.current_L3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l3,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.ev.power),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.power_active_import,
-                                "phase" : None,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.kw
-                            },
-                            {
-                                "value": str(self.application.ev.temperature),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.temperature,
-                                "phase" : None,
-                                "location": Location.body,
-                                "unit": UnitOfMeasure.celsius
-                            }
-                        ]
-                    }
-                ])
-            if self.application.ocppActive == True:
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                connector_id=1,
+                transaction_id=self.application.process.transaction_id,
+                meter_value=[{
+                    "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                    "sampledValue": sampled_data
+                }]
+            )
+
+            if self.application.ocppActive:
+                LOGGER_CHARGE_POINT.info("Request: %s", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                LOGGER_CENTRAL_SYSTEM.info("Response: %s", response)
                 return response
             else:
                 self.application.request_list.append(request)
+
         except Exception as e:
-            print("send_meter_values Exception:",e)
-            # self.application.request_list.append(request)
+            print("send_meter_values Exception:", e)
 
     # 8. START TRANSACTION
     async def send_start_transaction(
@@ -538,22 +537,18 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
-            for data in self.application.databaseModule.full_configuration:
-                if data["key"] == key:
-                    if data["readonly"] == False:
-                        status = ConfigurationStatus.accepted
-                    else:
-                        status = ConfigurationStatus.not_supported
+            avaibility = self.application.databaseModule.configuration_change(key, value)
 
-            self.application.databaseModule.set_configration(key,value)
             response = call_result.ChangeConfigurationPayload(
-                status= status
+                status= avaibility
             )
+
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
+               
         except Exception as e:
             print("on_change_configration Exception:",e)
-
+                  
     # 4. CLEAR CACHE
     @on(Action.ClearCache)
     def on_clear_cache(self):
@@ -563,7 +558,7 @@ class ChargePoint16(cp):
             response = call_result.ClearCachePayload(
                 status= ClearCacheStatus.accepted
             )
-            self.application.databaseModule.set_local_list([])
+            self.application.databaseModule.set_default_local_list([])
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
@@ -834,19 +829,20 @@ class ChargePoint16(cp):
         # Eğer kablo bağlı değilse
         # Waiting plug led yak
         # 30 saniye içinde kablo bağlanmazsa idle
+        connection_timeout = int(self.application.settings.configuration.ConnectionTimeOut)
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
-            print("self.application.ev.control_pilot",self.application.ev.control_pilot)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+            print("self.application.ev.control_pilot", self.application.ev.control_pilot)
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
             while True:
-                print("30 sn içinde kablo bağlantısı bekleniyor ! control pilot:",self.application.ev.control_pilot)
+                print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
                     print("Kablo bağlantısı sağlandı.")
                     break
-                elif time.time() - time_start > 30:
-                    print("Kablo bağlantısı sağlanamadı 30 saniye süre doldu!")
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                elif time.time() - time_start > connection_timeout:
+                    print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
+                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon=True).start()
+                    self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
                     self.application.ev.start_stop_authorize = False
                     self.application.chargePoint.authorize = None
                     self.application.ev.card_id = ""
@@ -1011,8 +1007,8 @@ class ChargePoint16(cp):
             localList = []
             for data in local_authorization_list:
                 localList.append(data["id_tag"])
-            self.application.databaseModule.set_local_list(localList)
-            self.application.databaseModule.get_local_list()
+            self.application.databaseModule.set_default_local_list(localList)
+            self.application.databaseModule.get_default_local_list()
         except Exception as e:
             print("after_send_local_list Exception:",e)
 
@@ -1072,9 +1068,7 @@ class ChargePoint16(cp):
                 )
             elif requested_message == MessageTrigger.heartbeat:
                 asyncio.run_coroutine_threadsafe(
-                    self.send_heartbeat(
-                        interval=self.application.settings.heartbeatInterval
-                    ),
+                    self.send_heartbeat_once(),
                     self.application.loop
                 )
             elif requested_message == MessageTrigger.meter_values:

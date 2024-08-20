@@ -71,8 +71,9 @@ class Application():
         self.meter_values_on = False
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
+        self.settings.configuration.load_configuration_from_db()
         self.bluetoothService = BluetoothService(self)
-        self.id_tag_list = self.databaseModule.get_local_list()
+        self.id_tag_list = self.databaseModule.get_default_local_list()
         self.softwareSettings = SoftwareSettings(self,logger)
         self.flaskModule = FlaskModuleThread(self).start()
         self.webSocketServer = WebSocketServer(self,logger)

@@ -93,8 +93,8 @@ class Process:
                 self.application.deviceState = DeviceState.WAITING_STATE_C
                 return True
             else:
-                if time.time() - time_start > 2:
-                    print(Color.Red.value,"2 saniyede kilit açılamadı!")
+                if time.time() - time_start > 3:
+                    print(Color.Red.value,"3 saniyede kilit açılamadı!")
                     return False
 
     def _lock_connector_set_control_pilot(self):

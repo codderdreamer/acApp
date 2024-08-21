@@ -1146,37 +1146,53 @@ class DatabaseModule():
         except Exception as e:
             print("reset_firmware_status Exception:", e)
 
-
-   
-
-    def add_auth_cache_tag(ocpp_tag, expire_date):
+    def update_auth_cache_tag(self, ocpp_tag, new_expire_date):
         try:
             settings_database = sqlite3.connect('/root/Settings.sqlite')
             cursor = settings_database.cursor()
-            insert_query = "INSERT INTO auth_cache_list (ocpp_tag, expire_date) VALUES (?, ?)"
-            cursor.execute(insert_query, (ocpp_tag, expire_date))
-            settings_database.commit()
-            settings_database.close()
-            print(f"Added auth cache tag: {ocpp_tag}")
-        except sqlite3.IntegrityError as e:
-            print(f"Error adding auth cache tag: {e}")
+          
+            # Convert the expiry date to the correct format
+            if isinstance(new_expire_date, str):
+                # Remove the microsecond and timezone ('.000Z') if present
+                if new_expire_date.endswith('Z'):
+                    new_expire_date = new_expire_date[:-1]  # Remove 'Z'
+                
+                try:
+                    new_expire_date = datetime.strptime(new_expire_date, "%Y-%m-%dT%H:%M:%S.%f")
+                    print(f"Successfully parsed new_expire_date with microseconds: {new_expire_date}")
+                except ValueError:
+                    try:
+                        # Attempt to parse without microseconds
+                        new_expire_date = datetime.strptime(new_expire_date, "%Y-%m-%dT%H:%M:%S")
+                        print(f"Successfully parsed new_expire_date without microseconds: {new_expire_date}")
+                    except ValueError:
+                        print(f"Error parsing new_expire_date: {new_expire_date}.")
+                        
+            # Check if the ocpp_tag already exists in the database
+            select_query = "SELECT id FROM auth_cache_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
 
-    def update_auth_cache_tag(ocpp_tag, new_expire_date):
-        try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
-            cursor = settings_database.cursor()
-            update_query = "UPDATE auth_cache_list SET expire_date = ?, updated_at = ? WHERE ocpp_tag = ?"
-            cursor.execute(update_query, (new_expire_date, str(datetime.now()), ocpp_tag))
-            settings_database.commit()
-            settings_database.close()
-            if cursor.rowcount:
-                print(f"Updated auth cache tag: {ocpp_tag}")
+            if result:
+                # If ocpp_tag exists, update the expiry date
+                update_query = "UPDATE auth_cache_list SET expire_date = ?, updated_at = ? WHERE ocpp_tag = ?"
+                cursor.execute(update_query, (new_expire_date, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ocpp_tag))
+                print(f"Updated auth cache tag: {ocpp_tag} with new expire date: {new_expire_date}")
             else:
-                print(f"No auth cache tag found to update: {ocpp_tag}")
+                # If ocpp_tag doesn't exist, insert a new record
+                insert_query = """
+                    INSERT INTO auth_cache_list (ocpp_tag, expire_date, created_at, updated_at) 
+                    VALUES (?, ?, ?, ?)
+                """
+                cursor.execute(insert_query, (ocpp_tag, new_expire_date, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                print(f"Inserted new auth cache tag: {ocpp_tag} with expire date: {new_expire_date}")
+
+            settings_database.commit()
+            settings_database.close()
+
         except sqlite3.Error as e:
-            print(f"Error updating auth cache tag: {e}")
-
-
+            print(f"Error updating auth cache tag: {e}")    
+            
     def delete_auth_cache_tag(ocpp_tag):
         try:
             settings_database = sqlite3.connect('/root/Settings.sqlite')
@@ -1191,39 +1207,14 @@ class DatabaseModule():
                 print(f"No auth cache tag found to delete: {ocpp_tag}")
         except sqlite3.Error as e:
             print(f"Error deleting auth cache tag: {e}")
-
-    def get_card_status_from_local_list(self, ocpp_tag):
-        """
-        Verilen ocpp_tag için local_auth_list tablosunda durumu döner.
-        Durum `expire_date` kontrol edilerek belirlenir. Eğer tarih geçmişse 'Expired' olarak döner.
-        """
-        try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
-            cursor = settings_database.cursor()
-            select_query = "SELECT expire_date FROM local_auth_list WHERE ocpp_tag = ?"
-            cursor.execute(select_query, (ocpp_tag,))
-            result = cursor.fetchone()
-            settings_database.close()
-
-            if result:
-                expire_date = result[0]
-                if datetime.strptime(expire_date, '%Y-%m-%d').date() < datetime.now().date():
-                    return "Expired"
-                else:
-                    return "Accepted"
-            else:
-                print(f"No entry found for ocpp_tag: {ocpp_tag}")
-                return "Invalid"
-        except sqlite3.Error as e:
-            print(f"Error retrieving card status for ocpp_tag {ocpp_tag}: {e}")
-            return "Invalid"
-        
+    
     def get_card_status_from_auth_cache(self, ocpp_tag):
         """
         Verilen ocpp_tag için auth_cache_list tablosunda durumu döner.
         Durum `expire_date` kontrol edilerek belirlenir. Eğer tarih geçmişse 'Expired' olarak döner.
         """
         try:
+            print(f"Checking cache status for ocpp_tag: {ocpp_tag}")
             settings_database = sqlite3.connect('/root/Settings.sqlite')
             cursor = settings_database.cursor()
             select_query = "SELECT expire_date FROM auth_cache_list WHERE ocpp_tag = ?"
@@ -1232,14 +1223,166 @@ class DatabaseModule():
             settings_database.close()
 
             if result:
-                expire_date = result[0]
-                if datetime.strptime(expire_date, '%Y-%m-%d').date() < datetime.now().date():
-                    return "Expired"
-                else:
-                    return "Accepted"
+                try:
+                    expire_date = result[0]
+                    expire_date = datetime.strptime(expire_date, '%Y-%m-%d %H:%M:%S')
+                    if expire_date < datetime.now():
+                        print(f"Entry found for ocpp_tag: {ocpp_tag} but it has expired.")
+                        return {'status': 'Expired'}
+                    else:
+                        print(f"Entry found for ocpp_tag: {ocpp_tag} and it's valid.")
+                        return {'status': 'Accepted', 'expiry_date': expire_date}
+                except ValueError:
+                    print(f"Failed to parse expiry_date for ocpp_tag: {ocpp_tag}, returning Invalid.")
+                    return {'status': 'Invalid'}
             else:
                 print(f"No entry found for ocpp_tag: {ocpp_tag}")
-                return None
+                return {'status': 'Invalid'}
+
         except sqlite3.Error as e:
             print(f"Error retrieving cache status for ocpp_tag {ocpp_tag}: {e}")
-            return None
+            return {'status': 'Invalid'}
+        
+    def update_local_auth_list(self, ocpp_tag, status, expiry_date=None):
+        """
+        Verilen ocpp_tag, status ve expiry_date ile local_auth_list tablosunu günceller.
+        Eğer ocpp_tag mevcut değilse yeni bir kayıt ekler.
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+
+            # Önce, ocpp_tag'in veritabanında mevcut olup olmadığını kontrol edin
+            select_query = "SELECT id FROM local_auth_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+
+            if result:
+                # ocpp_tag mevcutsa, durumu ve expiry_date'i güncelleyin
+                update_query = """
+                    UPDATE local_auth_list 
+                    SET status = ?, updated_at = CURRENT_TIMESTAMP, expiry_date = ?
+                    WHERE ocpp_tag = ?
+                """
+                cursor.execute(update_query, (status, expiry_date, ocpp_tag))
+                print(f"Updated ocpp_tag {ocpp_tag} with status {status} and expiry_date {expiry_date}.")
+            else:
+                # ocpp_tag mevcut değilse, yeni bir kayıt ekleyin
+                insert_query = """
+                    INSERT INTO local_auth_list (ocpp_tag, status, expiry_date, created_at, updated_at) 
+                    VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """
+                cursor.execute(insert_query, (ocpp_tag, status, expiry_date))
+                print(f"Inserted new ocpp_tag {ocpp_tag} with status {status} and expiry_date {expiry_date}.")
+
+            settings_database.commit()
+            settings_database.close()
+
+        except sqlite3.Error as e:
+            print(f"Error updating local_auth_list for ocpp_tag {ocpp_tag}: {e}")
+
+    def clear_local_auth_list(self):
+        """
+        local_auth_list tablosundaki tüm kayıtları siler.
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+
+            delete_query = "DELETE FROM local_auth_list"
+            cursor.execute(delete_query)
+
+            settings_database.commit()
+            settings_database.close()
+            print("local_auth_list has been cleared.")
+
+        except sqlite3.Error as e:
+            print(f"Error clearing local_auth_list: {e}")
+
+    def get_current_list_version(self):
+        """
+        ocpp_settings tablosundaki local_list_version anahtarını döner. Eğer NULL ise 0 döner.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            
+            # local_list_version anahtarını ocpp_settings tablosundan sorgula
+            query = "SELECT value FROM ocpp_settings WHERE key = 'local_list_version'"
+            cursor.execute(query)
+            result = cursor.fetchone()
+            settings_database.close()
+
+            # Eğer sonuç NULL ise 0 döndür
+            if result is None or result[0] is None:
+                return 0
+            else:
+                return int(result[0])
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving current list version: {e}")
+            return 0
+    
+    def update_local_auth_list_version(self, version):
+        """
+        ocpp_settings tablosundaki local_list_version anahtarını günceller veya ekler.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            
+            # local_list_version anahtarının var olup olmadığını kontrol et
+            query = "SELECT value FROM ocpp_settings WHERE key = 'local_list_version'"
+            cursor.execute(query)
+            result = cursor.fetchone()
+
+            if result is None:
+                # Eğer local_list_version mevcut değilse, yeni bir kayıt ekle
+                insert_query = "INSERT INTO ocpp_settings (key, value) VALUES ('local_list_version', ?)"
+                cursor.execute(insert_query, (str(version),))
+            else:
+                # Eğer local_list_version mevcutsa, mevcut değeri güncelle
+                update_query = "UPDATE ocpp_settings SET value = ? WHERE key = 'local_list_version'"
+                cursor.execute(update_query, (str(version),))
+
+            # Değişiklikleri kaydet
+            settings_database.commit()
+            settings_database.close()
+
+            print(f"local_list_version updated to: {version}")
+
+        except sqlite3.Error as e:
+            print(f"Error updating local_list_version: {e}")
+    
+    def get_card_status_from_local_list(self, ocpp_tag):
+        """
+        Verilen ocpp_tag için local_auth_list tablosunda durumu döner.
+        idTagInfo yapısını döner: {'status': status, 'expiry_date': expiry_date, 'parent_id': parent_id}
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            select_query = "SELECT status, expiry_date FROM local_auth_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+            settings_database.close()
+
+            if result:
+                status, expiry_date = result
+
+                # idTagInfo yapısı döndürülür
+                id_tag_info = {
+                    'status': status,
+                    'expiry_date': expiry_date if expiry_date else None,  # Eğer expiry_date varsa eklenir, yoksa None
+                }
+
+                return id_tag_info
+            else:
+                print(f"No entry found for ocpp_tag: {ocpp_tag}")
+                return {'status': 'Invalid'}
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving card status for ocpp_tag {ocpp_tag}: {e}")
+            return {'status': 'Invalid'}

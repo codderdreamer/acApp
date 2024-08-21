@@ -97,6 +97,25 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_authorize Exception:",e)
 
+    def handle_authorization_accepted(self):
+        """
+        Yetkilendirme kabul edildiğinde yapılacak işlemler.
+        """
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon=True).start()
+        if self.application.ev.control_pilot == "A" and not self.application.ev.charge:
+            print("-------------------------------------------------------------------  Araç bağlı değil")
+            self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
+            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+        if self.application.ev.charge:
+            self.application.deviceState = DeviceState.STOPPED_BY_USER
+
+
+    def handle_authorization_failed(self):
+        """
+        Yetkilendirme başarısız olduğunda yapılacak işlemler.
+        """
+        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
+        
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
                                         self,
@@ -759,17 +778,25 @@ class ChargePoint16(cp):
     # 10. GET LOCAL LIST VERSION
     @on(Action.GetLocalListVersion)
     def on_get_local_list_version(self):
-        try :
+        try:
             request = call.GetLocalListVersionPayload()
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            
+            # Veritabanından current local list version'ı al
+            current_list_version = self.application.databaseModule.get_current_list_version()     
+                   
+            # Eğer current_list_version None veya -1 ise, default olarak -1 döner
+            if current_list_version is None:
+                current_list_version = -1
+            
             response = call_result.GetLocalListVersionPayload(
-                list_version=-1
+                list_version=current_list_version
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
-        except Exception as e:
-            print("on_get_local_list_version Exception:",e)
 
+        except Exception as e:
+            print("on_get_local_list_version Exception:", e)
     # 11. REMOTE START TRANSACTION
     @on(Action.RemoteStartTransaction)
     def on_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
@@ -985,33 +1012,84 @@ class ChargePoint16(cp):
 
     # 15. SEND LOCAL LIST
     @on(Action.SendLocalList)
-    def on_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
-        try :
-            request = call.SendLocalListPayload(
-                list_version,
-                update_type,
-                local_authorization_list
-            )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.SendLocalListPayload(
-                status = UpdateStatus.accepted
-            )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
-            return response
-        except Exception as e:
-            print("on_send_local_list Exception:",e)
-            
-    @after(Action.SendLocalList)
-    def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
-        try :
-            localList = []
-            for data in local_authorization_list:
-                localList.append(data["id_tag"])
-            self.application.databaseModule.set_default_local_list(localList)
-            self.application.databaseModule.get_default_local_list()
-        except Exception as e:
-            print("after_send_local_list Exception:",e)
+    def on_send_local_list(self, list_version: int, update_type: UpdateType, local_authorization_list: list):
+        try:
+            # Mevcut liste sürümünü kontrol et
+            current_list_version = self.application.databaseModule.get_current_list_version()
 
+            if list_version > current_list_version:
+                # Gelen isteği güncelle
+                request = call.SendLocalListPayload(
+                    list_version,
+                    update_type,
+                    local_authorization_list
+                )
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+
+                # Liste sürümünü güncelle
+                self.application.databaseModule.update_local_auth_list_version(list_version)
+
+                # Yanıtı gönder
+                response = call_result.SendLocalListPayload(
+                    status=UpdateStatus.accepted 
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                return response
+            else:
+                # Liste sürümü güncellenmemişse hata döndür
+                response = call_result.SendLocalListPayload(
+                    status=UpdateStatus.version_mismatch
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                return response
+
+        except Exception as e:
+            print("on_send_local_list Exception:", e)
+            response = call_result.SendLocalListPayload(
+                status=UpdateStatus.failed
+            )
+            return response
+        
+    @after(Action.SendLocalList)
+    def after_send_local_list(self, list_version: int, update_type: UpdateType, local_authorization_list: list):
+            try:
+                if update_type == UpdateType.full:
+                    # Full update: Mevcut tüm verileri sil ve yeni verileri ekle
+                    self.application.databaseModule.clear_local_auth_list()
+                    LOGGER_CHARGE_POINT.info("Full update: Cleared existing local authorization list.")
+
+                # Gelen verileri ekle/güncelle
+                for data in local_authorization_list:
+                    ocpp_tag = data["id_tag"]
+                    id_tag_info = data.get("id_tag_info", {})  # id_tag_info alanını alın, eğer yoksa boş bir sözlük döndür
+                    status = id_tag_info.get("status", "Accepted")  # Varsayılan olarak Accepted
+                    expiry_date = id_tag_info.get("expiry_date", None)  # expiry_date alanını alın
+
+                    # local_auth_list tablosuna ekleme veya güncelleme yapın
+                    self.application.databaseModule.update_local_auth_list(ocpp_tag, status, expiry_date)
+
+                LOGGER_CHARGE_POINT.info("Local authorization list updated in database.")
+
+                # Çakışma kontrolü
+                conflict_detected = self.check_local_list_conflict(local_authorization_list)
+                if conflict_detected:
+                    # Çakışma varsa merkezi sisteme bildirim gönder
+                    self.send_status_notification(
+                        connector_id=0,
+                        error_code=ChargePointErrorCode.local_list_conflict
+                    )
+                    LOGGER_CENTRAL_SYSTEM.warning("Local list conflict detected and reported.")
+
+            except Exception as e:
+                print("after_send_local_list Exception:", e)
+        
+    def check_local_list_conflict(self, local_list):
+        """
+        Yerel yetkilendirme listesi ile StartTransaction.conf'daki geçerlilik arasında bir çakışma olup olmadığını kontrol eder.
+        """
+        return False  # Varsayılan olarak her zaman çakışma olmadığını döner
+
+  
     # 16. SET CHARGING PROFILE
     @on(Action.SetChargingProfile)
     def on_set_charging_profile(self,connector_id:int, cs_charging_profiles:dict):

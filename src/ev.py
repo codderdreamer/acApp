@@ -182,69 +182,62 @@ class EV():
             self.send_message_thread_start = False
             self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
 
-    def update_authorization_cache(self, ocpp_tag, expire_date):
-        """
-        Authorization Cache veritabanına yetkilendirilmiş tag'i kaydeder.
-        Eğer tag zaten mevcutsa, expire_date ve updated_at alanlarını günceller.
-        """
-        try:
-            # Önce, tag'in veritabanında mevcut olup olmadığını kontrol edin
-            existing_tag = self.application.databaseModule.get_card_status_from_auth_cache(ocpp_tag)
-
-            if existing_tag == AuthorizationStatus.expired.value:
-                # Mevcut ise, expire_date ve updated_at alanlarını güncelle
-                self.application.databaseModule.update_auth_cache_tag(ocpp_tag, expire_date)
-                print(f"Authorization cache for {ocpp_tag} updated with new expiration date {expire_date}.")
-            elif existing_tag is None:
-                # Mevcut değilse, yeni kayıt ekle
-                self.application.databaseModule.add_auth_cache_tag(ocpp_tag, expire_date)
-                print(f"Authorization cache for {ocpp_tag} added with expiration date {expire_date}.")
-            else:
-                print(f"Authorization cache for {ocpp_tag} is in {existing_tag} status and will not be updated.")
-
-        except Exception as e:
-            print(f"Error updating authorization cache for {ocpp_tag}: {e}")
-
+   
     def send_authorization_request(self, value):
         """
         Merkezi sisteme yetkilendirme talebi gönderir.
         """
         try:
-            # Yetkilendirme talebini merkezi sisteme gönder
+            print("Yetkilendirme talebi gönderiliyor", value)
+            # Merkezi sisteme yetkilendirme talebi gönder
             request = asyncio.run_coroutine_threadsafe(
                 self.application.chargePoint.send_authorize(id_tag=value), 
                 self.application.loop
             )
             response = request.result()  # Asenkron sonucu bekleyin
 
-            # Yetkilendirme talebinin yanıtını kontrol et
+            # Merkezi sistem yanıtını kontrol et
             id_tag_info = response.id_tag_info
             status = id_tag_info['status']
 
             if status == AuthorizationStatus.accepted.value:
-                # Yetkilendirme başarılı ise ve AuthorizationCacheEnabled True ise
+                # Yetkilendirme başarılıysa ve AuthorizationCacheEnabled True ise
                 if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
-                    # Merkezi sistemden gelen expire_date bilgisi
+                    # Merkezi sistem yanıtından expire_date bilgisi al
                     expiry_date = id_tag_info.get('expiry_date')
-                    
-                    # Eğer expiry_date merkezi sistemden gelmezse, bugünden itibaren 1 yıl sonrasını baz alarak ayarla
-                    if not expiry_date:
-                        expiry_date = (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
-                    
-                    # authorizationCache veritabanına bu tag'i kaydet
-                    self.update_authorization_cache(value, expiry_date)
-                
-                print("Authorized")
+
+                    # expire_date sağlanmışsa, datetime nesnesine dönüştür
+                    if expiry_date:
+                        try:
+                            # expire_date bir dize ise, datetime nesnesine dönüştür
+                            if isinstance(expiry_date, str):
+                                # Eğer Z harfi varsa UTC olduğunu belirtiyor, bu yüzden kaldırıyoruz
+                                if expiry_date.endswith('Z'):
+                                    expiry_date = expiry_date[:-1]
+                                # Dizeyi datetime nesnesine dönüştür
+                                expiry_date = datetime.strptime(expiry_date, '%Y-%m-%dT%H:%M:%S.%f')
+                                print(f"expiry_date ayrıştırıldı: {expiry_date}")
+                        except ValueError:
+                            print(f"expiry_date ayrıştırılamadı: {expiry_date}, geçerli tarih + 1 yıl kullanılıyor.")
+                            expiry_date = datetime.now() + timedelta(days=365)
+                    else:
+                        expiry_date = datetime.now() + timedelta(days=365)
+
+                    # expiry_date'i veritabanına ISO formatında bir dize olarak kaydet
+                    self.application.databaseModule.update_auth_cache_tag(value, expiry_date.strftime('%Y-%m-%d %H:%M:%S'))
+
+                print("Merkezi Sistem tarafından yetkilendirildi")
                 return AuthorizationStatus.accepted
             else:
-                # Yetkilendirme başarısız ise, Rejected olarak geri dön
-                return AuthorizationStatus.rejected
+                print("Merkezi Sistem tarafından yetkilendirme geçersiz")
+                # Yetkilendirme başarısızsa, invalid olarak geri dön
+                return AuthorizationStatus.invalid
 
         except Exception as e:
-            # Hata durumunda, hata mesajını logla ve Rejected olarak geri dön
-            print("Error:", e)
-            return AuthorizationStatus.rejected
-        
+            # Hata durumunda, hata mesajını logla ve invalid olarak geri dön
+            print("Hata:", e)
+            return AuthorizationStatus.invalid
+
     def check_online_authorization(self, value):
         """
         Cihaz online olduğunda yetkilendirme sürecini yönetir.
@@ -254,22 +247,29 @@ class EV():
         # LocalPreAuthorize bayrağını kontrol edin
         if self.application.settings.configuration.LocalPreAuthorize == "true":
             # Eğer LocalPreAuthorize True ise, LocalAuthListEnabled bayrağını kontrol edin
+            print("LocalPreAuthorize is True")
             local_auth_result = self.check_local_auth_list(value)
             if local_auth_result == AuthorizationStatus.accepted:
+                print("Authorized from LocalAuthList")
                 return local_auth_result  
             
             # Eğer ocppTag localAuthList içinde bulunmazsa ve AuthorizationCacheEnabled True ise
             if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+                print("AuthorizationCacheEnabled is True")
                 cache_auth_result = self.check_authorization_cache(value)
                 if cache_auth_result == AuthorizationStatus.accepted:
+                    print("Authorized from AuthorizationCache")
                     return cache_auth_result  # Eğer ocppTag authorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
             
-        else:
-            # Eğer LocalPreAuthorize False ise, doğrudan merkezi sisteme yetkilendirme talebi yapın.
+            # Merkezi Sistem Yetkilendirme Talebi
+            print("Sending authorization request to Central System 1")
             return self.send_authorization_request(value)
-
-        # Merkezi Sistem Yetkilendirme Talebi
-        return self.send_authorization_request(value)
+        
+        else:
+            print("LocalPreAuthorize is False")
+            # Eğer LocalPreAuthorize False ise, doğrudan merkezi sisteme yetkilendirme talebi yapın.
+            print("Sending authorization request to Central System 2")
+            return self.send_authorization_request(value)
 
     def check_offline_authorization(self, value):
         """
@@ -277,55 +277,105 @@ class EV():
         Sırasıyla LocalAuthorizeOffline, LocalAuthList, AuthorizationCache ve bilinmeyen kimlik 
         doğrulayıcılar için izin verilmesi kontrollerini gerçekleştirir.
         """
+        if self.card_id == self.application.process.id_tag:
+            print("Authorized for active card")
+            return AuthorizationStatus.accepted
+        
         # LocalAuthorizeOffline bayrağını kontrol edin
         if self.application.settings.configuration.LocalAuthorizeOffline == "false":
-            return AuthorizationStatus.rejected  # LocalAuthorizeOffline False ise, Red olarak geri dön.
+            print("LocalAuthorizeOffline is False so Unauthorized")
+            return AuthorizationStatus.invalid  # LocalAuthorizeOffline False ise, Red olarak geri dön.
 
         # LocalAuthList kontrolü
         local_auth_result = self.check_local_auth_list(value)
         if local_auth_result == AuthorizationStatus.accepted:
+            print("Authorized from LocalAuthList")
             return local_auth_result  # LocalAuthList içinde bulunursa ve Accepted durumundaysa, Yetkilendirildi olarak geri dön.
 
         # Authorization Cache kontrolü
         if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
             cache_auth_result = self.check_authorization_cache(value)
             if cache_auth_result == AuthorizationStatus.accepted:
+                print("Authorized from AuthorizationCache")
                 return cache_auth_result  # AuthorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
 
         # Bilinmeyen Kimlik Doğrulayıcıların Yetkilendirilmesi
         if self.application.settings.configuration.allowOfflineTxForUnknownId == "true":
+            print("Authorized for unknown id")
             return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
         
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
-        return AuthorizationStatus.rejected  # allowOfflineTxForUnknownId False ise, Red olarak geri dön.
+        return AuthorizationStatus.invalid  # allowOfflineTxForUnknownId False ise, Red olarak geri dön.
 
     def check_local_auth_list(self, value):
         """
         Local Authorization List içinde verilen id_tag'i kontrol eder.
-        Accepted durumunda "Authorized", diğer durumlarda None döner.
+        AuthorizationStatus ve diğer bilgileri içeren idTagInfo yapısını döner.
         """
         if self.application.settings.configuration.LocalAuthListEnabled == "true":
-            card_status = self.application.databaseModule.get_card_status_from_local_list(value)
-            if card_status == AuthorizationStatus.accepted.value:
+            id_tag_info = self.application.databaseModule.get_card_status_from_local_list(value)
+
+            status = id_tag_info.get('status')
+            expiry_date = id_tag_info.get('expiry_date')
+
+            # Expiry date kontrolü
+            if expiry_date:
+                try:
+                    # Convert expiry_date to a datetime object if it's a string
+                    expiry_date = datetime.strptime(expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+                except ValueError:
+                    print(f"Failed to parse expiry_date: {expiry_date}, using current date + 1 year.")
+                    expiry_date = datetime.now() + timedelta(days=365)
+            else:
+                expiry_date = datetime.now() + timedelta(days=365)
+
+            if status == AuthorizationStatus.accepted.value:
                 return AuthorizationStatus.accepted
-            elif card_status == AuthorizationStatus.expired.value:
+            elif status == AuthorizationStatus.expired.value:
                 print(f"Card {value} is expired.")
-            elif card_status == AuthorizationStatus.blocked.value:
+                return AuthorizationStatus.expired
+            elif status == AuthorizationStatus.blocked.value:
                 print(f"Card {value} is blocked.")
-            elif card_status == AuthorizationStatus.invalid.value:
+                return AuthorizationStatus.blocked
+            elif status == AuthorizationStatus.invalid.value:
                 print(f"Card {value} is invalid.")
-        return None
+                return AuthorizationStatus.invalid
+            else:
+                print(f"Unknown status for card {value}: {status}")
+
+        return AuthorizationStatus.invalid
 
     def check_authorization_cache(self, value):
         """
         Authorization Cache içinde verilen id_tag'i kontrol eder.
-        Accepted durumunda "Authorized", diğer durumlarda None döner.
+        AuthorizationStatus ve diğer bilgileri içeren idTagInfo yapısını döner.
         """
-        cache_status = self.application.databaseModule.get_card_status_from_auth_cache(value)
-        if cache_status == AuthorizationStatus.accepted.value:
-            return AuthorizationStatus.accepted
-        return None
+        if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
 
+            id_tag_info = self.application.databaseModule.get_card_status_from_auth_cache(value)
+            print("id_tag_info:", id_tag_info)
+            if not id_tag_info:
+                print(f"Card {value} is not in authorization cache.")
+                return AuthorizationStatus.invalid
+            status = id_tag_info.get('status')
+
+            if status == AuthorizationStatus.accepted.value:
+                print(f"Card {value} is accepted.")
+                return AuthorizationStatus.accepted
+            elif status == AuthorizationStatus.expired.value:
+                print(f"Card {value} is expired.")
+                return AuthorizationStatus.expired
+            elif status == AuthorizationStatus.blocked.value:
+                print(f"Card {value} is blocked.")
+                return AuthorizationStatus.blocked
+            elif status == AuthorizationStatus.invalid.value:
+                print(f"Card {value} is invalid.")
+                return AuthorizationStatus.invalid
+            else:
+                print(f"Unknown status for card {value}: {status}")
+
+        return AuthorizationStatus.invalid
+    
     def authorize_billing_card(self, value):
         """
         BillingCard tipi için yetkilendirme kontrolü yapar.
@@ -333,16 +383,18 @@ class EV():
         ve merkezi sistem yetkilendirme talebi kontrolleri yapılır.
         Cihaz offline olduğunda offline yetkilendirme süreçleri kontrol edilir.
         """
-        print("Billing Card Detected :", value)
+        authorization_result = None
         if self.application.ocppActive:  # Cihaz online ise
             print("Device is online")
             authorization_result =  self.check_online_authorization(value)
             print("Authorization Result:", authorization_result)
             if authorization_result == AuthorizationStatus.accepted:
                 print("Authorized for billing card: ", value)
+                self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                self.application.chargePoint.handle_authorization_accepted()
                 self.start_stop_authorize = True
             else:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
+                self.application.chargePoint.handle_authorization_failed()
                 print("Unauthorized for billing card: ", value)
                 self.start_stop_authorize = False
 
@@ -350,11 +402,16 @@ class EV():
             authorization_result = self.check_offline_authorization(value)
             print("Authorization Result:", authorization_result)
             if authorization_result == AuthorizationStatus.accepted:
+                self.authorize = AuthorizationStatus.accepted
+                self.application.chargePoint.handle_authorization_accepted()
                 print("Authorized for billing card: ", value)
                 self.start_stop_authorize = True
             else:
                 print("Unauthorized for billing card :", value)
+                self.application.chargePoint.handle_authorization_failed()
                 self.start_stop_authorize = False
+
+        return authorization_result
         
 
     @property
@@ -374,15 +431,25 @@ class EV():
             elif self.application.availability == AvailabilityType.inoperative:
                 Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
             elif (self.application.cardType == CardType.BillingCard):
+                print("Billing Card Detected :", value)
+                
+                if self.application.chargePoint is None:
+                    print("Error: chargePoint is None. Cannot proceed with authorization.")
+                    return  # Or handle the error as appropriate for your application
+
                 if self.charge:
                     if self.application.process.id_tag == value:
                         self.application.chargePoint.authorize = None
-                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag=value), self.application.loop)
+                        authorization_result = self.authorize_billing_card(value)
+                        if authorization_result == AuthorizationStatus.accepted:
+                            self.application.chargePoint.handle_authorization_accepted()
                 else:
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)
-                    if authorization_result == "Authorized":
+                    if authorization_result == AuthorizationStatus.accepted:
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                    else :
+                        self.application.chargePoint.authorize = None
                         
             elif self.application.cardType == CardType.StartStopCard:
                 print("Start Stop Card Detected :", value)

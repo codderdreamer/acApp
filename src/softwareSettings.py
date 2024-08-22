@@ -223,54 +223,40 @@ class SoftwareSettings():
             password = self.application.settings.settings4G.password
             pin = self.application.settings.settings4G.pin
             enableModification = self.application.settings.settings4G.enableModification
-            self.delete_connection_type("gsm")
+
+            # Mevcut GSM bağlantısını sil
+            self.delete_connection_type(connection_name)
+
+            # GPIO kontrol komutlarını çalıştır
+            subprocess.run("gpio-test.64 w d 20 0 > /dev/null 2>&1", shell=True, check=True)
+            time.sleep(3)
+
             if enableModification == "True":
                 time.sleep(3)
-                os.system("gpio-test.64 w d 20 1 > /dev/null 2>&1")
+                subprocess.run("gpio-test.64 w d 20 1 > /dev/null 2>&1", shell=True, check=True)
                 time.sleep(5)
-                add_connection_string = """nmcli connection add con-name {0} ifname ttyUSB2 autoconnect yes \\type gsm apn {1} user {2} password {3} > /dev/null 2>&1""".format(connection_name,apn,user,password)
-                os.system(add_connection_string)
-                if pin:
-                    time_start = time.time()
-                    pin_valid = False
-                    try:
-                        result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                        modem_id = result.split("/")[5].split()[0]
-                        pin_check = subprocess.run("""mmcli -i {0} --pin={1}""".format(modem_id, pin), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        if "error" in pin_check.stderr.decode('utf-8').lower():
-                            print("PIN hatalı. Lütfen doğru PIN'i girin.")
-                        else:
-                            pin_valid = True
-                    except Exception as e:
-                        print(f"PIN doğrulama sırasında bir hata oluştu: {str(e)}")
 
-                    if pin_valid:
-                        while True:
-                            if time.time() - time_start > 60:
-                                break
-                            try:
-                                net = """nmcli con up "{0}" ifname ttyUSB2 > /dev/null 2>&1""".format(connection_name)
-                                os.system(net)
-                                break
-                            except:
-                                pass
-                            time.sleep(2)
-                else:
-                    time_start = time.time()
-                    while True:
-                        if time.time() - time_start > 60:
-                                break
-                        try:
-                            result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                            modem_id = result.split("/")[5].split()[0]
-                            net = """nmcli con up "{0}" ifname ttyUSB2""".format(connection_name)
-                            os.system(net)
-                            break
-                        except:
-                            pass
+                # Bağlantı ekleme komutunu oluştur
+                add_connection_string = f"nmcli connection add con-name {connection_name} ifname ttyUSB2 autoconnect yes type gsm "
+                if apn:
+                    add_connection_string += f"apn {apn} "
+                if user:
+                    add_connection_string += f"user {user} "
+                if password:
+                    add_connection_string += f"password {password} "
+                if pin:
+                    add_connection_string += f"gsm.pin {pin} "
+                add_connection_string += "> /dev/null 2>&1"
+
+                # Bağlantı ekleme komutunu çalıştır
+                subprocess.run(add_connection_string, shell=True, check=True)
+
+                # PIN zaten bağlantı sırasında tanımlandı, bağlantıyı etkinleştir
+                subprocess.run(f"nmcli connection up {connection_name} ifname ttyUSB2", shell=True, check=True)
+
         except Exception as e:
-            print("set_4G Exception:",e)
-            
+            print("set_4G Exception:", e)
+   
     def set_wifi(self):
         try:
             wifiEnable = self.application.settings.wifiSettings.wifiEnable

@@ -30,7 +30,6 @@ class DatabaseModule():
         self.get_mid_settings()
         self.get_configuration()
         self.user = self.get_user_login()["UserName"]
-        self.set_diagnostics_status('None', str(datetime.now()))
         self.reset_diagnostics_status()
         self.reset_firmware_status()
         
@@ -1044,18 +1043,23 @@ class DatabaseModule():
 
             query = "SELECT * FROM diagnostics_status ORDER BY id DESC LIMIT 1"
             self.cursor.execute(query)
-            data = self.cursor.fetchall()
-            self.settings_database.close()
+            data = self.cursor.fetchone()  
 
             if data:
-                for row in data:
-                    data_dict['status'] = row[1]
-                    data_dict['last_update_time'] = row[2]
+                data_dict['status'] = data[1]
+                data_dict['last_update_time'] = data[2]
             else:
+                # Eğer tablo boşsa, 'Idle' statüsü ile bir kayıt ekle
+                insert_query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
+                self.settings_database.commit()
+
+                # Eklenen kaydı geri dön
                 data_dict['status'] = "Idle"
                 data_dict['last_update_time'] = str(datetime.now())
-                print("No diagnostics status found in the database.")
-                return data_dict
+                print("No diagnostics status found in the database. Added Idle status.")
+
+            self.settings_database.close()
 
         except Exception as e:
             print("get_diagnostics_status Exception:", e)
@@ -1067,30 +1071,39 @@ class DatabaseModule():
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+            # Var olan kaydı güncelle
+            query = "UPDATE diagnostics_status SET status = ?, last_update_time = ?"
             self.cursor.execute(query, (status, last_update_time))
+
+            # Eğer satır güncellenmediyse (kayıt yoksa), yeni kayıt ekle
+            if self.cursor.rowcount == 0:
+                query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(query, (status, last_update_time))
+
             self.settings_database.commit()
             self.settings_database.close()
 
         except Exception as e:
             print("set_diagnostics_status Exception:", e)
-
+   
     def reset_diagnostics_status(self):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            update_query = "UPDATE diagnostics_status SET status = ?"
-            self.cursor.execute(update_query, ("Idle",))
-            update_query = "UPDATE diagnostics_status SET last_update_time = ?"
-            self.cursor.execute(update_query, (str(datetime.now()),))
+            # Tüm tabloyu temizle
+            delete_query = "DELETE FROM diagnostics_status"
+            self.cursor.execute(delete_query)
+
+            # Yeni bir kayıt ekle
+            insert_query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+            self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
 
             self.settings_database.commit()
             self.settings_database.close()
             print("Diagnostics status has been reset.")
         except Exception as e:
             print("reset_diagnostics_status Exception:", e)
-
 
     def get_firmware_status(self):
         data_dict = {}
@@ -1100,30 +1113,43 @@ class DatabaseModule():
 
             query = "SELECT * FROM firmware_status ORDER BY id DESC LIMIT 1"
             self.cursor.execute(query)
-            data = self.cursor.fetchall()
-            self.settings_database.close()
+            data = self.cursor.fetchone()  # fetchall yerine fetchone kullanıldı, çünkü sadece bir satır bekleniyor.
 
             if data:
-                for row in data:
-                    data_dict['status'] = row[1]
-                    data_dict['last_update_time'] = row[2]
+                data_dict['status'] = data[1]
+                data_dict['last_update_time'] = data[2]
             else:
-                data_dict = {'status': "Idle", 'last_update_time': str(datetime.now())}
-                print("No firmware status found in the database.")
-                return data_dict
+                # Eğer tablo boşsa, 'Idle' statüsü ile bir kayıt ekle
+                insert_query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
+                self.settings_database.commit()
+
+                # Eklenen kaydı geri dön
+                data_dict['status'] = "Idle"
+                data_dict['last_update_time'] = str(datetime.now())
+                print("No firmware status found in the database. Added Idle status.")
+
+            self.settings_database.close()
 
         except Exception as e:
             print("get_firmware_status Exception:", e)
         
         return data_dict
-
+    
     def set_firmware_status(self, status: str, last_update_time: str):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
-            self.cursor.execute(query, (status, last_update_time))
+            # Mevcut kaydı güncelleme veya yeni kayıt ekleme
+            update_query = "UPDATE firmware_status SET status = ?, last_update_time = ?"
+            self.cursor.execute(update_query, (status, last_update_time))
+
+            # Eğer satır güncellenmediyse, yeni bir kayıt ekle
+            if self.cursor.rowcount == 0:
+                insert_query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(insert_query, (status, last_update_time))
+
             self.settings_database.commit()
             self.settings_database.close()
 
@@ -1135,14 +1161,18 @@ class DatabaseModule():
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            update_query = "UPDATE firmware_status SET status = ?"
-            self.cursor.execute(update_query, ("Idle",))
-            update_query = "UPDATE firmware_status SET last_update_time = ?"
-            self.cursor.execute(update_query, (str(datetime.now()),))
+            # Tüm kayıtları temizle
+            delete_query = "DELETE FROM firmware_status"
+            self.cursor.execute(delete_query)
+
+            # Yeni bir 'Idle' kaydı ekle
+            insert_query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+            self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
 
             self.settings_database.commit()
             self.settings_database.close()
-            print("Firmware status has been reset.")
+            print("Firmware status has been reset to Idle.")
+
         except Exception as e:
             print("reset_firmware_status Exception:", e)
 
@@ -1211,10 +1241,6 @@ class DatabaseModule():
         except sqlite3.Error as e:
             print(f"Error clearing auth cache: {e}")
             return ClearCacheStatus.rejected
-
-            
-
-
 
     def get_card_status_from_auth_cache(self, ocpp_tag):
         """

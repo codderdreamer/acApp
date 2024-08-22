@@ -300,7 +300,7 @@ class EV():
                 return cache_auth_result  # AuthorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
 
         # Bilinmeyen Kimlik Doğrulayıcıların Yetkilendirilmesi
-        if self.application.settings.configuration.allowOfflineTxForUnknownId == "true":
+        if self.application.settings.configuration.AllowOfflineTxForUnknownId == "true":
             print("Authorized for unknown id")
             return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
         

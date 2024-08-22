@@ -289,7 +289,6 @@ class Application():
                 else:
                     ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                     
-                # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
                 print(Color.Green.value,"Ocpp URL:",ocpp_url)
 
                 ssl_context = None
@@ -308,19 +307,30 @@ class Application():
                 if self.settings.ocppSettings.authorizationKey:
                     auth_header = {'Authorization': f'Basic {base64.b64encode(f"{self.settings.ocppSettings.chargePointId}:{self.settings.ocppSettings.authorizationKey}".encode()).decode()}'}
 
-                
-                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value], ssl=ssl_context, extra_headers=auth_header, compression=None, timeout=10) as ws:
+                # Ping interval value; 0 disables client-side ping/pong
+                ping_interval = float(self.settings.configuration.WebSocketPingInterval) if self.settings.configuration.WebSocketPingInterval else None
+
+                async with websockets.connect(
+                    ocpp_url, 
+                    subprotocols=[self.ocpp_subprotocols.value], 
+                    ssl=ssl_context, 
+                    extra_headers=auth_header, 
+                    compression=None, 
+                    timeout=10,
+                    ping_interval=ping_interval  # Ping interval added here
+                ) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                         await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId, self.settings.ocppSettings.chargePointId)
+        
         except Exception as e:
             print("ocppStart Exception:", e)
             self.ocppActive = False
             if self.chargePointStatus == ChargePointStatus.charging:
                 Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
-            
+ 
     def ocpp_task(self):
         while True:
             if self.cardType == CardType.BillingCard:

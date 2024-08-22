@@ -855,7 +855,7 @@ class ChargePoint16(cp):
     def remote_start_thread(self):
         # Eğer kablo bağlı değilse
         # Waiting plug led yak
-        # 30 saniye içinde kablo bağlanmazsa idle
+        # ConnectionTimeOut saniye içinde kablo bağlanmazsa idle
         connection_timeout = int(self.application.settings.configuration.ConnectionTimeOut)
         time_start = time.time()
         if self.application.ev.control_pilot != "B":

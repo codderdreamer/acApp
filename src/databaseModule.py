@@ -1193,21 +1193,29 @@ class DatabaseModule():
         except sqlite3.Error as e:
             print(f"Error updating auth cache tag: {e}")    
             
-    def delete_auth_cache_tag(ocpp_tag):
+    def clear_auth_cache(self):
         try:
             settings_database = sqlite3.connect('/root/Settings.sqlite')
             cursor = settings_database.cursor()
-            delete_query = "DELETE FROM auth_cache_list WHERE ocpp_tag = ?"
-            cursor.execute(delete_query, (ocpp_tag,))
+            delete_query = "DELETE FROM auth_cache_list"
+            cursor.execute(delete_query)
             settings_database.commit()
             settings_database.close()
             if cursor.rowcount:
-                print(f"Deleted auth cache tag: {ocpp_tag}")
+                print(f"Deleted auth cache entries: {cursor.rowcount}")
+                return ClearCacheStatus.accepted
             else:
-                print(f"No auth cache tag found to delete: {ocpp_tag}")
+                print("No auth cache entries found.")
+                return ClearCacheStatus.accepted
+            
         except sqlite3.Error as e:
-            print(f"Error deleting auth cache tag: {e}")
-    
+            print(f"Error clearing auth cache: {e}")
+            return ClearCacheStatus.rejected
+
+            
+
+
+
     def get_card_status_from_auth_cache(self, ocpp_tag):
         """
         Verilen ocpp_tag için auth_cache_list tablosunda durumu döner.

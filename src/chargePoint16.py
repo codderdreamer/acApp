@@ -574,10 +574,10 @@ class ChargePoint16(cp):
         try :
             request = call.ClearCachePayload()
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            cache_status  = self.application.databaseModule.clear_auth_cache()
             response = call_result.ClearCachePayload(
-                status= ClearCacheStatus.accepted
+                status= cache_status
             )
-            self.application.databaseModule.set_default_local_list([])
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

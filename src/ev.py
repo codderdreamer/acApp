@@ -203,10 +203,11 @@ class EV():
             if status == AuthorizationStatus.accepted.value:
                 # Yetkilendirme başarılıysa ve AuthorizationCacheEnabled True ise
                 if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
-                    # Merkezi sistem yanıtından expire_date bilgisi al
+                    # Merkezi sistem yanıtından expiry_date ve parent_id bilgilerini al
                     expiry_date = id_tag_info.get('expiry_date')
+                    parent_id = id_tag_info.get('parent_id')
 
-                    # expire_date sağlanmışsa, datetime nesnesine dönüştür
+                    # expiry_date sağlanmışsa, datetime nesnesine dönüştür
                     if expiry_date:
                         try:
                             # expire_date bir dize ise, datetime nesnesine dönüştür
@@ -223,8 +224,8 @@ class EV():
                     else:
                         expiry_date = datetime.now() + timedelta(days=365)
 
-                    # expiry_date'i veritabanına ISO formatında bir dize olarak kaydet
-                    self.application.databaseModule.update_auth_cache_tag(value, expiry_date.strftime('%Y-%m-%d %H:%M:%S'))
+                    # expiry_date ve parent_id'yi veritabanına kaydet
+                    self.application.databaseModule.update_auth_cache_tag(value, expiry_date.strftime('%Y-%m-%d %H:%M:%S'), parent_id)
 
                 print("Merkezi Sistem tarafından yetkilendirildi")
                 return AuthorizationStatus.accepted

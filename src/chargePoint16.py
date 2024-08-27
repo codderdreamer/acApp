@@ -1052,42 +1052,62 @@ class ChargePoint16(cp):
         
     @after(Action.SendLocalList)
     def after_send_local_list(self, list_version: int, update_type: UpdateType, local_authorization_list: list):
-            try:
-                if update_type == UpdateType.full:
-                    # Full update: Mevcut tüm verileri sil ve yeni verileri ekle
-                    self.application.databaseModule.clear_local_auth_list()
-                    LOGGER_CHARGE_POINT.info("Full update: Cleared existing local authorization list.")
+        try:
+            if update_type == UpdateType.full:
+                self.application.databaseModule.clear_local_auth_list()
+                LOGGER_CHARGE_POINT.info("Full update: Cleared existing local authorization list.")
 
-                # Gelen verileri ekle/güncelle
-                for data in local_authorization_list:
-                    ocpp_tag = data["id_tag"]
-                    id_tag_info = data.get("id_tag_info", {})  # id_tag_info alanını alın, eğer yoksa boş bir sözlük döndür
-                    status = id_tag_info.get("status", "Accepted")  # Varsayılan olarak Accepted
-                    expiry_date = id_tag_info.get("expiry_date", None)  # expiry_date alanını alın
+            for data in local_authorization_list:
+                ocpp_tag = data["id_tag"]
+                id_tag_info = data.get("id_tag_info", {})  # id_tag_info alanını alın, eğer yoksa boş bir sözlük döndür
+                status = id_tag_info.get("status", "Accepted")  # Varsayılan olarak Accepted
+                expiry_date = id_tag_info.get("expiry_date", None)  # expiry_date alanını alın
+                parent_id_tag = id_tag_info.get("parent_id_tag", None)  # parent_id_tag alanını alın
 
-                    # local_auth_list tablosuna ekleme veya güncelleme yapın
-                    self.application.databaseModule.update_local_auth_list(ocpp_tag, status, expiry_date)
+                self.application.databaseModule.update_local_auth_list(ocpp_tag, status, expiry_date, parent_id_tag)
 
-                LOGGER_CHARGE_POINT.info("Local authorization list updated in database.")
+            LOGGER_CHARGE_POINT.info("Local authorization list updated in database.")
 
-                # Çakışma kontrolü
-                conflict_detected = self.check_local_list_conflict(local_authorization_list)
-                if conflict_detected:
-                    # Çakışma varsa merkezi sisteme bildirim gönder
-                    self.send_status_notification(
-                        connector_id=0,
-                        error_code=ChargePointErrorCode.local_list_conflict
-                    )
-                    LOGGER_CENTRAL_SYSTEM.warning("Local list conflict detected and reported.")
+            conflict_detected = self.check_local_list_conflict(local_authorization_list)
+            if conflict_detected:
+                self.send_status_notification(
+                    connector_id=0,
+                    error_code=ChargePointErrorCode.local_list_conflict
+                )
+                LOGGER_CENTRAL_SYSTEM.warning("Local list conflict detected and reported.")
 
-            except Exception as e:
-                print("after_send_local_list Exception:", e)
-        
+        except Exception as e:
+            print("after_send_local_list Exception:", e)
+
     def check_local_list_conflict(self, local_list):
         """
         Yerel yetkilendirme listesi ile StartTransaction.conf'daki geçerlilik arasında bir çakışma olup olmadığını kontrol eder.
         """
-        return False  # Varsayılan olarak her zaman çakışma olmadığını döner
+        # try:
+        #     settings_database = sqlite3.connect('/root/Settings.sqlite')
+        #     cursor = settings_database.cursor()
+
+        #     # Çakışma kontrolü
+        #     for entry in local_list:
+        #         ocpp_tag = entry.get('id_tag')
+        #         parent_id_tag = entry.get('id_tag_info', {}).get('parent_id_tag')
+
+        #         if parent_id_tag:
+        #             # Eğer parent_id_tag varsa, child-parent ilişkisini kontrol edin
+        #             check_query = "SELECT status FROM local_auth_list WHERE ocpp_tag = ? AND parent_id = ?"
+        #             cursor.execute(check_query, (ocpp_tag, parent_id_tag))
+        #             result = cursor.fetchone()
+
+        #             if not result:
+        #                 # Parent-child ilişkisinde bir tutarsızlık veya eksiklik varsa, çakışma var demektir
+        #                 return True
+
+        #     settings_database.close()
+        #     return False  # Varsayılan olarak çakışma olmadığını döner
+
+        # except sqlite3.Error as e:
+        #     print(f"Error checking local list conflict: {e}")
+        return False
 
   
     # 16. SET CHARGING PROFILE

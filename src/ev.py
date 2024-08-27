@@ -203,10 +203,11 @@ class EV():
             if status == AuthorizationStatus.accepted.value:
                 # Yetkilendirme başarılıysa ve AuthorizationCacheEnabled True ise
                 if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
-                    # Merkezi sistem yanıtından expire_date bilgisi al
+                    # Merkezi sistem yanıtından expiry_date ve parent_id bilgilerini al
                     expiry_date = id_tag_info.get('expiry_date')
+                    parent_id = id_tag_info.get('parent_id')
 
-                    # expire_date sağlanmışsa, datetime nesnesine dönüştür
+                    # expiry_date sağlanmışsa, datetime nesnesine dönüştür
                     if expiry_date:
                         try:
                             # expire_date bir dize ise, datetime nesnesine dönüştür
@@ -215,16 +216,16 @@ class EV():
                                 if expiry_date.endswith('Z'):
                                     expiry_date = expiry_date[:-1]
                                 # Dizeyi datetime nesnesine dönüştür
-                                expiry_date = datetime.strptime(expiry_date, '%Y-%m-%dT%H:%M:%S.%f')
                                 print(f"expiry_date ayrıştırıldı: {expiry_date}")
                         except ValueError:
                             print(f"expiry_date ayrıştırılamadı: {expiry_date}, geçerli tarih + 1 yıl kullanılıyor.")
                             expiry_date = datetime.now() + timedelta(days=365)
                     else:
                         expiry_date = datetime.now() + timedelta(days=365)
-
-                    # expiry_date'i veritabanına ISO formatında bir dize olarak kaydet
-                    self.application.databaseModule.update_auth_cache_tag(value, expiry_date.strftime('%Y-%m-%d %H:%M:%S'))
+                    
+                    expiry_date = datetime.strptime(expiry_date, '%Y-%m-%dT%H:%M:%S.%f')
+                    
+                    self.application.databaseModule.update_auth_cache_tag(value, expiry_date, parent_id)
 
                 print("Merkezi Sistem tarafından yetkilendirildi")
                 return AuthorizationStatus.accepted

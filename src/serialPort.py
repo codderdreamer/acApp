@@ -473,7 +473,7 @@ class SerialPort():
             if card_id_length > 0:
                 for i in range(9,9+card_id_length):
                     card_id += data[i]
-                    print("card_id",card_id)
+            print("card_id",card_id)
             if card_id != "":
                 if time.time() - self.time_rfid > 20:
                     print("led setlendi...")

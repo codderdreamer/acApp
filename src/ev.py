@@ -501,6 +501,7 @@ class EV():
                         elif self.charge == False:
                             self.application.led_state =LedState.RfidVerified
                             if self.__control_pilot != "B":
+                                time.sleep(2)
                                 self.application.led_state =LedState.WaitingPluging
                         else:
                             self.application.led_state =LedState.RfidFailed

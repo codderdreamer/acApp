@@ -475,7 +475,8 @@ class Process:
         self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_ev)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)
         time_start = time.time()
-        self.application.led_state =LedState.ChargingStopped
+        self.application.led_state = LedState.ChargingStopped
+        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
         while True:
             if self.application.chargePointStatus == ChargePointStatus.faulted:
                 self.application.deviceState = DeviceState.FAULT

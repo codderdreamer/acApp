@@ -61,7 +61,7 @@ class Application():
         self.__chargePointStatus = None
         self.__error_code = None
         self.__deviceState = None
-        self.__led_state == None
+        self.__led_state = None
         self.ocppActive = False
         self.cardType: CardType = None
         self.socketType = SocketType.Type2

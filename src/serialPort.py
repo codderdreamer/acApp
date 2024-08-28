@@ -212,16 +212,18 @@ class SerialPort():
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
-        if led_state not in [LedState.RfidVerified, LedState.RfidFailed]:
-            self.led_state = led_state
-        else:
+        if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
             time.sleep(2)
+        else:
+            self.led_state = led_state
+
+        if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
             self.parameter_data = "002"
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-        self.application.ev.led_state = led_state
+        
 
     def get_command_pid_led_control(self):
         self.parameter_data = "001"

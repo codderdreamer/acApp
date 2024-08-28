@@ -52,11 +52,11 @@ class EV():
 
     def ocpp_offline(self):
         print(Color.Red.value, "Ocpp Offline")
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
+        self.application.led_state =LedState.DeviceOffline
         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
 
     def ocpp_online(self):
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
+        self.application.led_state =LedState.StandBy
         if self.application.availability == AvailabilityType.operative:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
         else:
@@ -305,7 +305,7 @@ class EV():
             print("Authorized for unknown id")
             return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
         
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
+        self.application.led_state =LedState.RfidFailed
         return AuthorizationStatus.invalid  # allowOfflineTxForUnknownId False ise, Red olarak geri dön.
 
     def check_local_auth_list(self, value):
@@ -430,7 +430,7 @@ class EV():
                 os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
                 os.system("systemctl restart acapp.service")
             elif self.application.availability == AvailabilityType.inoperative:
-                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                self.application.led_state =LedState.RfidFailed
             elif (self.application.cardType == CardType.BillingCard):
                 print("Billing Card Detected :", value)
                 
@@ -466,17 +466,17 @@ class EV():
 
                         if self.charge and (self.application.process.id_tag == value):
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                            self.application.led_state =LedState.RfidVerified
                         elif self.charge == False:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                            self.application.led_state =LedState.RfidVerified
                             if self.__control_pilot != "B":
-                                Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+                                self.application.led_state =LedState.WaitingPluging
                         else:
-                            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                            self.application.led_state =LedState.RfidFailed
                         break
                 if finded == False:
                     self.start_stop_authorize = False
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                    self.application.led_state =LedState.RfidFailed
         
         self.__card_id = value
 

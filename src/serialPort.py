@@ -474,12 +474,13 @@ class SerialPort():
                 for i in range(9,9+card_id_length):
                     card_id += data[i]
             print("card_id",card_id)
+            self.set_command_pid_rfid()
             if card_id != "":
                 if time.time() - self.time_rfid > 20:
                     print("led setlendi...")
                     self.time_rfid = time.time()
                     self.application.ev.card_id = card_id
-                    self.set_command_pid_rfid()
+                    
 
     def get_response_pid_evse_temp(self, data):
         if data[2] == self.pid_evse_temp:

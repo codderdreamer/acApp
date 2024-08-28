@@ -73,6 +73,7 @@ class ChargePoint16(cp):
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                         print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                        time.sleep(2)
                         self.application.led_state =LedState.WaitingPluging
                     if  self.application.ev.charge:
                         self.application.deviceState = DeviceState.STOPPED_BY_USER
@@ -88,6 +89,7 @@ class ChargePoint16(cp):
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                         print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                        time.sleep(2)
                         self.application.led_state =LedState.WaitingPluging
                     if  self.application.ev.charge:
                         self.application.deviceState = DeviceState.STOPPED_BY_USER

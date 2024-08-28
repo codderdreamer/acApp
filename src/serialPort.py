@@ -474,7 +474,7 @@ class SerialPort():
                 for i in range(9,9+card_id_length):
                     card_id += data[i]
             if card_id != "":
-                if time.time() - self.time_rfid > 3:
+                if time.time() - self.time_rfid > 20:
                     print("led setlendi...")
                     self.time_rfid = time.time()
                     self.application.ev.card_id = card_id

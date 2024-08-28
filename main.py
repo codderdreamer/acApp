@@ -94,11 +94,14 @@ class Application():
 
     def simu_test(self):
         while True:
-            x = input()
-            if x == "1":
-                self.create_error = True
-            elif x == "2":
-                self.create_error = False
+            try:
+                x = input()
+                if x == "1":
+                    self.create_error = True
+                elif x == "2":
+                    self.create_error = False
+            except Exception as e:
+                pass
             time.sleep(1)
 
     def control_output(self):

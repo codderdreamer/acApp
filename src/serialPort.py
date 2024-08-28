@@ -73,6 +73,7 @@ class SerialPort():
     def set_led_state_thread(self):
         while True:
             try:
+                print(self.application.led_state,self.application.led_state != LedState.RfidVerified,self.application.led_state != LedState.RfidFailed,self.application.led_state != LedState.RfidVerified or self.application.led_state != LedState.RfidFailed)
                 if self.application.led_state != LedState.RfidVerified or self.application.led_state != LedState.RfidFailed:
                     self.set_command_pid_led_control(self.application.led_state)
                     print("Led güncelleme -> ",self.application.led_state)

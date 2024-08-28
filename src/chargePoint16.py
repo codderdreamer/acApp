@@ -69,30 +69,30 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.authorize = response.id_tag_info['status']
                 if self.authorize == AuthorizationStatus.accepted:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                    self.application.led_state =LedState.RfidVerified
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                         print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+                        self.application.led_state =LedState.WaitingPluging
                     if  self.application.ev.charge:
                         self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                    self.application.led_state =LedState.RfidFailed
                 return response
             else:
                 self.application.request_list.append(request)
                 
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
+                    self.application.led_state =LedState.RfidVerified
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                         print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
+                        self.application.led_state =LedState.WaitingPluging
                     if  self.application.ev.charge:
                         self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                    self.application.led_state =LedState.RfidFailed
         
         except Exception as e:
             print("send_authorize Exception:",e)
@@ -101,11 +101,11 @@ class ChargePoint16(cp):
         """
         Yetkilendirme kabul edildiğinde yapılacak işlemler.
         """
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon=True).start()
+        self.application.led_state =LedState.RfidVerified
         if self.application.ev.control_pilot == "A" and not self.application.ev.charge:
             print("-------------------------------------------------------------------  Araç bağlı değil")
             self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+            self.application.led_state =LedState.WaitingPluging
         if self.application.ev.charge:
             self.application.deviceState = DeviceState.STOPPED_BY_USER
 
@@ -114,7 +114,7 @@ class ChargePoint16(cp):
         """
         Yetkilendirme başarısız olduğunda yapılacak işlemler.
         """
-        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon=True).start()
+        self.application.led_state =LedState.RfidFailed
         
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -889,7 +889,7 @@ class ChargePoint16(cp):
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
             print("self.application.ev.control_pilot", self.application.ev.control_pilot)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon=True).start()
+            self.application.led_state =LedState.WaitingPluging
             while True:
                 print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
@@ -897,7 +897,7 @@ class ChargePoint16(cp):
                     break
                 elif time.time() - time_start > connection_timeout:
                     print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon=True).start()
+                    self.application.led_state =LedState.StandBy
                     self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
                     self.application.ev.start_stop_authorize = False
                     self.application.chargePoint.authorize = None

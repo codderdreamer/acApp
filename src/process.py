@@ -277,7 +277,7 @@ class Process:
 
     def charging(self):
         print(Color.Yellow.value,"Cihaz şarja başlayacak...")
-        self.set_max_current()
+        
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:
@@ -298,6 +298,7 @@ class Process:
             self.application.ev.charge = True
             self.application.led_state =LedState.Charging
             self.application.serialPort.set_command_pid_relay_control(Relay.On)
+            self.set_max_current()
             self.charge_while()   
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
@@ -339,6 +340,7 @@ class Process:
                     self.application.deviceState = DeviceState.FAULT
                     return
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    self.set_max_current()
                     self.application.serialPort.set_command_pid_relay_control(Relay.On)
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
                     if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
@@ -351,13 +353,13 @@ class Process:
                     self.charge_while()
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
-        
         elif self.application.cardType == CardType.StartStopCard:
             if self.application.ev.start_stop_authorize:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
                 self.application.ev.charge = True
                 self.application.led_state =LedState.Charging
                 self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                self.set_max_current()
                 time_start = time.time()
                 self.charge_while()
             else:

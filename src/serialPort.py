@@ -73,9 +73,9 @@ class SerialPort():
     def set_led_state_thread(self):
         while True:
             try:
-                print("Led güncelleme -> ",self.application.led_state)
                 if self.application.led_state != LedState.RfidVerified or self.application.led_state != LedState.RfidFailed:
                     self.set_command_pid_led_control(self.application.led_state)
+                    print("Led güncelleme -> ",self.application.led_state)
                     time.sleep(10)
             except Exception as e:
                 pass
@@ -477,7 +477,7 @@ class SerialPort():
             self.set_command_pid_rfid()
             if card_id != "":
                 if time.time() - self.time_rfid > 10:
-                    print("led setlendi...")
+                    print(Color.Blue.value,"led setlendi...")
                     self.time_rfid = time.time()
                     self.application.ev.card_id = card_id
                     

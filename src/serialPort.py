@@ -77,7 +77,7 @@ class SerialPort():
                 if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
                     self.set_command_pid_led_control(self.application.led_state)
                     print("Led güncelleme -> ",self.application.led_state)
-                    time.sleep(10)
+                    time.sleep(20)
             except Exception as e:
                 pass
             time.sleep(1)
@@ -90,8 +90,7 @@ class SerialPort():
                 self.get_command_pid_proximity_pilot()
             except Exception as e:
                 print("get_energy_thread Exception:",e)
-
-            time.sleep(5)
+            time.sleep(10)
 
     def write(self):
         while True:
@@ -299,7 +298,7 @@ class SerialPort():
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-            time.sleep(0.5)
+            time.sleep(1)
 
     def get_command_pid_evse_temp(self):
         time.sleep(10)
@@ -309,7 +308,7 @@ class SerialPort():
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-            time.sleep(15)
+            time.sleep(30)
 
     def get_command_pid_error_list_init(self):
         time.sleep(15)
@@ -480,7 +479,6 @@ class SerialPort():
             self.set_command_pid_rfid()
             if card_id != "":
                 if time.time() - self.time_rfid > 10:
-                    print(Color.Blue.value,"led setlendi...")
                     self.time_rfid = time.time()
                     self.application.ev.card_id = card_id
                     

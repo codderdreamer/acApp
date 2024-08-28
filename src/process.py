@@ -205,6 +205,8 @@ class Process:
                     self.application.deviceState = DeviceState.STOPPED_BY_EVSE
                     print(Color.Red.value,"Cihaz 5 dk boyunca şarja geçmediği için sonlandı!")
                     break
+            elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+                self.application.deviceState = DeviceState.CHARGING
             else:
                 break
             if self.application.deviceState != DeviceState.WAITING_STATE_C:

@@ -240,6 +240,7 @@ class Process:
             print("if not self.application.ev.pid_relay_control self.application.ev.control_pilot",self.application.ev.control_pilot)
             self.application.deviceState = DeviceState.FAULT
             return
+        self.application.led_state = LedState.Charging
         while True:
             try:
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
@@ -259,7 +260,6 @@ class Process:
                         break
                 elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                     self.application.meter_values_on = True
-                    self.application.led_state =LedState.Charging
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
                     self.application.serialPort.get_command_pid_current()
                     self.application.serialPort.get_command_pid_voltage()

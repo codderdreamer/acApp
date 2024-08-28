@@ -399,16 +399,13 @@ class Process:
                     self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"OverPowerFailure")
                 elif value == PidErrorList.OverVoltageFailure:
                     self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
-                self.application.led_state =LedState.NeedReplugging
+                self.application.led_state =LedState.Fault
         elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
             self.application.led_state =LedState.NeedReplugging
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")
         elif self.locker_error:
             self.application.led_state =LedState.LockerError
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"LockerError")
-        # elif not self.application.ev.pid_relay_control:
-        #     self.application.led_state =LedState.Fault,), daemon=True).start()
-        #     self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"RelayError")
         elif self.application.ev.proximity_pilot_current == 0:
             self.application.led_state =LedState.Fault
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"proximity_pilot_current = 0")
@@ -437,6 +434,7 @@ class Process:
             if self.application.ev.control_pilot != ControlPlot.stateA.value:
                 time.sleep(1)
             else:
+                self.application.deviceState = DeviceState.IDLE
                 break
             
     def suspended_evse(self):

@@ -70,8 +70,14 @@ class SerialPort():
 
         self.set_command_pid_rfid()
 
-        
 
+    def set_led_state_thread(self):
+        while True:
+            try:
+                self.set_command_pid_led_control(self.application.led_state)
+            except Exception as e:
+                pass
+            time.sleep(10)
 
     def get_energy_thread(self):
         while True:
@@ -304,9 +310,9 @@ class SerialPort():
         if len(self.error_list) > 0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
+                    self.application.led_state = LedState.LockerError
                 elif value == PidErrorList.RcdInitializeError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                    self.application.led_state = LedState.RcdError
             
     def get_command_pid_error_list(self):
         time.sleep(10)

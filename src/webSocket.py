@@ -186,19 +186,19 @@ class TestWebSocketModule():
 
     def set_led_red(self, client):
         try:
-            self.application.serialPort.set_command_pid_led_control(LedState.Fault)
+            self.application.led_state = LedState.Fault
         except Exception as e:
             print(f"set_led_red Exception: {e}")
 
     def set_led_blue(self, client):
         try:
-            self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+            self.application.led_state = LedState.Connecting
         except Exception as e:
             print(f"set_led_blue Exception: {e}")
 
     def set_led_green(self, client):
         try:
-            self.application.serialPort.set_command_pid_led_control(LedState.Connecting)
+            self.application.led_state = LedState.Connecting
             self.application.test_led = False
         except Exception as e:
             print(f"set_led_green Exception: {e}")

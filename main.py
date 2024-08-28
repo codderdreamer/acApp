@@ -61,6 +61,7 @@ class Application():
         self.__chargePointStatus = None
         self.__error_code = None
         self.__deviceState = None
+        self.__led_state == None
         self.ocppActive = False
         self.cardType: CardType = None
         self.socketType = SocketType.Type2
@@ -115,6 +116,17 @@ class Application():
             except Exception as e:
                 print("control_output Exception:",e)
             time.sleep(60*10)
+
+    @property
+    def led_state(self):
+        return self.__led_state
+
+    @led_state.setter
+    def led_state(self, value):
+        if self.__led_state != value:
+            print(Color.Macenta.value, "Led State:", value)
+            self.__led_state = value
+            Thread(target=self.serialPort.set_command_pid_led_control, args=(value,),daemon=True).start()
 
     @property
     def chargePointStatus(self):
@@ -321,7 +333,7 @@ class Application():
             print("ocppStart Exception:", e)
             self.ocppActive = False
             if self.chargePointStatus == ChargePointStatus.charging:
-                Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
+                self.led_state = LedState.Charging
             
     def ocpp_task(self):
         while True:

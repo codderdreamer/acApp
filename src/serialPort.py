@@ -475,6 +475,7 @@ class SerialPort():
                     card_id += data[i]
             if card_id != "":
                 if time.time() - self.time_rfid > 3:
+                    print("led setlendi...")
                     self.time_rfid = time.time()
                     self.application.ev.card_id = card_id
                     self.set_command_pid_rfid()

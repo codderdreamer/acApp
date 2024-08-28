@@ -52,7 +52,7 @@ class SerialPort():
         
         self.parameter_data = "001"
         self.connector_id = "1"
-        
+        self.time_rfid = time.time()
         self.led_state = LedState.StandBy
         
         os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
@@ -474,8 +474,10 @@ class SerialPort():
                 for i in range(9,9+card_id_length):
                     card_id += data[i]
             if card_id != "":
-                self.application.ev.card_id = card_id
-                self.set_command_pid_rfid()
+                if time.time() - self.time_rfid > 3:
+                    self.time_rfid = time.time()
+                    self.application.ev.card_id = card_id
+                    self.set_command_pid_rfid()
 
     def get_response_pid_evse_temp(self, data):
         if data[2] == self.pid_evse_temp:

@@ -89,20 +89,24 @@ class EV():
                     return True
         return False
 
-    def is_reservation_expired(self, expiry_date: str) -> bool:
+    def is_reservation_expired(self):
         """
-        Verilen expiry_date ile rezervasyonun süresinin dolup dolmadığını kontrol eder.
+        Rezervasyonun süresinin dolup dolmadığını kontrol eder.
         """
         try:
-            # expiry_date string'ini datetime nesnesine dönüştür
-            expiry = datetime.strptime(expiry_date, '%Y-%m-%dT%H:%M:%SZ')
-            # Geçerli tarih ve saat
+            # Mikro saniyeli formatı kullanarak datetime nesnesine dönüştür
+            expiry = datetime.strptime(self.expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
             now = datetime.utcnow()
-            # Eğer geçerli tarih, expiry_date'ten büyükse rezervasyon süresi dolmuştur
             return now > expiry
-        except ValueError as e:
-            print(f"Error parsing expiry_date: {e}")
-            return True  # Tarih formatı hatalıysa, süresinin dolmuş olduğunu varsayıyoruz
+        except ValueError:
+            try:
+                # Mikro saniyesiz formatı kullanarak datetime nesnesine dönüştür
+                expiry = datetime.strptime(self.expiry_date, '%Y-%m-%dT%H:%M:%SZ')
+                now = datetime.utcnow()
+                return now > expiry
+            except ValueError as e:
+                print(f"Error parsing expiry_date: {e}")
+                return True
 
     def check_and_clear_expired_reservation(self):
         """

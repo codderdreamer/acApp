@@ -437,6 +437,8 @@ class Process:
         while True:
             if self.application.ev.control_pilot != ControlPlot.stateA.value:
                 time.sleep(1)
+            elif len(self.application.serialPort.error_list) > 0:
+                time.sleep(1)
             else:
                 self.application.deviceState = DeviceState.IDLE
                 break

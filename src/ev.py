@@ -41,6 +41,9 @@ class EV():
         self.reservation_id = None
         self.reservation_id_tag =  None
         self.expiry_date = None
+        self.parent_id = None
+        self.load_reservations()
+        self.check_and_clear_expired_reservation()
 
         self.send_message_thread_start = False
 
@@ -50,6 +53,17 @@ class EV():
 
         self.charging_again = False
 
+    def load_reservations(self):
+        """
+        Rezervasyonları yükler ve rezervasyon süresi dolmuş olanları siler.
+        """
+        reservation = self.application.databaseModule.get_current_reservation()
+        if reservation:
+            self.reservation_id = reservation.get('reservation_id')
+            self.reservation_id_tag = reservation.get('id_tag')
+            self.expiry_date = reservation.get('expiry_date')
+            self.parent_id = reservation.get('parent_id')
+            
     def ocpp_offline(self):
         print(Color.Red.value, "Ocpp Offline")
         Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.DeviceOffline,), daemon=True).start()
@@ -75,10 +89,28 @@ class EV():
                     return True
         return False
 
+    def check_and_clear_expired_reservation(self):
+        """
+        Mevcut rezervasyonun süresinin dolup dolmadığını kontrol eder.
+        Eğer süresi dolmuşsa, rezervasyonu temizler.
+        """
+        if self.ev.reservation_id is not None:
+            if self.is_reservation_expired():
+                # Eğer rezervasyon süresi dolmuşsa, rezervasyonu iptal et ve değişkenleri sıfırla
+                self.databaseModule.delete_reservation(self.ev.reservation_id)
+                self.ev.reservation_id = None
+                self.ev.reservation_id_tag = None
+                self.ev.expiry_date = None
+                self.ev.parent_id = None
+                print("Reservation expired and has been cleared.")
+
     def control_error_list(self):
         time.sleep(10)
         while True:
             try:
+                # Rezervasyon süresinin dolup dolmadığını kontrol et
+                self.check_and_clear_expired_reservation()
+                
                 if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
                     self.ocpp_offline()
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.serialPort.error == False):
@@ -96,9 +128,8 @@ class EV():
                         self.application.deviceState = DeviceState.FAULT
                 self.application.serialPort.error = False
             except Exception as e:
-                print("******************************************** control_error_list Exception",e)
+                print("******************************************** control_error_list Exception", e)
             time.sleep(1)
-
 
     def send_message(self):
         self.send_message_thread_start = True

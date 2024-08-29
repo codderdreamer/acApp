@@ -401,7 +401,18 @@ class ChargePoint16(cp):
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             self.application.process.transaction_id = response.transaction_id
+            print("response.id_tag_info['status']",response.id_tag_info['status'])
             self.start_transaction_result = response.id_tag_info['status']
+            if reservation_id and self.start_transaction_result == AuthorizationStatus.accepted:
+                print("Reservation accepted")
+                self.application.ev.reservation_id = None
+                self.application.ev.reservation_id_tag = None
+                self.application.ev.expiry_date = None
+                self.application.ev.parent_id = None
+                #delete reservation
+                print("delete_reservation")
+                self.application.databaseModule.delete_reservation(reservation_id)
+
             return response
         except Exception as e:
             print("send_start_transaction Exception:",e)
@@ -492,29 +503,47 @@ class ChargePoint16(cp):
 
     # 1. CANCEL RESERVATION
     @on(Action.CancelReservation)
-    def on_cancel_reservation(self,reservation_id: int):
-        try :
+    def cancel_reservation(self, reservation_id: int):
+        try:
             request = call.CancelReservationPayload(
                 reservation_id
             )
+
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            if reservation_id == self.application.ev.reservation_id:
+
+            # Veritabanında rezervasyonu kontrol et ve iptal et
+            if self.application.databaseModule.delete_reservation(reservation_id):
+                response_status = CancelReservationStatus.accepted
+
+                # Rezervasyon başarıyla silindiyse, yerel değişkenleri temizle
                 self.application.ev.reservation_id = None
                 self.application.ev.reservation_id_tag = None
                 self.application.ev.expiry_date = None
+                self.application.ev.parent_id = None
+
+                # Durumu güncelle
                 if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                    self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.available.value)
                 elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                    self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+            else:
+                # Rezervasyon bulunamazsa da accepted döndür, ancak durum güncellenmez
+                response_status = CancelReservationStatus.accepted
+
             response = call_result.CancelReservationPayload(
-                status = CancelReservationStatus.accepted
+                status=response_status
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
-        except Exception as e:
-            print("on_cancel_reservation Exception:",e)
-            
 
+        except Exception as e:
+            LOGGER_CENTRAL_SYSTEM.error("on_cancel_reservation Exception: %s", e)
+            response = call_result.CancelReservationPayload(
+                status=CancelReservationStatus.rejected
+            )
+            return response
+    
+    
     # 2. CHANGE AVAILABILITY
     @on(Action.ChangeAvailability)
     def on_change_availability(self,connector_id: int, type: AvailabilityType):
@@ -907,75 +936,85 @@ class ChargePoint16(cp):
             self.application.deviceState = DeviceState.STOPPED_BY_EVSE
         except Exception as e:
             print("after_remote_stop_transaction Exception:",e)
-            
-    @on(Action.ReserveNow)
-    def on_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
-        try :
-            request = call.ReserveNowPayload(
-                connector_id,
-                expiry_date,
-                id_tag,
-                reservation_id,
-                parent_id_tag
-            )
-            if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargePointStatus == ChargePointStatus.available:
-                self.application.ev.reservation_id_tag = id_tag
-                self.application.ev.expiry_date = expiry_date
-                self.application.ev.reservation_id = reservation_id
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.accepted
-                )
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
-                self.application.ev.reservation_id_tag = id_tag
-                self.application.ev.expiry_date = expiry_date
-                self.application.ev.reservation_id = reservation_id
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.accepted
-                )
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.ev.reservation_id != None and self.application.availability == AvailabilityType.operative:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.occupied
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.availability == AvailabilityType.inoperative:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.rejected
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.chargePointStatus == ChargePointStatus.faulted:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.faulted
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.chargePointStatus != ChargePointStatus.available:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.rejected
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            return response
-        except Exception as e:
-            print("on_reserve_now Exception:",e)
-            
+    
+   
     # 13. RESERVE NOW
-    @after(Action.ReserveNow)
-    def after_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
-        try :
-            # central_system - INFO - Request:ReserveNowPayload(connector_id=1, expiry_date='2024-05-04T23:00:00.000Z', id_tag='0485A54A007480', reservation_id=7, parent_id_tag=None)
-            pass
-                
-                
+    @on(Action.ReserveNow)
+    def on_reserve_now(self, connector_id: int, expiry_date: str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
+        try:
+            LOGGER_CENTRAL_SYSTEM.info("Received ReserveNow request: connector_id=%d, expiry_date=%s, id_tag=%s, reservation_id=%d, parent_id_tag=%s",
+                                    connector_id, expiry_date, id_tag, reservation_id, parent_id_tag)
+
+            # Rezervasyon işlemlerini yap
+            response_status = self.run_reserve_now_logic(connector_id, expiry_date, id_tag, reservation_id, parent_id_tag)
+
+            if response_status == ReservationStatus.accepted:
+                # Eğer rezervasyon başarılı olursa, ilgili değişkenleri güncelle
+                self.application.ev.reservation_id = reservation_id
+                self.application.ev.reservation_id_tag = id_tag
+                self.application.ev.expiry_date = expiry_date
+                self.application.ev.parent_id = parent_id_tag
+                # ChargePoint durumunu güncelle
+                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+
+            # Yanıt gönder
+            response = call_result.ReserveNowPayload(
+                status=response_status
+            )
+            LOGGER_CHARGE_POINT.info("Response: %s", response)
+            return response
+
         except Exception as e:
-            print("on_reserve_now Exception:",e)
+            LOGGER_CENTRAL_SYSTEM.error("Exception in on_reserve_now: %s", e)
+            response = call_result.ReserveNowPayload(
+                status=ReservationStatus.rejected
+            )
+            return response 
+
+    def run_reserve_now_logic(self, connector_id: int, expiry_date: str, id_tag: str, reservation_id: int, parent_id_tag: str = None) -> ReservationStatus:
+        try:
+            # Önce şarj noktasının mevcut durumunu kontrol edin
+            if self.application.availability == AvailabilityType.inoperative:
+                return ReservationStatus.rejected
+            elif self.application.chargePointStatus == ChargePointStatus.faulted:
+                return ReservationStatus.faulted
+            elif self.application.chargePointStatus != ChargePointStatus.available:
+                return ReservationStatus.occupied
+
+            # Mevcut rezervasyonu kontrol et
+            current_reservation = self.application.databaseModule.get_current_reservation()
+
+            if current_reservation:
+                current_reservation_id = current_reservation['reservation_id']
+                current_id_tag = current_reservation['id_tag']
+                current_parent_id_tag = current_reservation.get('parent_id_tag')
+
+                if reservation_id == current_reservation_id:
+                    # Eğer yeni rezervasyon aynı ID'ye sahipse, güncelle
+                    self.application.databaseModule.update_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                    return ReservationStatus.accepted
+                else:
+                    # Eğer ID'ler farklıysa, id_tag veya parent_id_tag eşleşmesi kontrol edilir
+                    if id_tag == current_id_tag:
+                        # Eğer id_tag veya parent_id_tag eşleşiyorsa, güncelle
+                        self.application.databaseModule.update_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                        return ReservationStatus.accepted
+                    else:
+                        # Eşleşme yoksa, Occupied durumu döndürülür
+                        if current_parent_id_tag and current_parent_id_tag == id_tag:
+                            # Eğer parent_id_tag eşleşiyorsa, güncelle
+                            self.application.databaseModule.update_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                            return ReservationStatus.accepted
+                        else:
+                            return ReservationStatus.occupied
+            else:
+                # Eğer mevcut rezervasyon yoksa, yeni rezervasyon ekle
+                self.application.databaseModule.add_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                return ReservationStatus.accepted
+
+        except Exception as e:
+            LOGGER_CENTRAL_SYSTEM.error("run_reserve_now_logic Exception: %s", e)
+            return ReservationStatus.rejected
 
     # 14. RESET
     @on(Action.Reset)
@@ -1108,7 +1147,6 @@ class ChargePoint16(cp):
         # except sqlite3.Error as e:
         #     print(f"Error checking local list conflict: {e}")
         return False
-
   
     # 16. SET CHARGING PROFILE
     @on(Action.SetChargingProfile)

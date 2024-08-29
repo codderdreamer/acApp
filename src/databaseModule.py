@@ -1413,3 +1413,145 @@ class DatabaseModule():
         except sqlite3.Error as e:
             print(f"Error retrieving card status for ocpp_tag {ocpp_tag}: {e}")
             return {'status': 'Invalid'}
+
+    def add_reservation(self, id_tag: str, reservation_id: int, expiry_date: str, parent_id_tag: str = None):
+        """
+        Yeni bir rezervasyon ekler.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Charge.sqlite')
+            cursor = settings_database.cursor()
+
+            # Yeni rezervasyonu ekle
+            insert_query = """
+                INSERT INTO reservations (reservation_id, id_tag, expiry_date, parent_id, created_at, updated_at)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """
+            cursor.execute(insert_query, (reservation_id, id_tag, expiry_date, parent_id_tag))
+
+            settings_database.commit()
+            settings_database.close()
+
+            print(f"Reservation {reservation_id} has been added.")
+
+        except sqlite3.Error as e:
+            print(f"Database error during add_reservation: {e}")
+            
+    def update_reservation(self, id_tag: str, reservation_id: int, expiry_date: str, parent_id_tag: str = None):
+        """
+        Mevcut bir rezervasyonu günceller.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Charge.sqlite')
+            cursor = settings_database.cursor()
+
+            # Rezervasyonu güncelle
+            update_query = """
+                UPDATE reservations
+                SET id_tag = ?, expiry_date = ?, parent_id = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE reservation_id = ?
+            """
+            cursor.execute(update_query, (id_tag, expiry_date, parent_id_tag, reservation_id))
+
+            settings_database.commit()
+            settings_database.close()
+
+            print(f"Reservation {reservation_id} has been updated.")
+
+        except sqlite3.Error as e:
+            print(f"Database error during update_reservation: {e}")
+
+    def delete_reservation(self, reservation_id: int):  
+        """
+        Veritabanında belirtilen reservation_id'ye sahip rezervasyonu iptal eder.
+        """
+        try:
+            conn = sqlite3.connect('/root/Charge.sqlite')
+            cursor = conn.cursor()
+
+            # Rezervasyonu veritabanından silme işlemi
+            delete_query = "DELETE FROM reservations WHERE reservation_id = ?"
+            cursor.execute(delete_query, (reservation_id,))
+            conn.commit()
+
+            print(f"Reservation {reservation_id} has been cancelled successfully.")
+
+        except sqlite3.Error as e:
+            print(f"Error cancelling reservation: {e}")
+        finally:
+            conn.close()
+
+    def get_current_reservation(self):
+        """
+        Veritabanındaki mevcut aktif rezervasyonu döndürür. Sadece tek bir rezervasyon olabilir.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Charge.sqlite')
+            cursor = settings_database.cursor()
+
+            # Mevcut aktif rezervasyonu sorgula (tek rezervasyon)
+            select_query = """
+                SELECT reservation_id, id_tag, expiry_date, parent_id 
+                FROM reservations 
+                WHERE expiry_date > ? 
+                LIMIT 1
+            """
+            cursor.execute(select_query, (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),))
+            result = cursor.fetchone()
+
+            settings_database.close()
+
+            if result:
+                reservation_id, id_tag, expiry_date, parent_id = result
+                return {
+                    'reservation_id': reservation_id,
+                    'id_tag': id_tag,
+                    'expiry_date': expiry_date,
+                    'parent_id_tag': parent_id
+                }
+            else:
+                return None
+
+        except sqlite3.Error as e:
+            print(f"Database error during get_current_reservation: {e}")
+            return None
+        
+    def get_reservation_by_id(self, reservation_id: int):
+        try:
+            # Veritabanına bağlan
+            conn = sqlite3.connect('/root/Charge.sqlite')
+            cursor = conn.cursor()
+
+            # reservation_id ile rezervasyonu sorgula
+            select_query = """
+                SELECT id, id_tag, connector_id, reservation_id, expiry_date, parent_id 
+                FROM reservations
+                WHERE reservation_id = ?
+            """
+            cursor.execute(select_query, (reservation_id,))
+            result = cursor.fetchone()
+
+            # Veritabanı bağlantısını kapat
+            conn.close()
+
+            if result:
+                # Sorgu sonucu bir rezervasyon bulundu
+                reservation = {
+                    'id': result[0],
+                    'id_tag': result[1],
+                    'connector_id': result[2],
+                    'reservation_id': result[3],
+                    'expiry_date': result[4],
+                    'parent_id': result[5]
+                }
+                return reservation
+            else:
+                # Sorgu sonucu hiçbir rezervasyon bulunamadı
+                return None
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving reservation with reservation_id {reservation_id}: {e}")
+            return None

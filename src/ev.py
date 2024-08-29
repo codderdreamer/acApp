@@ -89,20 +89,37 @@ class EV():
                     return True
         return False
 
+    def is_reservation_expired(self, expiry_date: str) -> bool:
+        """
+        Verilen expiry_date ile rezervasyonun süresinin dolup dolmadığını kontrol eder.
+        """
+        try:
+            # expiry_date string'ini datetime nesnesine dönüştür
+            expiry = datetime.strptime(expiry_date, '%Y-%m-%dT%H:%M:%SZ')
+            # Geçerli tarih ve saat
+            now = datetime.utcnow()
+            # Eğer geçerli tarih, expiry_date'ten büyükse rezervasyon süresi dolmuştur
+            return now > expiry
+        except ValueError as e:
+            print(f"Error parsing expiry_date: {e}")
+            return True  # Tarih formatı hatalıysa, süresinin dolmuş olduğunu varsayıyoruz
+
     def check_and_clear_expired_reservation(self):
         """
         Mevcut rezervasyonun süresinin dolup dolmadığını kontrol eder.
         Eğer süresi dolmuşsa, rezervasyonu temizler.
         """
-        if self.ev.reservation_id is not None:
+        if self.reservation_id is not None:
             if self.is_reservation_expired():
-                # Eğer rezervasyon süresi dolmuşsa, rezervasyonu iptal et ve değişkenleri sıfırla
-                self.databaseModule.delete_reservation(self.ev.reservation_id)
-                self.ev.reservation_id = None
-                self.ev.reservation_id_tag = None
-                self.ev.expiry_date = None
-                self.ev.parent_id = None
-                print("Reservation expired and has been cleared.")
+                self.application.databaseModule.delete_reservation(self.reservation_id)
+                self.reservation_id = None
+                self.reservation_id_tag = None
+                self.expiry_date = None
+                self.parent_id = None
+                # ChargePoint'i kullanılabilir hale getir
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation expired and has been cleared.")
+
 
     def control_error_list(self):
         time.sleep(10)

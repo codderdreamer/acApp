@@ -473,8 +473,6 @@ class EV():
     
     @card_id.setter
     def card_id(self, value):
-        if (self.__card_id != value) and (value != None) and (value != ""):
-            print(Color.Yellow.value,"Card Id:",value)
         if (value != None) and (value != ""):
             if self.application.masterCard == value:
                 print("Master card detected, resetting settings")

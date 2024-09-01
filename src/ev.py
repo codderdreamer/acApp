@@ -42,7 +42,6 @@ class EV():
         self.reservation_id_tag =  None
         self.expiry_date = None
         self.parent_id = None
-        self.load_reservations()
         self.check_and_clear_expired_reservation()
 
         self.send_message_thread_start = False

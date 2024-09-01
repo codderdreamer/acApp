@@ -149,7 +149,7 @@ class ChargePoint16(cp):
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
-
+                self.application.ev.load_reservations()
                 await self.send_heartbeat()
             return response
         except Exception as e:

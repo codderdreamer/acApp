@@ -333,6 +333,11 @@ class EV():
         Sırasıyla LocalPreAuthorize, Local Authorization List, Authorization Cache,
         ve merkezi sistem yetkilendirme taleplerini kontrol eder.
         """
+        if self.reservation_id:
+            if self.reservation_id == value:
+                return AuthorizationStatus.accepted
+            else:
+                return AuthorizationStatus.invalid
         # LocalPreAuthorize bayrağını kontrol edin
         if self.application.settings.configuration.LocalPreAuthorize == "true":
             # Eğer LocalPreAuthorize True ise, LocalAuthListEnabled bayrağını kontrol edin

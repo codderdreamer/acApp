@@ -205,46 +205,50 @@ set_gpio('e', 10, 1)
 time.sleep(0.5)
 set_gpio('e', 10, 0)
 create_and_write_file(0)
-while True:
-    try:
-        counter = int(read_file())
-        if counter != 0 and counter < 5:
-            print(f"{counter + 1}. ye deneniyor ")
-            firmware_name = find_name_bin_file()
-            if firmware_name != None:
-                if update_mcu_firmware(firmware_name) == False:
-                    create_and_write_file(counter + 1)
-                else:
-                    create_and_write_file(0)
-            else:
-                create_and_write_file(0)
-        if counter == 5:
-            create_and_write_file(0)
-            system_restart()
 
-        if is_there_internet():
-            charge = is_there_charge()
-            if charge == False:
-                ensure_repository()
-                there_is_change = check_for_git_changes()
-            if there_is_change == True:
-                mcu_firmware_changed, firmware_name = check_for_mcu_change()
-                update_firmware()
-                create_and_write_file(1)
-                if mcu_firmware_changed:
-                    if update_mcu_firmware(firmware_name) == False:
-                        if int(read_file()) == 1:
-                            create_and_write_file(2)
-                            print("Reboot ediliyor")
-                            # os.system("reboot")
-                    else:
-                        create_and_write_file(0)
+firmware_name = find_name_bin_file()
+update_firmware()
+
+# while True:
+#     try:
+#         counter = int(read_file())
+#         if counter != 0 and counter < 5:
+#             print(f"{counter + 1}. ye deneniyor ")
+#             firmware_name = find_name_bin_file()
+#             if firmware_name != None:
+#                 if update_mcu_firmware(firmware_name) == False:
+#                     create_and_write_file(counter + 1)
+#                 else:
+#                     create_and_write_file(0)
+#             else:
+#                 create_and_write_file(0)
+#         if counter == 5:
+#             create_and_write_file(0)
+#             system_restart()
+
+#         if is_there_internet():
+#             charge = is_there_charge()
+#             if charge == False:
+#                 ensure_repository()
+#                 there_is_change = check_for_git_changes()
+#             if there_is_change == True:
+#                 mcu_firmware_changed, firmware_name = check_for_mcu_change()
+#                 update_firmware()
+#                 create_and_write_file(1)
+#                 if mcu_firmware_changed:
+#                     if update_mcu_firmware(firmware_name) == False:
+#                         if int(read_file()) == 1:
+#                             create_and_write_file(2)
+#                             print("Reboot ediliyor")
+#                             # os.system("reboot")
+#                     else:
+#                         create_and_write_file(0)
                             
-                system_restart()
-    except Exception as e:
-        print("Exception:", e)
+#                 system_restart()
+#     except Exception as e:
+#         print("Exception:", e)
 
-    time.sleep(5)
+#     time.sleep(5)
     
 
 

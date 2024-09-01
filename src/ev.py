@@ -333,8 +333,8 @@ class EV():
         Sırasıyla LocalPreAuthorize, Local Authorization List, Authorization Cache,
         ve merkezi sistem yetkilendirme taleplerini kontrol eder.
         """
-        if self.reservation_id:
-            if self.reservation_id == value:
+        if self.reservation_id_tag:
+            if self.reservation_id_tag == value:
                 return AuthorizationStatus.accepted
             else:
                 return AuthorizationStatus.invalid

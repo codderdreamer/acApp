@@ -70,7 +70,9 @@ class EV():
         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
 
     def ocpp_online(self):
-        self.application.led_state =LedState.StandBy
+        # led rfid verified yada faild iken standby yanmasın
+        if not (self.application.led_state == LedState.RfidFailed or self.application.led_state == LedState.RfidVerified):
+            self.application.led_state =LedState.StandBy
         if self.application.availability == AvailabilityType.operative:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
         else:

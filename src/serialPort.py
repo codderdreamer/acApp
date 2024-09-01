@@ -302,7 +302,7 @@ class SerialPort():
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-            time.sleep(1)
+            time.sleep(0.5)
 
     def get_command_pid_evse_temp(self):
         time.sleep(10)

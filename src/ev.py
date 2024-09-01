@@ -62,7 +62,7 @@ class EV():
             self.reservation_id_tag = reservation.get('id_tag')
             self.expiry_date = reservation.get('expiry_date')
             self.parent_id = reservation.get('parent_id')
-            self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.preparing)
+            self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.reserved)
             if self.control_pilot == ControlPlot.stateA.value:
                 self.application.led_state = LedState.WaitingPluging
 

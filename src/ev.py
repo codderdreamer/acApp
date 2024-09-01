@@ -533,7 +533,7 @@ class EV():
                     if authorization_result == AuthorizationStatus.accepted:
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
                         if self.control_pilot == ControlPlot.stateA.value:
-                            self.remote_start_thread()
+                            Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
                     else :
                         self.application.chargePoint.authorize = None
                         print(Color.Red.value,"Autorize başarısız!")

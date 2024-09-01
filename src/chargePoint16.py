@@ -942,6 +942,7 @@ class ChargePoint16(cp):
                 self.application.ev.parent_id = parent_id_tag
                 # ChargePoint durumunu güncelle
                 self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+                self.application.led_state = LedState.WaitingPluging
 
             # Yanıt gönder
             response = call_result.ReserveNowPayload(

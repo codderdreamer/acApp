@@ -498,23 +498,23 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
             # Veritabanında rezervasyonu kontrol et ve iptal et
-            if self.application.databaseModule.delete_reservation(reservation_id):
-                response_status = CancelReservationStatus.accepted
+            self.application.databaseModule.delete_reservation(reservation_id)
+            response_status = CancelReservationStatus.accepted
 
-                # Rezervasyon başarıyla silindiyse, yerel değişkenleri temizle
-                self.application.ev.reservation_id = None
-                self.application.ev.reservation_id_tag = None
-                self.application.ev.expiry_date = None
-                self.application.ev.parent_id = None
+            # Rezervasyon başarıyla silindiyse, yerel değişkenleri temizle
+            self.application.ev.reservation_id = None
+            self.application.ev.reservation_id_tag = None
+            self.application.ev.expiry_date = None
+            self.application.ev.parent_id = None
 
-                # Durumu güncelle
-                if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                    self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.available.value)
-                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                    self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
-            else:
-                # Rezervasyon bulunamazsa da accepted döndür, ancak durum güncellenmez
-                response_status = CancelReservationStatus.accepted
+            # Durumu güncelle
+            if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                self.application.led_state = LedState.StandBy
+                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.available.value)
+            elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                self.application.led_state = LedState.Connecting
+                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+
 
             response = call_result.CancelReservationPayload(
                 status=response_status

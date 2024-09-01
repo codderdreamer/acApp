@@ -204,10 +204,9 @@ time.sleep(0.1)
 set_gpio('e', 10, 1)
 time.sleep(0.5)
 set_gpio('e', 10, 0)
+create_and_write_file(0)
 while True:
     try:
-        if not os.path.exists("/root/reset_counter.txt"):
-            create_and_write_file(0)
         counter = int(read_file())
         if counter != 0 and counter < 5:
             print(f"{counter + 1}. ye deneniyor ")

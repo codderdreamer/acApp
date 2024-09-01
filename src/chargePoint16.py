@@ -812,6 +812,7 @@ class ChargePoint16(cp):
 
         except Exception as e:
             print("on_get_local_list_version Exception:", e)
+
     # 11. REMOTE START TRANSACTION
     @on(Action.RemoteStartTransaction)
     def on_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
@@ -823,45 +824,19 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
-            if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
-                print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
-                self.application.ev.id_tag = id_tag
-                
-                # charger uygun değilse izin verme
-                if self.application.availability == AvailabilityType.inoperative:
-                    response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.rejected
-                            )
-                    return response
-                
-                # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
-                error = False
-                if len(self.application.serialPort.error_list) > 0:
-                    for value in self.application.serialPort.error_list:
-                        if value == PidErrorList.LockerInitializeError:
-                            print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
-                            response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.rejected
-                            )
-                            error = True
-                        if value == PidErrorList.RcdInitializeError:
-                            print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
-                            response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.rejected
-                            )
-                            error = True
-                            
-                if error == False:
-                    response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.accepted
-                    )
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                    self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                    Thread(target=self.remote_start_thread,daemon=True).start()
+            # charger uygun değilse izin verme
+            if self.application.availability == AvailabilityType.inoperative:
+                response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.rejected
+                        )
+            elif self.application.chargePointStatus != ChargePointStatus.available or self.application.chargePointStatus != ChargePointStatus.preparing or self.application.chargePointStatus != ChargePointStatus.reserved:
+                response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.rejected
+                        )
             else:
-                print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
-
+                response = call_result.RemoteStartTransactionPayload(
+                            status= RemoteStartStopStatus.accepted
+                        )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
@@ -896,7 +871,32 @@ class ChargePoint16(cp):
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
-            pass
+            if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
+                    print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
+                    self.application.ev.id_tag = id_tag
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                    self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                    Thread(target=self.remote_start_thread,daemon=True).start()
+            else:
+                print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
+                print("Yetkilendirme talebi gönderiliyor")
+                # Merkezi sisteme yetkilendirme talebi gönder
+                self.application.chargePoint.authorize = None
+                request = asyncio.run_coroutine_threadsafe(
+                    self.application.chargePoint.send_authorize(id_tag=id_tag), 
+                    self.application.loop
+                )
+                response = request.result()
+                id_tag_info = response.id_tag_info
+                status = id_tag_info['status']
+                if status == AuthorizationStatus.accepted.value:
+                    self.application.ev.id_tag = id_tag
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                    self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                    Thread(target=self.remote_start_thread,daemon=True).start()
+                else:
+                    print(Color.Red.value,"Yetkilendirme yapılamadı!")
+                    self.application.ev.id_tag = None
         except Exception as e:
             print("after_remote_start_transaction Exception:",e)
             

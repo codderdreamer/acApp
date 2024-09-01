@@ -43,8 +43,8 @@ class Application():
         os.system("service bluetooth restart")
         time.sleep(2)
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
-        os.system("chmod +x /root/acApp/bluetooth_set.sh")
-        os.system("/root/acApp/bluetooth_set.sh")
+        os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
+        os.system("/root/acApp/bash/bluetooth_set.sh")
         time.sleep(5)
         self.test_led = False
         self.test_charge = False

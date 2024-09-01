@@ -272,11 +272,11 @@ class SoftwareSettings():
             if wifiEnable == "True":
                 if mod == "AP":
                     if wifidhcpcEnable == "True":
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24", "192.168.1.1"])
+                        subprocess.run(["sh", "/root/acApp/bash/accesspoint_add.sh", ssid, password, "True", "192.168.1.100", "24", "192.168.1.1"])
                     else:
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen
-                        subprocess.run(["sh", "/root/acApp/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
+                        subprocess.run(["sh", "/root/acApp/bash/accesspoint_add.sh", ssid, password, "False", ip, str(netmask_prefix_length), gateway])
                 else:
                     result = subprocess.run(f"nmcli con add type wifi ifname wlan0 con-name wifi_connection ssid {ssid}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     time.sleep(2)

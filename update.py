@@ -81,7 +81,7 @@ def update_mcu_firmware(firmware_name):
         print("MCU boot moduna geçiyor...")
         threading.Thread(target=pe_10_set,daemon=True).start()
         threading.Thread(target=pe_11_set,daemon=True).start()
-        path = "/root/acApp/" + firmware_name
+        path = "/root/acApp/mcufirmware" + firmware_name
         time.sleep(10)
         print("MCU güncelleniyor...")
         run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
@@ -189,7 +189,7 @@ def pe_11_set():
 
 def find_name_bin_file():
     try:
-        files_and_dirs = os.listdir("/root/acApp")
+        files_and_dirs = os.listdir("/root/acApp/mcufirmware")
         bin_files = [f for f in files_and_dirs if f.endswith('.bin')]
         if len(bin_files)>0:
             return bin_files[0]

@@ -832,6 +832,11 @@ class ChargePoint16(cp):
             elif (self.application.chargePointStatus != ChargePointStatus.available) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved):
                 self.remote_start_stop_status = RemoteStartStopStatus.rejected
                 print(Color.Red.value,"chargePointStatus:",self.application.chargePointStatus,"Şarj için uygun değil!")
+            elif self.application.ev.reservation_id_tag != None:
+                if self.application.ev.reservation_id_tag == id_tag:
+                    self.remote_start_stop_status = RemoteStartStopStatus.accepted
+                else:
+                    self.remote_start_stop_status = RemoteStartStopStatus.rejected
             else:
                 self.remote_start_stop_status = RemoteStartStopStatus.accepted
             response = call_result.RemoteStartTransactionPayload(

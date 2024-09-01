@@ -145,13 +145,18 @@ class EV():
                     break
                 elif time.time() - time_start > connection_timeout:
                     print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
-                    self.application.led_state =LedState.StandBy
-                    self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
-                    self.application.ev.start_stop_authorize = False
-                    self.application.chargePoint.authorize = None
-                    self.application.ev.card_id = ""
-                    self.application.ev.id_tag = None
-                    self.application.ev.charge = False
+                    if self.reservation_id:
+                        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.reserved)
+                        if self.control_pilot == ControlPlot.stateA.value:
+                            self.application.led_state = LedState.WaitingPluging
+                    else:
+                        self.application.led_state =LedState.StandBy
+                        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
+                        self.application.ev.start_stop_authorize = False
+                        self.application.chargePoint.authorize = None
+                        self.application.ev.card_id = ""
+                        self.application.ev.id_tag = None
+                        self.application.ev.charge = False
                     break
                 time.sleep(0.2)
 

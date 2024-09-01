@@ -93,9 +93,12 @@ class SerialPort():
             time.sleep(10)
 
     def write(self):
+        counter = 0
         while True:
             try:
                 if len(self.send_data_list) > 0:
+                    counter += 1
+                    print("write counter",counter)
                     self.serial.write(self.send_data_list[0])
                     self.send_data_list.pop(0)
             except Exception as e:
@@ -539,11 +542,14 @@ class SerialPort():
             self.error_list = error_list
 
     def read(self):
+        counter = 0
         while True:
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
+                    counter += 1
+                    print("read counter", counter)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

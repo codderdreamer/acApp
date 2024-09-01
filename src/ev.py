@@ -129,6 +129,32 @@ class EV():
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                 print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation expired and has been cleared.")
 
+    def remote_start_thread(self):
+        # Eğer kablo bağlı değilse
+        # Waiting plug led yak
+        # ConnectionTimeOut saniye içinde kablo bağlanmazsa idle
+        connection_timeout = int(self.application.settings.configuration.ConnectionTimeOut)
+        time_start = time.time()
+        if self.application.ev.control_pilot != "B":
+            print("self.application.ev.control_pilot", self.application.ev.control_pilot)
+            self.application.led_state =LedState.WaitingPluging
+            while True:
+                print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)
+                if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
+                    print("Kablo bağlantısı sağlandı.")
+                    break
+                elif time.time() - time_start > connection_timeout:
+                    print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
+                    self.application.led_state =LedState.StandBy
+                    self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
+                    self.application.ev.start_stop_authorize = False
+                    self.application.chargePoint.authorize = None
+                    self.application.ev.card_id = ""
+                    self.application.ev.id_tag = None
+                    self.application.ev.charge = False
+                    break
+                time.sleep(0.2)
+
 
     def control_error_list(self):
         time.sleep(10)
@@ -500,13 +526,17 @@ class EV():
                         authorization_result = self.authorize_billing_card(value)
                         if authorization_result == AuthorizationStatus.accepted:
                             self.application.chargePoint.handle_authorization_accepted()
+                            self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)
                     if authorization_result == AuthorizationStatus.accepted:
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                        if self.control_pilot == ControlPlot.stateA.value:
+                            self.remote_start_thread()
                     else :
                         self.application.chargePoint.authorize = None
+                        print(Color.Red.value,"Autorize başarısız!")
                         
             elif self.application.cardType == CardType.StartStopCard:
                 print("Start Stop Card Detected :", value)

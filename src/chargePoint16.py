@@ -847,31 +847,7 @@ class ChargePoint16(cp):
         except Exception as e:
             print("on_remote_start_transaction Exception:",e)
             
-    def remote_start_thread(self):
-        # Eğer kablo bağlı değilse
-        # Waiting plug led yak
-        # ConnectionTimeOut saniye içinde kablo bağlanmazsa idle
-        connection_timeout = int(self.application.settings.configuration.ConnectionTimeOut)
-        time_start = time.time()
-        if self.application.ev.control_pilot != "B":
-            print("self.application.ev.control_pilot", self.application.ev.control_pilot)
-            self.application.led_state =LedState.WaitingPluging
-            while True:
-                print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)
-                if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
-                    print("Kablo bağlantısı sağlandı.")
-                    break
-                elif time.time() - time_start > connection_timeout:
-                    print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
-                    self.application.led_state =LedState.StandBy
-                    self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
-                    self.application.ev.start_stop_authorize = False
-                    self.application.chargePoint.authorize = None
-                    self.application.ev.card_id = ""
-                    self.application.ev.id_tag = None
-                    self.application.ev.charge = False
-                    break
-                time.sleep(0.2)
+    
                 
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
@@ -882,7 +858,7 @@ class ChargePoint16(cp):
                         self.application.ev.id_tag = id_tag
                         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                        Thread(target=self.remote_start_thread,daemon=True).start()
+                        Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
                 else:
                     print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
                     print("Yetkilendirme talebi gönderiliyor")
@@ -899,7 +875,7 @@ class ChargePoint16(cp):
                         self.application.ev.id_tag = id_tag
                         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                        Thread(target=self.remote_start_thread,daemon=True).start()
+                        Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
                     else:
                         print(Color.Red.value,"Yetkilendirme yapılamadı!")
                         self.application.ev.id_tag = None

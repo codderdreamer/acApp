@@ -294,35 +294,21 @@ class EV():
     def check_online_authorization(self, value):
         """
         Cihaz online olduğunda yetkilendirme sürecini yönetir.
-        Sırasıyla LocalPreAuthorize, Local Authorization List, Authorization Cache,
+        Sırasıyla Authorization Cache,
         ve merkezi sistem yetkilendirme taleplerini kontrol eder.
         """
-        # LocalPreAuthorize bayrağını kontrol edin
-        if self.application.settings.configuration.LocalPreAuthorize == "true":
-            # Eğer LocalPreAuthorize True ise, LocalAuthListEnabled bayrağını kontrol edin
-            print("LocalPreAuthorize is True")
-            local_auth_result = self.check_local_auth_list(value)
-            if local_auth_result == AuthorizationStatus.accepted:
-                print("Authorized from LocalAuthList")
-                return local_auth_result  
-            
-            # Eğer ocppTag localAuthList içinde bulunmazsa ve AuthorizationCacheEnabled True ise
-            if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
-                print("AuthorizationCacheEnabled is True")
-                cache_auth_result = self.check_authorization_cache(value)
-                if cache_auth_result == AuthorizationStatus.accepted:
-                    print("Authorized from AuthorizationCache")
-                    return cache_auth_result  # Eğer ocppTag authorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
-            
-            # Merkezi Sistem Yetkilendirme Talebi
-            print("Sending authorization request to Central System 1")
-            return self.send_authorization_request(value)
+        # Eğer ocppTag localAuthList içinde bulunmazsa ve AuthorizationCacheEnabled True ise
+        if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+            print("AuthorizationCacheEnabled is True")
+            cache_auth_result = self.check_authorization_cache(value)
+            if cache_auth_result == AuthorizationStatus.accepted:
+                print("Authorized from AuthorizationCache")
+                return cache_auth_result  # Eğer ocppTag authorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
         
-        else:
-            print("LocalPreAuthorize is False")
-            # Eğer LocalPreAuthorize False ise, doğrudan merkezi sisteme yetkilendirme talebi yapın.
-            print("Sending authorization request to Central System 2")
-            return self.send_authorization_request(value)
+        # Merkezi Sistem Yetkilendirme Talebi
+        print("Sending authorization request to Central System 1")
+        return self.send_authorization_request(value)
+    
 
     def check_offline_authorization(self, value):
         """

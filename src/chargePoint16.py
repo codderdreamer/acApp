@@ -828,8 +828,10 @@ class ChargePoint16(cp):
             # charger uygun değilse izin verme
             if self.application.availability == AvailabilityType.inoperative:
                 self.remote_start_stop_status = RemoteStartStopStatus.rejected
+                print(Color.Red.value,"Cihaz availability inoperative!")
             elif self.application.chargePointStatus != ChargePointStatus.available or self.application.chargePointStatus != ChargePointStatus.preparing or self.application.chargePointStatus != ChargePointStatus.reserved:
                 self.remote_start_stop_status = RemoteStartStopStatus.rejected
+                print(Color.Red.value,"chargePointStatus:",self.application.chargePointStatus,"Şarj için uygun değil!")
             else:
                 self.remote_start_stop_status = RemoteStartStopStatus.accepted
             response = call_result.RemoteStartTransactionPayload(

@@ -207,7 +207,9 @@ set_gpio('e', 10, 0)
 create_and_write_file(0)
 
 firmware_name = find_name_bin_file()
-update_firmware()
+update_mcu_firmware(firmware_name)
+
+time.sleep(100)
 
 # while True:
 #     try:

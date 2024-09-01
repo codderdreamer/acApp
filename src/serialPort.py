@@ -52,7 +52,8 @@ class SerialPort():
         
         self.parameter_data = "001"
         self.connector_id = "1"
-        self.time_rfid = time.time()
+        self.set_time_rfid = time.time()
+        self.delete_time_rfid = time.time()
         self.led_state = LedState.StandBy
         
         os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
@@ -480,11 +481,12 @@ class SerialPort():
                     card_id += data[i]
             if card_id != "":
                 print(Color.Blue.value,"Readed card id",card_id)
-            if time.time() - self.time_rfid > 2:
+            if time.time() - self.delete_time_rfid > 2:
                 self.set_command_pid_rfid()
+                self.delete_time_rfid = time.time()
             if card_id != "":
-                if time.time() - self.time_rfid > 5:
-                    self.time_rfid = time.time()
+                if time.time() - self.set_time_rfid > 5:
+                    self.set_time_rfid = time.time()
                     self.application.ev.card_id = card_id
                     
 

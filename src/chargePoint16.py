@@ -73,7 +73,7 @@ class ChargePoint16(cp):
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                         print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        time.sleep(2)
+                        time.sleep(3)
                         self.application.led_state =LedState.WaitingPluging
                     if  self.application.ev.charge:
                         self.application.deviceState = DeviceState.STOPPED_BY_USER
@@ -89,7 +89,7 @@ class ChargePoint16(cp):
                     if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
                         print("-------------------------------------------------------------------  Araç bağlı değil")
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        time.sleep(2)
+                        time.sleep(3)
                         self.application.led_state =LedState.WaitingPluging
                     if  self.application.ev.charge:
                         self.application.deviceState = DeviceState.STOPPED_BY_USER
@@ -107,7 +107,7 @@ class ChargePoint16(cp):
         if self.application.ev.control_pilot == "A" and not self.application.ev.charge:
             print("-------------------------------------------------------------------  Araç bağlı değil")
             self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
-            time.sleep(2)
+            time.sleep(3)
             self.application.led_state =LedState.WaitingPluging
         if self.application.ev.charge:
             self.application.deviceState = DeviceState.STOPPED_BY_USER
@@ -892,7 +892,6 @@ class ChargePoint16(cp):
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
             print("self.application.ev.control_pilot", self.application.ev.control_pilot)
-            time.sleep(2)
             self.application.led_state =LedState.WaitingPluging
             while True:
                 print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)

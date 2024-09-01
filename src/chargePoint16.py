@@ -69,14 +69,15 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.authorize = response.id_tag_info['status']
                 if self.authorize == AuthorizationStatus.accepted:
-                    self.application.led_state =LedState.RfidVerified
-                    if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                        print("-------------------------------------------------------------------  Araç bağlı değil")
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        time.sleep(3)
-                        self.application.led_state =LedState.WaitingPluging
-                    if  self.application.ev.charge:
-                        self.application.deviceState = DeviceState.STOPPED_BY_USER
+                    pass
+                    # self.application.led_state =LedState.RfidVerified
+                    # if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
+                    #     print("-------------------------------------------------------------------  Araç bağlı değil")
+                    #     self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                    #     time.sleep(3)
+                    #     self.application.led_state =LedState.WaitingPluging
+                    # if  self.application.ev.charge:
+                    #     self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
                     self.application.led_state =LedState.RfidFailed
                 return response
@@ -85,14 +86,14 @@ class ChargePoint16(cp):
                 
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
-                    self.application.led_state =LedState.RfidVerified
-                    if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                        print("-------------------------------------------------------------------  Araç bağlı değil")
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        time.sleep(3)
-                        self.application.led_state =LedState.WaitingPluging
-                    if  self.application.ev.charge:
-                        self.application.deviceState = DeviceState.STOPPED_BY_USER
+                    # self.application.led_state =LedState.RfidVerified
+                    # if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
+                    #     print("-------------------------------------------------------------------  Araç bağlı değil")
+                    #     self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                    #     time.sleep(3)
+                    #     self.application.led_state =LedState.WaitingPluging
+                    # if  self.application.ev.charge:
+                    #     self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
                     self.application.led_state =LedState.RfidFailed
         

@@ -526,7 +526,7 @@ class Process:
         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
         if self.application.ev.reservation_id != None:
             print(Color.Green.value,"Bir reservasyon var. reservation_id:", self.application.ev.reservation_id)
-            self.application.led_state =LedState.StandBy
+            self.application.led_state =LedState.WaitingPluging
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
             return
         if len(self.application.serialPort.error_list) > 0:

@@ -488,6 +488,7 @@ class SerialPort():
                 if time.time() - self.set_time_rfid > 5:
                     self.set_time_rfid = time.time()
                     self.application.ev.card_id = card_id
+                    print(Color.Yellow.value,"Card id set edildi",card_id)
                     
 
     def get_response_pid_evse_temp(self, data):

@@ -30,7 +30,6 @@ class DatabaseModule():
         self.get_mid_settings()
         self.get_configuration()
         self.user = self.get_user_login()["UserName"]
-        self.set_diagnostics_status('None', str(datetime.now()))
         self.reset_diagnostics_status()
         self.reset_firmware_status()
         
@@ -841,26 +840,26 @@ class DatabaseModule():
         except Exception as e:
             print("set_max_current Exception:", e)
 
-    def set_local_list(self, local_list: list):
+    def set_default_local_list(self, local_list: list):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            self.cursor.execute('DELETE FROM local_list;')
+            self.cursor.execute('DELETE FROM default_local_list;')
             self.settings_database.commit()
             for idTag in local_list:
-                query = '''INSERT INTO local_list (idTag) VALUES (?);'''
+                query = '''INSERT INTO default_local_list (idTag) VALUES (?);'''
                 self.cursor.execute(query, (idTag,))
                 self.settings_database.commit()
             self.settings_database.close()
         except Exception as e:
-            print("set_local_list Exception:", e)
+            print("set_default_local_list Exception:", e)
             
-    def get_local_list(self):
+    def get_default_local_list(self):
         id_tag_list = []
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
-            query = "SELECT * FROM local_list"
+            query = "SELECT * FROM default_local_list"
             self.cursor.execute(query)
             data = self.cursor.fetchall()
             self.settings_database.close()
@@ -868,7 +867,7 @@ class DatabaseModule():
                 id_tag_list.append(id[0])
             return id_tag_list
         except Exception as e:
-            print("get_local_list Exception:", e)
+            print("get_default_local_list Exception:", e)
 
     def get_user_login(self):
         try:
@@ -952,7 +951,7 @@ class DatabaseModule():
         try:
             configrations = []
             self.full_configuration = []
-            configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
+            configuration_db = sqlite3.connect('/root/configuration.db')
             cursor = configuration_db.cursor()
             query = "SELECT * FROM configs"
             cursor.execute(query)
@@ -971,9 +970,9 @@ class DatabaseModule():
         except Exception as e:
             print("get_configuration Exception:", e)
 
-    def set_configration(self,key,value):
+    def set_configuration(self,key,value):
         try:
-            configuration_db = sqlite3.connect('/root/acApp/src/configuration.db')
+            configuration_db = sqlite3.connect('/root/configuration.db')
             cursor = configuration_db.cursor()
             query = "UPDATE configs SET value = ? WHERE key = ?"
             value = (str(value),key)
@@ -982,8 +981,47 @@ class DatabaseModule():
             configuration_db.close()
             self.get_configuration()
         except Exception as e:
-            print("set_configration Exception:", e)
+            print("set_configuration Exception:", e)
 
+    def configuration_change(self,key,value):
+        try:
+            configuration_db = sqlite3.connect('/root/configuration.db')
+            cursor = configuration_db.cursor()
+            query = "SELECT * FROM configs WHERE key = ?"
+            cursor.execute(query,(key,))
+            data = cursor.fetchall()
+            configuration_db.close()
+            for column in data:
+                supported = column[3]
+                readonly = column[1]
+
+            #  Accepted
+            #  Configuration key is supported and setting has been changed.
+            #  Rejected
+            #  Configuration key is supported, but setting could not be changed.
+            #  RebootRequired
+            #  Configuration key is supported and setting has been changed, but change will be available after reboot (Charge Point will not
+            #  reboot itself)
+            #  NotSupported
+            #  Configuration key is not supported.
+
+            if supported == "True":
+                if readonly == "True":
+                    return "Rejected"
+                else:
+                    self.set_configuration(key,value)
+                    return "Accepted"
+            else:
+                return "NotSupported"
+            
+        except Exception as e:
+            print("check_configuration_change_availability Exception:", e)
+          
+               
+            # return True supported and read_only 
+        except Exception as e:
+            print("is_configuration_supported Exception:", e)
+           
 
     def clear_certificate_name(self):
         try:
@@ -1005,18 +1043,23 @@ class DatabaseModule():
 
             query = "SELECT * FROM diagnostics_status ORDER BY id DESC LIMIT 1"
             self.cursor.execute(query)
-            data = self.cursor.fetchall()
-            self.settings_database.close()
+            data = self.cursor.fetchone()  
 
             if data:
-                for row in data:
-                    data_dict['status'] = row[1]
-                    data_dict['last_update_time'] = row[2]
+                data_dict['status'] = data[1]
+                data_dict['last_update_time'] = data[2]
             else:
+                # Eğer tablo boşsa, 'Idle' statüsü ile bir kayıt ekle
+                insert_query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
+                self.settings_database.commit()
+
+                # Eklenen kaydı geri dön
                 data_dict['status'] = "Idle"
                 data_dict['last_update_time'] = str(datetime.now())
-                print("No diagnostics status found in the database.")
-                return data_dict
+                print("No diagnostics status found in the database. Added Idle status.")
+
+            self.settings_database.close()
 
         except Exception as e:
             print("get_diagnostics_status Exception:", e)
@@ -1028,30 +1071,39 @@ class DatabaseModule():
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+            # Var olan kaydı güncelle
+            query = "UPDATE diagnostics_status SET status = ?, last_update_time = ?"
             self.cursor.execute(query, (status, last_update_time))
+
+            # Eğer satır güncellenmediyse (kayıt yoksa), yeni kayıt ekle
+            if self.cursor.rowcount == 0:
+                query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(query, (status, last_update_time))
+
             self.settings_database.commit()
             self.settings_database.close()
 
         except Exception as e:
             print("set_diagnostics_status Exception:", e)
-
+   
     def reset_diagnostics_status(self):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            update_query = "UPDATE diagnostics_status SET status = ?"
-            self.cursor.execute(update_query, ("Idle",))
-            update_query = "UPDATE diagnostics_status SET last_update_time = ?"
-            self.cursor.execute(update_query, (str(datetime.now()),))
+            # Tüm tabloyu temizle
+            delete_query = "DELETE FROM diagnostics_status"
+            self.cursor.execute(delete_query)
+
+            # Yeni bir kayıt ekle
+            insert_query = "INSERT INTO diagnostics_status (status, last_update_time) VALUES (?, ?)"
+            self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
 
             self.settings_database.commit()
             self.settings_database.close()
             print("Diagnostics status has been reset.")
         except Exception as e:
             print("reset_diagnostics_status Exception:", e)
-
 
     def get_firmware_status(self):
         data_dict = {}
@@ -1061,30 +1113,43 @@ class DatabaseModule():
 
             query = "SELECT * FROM firmware_status ORDER BY id DESC LIMIT 1"
             self.cursor.execute(query)
-            data = self.cursor.fetchall()
-            self.settings_database.close()
+            data = self.cursor.fetchone()  # fetchall yerine fetchone kullanıldı, çünkü sadece bir satır bekleniyor.
 
             if data:
-                for row in data:
-                    data_dict['status'] = row[1]
-                    data_dict['last_update_time'] = row[2]
+                data_dict['status'] = data[1]
+                data_dict['last_update_time'] = data[2]
             else:
-                data_dict = {'status': "Idle", 'last_update_time': str(datetime.now())}
-                print("No firmware status found in the database.")
-                return data_dict
+                # Eğer tablo boşsa, 'Idle' statüsü ile bir kayıt ekle
+                insert_query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
+                self.settings_database.commit()
+
+                # Eklenen kaydı geri dön
+                data_dict['status'] = "Idle"
+                data_dict['last_update_time'] = str(datetime.now())
+                print("No firmware status found in the database. Added Idle status.")
+
+            self.settings_database.close()
 
         except Exception as e:
             print("get_firmware_status Exception:", e)
         
         return data_dict
-
+    
     def set_firmware_status(self, status: str, last_update_time: str):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
-            self.cursor.execute(query, (status, last_update_time))
+            # Mevcut kaydı güncelleme veya yeni kayıt ekleme
+            update_query = "UPDATE firmware_status SET status = ?, last_update_time = ?"
+            self.cursor.execute(update_query, (status, last_update_time))
+
+            # Eğer satır güncellenmediyse, yeni bir kayıt ekle
+            if self.cursor.rowcount == 0:
+                insert_query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+                self.cursor.execute(insert_query, (status, last_update_time))
+
             self.settings_database.commit()
             self.settings_database.close()
 
@@ -1096,13 +1161,397 @@ class DatabaseModule():
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()
 
-            update_query = "UPDATE firmware_status SET status = ?"
-            self.cursor.execute(update_query, ("Idle",))
-            update_query = "UPDATE firmware_status SET last_update_time = ?"
-            self.cursor.execute(update_query, (str(datetime.now()),))
+            # Tüm kayıtları temizle
+            delete_query = "DELETE FROM firmware_status"
+            self.cursor.execute(delete_query)
+
+            # Yeni bir 'Idle' kaydı ekle
+            insert_query = "INSERT INTO firmware_status (status, last_update_time) VALUES (?, ?)"
+            self.cursor.execute(insert_query, ("Idle", str(datetime.now())))
 
             self.settings_database.commit()
             self.settings_database.close()
-            print("Firmware status has been reset.")
+            print("Firmware status has been reset to Idle.")
+
         except Exception as e:
             print("reset_firmware_status Exception:", e)
+
+    def update_auth_cache_tag(self, ocpp_tag, new_expire_date, parent_id=None):
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+        
+            # Convert the expiry date to the correct format
+            if isinstance(new_expire_date, str):
+                if new_expire_date.endswith('Z'):
+                    new_expire_date = new_expire_date[:-1]  # Remove 'Z'
+                try:
+                    new_expire_date = datetime.strptime(new_expire_date, "%Y-%m-%dT%H:%M:%S.%f")
+                except ValueError:
+                    new_expire_date = datetime.strptime(new_expire_date, "%Y-%m-%dT%H:%M:%S")
+
+            # Check if the ocpp_tag already exists in the database
+            select_query = "SELECT id FROM auth_cache_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+
+            if result:
+                # Update the existing record
+                update_query = "UPDATE auth_cache_list SET expire_date = ?, parent_id = ?, updated_at = ? WHERE ocpp_tag = ?"
+                cursor.execute(update_query, (new_expire_date, parent_id, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ocpp_tag))
+            else:
+                # Insert a new record
+                insert_query = "INSERT INTO auth_cache_list (ocpp_tag, expire_date, parent_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
+                cursor.execute(insert_query, (ocpp_tag, new_expire_date, parent_id, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+
+            settings_database.commit()
+            settings_database.close()
+
+        except sqlite3.Error as e:
+            print(f"Error updating auth cache tag: {e}")
+
+    def get_card_status_from_auth_cache(self, ocpp_tag):
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            select_query = "SELECT expire_date, parent_id FROM auth_cache_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+            settings_database.close()
+
+            if result:
+                expire_date, parent_id = result
+                expire_date = datetime.strptime(expire_date, '%Y-%m-%d %H:%M:%S')
+                if expire_date < datetime.now():
+                    return {'status': 'Expired'}
+                
+                # Parent_id geçerliliğini kontrol et
+                if parent_id:
+                    parent_status = self.get_card_status_from_auth_cache(parent_id)
+                    if parent_status.get('status') != 'Accepted':
+                        return {'status': 'Invalid'}
+                    
+                return {'status': 'Accepted', 'expiry_date': expire_date}
+
+            else:
+                return {'status': 'Invalid'}
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving cache status for ocpp_tag {ocpp_tag}: {e}")
+            return {'status': 'Invalid'}     
+    
+    def clear_auth_cache(self):
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            delete_query = "DELETE FROM auth_cache_list"
+            cursor.execute(delete_query)
+            settings_database.commit()
+            settings_database.close()
+            if cursor.rowcount:
+                print(f"Deleted auth cache entries: {cursor.rowcount}")
+                return ClearCacheStatus.accepted
+            else:
+                print("No auth cache entries found.")
+                return ClearCacheStatus.accepted
+            
+        except sqlite3.Error as e:
+            print(f"Error clearing auth cache: {e}")
+            return ClearCacheStatus.rejected
+
+    def update_local_auth_list(self, ocpp_tag, status, expiry_date=None, parent_id=None):
+        """
+        Verilen ocpp_tag, status, expiry_date ve parent_id ile local_auth_list tablosunu günceller.
+        Eğer ocpp_tag mevcut değilse yeni bir kayıt ekler.
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+
+            # Önce, ocpp_tag'in veritabanında mevcut olup olmadığını kontrol edin
+            select_query = "SELECT id FROM local_auth_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+
+            if result:
+                # ocpp_tag mevcutsa, durumu, expiry_date ve parent_id'yi güncelleyin
+                update_query = """
+                    UPDATE local_auth_list 
+                    SET status = ?, updated_at = CURRENT_TIMESTAMP, expiry_date = ?, parent_id = ?
+                    WHERE ocpp_tag = ?
+                """
+                cursor.execute(update_query, (status, expiry_date, parent_id, ocpp_tag))
+                print(f"Updated ocpp_tag {ocpp_tag} with status {status}, expiry_date {expiry_date}, and parent_id {parent_id}.")
+            else:
+                # ocpp_tag mevcut değilse, yeni bir kayıt ekleyin
+                insert_query = """
+                    INSERT INTO local_auth_list (ocpp_tag, status, expiry_date, parent_id, created_at, updated_at) 
+                    VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """
+                cursor.execute(insert_query, (ocpp_tag, status, expiry_date, parent_id))
+                print(f"Inserted new ocpp_tag {ocpp_tag} with status {status}, expiry_date {expiry_date}, and parent_id {parent_id}.")
+
+            settings_database.commit()
+            settings_database.close()
+
+        except sqlite3.Error as e:
+            print(f"Error updating local_auth_list for ocpp_tag {ocpp_tag}: {e}")
+
+    def clear_local_auth_list(self):
+        """
+        local_auth_list tablosundaki tüm kayıtları siler.
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+
+            delete_query = "DELETE FROM local_auth_list"
+            cursor.execute(delete_query)
+
+            settings_database.commit()
+            settings_database.close()
+            print("local_auth_list has been cleared.")
+
+        except sqlite3.Error as e:
+            print(f"Error clearing local_auth_list: {e}")
+
+    def get_current_list_version(self):
+        """
+        ocpp_settings tablosundaki local_list_version anahtarını döner. Eğer NULL ise 0 döner.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            
+            # local_list_version anahtarını ocpp_settings tablosundan sorgula
+            query = "SELECT value FROM ocpp_settings WHERE key = 'local_list_version'"
+            cursor.execute(query)
+            result = cursor.fetchone()
+            settings_database.close()
+
+            # Eğer sonuç NULL ise 0 döndür
+            if result is None or result[0] is None:
+                return 0
+            else:
+                return int(result[0])
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving current list version: {e}")
+            return 0
+    
+    def update_local_auth_list_version(self, version):
+        """
+        ocpp_settings tablosundaki local_list_version anahtarını günceller veya ekler.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            
+            # local_list_version anahtarının var olup olmadığını kontrol et
+            query = "SELECT value FROM ocpp_settings WHERE key = 'local_list_version'"
+            cursor.execute(query)
+            result = cursor.fetchone()
+
+            if result is None:
+                # Eğer local_list_version mevcut değilse, yeni bir kayıt ekle
+                insert_query = "INSERT INTO ocpp_settings (key, value) VALUES ('local_list_version', ?)"
+                cursor.execute(insert_query, (str(version),))
+            else:
+                # Eğer local_list_version mevcutsa, mevcut değeri güncelle
+                update_query = "UPDATE ocpp_settings SET value = ? WHERE key = 'local_list_version'"
+                cursor.execute(update_query, (str(version),))
+
+            # Değişiklikleri kaydet
+            settings_database.commit()
+            settings_database.close()
+
+            print(f"local_list_version updated to: {version}")
+
+        except sqlite3.Error as e:
+            print(f"Error updating local_list_version: {e}")
+    
+    def get_card_status_from_local_list(self, ocpp_tag):
+        """
+        Verilen ocpp_tag için local_auth_list tablosunda durumu döner.
+        idTagInfo yapısını döner: {'status': status, 'expiry_date': expiry_date, 'parent_id': parent_id}
+        """
+        try:
+            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            cursor = settings_database.cursor()
+            select_query = "SELECT status, expiry_date, parent_id FROM local_auth_list WHERE ocpp_tag = ?"
+            cursor.execute(select_query, (ocpp_tag,))
+            result = cursor.fetchone()
+            settings_database.close()
+
+            if result:
+                status, expiry_date, parent_id = result
+
+                # idTagInfo yapısı döndürülür
+                id_tag_info = {
+                    'status': status,
+                    'expiry_date': expiry_date if expiry_date else None,  # Eğer expiry_date varsa eklenir, yoksa None
+                    'parent_id': parent_id if parent_id else None  # Eğer parent_id varsa eklenir, yoksa None
+                }
+
+                # Parent_id'nin geçerliliğini kontrol edin
+                if parent_id:
+                    parent_status_info = self.get_card_status_from_local_list(parent_id)
+                    parent_status = parent_status_info.get('status')
+                    
+                    if parent_status != 'Accepted':
+                        # Eğer parent_id geçerli değilse, child id_tag de geçerli değil olarak işaretlenir
+                        id_tag_info['status'] = 'Invalid'
+                        print(f"Parent id_tag {parent_id} is not accepted, setting status of {ocpp_tag} to Invalid.")
+
+                return id_tag_info
+            else:
+                print(f"No entry found for ocpp_tag: {ocpp_tag}")
+                return {'status': 'Invalid'}
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving card status for ocpp_tag {ocpp_tag}: {e}")
+            return {'status': 'Invalid'}
+
+    def add_reservation(self, id_tag: str, reservation_id: int, expiry_date: str, parent_id_tag: str = None):
+        """
+        Yeni bir rezervasyon ekler.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Charge.sqlite')
+            cursor = settings_database.cursor()
+
+            # Yeni rezervasyonu ekle
+            insert_query = """
+                INSERT INTO reservations (reservation_id, id_tag, expiry_date, parent_id, created_at, updated_at)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+            """
+            cursor.execute(insert_query, (reservation_id, id_tag, expiry_date, parent_id_tag))
+
+            settings_database.commit()
+            settings_database.close()
+
+            print(f"Reservation {reservation_id} has been added.")
+
+        except sqlite3.Error as e:
+            print(f"Database error during add_reservation: {e}")
+            
+    def update_reservation(self, id_tag: str, reservation_id: int, expiry_date: str, parent_id_tag: str = None):
+        """
+        Mevcut bir rezervasyonu günceller.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Charge.sqlite')
+            cursor = settings_database.cursor()
+
+            # Rezervasyonu güncelle
+            update_query = """
+                UPDATE reservations
+                SET id_tag = ?, expiry_date = ?, parent_id = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE reservation_id = ?
+            """
+            cursor.execute(update_query, (id_tag, expiry_date, parent_id_tag, reservation_id))
+
+            settings_database.commit()
+            settings_database.close()
+
+            print(f"Reservation {reservation_id} has been updated.")
+
+        except sqlite3.Error as e:
+            print(f"Database error during update_reservation: {e}")
+
+    def delete_reservation(self, reservation_id: int):  
+        """
+        Veritabanında belirtilen reservation_id'ye sahip rezervasyonu iptal eder.
+        """
+        try:
+            conn = sqlite3.connect('/root/Charge.sqlite')
+            cursor = conn.cursor()
+
+            # Rezervasyonu veritabanından silme işlemi
+            delete_query = "DELETE FROM reservations WHERE reservation_id = ?"
+            cursor.execute(delete_query, (reservation_id,))
+            conn.commit()
+
+            print(f"Reservation {reservation_id} has been cancelled successfully.")
+
+        except sqlite3.Error as e:
+            print(f"Error cancelling reservation: {e}")
+        finally:
+            conn.close()
+
+    def get_current_reservation(self):
+        """
+        Veritabanındaki mevcut aktif rezervasyonu döndürür. Sadece tek bir rezervasyon olabilir.
+        """
+        try:
+            # Veritabanına bağlan
+            settings_database = sqlite3.connect('/root/Charge.sqlite')
+            cursor = settings_database.cursor()
+
+            # Mevcut aktif rezervasyonu sorgula (tek rezervasyon)
+            select_query = """
+                SELECT reservation_id, id_tag, expiry_date, parent_id 
+                FROM reservations 
+                WHERE expiry_date > ? 
+                LIMIT 1
+            """
+            cursor.execute(select_query, (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),))
+            result = cursor.fetchone()
+
+            settings_database.close()
+
+            if result:
+                reservation_id, id_tag, expiry_date, parent_id = result
+                return {
+                    'reservation_id': reservation_id,
+                    'id_tag': id_tag,
+                    'expiry_date': expiry_date,
+                    'parent_id_tag': parent_id
+                }
+            else:
+                return None
+
+        except sqlite3.Error as e:
+            print(f"Database error during get_current_reservation: {e}")
+            return None
+        
+    def get_reservation_by_id(self, reservation_id: int):
+        try:
+            # Veritabanına bağlan
+            conn = sqlite3.connect('/root/Charge.sqlite')
+            cursor = conn.cursor()
+
+            # reservation_id ile rezervasyonu sorgula
+            select_query = """
+                SELECT id, id_tag, connector_id, reservation_id, expiry_date, parent_id 
+                FROM reservations
+                WHERE reservation_id = ?
+            """
+            cursor.execute(select_query, (reservation_id,))
+            result = cursor.fetchone()
+
+            # Veritabanı bağlantısını kapat
+            conn.close()
+
+            if result:
+                # Sorgu sonucu bir rezervasyon bulundu
+                reservation = {
+                    'id': result[0],
+                    'id_tag': result[1],
+                    'connector_id': result[2],
+                    'reservation_id': result[3],
+                    'expiry_date': result[4],
+                    'parent_id': result[5]
+                }
+                return reservation
+            else:
+                # Sorgu sonucu hiçbir rezervasyon bulunamadı
+                return None
+
+        except sqlite3.Error as e:
+            print(f"Error retrieving reservation with reservation_id {reservation_id}: {e}")
+            return None

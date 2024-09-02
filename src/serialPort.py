@@ -52,7 +52,8 @@ class SerialPort():
         
         self.parameter_data = "001"
         self.connector_id = "1"
-        
+        self.set_time_rfid = time.time()
+        self.delete_time_rfid = time.time()
         self.led_state = LedState.StandBy
         
         os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
@@ -67,10 +68,20 @@ class SerialPort():
         Thread(target=self.get_command_pid_error_list_init,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         Thread(target=self.get_energy_thread,daemon=True).start()
-
+        Thread(target=self.set_led_state_thread,daemon=True).start()
         self.set_command_pid_rfid()
 
-        
+    def set_led_state_thread(self):
+        while True:
+            try:
+                # print(self.application.led_state,self.application.led_state != LedState.RfidVerified,self.application.led_state != LedState.RfidFailed,self.application.led_state != LedState.RfidVerified or self.application.led_state != LedState.RfidFailed)
+                if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
+                    self.set_command_pid_led_control(self.application.led_state)
+                    print("Led güncelleme -> ",self.application.led_state)
+                    time.sleep(20)
+            except Exception as e:
+                pass
+            time.sleep(1)
 
 
     def get_energy_thread(self):
@@ -80,13 +91,15 @@ class SerialPort():
                 self.get_command_pid_proximity_pilot()
             except Exception as e:
                 print("get_energy_thread Exception:",e)
-
-            time.sleep(5)
+            time.sleep(10)
 
     def write(self):
+        # counter = 0
         while True:
             try:
                 if len(self.send_data_list) > 0:
+                    # counter += 1
+                    # print("write counter",counter)
                     self.serial.write(self.send_data_list[0])
                     self.send_data_list.pop(0)
             except Exception as e:
@@ -203,16 +216,19 @@ class SerialPort():
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
-        if led_state not in [LedState.RfidVerified, LedState.RfidFailed]:
-            self.led_state = led_state
-        else:
+        if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
             time.sleep(2)
+        else:
+            self.led_state = led_state
+
+        if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
             self.parameter_data = "002"
             data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-        self.application.ev.led_state = led_state
+            self.application.led_state = self.led_state
+        
 
     def get_command_pid_led_control(self):
         self.parameter_data = "001"
@@ -297,16 +313,16 @@ class SerialPort():
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-            time.sleep(15)
+            time.sleep(30)
 
     def get_command_pid_error_list_init(self):
         time.sleep(15)
         if len(self.error_list) > 0:
             for value in self.error_list:
                 if value == PidErrorList.LockerInitializeError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.LockerError,), daemon= True).start()
+                    self.application.led_state =LedState.LockerError
                 elif value == PidErrorList.RcdInitializeError:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RcdError,), daemon= True).start()
+                    self.application.led_state =LedState.RcdError
             
     def get_command_pid_error_list(self):
         time.sleep(10)
@@ -465,8 +481,17 @@ class SerialPort():
                 for i in range(9,9+card_id_length):
                     card_id += data[i]
             if card_id != "":
-                self.application.ev.card_id = card_id
+                print(Color.Blue.value,"Readed card id",card_id)
+            if time.time() - self.delete_time_rfid > 2:
                 self.set_command_pid_rfid()
+                self.delete_time_rfid = time.time()
+            if card_id != "":
+                if time.time() - self.set_time_rfid > 5:
+                    print(Color.Yellow.value,"Card id set edildi",card_id)
+                    self.set_time_rfid = time.time()
+                    self.application.ev.card_id = card_id
+                    
+                    
 
     def get_response_pid_evse_temp(self, data):
         if data[2] == self.pid_evse_temp:
@@ -524,11 +549,14 @@ class SerialPort():
             self.error_list = error_list
 
     def read(self):
+        # counter = 0
         while True:
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
+                    # counter += 1
+                    # print("read counter", counter)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

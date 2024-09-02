@@ -34,6 +34,7 @@ class ChargePoint16(cp):
         self.authorize = None
         self.logger = logger
         self.start_transaction_result = None
+        self.remote_start_stop_status = None
 
     def reboot(self):
         time.sleep(7)
@@ -68,35 +69,40 @@ class ChargePoint16(cp):
                 response = await self.call(request)
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.authorize = response.id_tag_info['status']
-                if self.authorize == AuthorizationStatus.accepted:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                    if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                        print("-------------------------------------------------------------------  Araç bağlı değil")
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
-                    if  self.application.ev.charge:
-                        self.application.deviceState = DeviceState.STOPPED_BY_USER
-                else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                if self.authorize != AuthorizationStatus.accepted:
+                    self.application.led_state =LedState.RfidFailed
                 return response
             else:
                 self.application.request_list.append(request)
                 
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidVerified,), daemon= True).start()
-                    if (self.application.ev.control_pilot == "A" and self.application.ev.charge == False) :
-                        print("-------------------------------------------------------------------  Araç bağlı değil")
-                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-                        Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
-                    if  self.application.ev.charge:
-                        self.application.deviceState = DeviceState.STOPPED_BY_USER
                 else:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.RfidFailed,), daemon= True).start()
+                    self.application.led_state =LedState.RfidFailed
         
         except Exception as e:
             print("send_authorize Exception:",e)
 
+    def handle_authorization_accepted(self):
+        """
+        Yetkilendirme kabul edildiğinde yapılacak işlemler.
+        """
+        self.application.led_state =LedState.RfidVerified
+        if self.application.ev.control_pilot == "A" and not self.application.ev.charge:
+            print("-------------------------------------------------------------------  Araç bağlı değil")
+            self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
+            time.sleep(3)
+            self.application.led_state =LedState.WaitingPluging
+        if self.application.ev.charge:
+            self.application.deviceState = DeviceState.STOPPED_BY_USER
+
+
+    def handle_authorization_failed(self):
+        """
+        Yetkilendirme başarısız olduğunda yapılacak işlemler.
+        """
+        self.application.led_state =LedState.RfidFailed
+        
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
                                         self,
@@ -143,7 +149,8 @@ class ChargePoint16(cp):
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
-                await self.send_heartbeat(response.interval)
+                self.application.ev.load_reservations()
+                await self.send_heartbeat()
             return response
         except Exception as e:
             print("send_boot_notification Exception:",e)
@@ -208,7 +215,7 @@ class ChargePoint16(cp):
             print("send_firmware_status_notification Exception:",e)
 
     # 6. HEARTBEAT
-    async def send_heartbeat(self, interval):
+    async def send_heartbeat(self):
         """
         interval: int
         """
@@ -237,123 +244,121 @@ class ChargePoint16(cp):
                 response = await self.call(request)
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.application.ocppActive = True
-                await asyncio.sleep(5)
+                interval = int(self.application.settings.configuration.HeartbeatInterval)
+                await asyncio.sleep(interval)
+
         except Exception as e:
             print("send_heartbeat Exception:",e)
             self.application.ocppActive = False
 
+    async def send_heartbeat_once(self):
+        try:
+            request = call.HeartbeatPayload()
+            LOGGER_CHARGE_POINT.info("Sending Heartbeat: %s", request)
+            response = await self.call(request)
+            LOGGER_CENTRAL_SYSTEM.info("Received Heartbeat Response: %s", response)
+            return response
+        except Exception as e:
+            print("send_heartbeat_once Exception:", e)
+            self.application.ocppActive = False    
 
     # 7. METER VALUES
-    async def send_meter_values(
-                                self
-                                ):
-        """
-        connector_id: int,
-        meter_value: List = list,
-        transaction_id: int | None = None
-        """
-        try :
+    async def send_meter_values(self):
+        try:
+            # Configurations
+            sampled_data = []
+            measurands = self.application.settings.configuration.MeterValuesSampledData.split(",")
+            print("measurands:",measurands)
+            max_length = int(self.application.settings.configuration.MeterValuesSampledDataMaxLength)
+            print("max_length:",max_length)
+            # Map the measurand strings to actual data
+            measurand_mapping = {
+                "Energy.Active.Import.Register": {
+                    "value": str(self.application.ev.energy),
+                    "measurand": Measurand.energy_active_import_register,
+                    "unit": UnitOfMeasure.kwh
+                },
+                "Voltage.L1": {
+                    "value": str(self.application.ev.voltage_L1),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L2": {
+                    "value": str(self.application.ev.voltage_L2),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L3": {
+                    "value": str(self.application.ev.voltage_L3),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.v
+                },
+                "Current.Import.L1": {
+                    "value": str(self.application.ev.current_L1),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L2": {
+                    "value": str(self.application.ev.current_L2),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L3": {
+                    "value": str(self.application.ev.current_L3),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.a
+                },
+                "Power.Active.Import": {
+                    "value": str(self.application.ev.power),
+                    "measurand": Measurand.power_active_import,
+                    "unit": UnitOfMeasure.kw
+                },
+                "Temperature": {
+                    "value": str(self.application.ev.temperature),
+                    "measurand": Measurand.temperature,
+                    "unit": UnitOfMeasure.celsius
+                }
+            }
+
+            # Add measurands to the sampled data list according to the configuration
+            for measurand in measurands:
+                if measurand in measurand_mapping and len(sampled_data) < max_length:
+                    sampled_data.append({
+                        "value": measurand_mapping[measurand]["value"],
+                        "context": ReadingContext.sample_periodic,
+                        "format": ValueFormat.raw,
+                        "measurand": measurand_mapping[measurand]["measurand"],
+                        "phase": measurand_mapping[measurand].get("phase", None),
+                        "location": Location.cable,
+                        "unit": measurand_mapping[measurand]["unit"]
+                    })
+
+            # Prepare and send the MeterValues request
             request = call.MeterValuesPayload(
-                connector_id = 1,
-                transaction_id = self.application.process.transaction_id,
-                meter_value = [
-                    {
-                        "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
-                        "sampledValue": [
-                            {
-                                "value": str(self.application.ev.energy),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.energy_active_import_register,
-                                "phase" : None,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.kwh
-                            },
-                            {
-                                "value": str(self.application.ev.voltage_L1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l1,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.ev.voltage_L2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l2,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.ev.voltage_L3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.voltage,
-                                "phase" : Phase.l3,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.v
-                            },
-                            {
-                                "value": str(self.application.ev.current_L1),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l1,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.ev.current_L2),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l2,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.ev.current_L3),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.current_import,
-                                "phase" : Phase.l3,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.a
-                            },
-                            {
-                                "value": str(self.application.ev.power),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.power_active_import,
-                                "phase" : None,
-                                "location": Location.cable,
-                                "unit": UnitOfMeasure.kw
-                            },
-                            {
-                                "value": str(self.application.ev.temperature),
-                                "context": ReadingContext.sample_periodic,
-                                "format": ValueFormat.raw,
-                                "measurand": Measurand.temperature,
-                                "phase" : None,
-                                "location": Location.body,
-                                "unit": UnitOfMeasure.celsius
-                            }
-                        ]
-                    }
-                ])
-            if self.application.ocppActive == True:
-                LOGGER_CHARGE_POINT.info("Request:%s", request)
+                connector_id=1,
+                transaction_id=self.application.process.transaction_id,
+                meter_value=[{
+                    "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                    "sampledValue": sampled_data
+                }]
+            )
+
+            if self.application.ocppActive:
+                LOGGER_CHARGE_POINT.info("Request: %s", request)
                 response = await self.call(request)
-                LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
+                LOGGER_CENTRAL_SYSTEM.info("Response: %s", response)
                 return response
             else:
                 self.application.request_list.append(request)
+
         except Exception as e:
-            print("send_meter_values Exception:",e)
-            # self.application.request_list.append(request)
+            print("send_meter_values Exception:", e)
 
     # 8. START TRANSACTION
     async def send_start_transaction(
@@ -383,7 +388,18 @@ class ChargePoint16(cp):
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             self.application.process.transaction_id = response.transaction_id
+            print("response.id_tag_info['status']",response.id_tag_info['status'])
             self.start_transaction_result = response.id_tag_info['status']
+            if reservation_id and self.start_transaction_result == AuthorizationStatus.accepted:
+                print("Reservation accepted")
+                self.application.ev.reservation_id = None
+                self.application.ev.reservation_id_tag = None
+                self.application.ev.expiry_date = None
+                self.application.ev.parent_id = None
+                #delete reservation
+                print("delete_reservation")
+                self.application.databaseModule.delete_reservation(reservation_id)
+
             return response
         except Exception as e:
             print("send_start_transaction Exception:",e)
@@ -431,6 +447,93 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_status_notification Exception:",e)
 
+    def transaction_data_json(self):
+        try:
+            # Configurations
+            sampled_data = []
+            measurands = self.application.settings.configuration.StopTxnAlignedData.split(",")
+            print("measurands:",measurands)
+            max_length = int(self.application.settings.configuration.StopTxnAlignedDataMaxLength)
+            print("max_length:",max_length)
+            # Map the measurand strings to actual data
+            measurand_mapping = {
+                "Energy.Active.Import.Register": {
+                    "value": str(self.application.ev.energy),
+                    "measurand": Measurand.energy_active_import_register,
+                    "unit": UnitOfMeasure.kwh
+                },
+                "Voltage.L1": {
+                    "value": str(self.application.ev.voltage_L1),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L2": {
+                    "value": str(self.application.ev.voltage_L2),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L3": {
+                    "value": str(self.application.ev.voltage_L3),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.v
+                },
+                "Current.Import.L1": {
+                    "value": str(self.application.ev.current_L1),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L2": {
+                    "value": str(self.application.ev.current_L2),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L3": {
+                    "value": str(self.application.ev.current_L3),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.a
+                },
+                "Power.Active.Import": {
+                    "value": str(self.application.ev.power),
+                    "measurand": Measurand.power_active_import,
+                    "unit": UnitOfMeasure.kw
+                },
+                "Temperature": {
+                    "value": str(self.application.ev.temperature),
+                    "measurand": Measurand.temperature,
+                    "unit": UnitOfMeasure.celsius
+                }
+            }
+
+            # Add measurands to the sampled data list according to the configuration
+            for measurand in measurands:
+                if measurand in measurand_mapping and len(sampled_data) < max_length:
+                    sampled_data.append({
+                        "value": measurand_mapping[measurand]["value"],
+                        "context": ReadingContext.sample_periodic,
+                        "format": ValueFormat.raw,
+                        "measurand": measurand_mapping[measurand]["measurand"],
+                        "phase": measurand_mapping[measurand].get("phase", None),
+                        "location": Location.cable,
+                        "unit": measurand_mapping[measurand]["unit"]
+                    })
+
+  
+            meter_value=[{
+                "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                "sampledValue": sampled_data
+            }]
+
+            return meter_value
+        except Exception as e:
+            print("transaction_data_json Exception:", e)
+
+
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
                                     self, reason = None
@@ -449,7 +552,7 @@ class ChargePoint16(cp):
         transaction_id = self.application.process.transaction_id
         reason = None
         id_tag = self.application.process.id_tag
-        transaction_data = None
+        transaction_data = self.transaction_data_json()
         try :
             request = call.StopTransactionPayload(
                 meter_stop,
@@ -474,29 +577,47 @@ class ChargePoint16(cp):
 
     # 1. CANCEL RESERVATION
     @on(Action.CancelReservation)
-    def on_cancel_reservation(self,reservation_id: int):
-        try :
+    def cancel_reservation(self, reservation_id: int):
+        try:
             request = call.CancelReservationPayload(
                 reservation_id
             )
+
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            if reservation_id == self.application.ev.reservation_id:
-                self.application.ev.reservation_id = None
-                self.application.ev.reservation_id_tag = None
-                self.application.ev.expiry_date = None
-                if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+
+            # Veritabanında rezervasyonu kontrol et ve iptal et
+            self.application.databaseModule.delete_reservation(reservation_id)
+            response_status = CancelReservationStatus.accepted
+
+            # Rezervasyon başarıyla silindiyse, yerel değişkenleri temizle
+            self.application.ev.reservation_id = None
+            self.application.ev.reservation_id_tag = None
+            self.application.ev.expiry_date = None
+            self.application.ev.parent_id = None
+
+            # Durumu güncelle
+            if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                self.application.led_state = LedState.StandBy
+                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.available.value)
+            elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                self.application.led_state = LedState.Connecting
+                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+
+
             response = call_result.CancelReservationPayload(
-                status = CancelReservationStatus.accepted
+                status=response_status
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
-        except Exception as e:
-            print("on_cancel_reservation Exception:",e)
-            
 
+        except Exception as e:
+            LOGGER_CENTRAL_SYSTEM.error("on_cancel_reservation Exception: %s", e)
+            response = call_result.CancelReservationPayload(
+                status=CancelReservationStatus.rejected
+            )
+            return response
+    
+    
     # 2. CHANGE AVAILABILITY
     @on(Action.ChangeAvailability)
     def on_change_availability(self,connector_id: int, type: AvailabilityType):
@@ -538,32 +659,28 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
-            for data in self.application.databaseModule.full_configuration:
-                if data["key"] == key:
-                    if data["readonly"] == False:
-                        status = ConfigurationStatus.accepted
-                    else:
-                        status = ConfigurationStatus.not_supported
+            avaibility = self.application.databaseModule.configuration_change(key, value)
 
-            self.application.databaseModule.set_configration(key,value)
             response = call_result.ChangeConfigurationPayload(
-                status= status
+                status= avaibility
             )
+
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
+               
         except Exception as e:
             print("on_change_configration Exception:",e)
-
+                  
     # 4. CLEAR CACHE
     @on(Action.ClearCache)
     def on_clear_cache(self):
         try :
             request = call.ClearCachePayload()
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            cache_status  = self.application.databaseModule.clear_auth_cache()
             response = call_result.ClearCachePayload(
-                status= ClearCacheStatus.accepted
+                status= cache_status
             )
-            self.application.databaseModule.set_local_list([])
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
@@ -764,16 +881,25 @@ class ChargePoint16(cp):
     # 10. GET LOCAL LIST VERSION
     @on(Action.GetLocalListVersion)
     def on_get_local_list_version(self):
-        try :
+        try:
             request = call.GetLocalListVersionPayload()
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+            
+            # Veritabanından current local list version'ı al
+            current_list_version = self.application.databaseModule.get_current_list_version()     
+                   
+            # Eğer current_list_version None veya -1 ise, default olarak -1 döner
+            if current_list_version is None:
+                current_list_version = -1
+            
             response = call_result.GetLocalListVersionPayload(
-                list_version=-1
+                list_version=current_list_version
             )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
+
         except Exception as e:
-            print("on_get_local_list_version Exception:",e)
+            print("on_get_local_list_version Exception:", e)
 
     # 11. REMOTE START TRANSACTION
     @on(Action.RemoteStartTransaction)
@@ -786,79 +912,60 @@ class ChargePoint16(cp):
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
-            if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
-                print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
-                self.application.ev.id_tag = id_tag
-                
-                # charger uygun değilse izin verme
-                if self.application.availability == AvailabilityType.inoperative:
-                    response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.rejected
-                            )
-                    return response
-                
-                # “Locker Initialize Error”  ve   “Rcd Initialize Error” hataları varsa şarja izin verme
-                error = False
-                if len(self.application.serialPort.error_list) > 0:
-                    for value in self.application.serialPort.error_list:
-                        if value == PidErrorList.LockerInitializeError:
-                            print("Şarja başlanamaz! PidErrorList.LockerInitializeError")
-                            response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.rejected
-                            )
-                            error = True
-                        if value == PidErrorList.RcdInitializeError:
-                            print("Şarja başlanamaz! PidErrorList.RcdInitializeError")
-                            response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.rejected
-                            )
-                            error = True
-                            
-                if error == False:
-                    response = call_result.RemoteStartTransactionPayload(
-                                status= RemoteStartStopStatus.accepted
-                    )
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                    self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                    Thread(target=self.remote_start_thread,daemon=True).start()
+            # charger uygun değilse izin verme
+            if self.application.availability == AvailabilityType.inoperative:
+                self.remote_start_stop_status = RemoteStartStopStatus.rejected
+                print(Color.Red.value,"Cihaz availability inoperative!")
+            elif (self.application.chargePointStatus != ChargePointStatus.available) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved):
+                self.remote_start_stop_status = RemoteStartStopStatus.rejected
+                print(Color.Red.value,"chargePointStatus:",self.application.chargePointStatus,"Şarj için uygun değil!")
+            elif self.application.ev.reservation_id_tag != None:
+                if self.application.ev.reservation_id_tag == id_tag:
+                    self.remote_start_stop_status = RemoteStartStopStatus.accepted
+                else:
+                    self.remote_start_stop_status = RemoteStartStopStatus.rejected
             else:
-                print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_authorize(id_tag = value),self.application.loop)
-
+                self.remote_start_stop_status = RemoteStartStopStatus.accepted
+            response = call_result.RemoteStartTransactionPayload(
+                            status= self.remote_start_stop_status
+                        )
             LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
             print("on_remote_start_transaction Exception:",e)
             
-    def remote_start_thread(self):
-        # Eğer kablo bağlı değilse
-        # Waiting plug led yak
-        # 30 saniye içinde kablo bağlanmazsa idle
-        time_start = time.time()
-        if self.application.ev.control_pilot != "B":
-            print("self.application.ev.control_pilot",self.application.ev.control_pilot)
-            Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.WaitingPluging,), daemon= True).start()
-            while True:
-                print("30 sn içinde kablo bağlantısı bekleniyor ! control pilot:",self.application.ev.control_pilot)
-                if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
-                    print("Kablo bağlantısı sağlandı.")
-                    break
-                elif time.time() - time_start > 30:
-                    print("Kablo bağlantısı sağlanamadı 30 saniye süre doldu!")
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon= True).start()
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-                    self.application.ev.start_stop_authorize = False
-                    self.application.chargePoint.authorize = None
-                    self.application.ev.card_id = ""
-                    self.application.ev.id_tag = None
-                    self.application.ev.charge = False
-                    break
-                time.sleep(0.2)
+    
                 
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
-            pass
+            if self.remote_start_stop_status == RemoteStartStopStatus.accepted:
+                if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
+                        print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
+                        self.application.ev.id_tag = id_tag
+                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                        self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                        Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
+                else:
+                    print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
+                    print("Yetkilendirme talebi gönderiliyor")
+                    # Merkezi sisteme yetkilendirme talebi gönder
+                    self.application.chargePoint.authorize = None
+                    request = asyncio.run_coroutine_threadsafe(
+                        self.application.chargePoint.send_authorize(id_tag=id_tag), 
+                        self.application.loop
+                    )
+                    response = request.result()
+                    id_tag_info = response.id_tag_info
+                    status = id_tag_info['status']
+                    if status == AuthorizationStatus.accepted.value:
+                        self.application.ev.id_tag = id_tag
+                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                        self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                        Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
+                    else:
+                        print(Color.Red.value,"Yetkilendirme yapılamadı!")
+                        self.application.ev.id_tag = None
         except Exception as e:
             print("after_remote_start_transaction Exception:",e)
             
@@ -884,75 +991,86 @@ class ChargePoint16(cp):
             self.application.deviceState = DeviceState.STOPPED_BY_EVSE
         except Exception as e:
             print("after_remote_stop_transaction Exception:",e)
-            
-    @on(Action.ReserveNow)
-    def on_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
-        try :
-            request = call.ReserveNowPayload(
-                connector_id,
-                expiry_date,
-                id_tag,
-                reservation_id,
-                parent_id_tag
-            )
-            if self.application.ev.reservation_id == None and self.application.availability == AvailabilityType.operative and self.application.chargePointStatus == ChargePointStatus.available:
-                self.application.ev.reservation_id_tag = id_tag
-                self.application.ev.expiry_date = expiry_date
-                self.application.ev.reservation_id = reservation_id
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.accepted
-                )
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.ev.reservation_id == reservation_id and self.application.availability == AvailabilityType.operative:
-                self.application.ev.reservation_id_tag = id_tag
-                self.application.ev.expiry_date = expiry_date
-                self.application.ev.reservation_id = reservation_id
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.accepted
-                )
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.ev.reservation_id != None and self.application.availability == AvailabilityType.operative:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.occupied
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.availability == AvailabilityType.inoperative:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.rejected
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.chargePointStatus == ChargePointStatus.faulted:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.faulted
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            elif self.application.chargePointStatus != ChargePointStatus.available:
-                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-                response = call_result.ReserveNowPayload(
-                    status = ReservationStatus.rejected
-                )
-                LOGGER_CHARGE_POINT.info("Response:%s", response)
-            return response
-        except Exception as e:
-            print("on_reserve_now Exception:",e)
-            
+    
+   
     # 13. RESERVE NOW
-    @after(Action.ReserveNow)
-    def after_reserve_now(self,connector_id:int, expiry_date:str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
-        try :
-            # central_system - INFO - Request:ReserveNowPayload(connector_id=1, expiry_date='2024-05-04T23:00:00.000Z', id_tag='0485A54A007480', reservation_id=7, parent_id_tag=None)
-            pass
-                
-                
+    @on(Action.ReserveNow)
+    def on_reserve_now(self, connector_id: int, expiry_date: str, id_tag: str, reservation_id: int, parent_id_tag: str = None):
+        try:
+            LOGGER_CENTRAL_SYSTEM.info("Received ReserveNow request: connector_id=%d, expiry_date=%s, id_tag=%s, reservation_id=%d, parent_id_tag=%s",
+                                    connector_id, expiry_date, id_tag, reservation_id, parent_id_tag)
+
+            # Rezervasyon işlemlerini yap
+            response_status = self.run_reserve_now_logic(connector_id, expiry_date, id_tag, reservation_id, parent_id_tag)
+
+            if response_status == ReservationStatus.accepted:
+                # Eğer rezervasyon başarılı olursa, ilgili değişkenleri güncelle
+                self.application.ev.reservation_id = reservation_id
+                self.application.ev.reservation_id_tag = id_tag
+                self.application.ev.expiry_date = expiry_date
+                self.application.ev.parent_id = parent_id_tag
+                # ChargePoint durumunu güncelle
+                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+                self.application.led_state = LedState.WaitingPluging
+
+            # Yanıt gönder
+            response = call_result.ReserveNowPayload(
+                status=response_status
+            )
+            LOGGER_CHARGE_POINT.info("Response: %s", response)
+            return response
+
         except Exception as e:
-            print("on_reserve_now Exception:",e)
+            LOGGER_CENTRAL_SYSTEM.error("Exception in on_reserve_now: %s", e)
+            response = call_result.ReserveNowPayload(
+                status=ReservationStatus.rejected
+            )
+            return response 
+
+    def run_reserve_now_logic(self, connector_id: int, expiry_date: str, id_tag: str, reservation_id: int, parent_id_tag: str = None) -> ReservationStatus:
+        try:
+            # Önce şarj noktasının mevcut durumunu kontrol edin
+            if self.application.availability == AvailabilityType.inoperative:
+                return ReservationStatus.rejected
+            elif self.application.chargePointStatus == ChargePointStatus.faulted:
+                return ReservationStatus.faulted
+            elif self.application.chargePointStatus != ChargePointStatus.available:
+                return ReservationStatus.occupied
+
+            # Mevcut rezervasyonu kontrol et
+            current_reservation = self.application.databaseModule.get_current_reservation()
+
+            if current_reservation:
+                current_reservation_id = current_reservation['reservation_id']
+                current_id_tag = current_reservation['id_tag']
+                current_parent_id_tag = current_reservation.get('parent_id_tag')
+
+                if reservation_id == current_reservation_id:
+                    # Eğer yeni rezervasyon aynı ID'ye sahipse, güncelle
+                    self.application.databaseModule.update_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                    return ReservationStatus.accepted
+                else:
+                    # Eğer ID'ler farklıysa, id_tag veya parent_id_tag eşleşmesi kontrol edilir
+                    if id_tag == current_id_tag:
+                        # Eğer id_tag veya parent_id_tag eşleşiyorsa, güncelle
+                        self.application.databaseModule.update_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                        return ReservationStatus.accepted
+                    else:
+                        # Eşleşme yoksa, Occupied durumu döndürülür
+                        if current_parent_id_tag and current_parent_id_tag == id_tag:
+                            # Eğer parent_id_tag eşleşiyorsa, güncelle
+                            self.application.databaseModule.update_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                            return ReservationStatus.accepted
+                        else:
+                            return ReservationStatus.occupied
+            else:
+                # Eğer mevcut rezervasyon yoksa, yeni rezervasyon ekle
+                self.application.databaseModule.add_reservation(id_tag, reservation_id, expiry_date, parent_id_tag)
+                return ReservationStatus.accepted
+
+        except Exception as e:
+            LOGGER_CENTRAL_SYSTEM.error("run_reserve_now_logic Exception: %s", e)
+            return ReservationStatus.rejected
 
     # 14. RESET
     @on(Action.Reset)
@@ -989,33 +1107,103 @@ class ChargePoint16(cp):
 
     # 15. SEND LOCAL LIST
     @on(Action.SendLocalList)
-    def on_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
-        try :
-            request = call.SendLocalListPayload(
-                list_version,
-                update_type,
-                local_authorization_list
-            )
-            LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.SendLocalListPayload(
-                status = UpdateStatus.accepted
-            )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
-            return response
-        except Exception as e:
-            print("on_send_local_list Exception:",e)
-            
-    @after(Action.SendLocalList)
-    def after_send_local_list(self,list_version: int, update_type: UpdateType, local_authorization_list: list):
-        try :
-            localList = []
-            for data in local_authorization_list:
-                localList.append(data["id_tag"])
-            self.application.databaseModule.set_local_list(localList)
-            self.application.databaseModule.get_local_list()
-        except Exception as e:
-            print("after_send_local_list Exception:",e)
+    def on_send_local_list(self, list_version: int, update_type: UpdateType, local_authorization_list: list):
+        try:
+            # Mevcut liste sürümünü kontrol et
+            current_list_version = self.application.databaseModule.get_current_list_version()
 
+            if list_version > current_list_version:
+                # Gelen isteği güncelle
+                request = call.SendLocalListPayload(
+                    list_version,
+                    update_type,
+                    local_authorization_list
+                )
+                LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
+
+                # Liste sürümünü güncelle
+                self.application.databaseModule.update_local_auth_list_version(list_version)
+
+                # Yanıtı gönder
+                response = call_result.SendLocalListPayload(
+                    status=UpdateStatus.accepted 
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                return response
+            else:
+                # Liste sürümü güncellenmemişse hata döndür
+                response = call_result.SendLocalListPayload(
+                    status=UpdateStatus.version_mismatch
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
+                return response
+
+        except Exception as e:
+            print("on_send_local_list Exception:", e)
+            response = call_result.SendLocalListPayload(
+                status=UpdateStatus.failed
+            )
+            return response
+        
+    @after(Action.SendLocalList)
+    def after_send_local_list(self, list_version: int, update_type: UpdateType, local_authorization_list: list):
+        try:
+            if update_type == UpdateType.full:
+                self.application.databaseModule.clear_local_auth_list()
+                LOGGER_CHARGE_POINT.info("Full update: Cleared existing local authorization list.")
+
+            for data in local_authorization_list:
+                ocpp_tag = data["id_tag"]
+                id_tag_info = data.get("id_tag_info", {})  # id_tag_info alanını alın, eğer yoksa boş bir sözlük döndür
+                status = id_tag_info.get("status", "Accepted")  # Varsayılan olarak Accepted
+                expiry_date = id_tag_info.get("expiry_date", None)  # expiry_date alanını alın
+                parent_id_tag = id_tag_info.get("parent_id_tag", None)  # parent_id_tag alanını alın
+
+                self.application.databaseModule.update_local_auth_list(ocpp_tag, status, expiry_date, parent_id_tag)
+
+            LOGGER_CHARGE_POINT.info("Local authorization list updated in database.")
+
+            conflict_detected = self.check_local_list_conflict(local_authorization_list)
+            if conflict_detected:
+                self.send_status_notification(
+                    connector_id=0,
+                    error_code=ChargePointErrorCode.local_list_conflict
+                )
+                LOGGER_CENTRAL_SYSTEM.warning("Local list conflict detected and reported.")
+
+        except Exception as e:
+            print("after_send_local_list Exception:", e)
+
+    def check_local_list_conflict(self, local_list):
+        """
+        Yerel yetkilendirme listesi ile StartTransaction.conf'daki geçerlilik arasında bir çakışma olup olmadığını kontrol eder.
+        """
+        # try:
+        #     settings_database = sqlite3.connect('/root/Settings.sqlite')
+        #     cursor = settings_database.cursor()
+
+        #     # Çakışma kontrolü
+        #     for entry in local_list:
+        #         ocpp_tag = entry.get('id_tag')
+        #         parent_id_tag = entry.get('id_tag_info', {}).get('parent_id_tag')
+
+        #         if parent_id_tag:
+        #             # Eğer parent_id_tag varsa, child-parent ilişkisini kontrol edin
+        #             check_query = "SELECT status FROM local_auth_list WHERE ocpp_tag = ? AND parent_id = ?"
+        #             cursor.execute(check_query, (ocpp_tag, parent_id_tag))
+        #             result = cursor.fetchone()
+
+        #             if not result:
+        #                 # Parent-child ilişkisinde bir tutarsızlık veya eksiklik varsa, çakışma var demektir
+        #                 return True
+
+        #     settings_database.close()
+        #     return False  # Varsayılan olarak çakışma olmadığını döner
+
+        # except sqlite3.Error as e:
+        #     print(f"Error checking local list conflict: {e}")
+        return False
+  
     # 16. SET CHARGING PROFILE
     @on(Action.SetChargingProfile)
     def on_set_charging_profile(self,connector_id:int, cs_charging_profiles:dict):
@@ -1072,9 +1260,7 @@ class ChargePoint16(cp):
                 )
             elif requested_message == MessageTrigger.heartbeat:
                 asyncio.run_coroutine_threadsafe(
-                    self.send_heartbeat(
-                        interval=self.application.settings.heartbeatInterval
-                    ),
+                    self.send_heartbeat_once(),
                     self.application.loop
                 )
             elif requested_message == MessageTrigger.meter_values:

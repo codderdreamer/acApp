@@ -1,0 +1,13 @@
+[Unit]
+Description=Update Service
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /root/update.py
+StandardOutput=inherit
+StandardError=inherit
+Restart=restart
+User=root
+
+[Install]
+WantedBy=multi-user.target

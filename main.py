@@ -34,7 +34,7 @@ def timestamped_print(color = "",*args, **kwargs):
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     args = (f"[{current_time}]",) + (color,) + args + ("\033[0m",)
     original_print(*args, **kwargs)
-    file.write(" ".join(map(str, args)) + "\n")
+    # file.write(" ".join(map(str, args)) + "\n")
 builtins.print = timestamped_print
 
 class Application():
@@ -43,8 +43,8 @@ class Application():
         os.system("service bluetooth restart")
         time.sleep(2)
         os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
-        os.system("chmod +x /root/acApp/bluetooth_set.sh")
-        os.system("/root/acApp/bluetooth_set.sh")
+        os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
+        os.system("/root/acApp/bash/bluetooth_set.sh")
         time.sleep(5)
         self.test_led = False
         self.test_charge = False
@@ -61,6 +61,7 @@ class Application():
         self.__chargePointStatus = None
         self.__error_code = None
         self.__deviceState = None
+        self.__led_state = None
         self.ocppActive = False
         self.cardType: CardType = None
         self.socketType = SocketType.Type2
@@ -71,8 +72,9 @@ class Application():
         self.meter_values_on = False
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
+        self.settings.configuration.load_configuration_from_db()
         self.bluetoothService = BluetoothService(self)
-        self.id_tag_list = self.databaseModule.get_local_list()
+        self.id_tag_list = self.databaseModule.get_default_local_list()
         self.softwareSettings = SoftwareSettings(self,logger)
         self.flaskModule = FlaskModuleThread(self).start()
         self.webSocketServer = WebSocketServer(self,logger)
@@ -91,6 +93,17 @@ class Application():
         self.chargePointStatus = ChargePointStatus.available
 
         self.create_error = False
+
+    @property
+    def led_state(self):
+        return self.__led_state
+
+    @led_state.setter
+    def led_state(self, value):
+        if self.__led_state != value:
+            print(Color.Macenta.value, "Led State:", value)
+            self.__led_state = value
+            Thread(target=self.serialPort.set_command_pid_led_control, args=(value,),daemon=True).start()
 
     def simu_test(self):
         while True:
@@ -288,7 +301,6 @@ class Application():
                 else:
                     ocpp_url = ws + self.settings.ocppSettings.domainName + self.settings.ocppSettings.path + self.settings.ocppSettings.chargePointId
                     
-                # ocpp_url = "ws://ocpp.chargehq.net/ocpp16/evseid"
                 print(Color.Green.value,"Ocpp URL:",ocpp_url)
 
                 ssl_context = None
@@ -307,19 +319,30 @@ class Application():
                 if self.settings.ocppSettings.authorizationKey:
                     auth_header = {'Authorization': f'Basic {base64.b64encode(f"{self.settings.ocppSettings.chargePointId}:{self.settings.ocppSettings.authorizationKey}".encode()).decode()}'}
 
-                
-                async with websockets.connect(ocpp_url, subprotocols=[self.ocpp_subprotocols.value], ssl=ssl_context, extra_headers=auth_header, compression=None, timeout=10) as ws:
+                # Ping interval value; 0 disables client-side ping/pong
+                ping_interval = float(self.settings.configuration.WebSocketPingInterval) if self.settings.configuration.WebSocketPingInterval else None
+
+                async with websockets.connect(
+                    ocpp_url, 
+                    subprotocols=[self.ocpp_subprotocols.value], 
+                    ssl=ssl_context, 
+                    extra_headers=auth_header, 
+                    compression=None, 
+                    timeout=10,
+                    ping_interval=ping_interval  # Ping interval added here
+                ) as ws:
                     print("Ocpp'ye bağlanmaya çalışıyor...")
                     if self.ocpp_subprotocols == OcppVersion.ocpp16:
                         self.chargePoint = ChargePoint16(self, self.settings.ocppSettings.chargePointId, ws, self.loop)
                         future = asyncio.run_coroutine_threadsafe(self.chargePoint.start(), self.loop)
                         await self.chargePoint.send_boot_notification(self.settings.ocppSettings.chargePointId, self.settings.ocppSettings.chargePointId)
+        
         except Exception as e:
             print("ocppStart Exception:", e)
             self.ocppActive = False
             if self.chargePointStatus == ChargePointStatus.charging:
-                Thread(target=self.serialPort.set_command_pid_led_control, args=(LedState.Charging,), daemon= True).start()
-            
+                self.led_state = LedState.Charging
+ 
     def ocpp_task(self):
         while True:
             if self.cardType == CardType.BillingCard:

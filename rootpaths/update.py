@@ -81,7 +81,7 @@ def update_mcu_firmware(firmware_name):
         print("MCU boot moduna geçiyor...")
         threading.Thread(target=pe_10_set,daemon=True).start()
         threading.Thread(target=pe_11_set,daemon=True).start()
-        path = "/root/acApp/" + firmware_name
+        path = "/root/acApp/mcufirmware" + firmware_name
         time.sleep(10)
         print("MCU güncelleniyor...")
         run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
@@ -189,7 +189,7 @@ def pe_11_set():
 
 def find_name_bin_file():
     try:
-        files_and_dirs = os.listdir("/root/acApp")
+        files_and_dirs = os.listdir("/root/acApp/mcufirmware")
         bin_files = [f for f in files_and_dirs if f.endswith('.bin')]
         if len(bin_files)>0:
             return bin_files[0]
@@ -204,48 +204,53 @@ time.sleep(0.1)
 set_gpio('e', 10, 1)
 time.sleep(0.5)
 set_gpio('e', 10, 0)
-while True:
-    try:
-        if not os.path.exists("/root/reset_counter.txt"):
-            create_and_write_file(0)
-        counter = int(read_file())
-        if counter != 0 and counter < 5:
-            print(f"{counter + 1}. ye deneniyor ")
-            firmware_name = find_name_bin_file()
-            if firmware_name != None:
-                if update_mcu_firmware(firmware_name) == False:
-                    create_and_write_file(counter + 1)
-                else:
-                    create_and_write_file(0)
-            else:
-                create_and_write_file(0)
-        if counter == 5:
-            create_and_write_file(0)
-            system_restart()
+create_and_write_file(0)
 
-        if is_there_internet():
-            charge = is_there_charge()
-            if charge == False:
-                ensure_repository()
-                there_is_change = check_for_git_changes()
-            if there_is_change == True:
-                mcu_firmware_changed, firmware_name = check_for_mcu_change()
-                update_firmware()
-                create_and_write_file(1)
-                if mcu_firmware_changed:
-                    if update_mcu_firmware(firmware_name) == False:
-                        if int(read_file()) == 1:
-                            create_and_write_file(2)
-                            print("Reboot ediliyor")
-                            # os.system("reboot")
-                    else:
-                        create_and_write_file(0)
+firmware_name = find_name_bin_file()
+update_mcu_firmware(firmware_name)
+
+time.sleep(100)
+
+# while True:
+#     try:
+#         counter = int(read_file())
+#         if counter != 0 and counter < 5:
+#             print(f"{counter + 1}. ye deneniyor ")
+#             firmware_name = find_name_bin_file()
+#             if firmware_name != None:
+#                 if update_mcu_firmware(firmware_name) == False:
+#                     create_and_write_file(counter + 1)
+#                 else:
+#                     create_and_write_file(0)
+#             else:
+#                 create_and_write_file(0)
+#         if counter == 5:
+#             create_and_write_file(0)
+#             system_restart()
+
+#         if is_there_internet():
+#             charge = is_there_charge()
+#             if charge == False:
+#                 ensure_repository()
+#                 there_is_change = check_for_git_changes()
+#             if there_is_change == True:
+#                 mcu_firmware_changed, firmware_name = check_for_mcu_change()
+#                 update_firmware()
+#                 create_and_write_file(1)
+#                 if mcu_firmware_changed:
+#                     if update_mcu_firmware(firmware_name) == False:
+#                         if int(read_file()) == 1:
+#                             create_and_write_file(2)
+#                             print("Reboot ediliyor")
+#                             # os.system("reboot")
+#                     else:
+#                         create_and_write_file(0)
                             
-                system_restart()
-    except Exception as e:
-        print("Exception:", e)
+#                 system_restart()
+#     except Exception as e:
+#         print("Exception:", e)
 
-    time.sleep(5)
+#     time.sleep(5)
     
 
 

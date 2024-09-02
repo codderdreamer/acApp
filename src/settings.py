@@ -25,11 +25,13 @@ class Settings():
         self.deviceSettings = DeviceSettings()
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
-        self.configuration = Configuration()
+        self.configuration = Configuration(application)
         self.diagnosticsStatusSettings = DiagnosticsStatusSettings()  # Yeni eklendi
         
         self.change_ocpp = False
         self.__websocketIp = None
+
+        
 
     @property
     def websocketIp(self):
@@ -391,7 +393,7 @@ class Settings():
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
                 if card_type == CardType.LocalPnC.value or card_type == CardType.StartStopCard.value:
-                    Thread(target=self.application.serialPort.set_command_pid_led_control, args=(LedState.StandBy,), daemon=True).start()
+                    self.application.led_state =LedState.StandBy
                 self.application.databaseModule.set_functions_enable(card_type, whether_to_open_the_qr_code_process, local_startup_whether_to_go_ocpp_background, whether_to_transfer_private_data)
                 self.application.softwareSettings.set_functions_enable()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_functions_enable())
@@ -572,7 +574,8 @@ class DeviceSettings():
         self.password = None
 
 class Configuration():
-    def __init__(self) -> None:
+    def __init__(self, application) -> None:
+        self.application = application 
         self.AllowOfflineTxForUnknownId = None
         self.AuthorizationCacheEnabled = None
         self.AuthorizeRemoteTxRequests = None
@@ -607,6 +610,28 @@ class Configuration():
         self.TransactionMessageRetryInterval = None
         self.UnlockConnectorOnEVSideDisconnect = None
         self.WebSocketPingInterval = None
+        self.LocalAuthListEnabled = None
+        self.LocalAuthListMaxLength = None
+        self.SendLocalListMaxLength = None
+        self.ReserveConnectorZeroSupported = None
+        self.ChargeProfileMaxStackLevel = None
+        self.ChargingScheduleAllowedChargingRateUnit = None
+        self.ChargingScheduleMaxPeriods = None
+        self.ConnectorSwitch3to1PhaseSupported = None
+        self.MaxChargingProfilesInstalled = None
+
+    def load_configuration_from_db(self):
+        try:
+            config_data = self.application.databaseModule.get_configuration()
+            max_keys = int(self.GetConfigurationMaxKeys)
+            print("max_keys:", max_keys)
+            for index, config in enumerate(config_data):
+                if index >= max_keys:
+                    print("Configuration keys limit exceeded.")
+                    break
+                setattr(self, config['key'], config['value'])
+        except Exception as e:
+            print("load_configuration_from_db Exception:", e)
 
 class DiagnosticsStatusSettings():
     def __init__(self) -> None:

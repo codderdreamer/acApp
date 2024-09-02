@@ -92,6 +92,7 @@ class LedState(Enum):
     FirmwareUpdate = ">"
     RcdError = "?"
     LockerError = "@"
+    DeviceInoperative = "C"
 
 
 class LockerState(Enum):

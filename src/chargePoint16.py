@@ -447,6 +447,93 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_status_notification Exception:",e)
 
+    def transaction_data_json(self):
+        try:
+            # Configurations
+            sampled_data = []
+            measurands = self.application.settings.configuration.StopTxnAlignedData.split(",")
+            print("measurands:",measurands)
+            max_length = int(self.application.settings.configuration.StopTxnAlignedDataMaxLength)
+            print("max_length:",max_length)
+            # Map the measurand strings to actual data
+            measurand_mapping = {
+                "Energy.Active.Import.Register": {
+                    "value": str(self.application.ev.energy),
+                    "measurand": Measurand.energy_active_import_register,
+                    "unit": UnitOfMeasure.kwh
+                },
+                "Voltage.L1": {
+                    "value": str(self.application.ev.voltage_L1),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L2": {
+                    "value": str(self.application.ev.voltage_L2),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.v
+                },
+                "Voltage.L3": {
+                    "value": str(self.application.ev.voltage_L3),
+                    "measurand": Measurand.voltage,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.v
+                },
+                "Current.Import.L1": {
+                    "value": str(self.application.ev.current_L1),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l1,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L2": {
+                    "value": str(self.application.ev.current_L2),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l2,
+                    "unit": UnitOfMeasure.a
+                },
+                "Current.Import.L3": {
+                    "value": str(self.application.ev.current_L3),
+                    "measurand": Measurand.current_import,
+                    "phase": Phase.l3,
+                    "unit": UnitOfMeasure.a
+                },
+                "Power.Active.Import": {
+                    "value": str(self.application.ev.power),
+                    "measurand": Measurand.power_active_import,
+                    "unit": UnitOfMeasure.kw
+                },
+                "Temperature": {
+                    "value": str(self.application.ev.temperature),
+                    "measurand": Measurand.temperature,
+                    "unit": UnitOfMeasure.celsius
+                }
+            }
+
+            # Add measurands to the sampled data list according to the configuration
+            for measurand in measurands:
+                if measurand in measurand_mapping and len(sampled_data) < max_length:
+                    sampled_data.append({
+                        "value": measurand_mapping[measurand]["value"],
+                        "context": ReadingContext.sample_periodic,
+                        "format": ValueFormat.raw,
+                        "measurand": measurand_mapping[measurand]["measurand"],
+                        "phase": measurand_mapping[measurand].get("phase", None),
+                        "location": Location.cable,
+                        "unit": measurand_mapping[measurand]["unit"]
+                    })
+
+  
+            meter_value=[{
+                "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                "sampledValue": sampled_data
+            }]
+
+            return meter_value
+        except Exception as e:
+            print("transaction_data_json Exception:", e)
+
+
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
                                     self, reason = None
@@ -465,7 +552,7 @@ class ChargePoint16(cp):
         transaction_id = self.application.process.transaction_id
         reason = None
         id_tag = self.application.process.id_tag
-        transaction_data = None
+        transaction_data = self.transaction_data_json()
         try :
             request = call.StopTransactionPayload(
                 meter_stop,

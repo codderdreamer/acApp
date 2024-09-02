@@ -187,7 +187,7 @@ class EV():
                 if self.application.ocppActive:
                     if self.application.settings.configuration.MinimumStatusDuration:
                         if time.time() - time_start > int(self.application.settings.configuration.MinimumStatusDuration):
-                            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=info),self.loop)
+                            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_status_notification(connector_id=1,error_code=self.chargePoint.error_code,status=self.chargePoint.chargePointStatus,info=None),self.loop)
                             time_start = time.time()
                 self.application.serialPort.error = False
             except Exception as e:

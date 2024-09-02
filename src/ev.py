@@ -163,6 +163,7 @@ class EV():
 
     def control_error_list(self):
         time.sleep(10)
+        time_start = time.time()
         while True:
             try:
                 # Rezervasyon süresinin dolup dolmadığını kontrol et
@@ -183,6 +184,11 @@ class EV():
                         self.application.deviceState = DeviceState.FAULT
                     else:
                         self.application.deviceState = DeviceState.FAULT
+                if self.application.ocppActive:
+                    if self.application.settings.configuration.MinimumStatusDuration:
+                        if time.time() - time_start > int(self.application.settings.configuration.MinimumStatusDuration):
+                            asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=info),self.loop)
+                            time_start = time.time()
                 self.application.serialPort.error = False
             except Exception as e:
                 print("******************************************** control_error_list Exception", e)

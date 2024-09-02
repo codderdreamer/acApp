@@ -541,8 +541,9 @@ class EV():
                         self.application.chargePoint.authorize = None
                         authorization_result = self.authorize_billing_card(value)
                         if authorization_result == AuthorizationStatus.accepted:
-                            self.application.chargePoint.handle_authorization_accepted()
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
+                    else:
+                        self.application.chargePoint.handle_authorization_failed()
                 else:
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)

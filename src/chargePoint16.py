@@ -1253,7 +1253,7 @@ class ChargePoint16(cp):
                 asyncio.run_coroutine_threadsafe(
                     self.send_status_notification(
                         connector_id=connector_id or 1,
-                        error_code=ChargePointErrorCode.noError,
+                        error_code=self.application.error_code,
                         status=self.application.chargePointStatus
                     ),
                     self.application.loop

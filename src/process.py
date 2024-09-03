@@ -403,7 +403,14 @@ class Process:
                     self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"OverPowerFailure")
                 elif value == PidErrorList.OverVoltageFailure:
                     self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
-                self.application.led_state =LedState.Fault
+                
+                #Eğer counter 3'ten büyükse ledi NeedReplugging yap
+                if self.charge_try_counter > 3:
+                    self.application.led_state =LedState.NeedReplugging
+                else:
+                    self.application.led_state =LedState.Fault
+
+
         elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
             self.application.led_state =LedState.NeedReplugging
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")

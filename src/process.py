@@ -245,14 +245,17 @@ class Process:
             try:
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
                     break
-                if self.application.settings.deviceSettings.mid_meter:
-                    print(Color.Blue.value,"Mid Meter aktif.")
-                elif self.application.settings.deviceSettings.externalMidMeter:
+                if self.application.settings.deviceSettings.externalMidMeter:
                     print(Color.Blue.value,"External Mid Meter aktif.")
+                elif self.application.settings.deviceSettings.mid_meter:
+                    print(Color.Blue.value,"Mid Meter aktif.")
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                        if time.time() - time_start > 6:
-                            print(Color.Red.value,"Mid Meter bağlanamadı!")
+                        if time.time() - time_start > 10:
+                            if self.application.settings.deviceSettings.externalMidMeter:
+                                print(Color.Red.value,"External Mid Meter bağlanamadı!")
+                            elif self.application.settings.deviceSettings.mid_meter:
+                                print(Color.Red.value,"Mid Meter bağlanamadı!")
                             self.application.deviceState = DeviceState.FAULT
                             self.application.testWebSocket.send_mid_meter_state(False)
                             break

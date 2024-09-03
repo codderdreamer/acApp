@@ -35,6 +35,17 @@ class ModbusModule:
         
         Thread(target=self.read_all_data, daemon=True).start()
 
+    def change_slave_address(self, new_slave_address):
+        self.slave_address = new_slave_address
+        self.instrument = minimalmodbus.Instrument(self.port, self.slave_address)
+        self.instrument.serial.baudrate = self.baudrate
+        self.instrument.serial.parity = self.instrument.serial.parity
+        self.instrument.serial.stopbits = self.instrument.serial.stopbits
+        self.instrument.serial.bytesize = self.instrument.serial.bytesize
+        self.instrument.mode = minimalmodbus.MODE_RTU
+        self.instrument.serial.timeout = 1 
+        print(Color.Yellow.value,f"Slave adresi değiştirildi: {self.slave_address}")
+
     @property
     def connection(self):
         return self.__connection
@@ -43,7 +54,10 @@ class ModbusModule:
     def connection(self, value):
         if self.__connection != value:
             if value == True:
-                print(Color.Blue.value,"Mid Meter Bağlandı")
+                if self.application.settings.deviceSettings.externalMidMeter:
+                    print(Color.Blue.value,"External Mid Meter Bağlandı")
+                elif self.application.settings.deviceSettings.mid_meter:
+                    print(Color.Blue.value,"Mid Meter Bağlandı")
                 self.application.testWebSocket.send_mid_meter_state(True)
                 self.firstEnergy = self.read_input_float(register_address=73)
         self.__connection = value

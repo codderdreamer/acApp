@@ -81,7 +81,8 @@ def update_mcu_firmware(firmware_name):
         print("MCU boot moduna geçiyor...")
         threading.Thread(target=pe_10_set,daemon=True).start()
         threading.Thread(target=pe_11_set,daemon=True).start()
-        path = "/root/acApp/mcufirmware" + firmware_name
+        path = "/root/acApp/mcufirmware/" + firmware_name
+        print("firmware path",path)
         time.sleep(10)
         print("MCU güncelleniyor...")
         run_command = "dfu-util -a 0 -s 0x08020000:leave -D " + path
@@ -198,7 +199,14 @@ def find_name_bin_file():
 
 
 '''
+# reset_counter 0 setle
 
+# while
+
+    # internet varsa
+        # 
+
+    # internet yoksa
 
 
 '''

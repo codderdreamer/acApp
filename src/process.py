@@ -440,8 +440,9 @@ class Process:
             elif len(self.application.serialPort.error_list) > 0:
                 time.sleep(1)
             else:
-                self.application.deviceState = DeviceState.IDLE
-                break
+                if self.application.availability == AvailabilityType.operative:
+                    self.application.deviceState = DeviceState.IDLE
+                    break
             
     def suspended_evse(self):
         print("Suspended evse function")
@@ -541,9 +542,12 @@ class Process:
             self.application.meter_values_on = False
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+            if self.application.availability == AvailabilityType.operative:
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
         else:
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+            # cihaz inoperatif durumda değilse
+            if self.application.availability == AvailabilityType.operative:
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 
         self.application.ev.start_stop_authorize = False
         if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):

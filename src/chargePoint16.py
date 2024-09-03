@@ -627,10 +627,18 @@ class ChargePoint16(cp):
                 type
             )
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
-            response = call_result.ChangeAvailabilityPayload(
-                status = AvailabilityStatus.accepted
-            )
-            LOGGER_CHARGE_POINT.info("Response:%s", response)
+            #eğer bir şarj işlemi varsa scheduled geri dön
+            if self.application.ev.charge:
+                response = call_result.ChangeAvailabilityPayload(
+                    status = AvailabilityStatus.scheduled
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response
+                )
+            else:
+                response = call_result.ChangeAvailabilityPayload(
+                    status = AvailabilityStatus.accepted
+                )
+                LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:
             print("on_change_availability Exception:",e)

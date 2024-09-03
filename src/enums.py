@@ -79,7 +79,7 @@ class Relay(Enum):
     Off = "0"
 
 class LedState(Enum):
-    StandBy = "1"
+    StandBy = "C"
     Connecting = "2"
     RfidVerified = "3"
     Charging = "4"

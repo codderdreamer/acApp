@@ -450,6 +450,7 @@ class Process:
         self.application.meter_values_on = False
         if self.charge_try_counter == 4:
             self.application.deviceState = DeviceState.FAULT
+            self.application.led_state =LedState.NeedReplugging
             return
         print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
         for value in self.application.serialPort.error_list:

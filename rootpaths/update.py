@@ -154,7 +154,6 @@ def is_there_internet():
         print("is_there_internet Exception:",e)
         return False
     
-
 def set_gpio(port, pin, value):
     command = f"gpio-test.64 w {port} {pin} {value}"
     subprocess.run(command, shell=True)
@@ -196,20 +195,44 @@ def find_name_bin_file():
     except Exception as e:
         print("list_bin_files Exception:",e)
 
-charge = False
-there_is_change = False
-set_gpio('e', 10, 0)
-set_gpio('e', 11, 0)
-time.sleep(0.1)
-set_gpio('e', 10, 1)
-time.sleep(0.5)
-set_gpio('e', 10, 0)
-create_and_write_file(0)
 
-firmware_name = find_name_bin_file()
-update_mcu_firmware(firmware_name)
+# 
 
-time.sleep(100)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# charge = False
+# there_is_change = False
+# set_gpio('e', 10, 0)
+# set_gpio('e', 11, 0)
+# time.sleep(0.1)
+# set_gpio('e', 10, 1)
+# time.sleep(0.5)
+# set_gpio('e', 10, 0)
+# create_and_write_file(0)
+
+# firmware_name = find_name_bin_file()
+# update_mcu_firmware(firmware_name)
+
+# time.sleep(100)
 
 # while True:
 #     try:
@@ -253,4 +276,8 @@ time.sleep(100)
 #     time.sleep(5)
     
 
+'''
 
+
+
+'''

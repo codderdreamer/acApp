@@ -291,7 +291,7 @@ class Process:
 
     def charging(self):
         print(Color.Yellow.value,"Cihaz şarja başlayacak...")
-        
+        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:

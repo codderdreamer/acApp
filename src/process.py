@@ -235,7 +235,7 @@ class Process:
 
             
     def charge_while(self):
-        print(Color.Yellow.value,"Cihaz şarja başlıyor...")
+        print(Color.Yellow.value,"Cihaz şarja başlıyor... *************************************************************")
         if self.application.deviceState != DeviceState.CHARGING:
             return
         time_start = time.time()
@@ -274,7 +274,6 @@ class Process:
                         break
                 elif self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                     self.application.meter_values_on = True
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
                     self.application.serialPort.get_command_pid_current()
                     self.application.serialPort.get_command_pid_voltage()
                     self.application.serialPort.get_command_pid_power(PowerType.kw)

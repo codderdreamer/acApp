@@ -956,7 +956,7 @@ class ChargePoint16(cp):
         except Exception as e:
             print("on_remote_start_transaction Exception:",e)
             
-    def set_authorize(self):
+    def set_authorize(self,id_tag):
         try :
             self.application.chargePoint.authorize = None
             request = asyncio.run_coroutine_threadsafe(
@@ -991,7 +991,7 @@ class ChargePoint16(cp):
                     print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
                     print("Yetkilendirme talebi gönderiliyor")
                     # Merkezi sisteme yetkilendirme talebi gönder
-                    Thread(target=self.set_authorize,daemon=True).start()
+                    Thread(target=self.set_authorize,args=(id_tag,),daemon=True).start()
         except Exception as e:
             print("after_remote_start_transaction Exception:",e)
             

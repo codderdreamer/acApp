@@ -7,7 +7,7 @@ import time
 import threading
 import fcntl
 import sqlite3
-import json
+import zipfile
 from logging.handlers import RotatingFileHandler
 
 
@@ -68,7 +68,6 @@ class ChargeManager:
             fcntl.flock(self.f, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self.conn = sqlite3.connect(self.db_path)
             self.cursor = self.conn.cursor()
-            logger.info("Veritabanına bağlantı başarılı.")
             return True
         except sqlite3.Error as e:
             logger.error(f"SQLite bağlantı hatası: {e}")
@@ -88,10 +87,8 @@ class ChargeManager:
         try:
             if self.conn:
                 self.conn.close()
-                logger.info("Veritabanı bağlantısı kapatıldı.")
             if self.f:
                 self.f.close()
-                logger.info("Dosya kilidi kaldırıldı.")
         except sqlite3.Error as e:
             logger.error(f"Veritabanı bağlantısını kapatma hatası: {e}")
         except Exception as e:
@@ -387,7 +384,7 @@ class MCUManager:
     MCU güncellemeleri için yardımcı sınıf.
     """
     def __init__(self):
-        self.mcu_update_failed_three_times = False
+        self.update_failed_three_times = False
 
     def set_gpio(self, port, pin, value):
         try:
@@ -1008,7 +1005,107 @@ class DatabaseManager:
             self.disconnect()
         else:
             logger.error("Veritabanı bağlantısı başarısız oldu.")
+
+class ZipManager:
+    def __init__(self, zip_file_dir, root_dir):
+        self.zip_file_dir = zip_file_dir  # Zip dosyasının olduğu dizin
+        self.zip_file_path = None  # Zip dosyasının yolu
+        self.root_dir = root_dir  # Zip dosyasının çıkarılacağı dizin
+
+    def find_zip_file(self):
+        """
+        Zip dosyasını zip_file_dir içinde bulur. Sadece bir zip dosyasının olacağı varsayılır.
+        """
+        logger.info(f"Zip dosyası aranıyor: {self.zip_file_dir}")
+        # Dizin mevcut değilse oluştur
+        if not os.path.exists(self.zip_file_dir):
+            logging.info(f"{self.zip_file_dir} dizini mevcut değil, oluşturuluyor.")
+            os.makedirs(self.zip_file_dir)
+
+        zip_files = [file for file in os.listdir(self.zip_file_dir) if file.endswith(".zip")]
+
+        if len(zip_files) == 1:
+            self.zip_file_path = os.path.join(self.zip_file_dir, zip_files[0])
+            logging.info(f"Zip dosyası bulundu: {self.zip_file_path}")
+            return True
+        elif len(zip_files) > 1:
+            logging.error("Birden fazla zip dosyası bulundu, yalnızca bir zip dosyasının olması bekleniyor.")
+            return False
+        else:
+            logging.warning("Zip dosyası bulunamadı.")
+            return False
+
+    def extract_rename_zip(self):
+        """
+        Zip dosyasını extracted_zip_dir "extracted_temp_zip" adıyla çıkarır.ve o dosyanın adını acapp_new_dir olarak değiştirir.
+        """
+        if not self.zip_file_path:
+            logging.warning("Zip dosyası bulunamadı.")
+            return False
+        
+        try:
+
+            # Zip için geçici bir dizin oluştur
+            extracted_zip_dir = os.path.join(self.root_dir, "extracted_temp_zip")
+            if not os.path.exists(extracted_zip_dir):
+                os.makedirs(extracted_zip_dir)
             
+            # Zip dosyasını çıkar
+            with zipfile.ZipFile(self.zip_file_path, 'r') as zip_ref:
+                zip_ref.extractall(extracted_zip_dir)
+                logging.info(f"{self.zip_file_path} dosyası {extracted_zip_dir} dizinine çıkarıldı.")
+
+            # extracted_zip_dir'in içersindeki acApp dizinini acapp_new_dir olarak değiştir ve /root dizinine taşı
+            extracted_acapp_dir = os.path.join(extracted_zip_dir, "acApp")
+            self.acapp_new_dir = os.path.join(self.root_dir, "acApp_new")
+            
+            # "acApp" klasörünün varlığını kontrol et
+            if not os.path.exists(extracted_acapp_dir):
+                logging.error(f"{extracted_acapp_dir} dizini bulunamadı. Dosya yapısı beklendiği gibi değil.")
+                return False
+            
+            # Eğer hedef dizin mevcutsa, önce onu sil
+            if os.path.exists(self.acapp_new_dir):
+                logging.info(f"{self.acapp_new_dir} dizini mevcut, siliniyor...")
+                shutil.rmtree(self.acapp_new_dir)
+
+
+            # Klasörü taşı (rename yerine move kullanıyoruz)
+            shutil.move(extracted_acapp_dir, self.acapp_new_dir)
+            logging.info(f"{extracted_acapp_dir} dizini başarıyla {self.acapp_new_dir} olarak taşındı.")
+                
+            # extracted_zip_dir'i sil
+            shutil.rmtree(extracted_zip_dir)
+            logging.info(f"{extracted_zip_dir} dizini temizlendi.")
+
+            return True
+        except zipfile.BadZipFile as e:
+            logging.error(f"Zip dosyası çıkarılırken hata oluştu: {e}")
+            return False
+        except Exception as e:
+            logging.error(f"Beklenmeyen bir hata oluştu: {e}")
+            return False
+        
+    def clean_zip_file(self):
+        """
+        Zip dosyasını temizler.
+        """
+        if not self.zip_file_path:
+            logging.warning("Zip dosyası bulunamadı.")
+            return True
+        
+        try:
+            os.remove(self.zip_file_path)
+            logging.info(f"{self.zip_file_path} dosyası temizlendi.")
+            return True
+        except FileNotFoundError as e:
+            logging.error(f"Zip dosyası silinirken hata oluştu: {e}")
+            return False
+        except Exception as e:
+            logging.error(f"Beklenmeyen bir hata oluştu: {e}")
+            return False
+          
+
 def perform_final_operations(file_manager, git_manager):
     # Harici betik çalıştırma işlemi
     run_external_script_status = file_manager.run_external_script(os.path.join(git_manager.acapp_new_dir, "rootpaths", "external_run.py"))
@@ -1084,88 +1181,159 @@ if __name__ == '__main__':
     file_manager = FileManager(database_manager, "/root")
     mcu_manager = MCUManager()
     charge_manager = ChargeManager()
+    zip_manager = ZipManager("/root/acAppFirmwareFiles", git_manager.root_dir)
     mcu_update_fail_erro_wait_time = 86400
 
     while True:
-        logger.info(f"mcu_update_failed_three_times: {mcu_manager.mcu_update_failed_three_times}")
         
-        if mcu_manager.mcu_update_failed_three_times:
+        if mcu_manager.update_failed_three_times:
             # MCU güncellemesi başarısız olduysa 24 saat hiç bir işlem yapma
-            logger.info(f"MCU güncellemesi başarısız oldu, 24 saat bekleniyor.")
+            logger.info(f"Güncelleme 3 kez başarısız oldu. {mcu_update_fail_erro_wait_time} saniye bekleniyor.")
             time.sleep(mcu_update_fail_erro_wait_time)
-            mcu_manager.mcu_update_failed_three_times = False
+            mcu_manager.update_failed_three_times = False
+        
+         # Şarj işlemi devam ediyorsa güncelleme yapma
+        if charge_manager.is_there_charge():
+            logger.info("Şarj işlemi devam ettiği için güncelleme yapılmayacak.")
+            continue
 
-        logger.info("Yeni güncelleme kontrolü için 60 saniye bekleniyor...")
+
         sleep_time = 60  # Her döngüde 60 saniye beklet
+
+        logger.info("Yeni güncelleme kontrolü yapılmadan önce 60 saniye bekleniyor...")
         time.sleep(sleep_time)
+        
+        # Zip dosyasını zip_file_dir içinde bul
+        zip_file_path = zip_manager.find_zip_file()
         # İnternet bağlantısını kontrol et
-        if network_manager.is_internet_available():
-            # Git değişikliklerini kontrol et
-            if git_manager.check_for_git_changes():
-                # CWD'yi root dizinine ayarla
-                os.chdir(git_manager.root_dir)
+        if zip_file_path:
+            logger.info(f"{zip_manager.zip_file_path} bulundu, zip dosyasından güncelleme yapılacak.")
+            # CWD'yi root dizinine ayarla
+            os.chdir(git_manager.root_dir)
 
-                # Şarj işlemi devam ediyorsa güncelleme yapma
-                if charge_manager.is_there_charge():
-                    logger.info("Şarj işlemi devam ettiği için güncelleme yapılmayacak.")
-                    continue
+            # Servisi durdur
+            service_manager.stop_service()
 
-                # Servisi durdur
-                service_manager.stop_service()
+            # Eski dizinleri temizle
+            git_manager.clean_old_directories()
 
-                # Eski dizinleri temizle
+            # acApp dizinini yedekle
+            git_manager.backup_acapp_directory()
+
+            # Zip dosyasını çıkar
+            zip_extract_status = zip_manager.extract_rename_zip()
+
+            database_update_status = file_manager.update_database_files_in_new_repo(git_manager.acapp_new_dir)
+            if not database_update_status:
+                logger.error("Veritabanı dosyaları güncellenirken hata oluştu.")
+                mcu_manager.update_failed_three_times = True
+                service_manager.start_service("acapp.service")
                 git_manager.clean_old_directories()
+                continue
+                
+            # Yeni ve eski firmware dosyasını karşılaştır
+            old_firmware_dir = os.path.join(git_manager.acapp_old_dir, "mcufirmware")
+            new_firmware_dir = os.path.join(git_manager.acapp_new_dir, "mcufirmware")
 
-                # acApp dizinini yedekle
-                git_manager.backup_acapp_directory()
-
-                # Yeni repoyu klonla
-                git_manager.clone_new_repo()
-
-                database_update_status = file_manager.update_database_files_in_new_repo(git_manager.acapp_new_dir)
-                if not database_update_status:
-                    logger.error("Veritabanı dosyaları güncellenirken hata oluştu.")
-                    continue
-                    
-                # Yeni ve eski firmware dosyasını karşılaştır
-                old_firmware_dir = os.path.join(git_manager.acapp_old_dir, "mcufirmware")
-                new_firmware_dir = os.path.join(git_manager.acapp_new_dir, "mcufirmware")
-
-                if mcu_manager.compare_and_update_firmware(old_firmware_dir, new_firmware_dir):
-                    logger.info("Firmware güncelleme kontrolü yapıldı.")
-                    mcu_manager.mcu_update_failed_three_times = False
-                else:
-                    mcu_manager.mcu_update_failed_three_times = True # 24 saat sonra tekrar dene
-                    logger.info("Firmware güncelleme başarısız oldu. 24 saat sonra tekrar denenecek.")
-                    if service_manager.start_service("acapp.service"):
-                        logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
-                        git_manager.clean_old_directories()
-                    continue
-
-                # Son işlemleri yap
-                final_operations_status = perform_final_operations(file_manager, git_manager)
-                if not final_operations_status:
-                    logger.error("Son işlemler başarısız oldu. Eski repo ve dosyalar geri yüklenecek.")
-                    restore_and_restart_service(file_manager, git_manager, service_manager)
-                    mcu_manager.mcu_update_failed_three_times = True
-                    git_manager.clean_old_directories()
-                    continue
-
-
-                # Servisi başlat ve geri dönen değeri kontrol et
+            if mcu_manager.compare_and_update_firmware(old_firmware_dir, new_firmware_dir):
+                logger.info("Firmware güncelleme kontrolü yapıldı.")
+                mcu_manager.update_failed_three_times = False
+            else:
+                mcu_manager.update_failed_three_times = True # 24 saat sonra tekrar dene
+                logger.info("Firmware güncelleme başarısız oldu. 24 saat sonra tekrar denenecek.")
                 if service_manager.start_service("acapp.service"):
                     logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
                     git_manager.clean_old_directories()
+                continue
+
+            # Son işlemleri yap
+            final_operations_status = perform_final_operations(file_manager, git_manager)
+            if not final_operations_status:
+                logger.error("Son işlemler başarısız oldu. Eski repo ve dosyalar geri yüklenecek.")
+                restore_and_restart_service(file_manager, git_manager, service_manager)
+                mcu_manager.update_failed_three_times = True
+                git_manager.clean_old_directories()
+                continue
+            else:
+                # Servisi başlat ve geri dönen değeri kontrol et
+                if service_manager.start_service("acapp.service"):
+                    logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
+                    # Eski dizinleri temizle
+                    git_manager.clean_old_directories()
+                    # Zip dosyasını temizle
+                    zip_manager.clean_zip_file()
+
                 else:
                     logger.error("Servis başlatılamadı ya da PID değişti, yeni repo sorunlu olabilir. Eski repo geri yüklenecek.")
                     restore_and_restart_service(file_manager, git_manager, service_manager)
-                    mcu_manager.mcu_update_failed_three_times = True
+                    mcu_manager.update_failed_three_times = True
                     git_manager.clean_old_directories()
                     continue
-
-            else:
-                logger.info("Git'te yeni bir değişiklik yok, işlem yapılmadı.")
+        
         else:
-            logger.error("İnternet bağlantısı yok, işlem sonlandırıldı.")
+            if network_manager.is_internet_available():
+                # Git değişikliklerini kontrol et
+                if git_manager.check_for_git_changes():
+                    # CWD'yi root dizinine ayarla
+                    os.chdir(git_manager.root_dir)
+
+                    # Servisi durdur
+                    service_manager.stop_service()
+
+                    # Eski dizinleri temizle
+                    git_manager.clean_old_directories()
+
+                    # acApp dizinini yedekle
+                    git_manager.backup_acapp_directory()
+
+                    # Yeni repoyu klonla
+                    git_manager.clone_new_repo()
+
+                    database_update_status = file_manager.update_database_files_in_new_repo(git_manager.acapp_new_dir)
+                    if not database_update_status:
+                        logger.error("Veritabanı dosyaları güncellenirken hata oluştu.")
+                        mcu_manager.update_failed_three_times = True
+                        service_manager.start_service("acapp.service")
+                        git_manager.clean_old_directories()
+                        continue
+                        
+                    # Yeni ve eski firmware dosyasını karşılaştır
+                    old_firmware_dir = os.path.join(git_manager.acapp_old_dir, "mcufirmware")
+                    new_firmware_dir = os.path.join(git_manager.acapp_new_dir, "mcufirmware")
+
+                    if mcu_manager.compare_and_update_firmware(old_firmware_dir, new_firmware_dir):
+                        logger.info("Firmware güncelleme kontrolü yapıldı.")
+                        mcu_manager.update_failed_three_times = False
+                    else:
+                        mcu_manager.update_failed_three_times = True # 24 saat sonra tekrar dene
+                        logger.info("Firmware güncelleme başarısız oldu. 24 saat sonra tekrar denenecek.")
+                        if service_manager.start_service("acapp.service"):
+                            logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
+                            git_manager.clean_old_directories()
+                        continue
+
+                    # Son işlemleri yap
+                    final_operations_status = perform_final_operations(file_manager, git_manager)
+                    if not final_operations_status:
+                        logger.error("Son işlemler başarısız oldu. Eski repo ve dosyalar geri yüklenecek.")
+                        restore_and_restart_service(file_manager, git_manager, service_manager)
+                        mcu_manager.update_failed_three_times = True
+                        git_manager.clean_old_directories()
+                        continue
+                    else:
+                          # Servisi başlat ve geri dönen değeri kontrol et
+                        if service_manager.start_service("acapp.service"):
+                            logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
+                            git_manager.clean_old_directories()
+                        else:
+                            logger.error("Servis başlatılamadı ya da PID değişti, yeni repo sorunlu olabilir. Eski repo geri yüklenecek.")
+                            restore_and_restart_service(file_manager, git_manager, service_manager)
+                            mcu_manager.update_failed_three_times = True
+                            git_manager.clean_old_directories()
+                            continue
+                else:
+                    logger.info("Git'te yeni bir değişiklik yok, işlem yapılmadı.")
+            else:
+                logger.error("İnternet bağlantısı yok, işlem sonlandırıldı.")
         
                 

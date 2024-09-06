@@ -1350,21 +1350,33 @@ class ChargePoint16(cp):
         self.application.databaseModule.set_firmware_status(FirmwareStatus.downloading.value, str(datetime.now()))
         
         asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloading), self.application.loop)
-        filename = "/root/new_firmware.zip"
-        exit_status = os.system(f"curl {location} --output {filename}")
+        
+        file_path = "/root/acAppFirmwareFiles"
+    
+        # clear the directory
+        os.system(f"rm -rf {file_path}/*")
+        
+        # Extract the filename from the URL
+        filename = location.split("/")[-1]
+        
+        # Construct the full path where the file will be saved
+        full_file_path = os.path.join(file_path, filename)
+        
+        # Download the file and save it to the target directory
+        exit_status = os.system(f"curl {location} -o {full_file_path}")
+
         if exit_status == 0:
             print("Dosya başarıyla indirildi.")
-            with zipfile.ZipFile(filename, 'r') as zip_ref:
-                zip_ref.extractall('/root')
-            print("Dosya başarıyla unzip yapıldı.")
-            subprocess.run(["/bin/bash", "/root/update.sh"])
             
-            # Set status to 'downloaded'
+            
             self.application.databaseModule.set_firmware_status(FirmwareStatus.downloaded.value, str(datetime.now()))
             asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloaded), self.application.loop)
+
+            self.application.databaseModule.set_firmware_status(FirmwareStatus.installing.value, str(datetime.now()))
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.install_rebooting), self.application.loop)
+            
         else:
             print("Hata: Dosya indirilirken bir sorun oluştu.")
-            
             # Set status to 'download_failed'
             self.application.databaseModule.set_firmware_status(FirmwareStatus.download_failed.value, str(datetime.now()))
             asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.download_failed), self.application.loop)

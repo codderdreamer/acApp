@@ -382,7 +382,6 @@ class Process:
     def delete_charge(self):
         try:
             print("**************** şarj geçmişi siliniyor ...")
-            self.application.databaseModule.set_charge("False", "", "")
             self.application.ev.start_stop_authorize = False
             if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
                 self.application.chargePoint.authorize = None
@@ -457,9 +456,11 @@ class Process:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted)
         
         if (self.application.cardType != CardType.BillingCard):
+            self.application.databaseModule.set_charge("False", "", "")
             self.delete_charge()
         else:
             if self.application.info != "Offline":
+                self.application.databaseModule.set_charge("False", "", "")
                 self.delete_charge()
 
         self.application.serialPort.set_command_pid_cp_pwm(0)

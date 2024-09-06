@@ -249,6 +249,7 @@ class ChargePoint16(cp):
         interval: int
         """
         try :
+            print("--------------- self.initilly",self.initilly)
             if self.initilly:
                 Thread(target=self.send_stop_thread,daemon=True).start()
                 self.application.process.delete_charge()

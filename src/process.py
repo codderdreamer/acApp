@@ -398,6 +398,7 @@ class Process:
             print("delete_charge Exception:",e)
 
     def fault(self):
+        print("Fauld Process")
         if PidErrorList.RcdTripError in self.application.serialPort.error_list:
             self.application.led_state =LedState.RcdError
             self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")

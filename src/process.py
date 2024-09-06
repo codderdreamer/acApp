@@ -134,8 +134,8 @@ class Process:
                 if value == PidErrorList.RcdInitializeError:
                     return
 
-        if self.application.chargePointStatus == ChargePointStatus.faulted:
-            return
+        # if self.application.chargePointStatus == ChargePointStatus.faulted:
+        #     return
 
         if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
             self.application.deviceState = DeviceState.SUSPENDED_EV

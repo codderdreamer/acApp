@@ -344,7 +344,6 @@ class Application():
                 self.led_state = LedState.Charging
  
     def ocpp_task(self):
-        time.sleep(10)
         while True:
             if self.cardType == CardType.BillingCard:
                 res = loop.run_until_complete(self.ocppStart())

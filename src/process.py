@@ -368,6 +368,22 @@ class Process:
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
 
+    def delete_charge(self):
+        try:
+            self.application.databaseModule.set_charge("False", "", "")
+            self.application.ev.start_stop_authorize = False
+            if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
+                self.application.chargePoint.authorize = None
+            self.application.ev.card_id = ""
+            self.application.ev.id_tag = None
+            self.application.ev.charge = False
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
+            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+                    self.application.meter_values_on = False
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+        except Exception as e:
+            print("delete_charge Exception:",e)
+
     def fault(self):
         if PidErrorList.RcdTripError in self.application.serialPort.error_list:
             self.application.led_state =LedState.RcdError
@@ -427,17 +443,12 @@ class Process:
             self.application.led_state =LedState.Fault
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted)
         
-        self.application.databaseModule.set_charge("False", "", "")
-        self.application.ev.start_stop_authorize = False
-        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
-            self.application.chargePoint.authorize = None
-        self.application.ev.card_id = ""
-        self.application.ev.id_tag = None
-        self.application.ev.charge = False
-        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
-        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-                self.application.meter_values_on = False
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+        if self.application.cardType != CardType.BillingCard:
+            self.delete_charge()
+        else:
+            if not self.application.chargePoint.initilly:
+                self.delete_charge()
+
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)
         self.application.serialPort.set_command_pid_relay_control(Relay.Off)

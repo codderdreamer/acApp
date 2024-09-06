@@ -956,7 +956,26 @@ class ChargePoint16(cp):
         except Exception as e:
             print("on_remote_start_transaction Exception:",e)
             
-    
+    def set_authorize(self):
+        try :
+            self.application.chargePoint.authorize = None
+            request = asyncio.run_coroutine_threadsafe(
+                self.application.chargePoint.send_authorize(id_tag=id_tag), 
+                self.application.loop
+            )
+            response = request.result()
+            id_tag_info = response.id_tag_info
+            status = id_tag_info['status']
+            if status == AuthorizationStatus.accepted.value:
+                self.application.ev.id_tag = id_tag
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
+            else:
+                print(Color.Red.value,"Yetkilendirme yapılamadı!")
+                self.application.ev.id_tag = None
+        except Exception as e:
+            print("set_authorize Exception:",e)
                 
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
@@ -972,23 +991,7 @@ class ChargePoint16(cp):
                     print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
                     print("Yetkilendirme talebi gönderiliyor")
                     # Merkezi sisteme yetkilendirme talebi gönder
-                    self.application.chargePoint.authorize = None
-                    # request = asyncio.run_coroutine_threadsafe(
-                    #     self.application.chargePoint.send_authorize(id_tag=id_tag), 
-                    #     self.application.loop
-                    # )
-                    request = self.send_authorize(id_tag=id_tag)
-                    response = request.result()
-                    id_tag_info = response.id_tag_info
-                    status = id_tag_info['status']
-                    if status == AuthorizationStatus.accepted.value:
-                        self.application.ev.id_tag = id_tag
-                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                        self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                        Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
-                    else:
-                        print(Color.Red.value,"Yetkilendirme yapılamadı!")
-                        self.application.ev.id_tag = None
+                    Thread(target=self.set_authorize,daemon=True).start()
         except Exception as e:
             print("after_remote_start_transaction Exception:",e)
             

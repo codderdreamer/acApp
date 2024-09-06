@@ -206,6 +206,7 @@ class Application():
                 Thread(target=self.process.suspended_ev,daemon=True).start()
             
             elif self.__deviceState == DeviceState.OFFLINE:
+                self.control_C_B = False
                 pass
 
 

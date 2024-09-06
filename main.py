@@ -204,6 +204,9 @@ class Application():
 
             elif self.__deviceState == DeviceState.SUSPENDED_EV:
                 Thread(target=self.process.suspended_ev,daemon=True).start()
+            
+            elif self.__deviceState == DeviceState.OFFLINE:
+                pass
 
 
                 

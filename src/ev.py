@@ -69,7 +69,8 @@ class EV():
             
     def ocpp_offline(self):
         print(Color.Red.value, "Ocpp Offline")
-        self.application.led_state =LedState.DeviceOffline
+        self.application.led_state = LedState.DeviceOffline
+        self.application.deviceState = DeviceState.OFFLINE
         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted,"Offline")
 
     def ocpp_online(self):

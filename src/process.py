@@ -14,6 +14,11 @@ class Process:
         self.locker_error = False
         self.charge_try_counter = 0
 
+        self.transaction_id = self.application.databaseModule.get_charge()["transaction_id"]
+        self.id_tag = self.application.databaseModule.get_charge()["id_tag"]
+        self.initially_charge = self.application.databaseModule.get_charge()["charge"] == "True"
+        print("********************************** self.initially_charge",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
+
     def relay_control(self,relay:Relay):
         counter = 0
         while True:

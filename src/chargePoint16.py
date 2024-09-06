@@ -973,10 +973,11 @@ class ChargePoint16(cp):
                     print("Yetkilendirme talebi gönderiliyor")
                     # Merkezi sisteme yetkilendirme talebi gönder
                     self.application.chargePoint.authorize = None
-                    request = asyncio.run_coroutine_threadsafe(
-                        self.application.chargePoint.send_authorize(id_tag=id_tag), 
-                        self.application.loop
-                    )
+                    # request = asyncio.run_coroutine_threadsafe(
+                    #     self.application.chargePoint.send_authorize(id_tag=id_tag), 
+                    #     self.application.loop
+                    # )
+                    request = self.send_authorize(id_tag=id_tag)
                     response = request.result()
                     id_tag_info = response.id_tag_info
                     status = id_tag_info['status']

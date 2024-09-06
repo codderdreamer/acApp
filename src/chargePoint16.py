@@ -37,6 +37,8 @@ class ChargePoint16(cp):
         self.remote_start_stop_status = None
         self.server_time = None
 
+        self.initilly = True
+
     def reboot(self):
         time.sleep(7)
         os.system("reboot")
@@ -228,12 +230,8 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_firmware_status_notification Exception:",e)
 
-    # 6. HEARTBEAT
-    async def send_heartbeat(self):
-        """
-        interval: int
-        """
-        try :
+    def send_stop_thread(self):
+        try:
             if self.application.databaseModule.get_charge()["charge"] == "True" and self.application.cardType == CardType.BillingCard:
                 self.application.process.transaction_id = self.application.databaseModule.get_charge()["transaction_id"]
                 self.application.process.id_tag = self.application.databaseModule.get_charge()["id_tag"]
@@ -241,6 +239,19 @@ class ChargePoint16(cp):
                 time.sleep(1)
                 self.application.process.transaction_id = None
                 self.application.process.id_tag = None
+        except Exception as e:
+            print("send_stop_thread Exception:",e)
+
+    # 6. HEARTBEAT
+    async def send_heartbeat(self):
+        """
+        interval: int
+        """
+        try :
+            if self.initilly:
+                Thread(target=self.send_stop_thread,daemon=True).start()
+                self.initilly = False
+            
             if self.application.cardType == CardType.BillingCard:
                 for request in self.application.request_list:
                     print("Requested List")

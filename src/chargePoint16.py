@@ -159,7 +159,12 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
-                self.application.deviceState = DeviceState.IDLE
+                if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                    self.application.deviceState = DeviceState.IDLE
+                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    self.application.deviceState = DeviceState.CONNECTED
+                elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    self.application.deviceState = DeviceState.CHARGING
                 self.server_time = response.current_time
                 self.application.ocppActive = True
                 if self.application.availability == AvailabilityType.operative:

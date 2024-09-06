@@ -254,6 +254,7 @@ class ChargePoint16(cp):
                 Thread(target=self.send_stop_thread,daemon=True).start()
                 self.application.process.delete_charge()
                 self.initilly = False
+                print("---------------------- self.initilly = False")
             
             if self.application.cardType == CardType.BillingCard:
                 for request in self.application.request_list:

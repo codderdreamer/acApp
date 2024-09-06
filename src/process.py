@@ -388,7 +388,6 @@ class Process:
             self.application.ev.card_id = ""
             self.application.ev.id_tag = None
             self.application.ev.charge = False
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.faulted)
             if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
                     self.application.meter_values_on = False
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)

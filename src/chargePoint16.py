@@ -43,14 +43,10 @@ class ChargePoint16(cp):
 
     def calculate_time(self):
         try:
-            print("self.server_time",self.server_time)
-            # if isinstance(self.server_time, str):
-            #     self.server_time = datetime.strptime(self.server_time, '%Y-%m-%dT%H:%M:%S.%fZ')
-
+            server_time_datetime = datetime.strptime(self.server_time, '%Y-%m-%dT%H:%M:%S.%fZ')  
             current_time = datetime.utcnow()
-            time_difference = current_time - self.server_time
-            adjusted_time = self.server_time + time_difference
-
+            time_difference = current_time - server_time_datetime
+            adjusted_time = server_time_datetime + time_difference
             return adjusted_time.strftime('%Y-%m-%dT%H:%M:%S') + "Z"
         except Exception as e:
             print("calculate_time Exception:", e)

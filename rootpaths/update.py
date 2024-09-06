@@ -8,7 +8,10 @@ import threading
 import fcntl
 import sqlite3
 import zipfile
+import serial
+import threading
 from logging.handlers import RotatingFileHandler
+from enum import Enum
 
 
 # Logger yapılandırması
@@ -29,6 +32,81 @@ def setup_logger(log_file="/root/update_manager.log", log_level=logging.INFO):
     return logger
 
 logger = setup_logger()
+
+
+
+class LedState(Enum):
+    FirmwareUpdate = ">"
+
+class LedManager:
+    def __init__(self, serial_port_path, baud_rate=115200):
+        """
+        LedManager sınıfı, LED durumlarını günceller ve thread'i başlatıp durdurur.
+        :param serial_port_path: Seri port yolu.
+        :param baud_rate: Seri port hızı, varsayılan 115200.
+        """
+        self.serial = serial.Serial(serial_port_path, baud_rate, timeout=1)
+        self.stx = b'\x02'
+        self.lf = b'\n'
+        self.set_command = 'S'
+        self.pid_led_control = "L"
+        self.led_state = LedState.FirmwareUpdate
+        self.thread = None
+        self.running = False  # Thread'in çalışıp çalışmadığını kontrol eden bayrak
+
+    def calculate_checksum(self, data):
+        checksum = int.from_bytes(self.stx, "big")
+        for i in data:
+            checksum += ord(i)
+        checksum = checksum % 256
+        checksum = str(checksum)
+        return checksum.zfill(3)
+
+    def set_led_state(self, led_state):
+        """
+        LED durumunu günceller ve seri port üzerinden gönderir.
+        :param led_state: Yeni LED durumu (LedState)
+        """
+        try:
+            parameter_data = "002"
+            connector_id = "1"
+            data = self.set_command + self.pid_led_control + parameter_data + connector_id + led_state.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+
+            # Seri port üzerinden gönder
+            self.serial.write(send_data)
+        except Exception as e:
+            print(f"LED durumu güncellenirken hata oluştu: {e}")
+
+    def led_thread_function(self):
+        """
+        LED durumunu düzenli aralıklarla güncelleyen thread fonksiyonu.
+        """
+        while self.running:
+            self.set_led_state(self.led_state)
+            time.sleep(2)  # Her 10 saniyede bir LED durumu gönderiliyor
+
+    def start_led_thread(self):
+        """
+        LED güncellemeleri için thread'i başlatır.
+        """
+        if not self.running:
+            self.running = True
+            self.thread = threading.Thread(target=self.led_thread_function)
+            self.thread.start()
+            print("LED güncelleme thread'i başlatıldı.")
+
+    def stop_led_thread(self):
+        """
+        LED güncellemeleri için thread'i durdurur.
+        """
+        if self.running:
+            self.running = False
+            if self.thread is not None:
+                self.thread.join()
+                print("LED güncelleme thread'i durduruldu.")
+
 class CommandRunner:
     """
     OS komutlarını çalıştırmak için yardımcı sınıf
@@ -147,14 +225,20 @@ class ServiceManager:
     @staticmethod
     def stop_service(service_name="acapp.service"):
         logger.info(f"{service_name} servisi durduruluyor...")
-        CommandRunner.run_os_command(f"systemctl stop {service_name}")
-        logger.info(f"{service_name} servisi durduruldu.")
+        result = subprocess.run(['systemctl', 'stop', service_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        if result.returncode == 0:
+            logger.info(f"{service_name} servisi başarıyla durduruldu.")
+            return True
+        else:
+            logger.error(f"{service_name} servisi durdurulamadı: {result.stderr}")
+            return False
+
     
     @staticmethod
     def start_service(service_name="acapp.service"):
-        CommandRunner.run_os_command(f"systemctl start {service_name}")
-        logger.info(f"{service_name} servisi başlatıldı. Kontroller için 10 saniye bekleniyor...")
-        time.sleep(10)
+        subprocess.run(['systemctl', 'start', service_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        led_manager.stop_led_thread()
+        logger.info(f"{service_name} servisi başlatıldı. Kontroller için 25 saniye bekleniyor...")
         if ServiceManager.is_service_active(service_name):
             # PID izleme sadece başlangıçtan sonra
             pid_not_changed = ServiceManager.monitor_service_pid(service_name)
@@ -163,11 +247,36 @@ class ServiceManager:
                 return  True  # Başarılı
             else:
                 logger.error(f"{service_name} servisi başlatıldı ancak PID değişti! Sorun olabilir.")
+                
+                # LED durumunu güncelle
+                led_manager.stop_led_thread()
+                return False
+        else:
+            logger.error(f"{service_name} servisi başlatılamadı!")
+            led_manager.stop_led_thread()
+            return False
+    
+    @staticmethod
+    def restart_service(service_name):
+        """
+        Servisi yeniden başlatır ve servisin başarılı şekilde çalıştığını kontrol eder.
+        """
+        subprocess.run(['systemctl', 'restart', service_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        logger.info(f"{service_name} servisi yeniden başlatıldı. Kontroller için 25 saniye bekleniyor...")
+        time.sleep(10)  # Kontrol öncesi 10 saniye bekle
+
+        if ServiceManager.is_service_active(service_name):
+            # PID izleme sadece başlangıçtan sonra
+            pid_not_changed = ServiceManager.monitor_service_pid(service_name)
+            
+            if pid_not_changed:
+                return True  # Başarılı
+            else:
+                logger.error(f"{service_name} servisi başlatıldı ancak PID değişti! Sorun olabilir.")
                 return False
         else:
             logger.error(f"{service_name} servisi başlatılamadı!")
             return False
-        
     @staticmethod
     def is_service_active(service_name="acapp.service"):
         """
@@ -370,6 +479,9 @@ class GitManager:
         """
         try:
             logger.info(f"Git reposu {self.repo_url} klonlanıyor...")
+            # Change directory
+            os.chdir(self.root_dir)
+
             result = subprocess.run(['git', 'clone', self.repo_url, self.acapp_new_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
             if result.returncode == 0:
@@ -383,8 +495,9 @@ class MCUManager:
     """
     MCU güncellemeleri için yardımcı sınıf.
     """
-    def __init__(self):
+    def __init__(self, led_manager):
         self.update_failed_three_times = False
+        self.led_manager = led_manager
 
     def set_gpio(self, port, pin, value):
         try:
@@ -434,6 +547,7 @@ class MCUManager:
         MCU'nun firmware'ini günceller.
         """
         try:
+            led_manager.stop_led_thread()
             logger.info("MCU boot moduna geçiyor...")
             # GPIO ayarları için ayrı thread'ler başlat
             threading.Thread(target=self.pe_10_set, daemon=True).start()
@@ -461,6 +575,8 @@ class MCUManager:
             self.set_gpio('e', 10, 1)
             time.sleep(0.5)
             self.set_gpio('e', 10, 0)
+
+            led_manager.start_led_thread()
 
             # Yükleme başarılı mı kontrol et
             if "File downloaded successfully" in log_output:
@@ -1129,24 +1245,26 @@ def perform_final_operations(file_manager, git_manager):
         logger.error("Repo taşıma işlemi başarısız oldu.")
         return False  # Repo geri yüklemesi yapıldığı için işlem başarısız.
     
-    logger.info("Repo taşıma işlemi başarıyla tamamlandı.")
-    
-    return True  # Final işlemleri başarıyla tamamlandı.  
+    # Eğer tüm işlemler başarılıysa true döner
+    if final_copy_for_repo_status and final_copy_for_root_dir_status and run_external_script_status:
+        logger.info("Repo taşıma işlemi başarıyla tamamlandı.")
+        return True
+    else:
+        return False
 
-def restore_and_restart_service(file_manager, git_manager, service_manager):
+def restore_and_restart_service(file_manager, git_manager):
     """
     Servis başlatılamazsa eski repoyu ve rootpaths yedeğini geri yükler ve servisi yeniden başlatır.
     
     Args:
         file_manager: Dosya yönetimi işlemlerini yöneten sınıf.
         git_manager: Git işlemlerini yöneten sınıf.
-        service_manager: Servis işlemlerini yöneten sınıf.
+        ServiceManager: Servis işlemlerini yöneten sınıf.
     
     Returns:
         bool: Eğer tüm işlemler başarıyla tamamlandıysa True, aksi halde False döner.
     """
-    logger.error("Servis başlatılamadı ya da PID değişti, yeni repo sorunlu olabilir. Eski repo geri yüklenecek.")
-    
+  
     # Eski repoyu geri yükleme
     restore_repo_status = file_manager.restore_old_repo(git_manager.acapp_dir, git_manager.acapp_old_dir)
     if not restore_repo_status:
@@ -1163,45 +1281,83 @@ def restore_and_restart_service(file_manager, git_manager, service_manager):
     else:
         logger.info("Yedek rootpaths dizini başarıyla geri yüklendi.")
 
+
+    #MCU Firmware güncelleme kontrolü
+    old_firmware_dir = os.path.join(git_manager.acapp_old_dir, "mcufirmware")
+
+    # Eski firmware dosyasını yükleyip güncelleme kontrolü yap
+    if mcu_manager.retry_mcu_update(old_firmware_dir, 3):
+        logger.info("Eski firmware dosyası yüklendi ve güncelleme kontrolü yapıldı.")
+    else:
+        logger.error("Eski firmware dosyası yüklenemedi.")
+        return False
+
     # Servisi tekrar başlatma
-    if service_manager.start_service("acapp.service"):
+    if ServiceManager.start_service():
         logger.info("Eski repo başarıyla başlatıldı ve sorunsuz çalışıyor.")
         return True
     else:
-        logger.error("Servis başlatılamadı ya da PID değişti, potansiyel sorun.")
+        logger.error("Servis başlatılamadı ya da PID değişti, potansiyel repo sorunları olabilir.")
         return False
+    
     
 
 if __name__ == '__main__':
     repo_url = "git@github.com:codderdreamer/acApp.git"
     git_manager = GitManager(repo_url)
-    service_manager = ServiceManager()
     network_manager = NetworkManager()
     database_manager = DatabaseManager()
     file_manager = FileManager(database_manager, "/root")
-    mcu_manager = MCUManager()
+    serial_port_path = "/dev/ttyS2"
+    led_manager = LedManager(serial_port_path)
+    mcu_manager = MCUManager(led_manager)
     charge_manager = ChargeManager()
     zip_manager = ZipManager("/root/acAppFirmwareFiles", git_manager.root_dir)
     mcu_update_fail_erro_wait_time = 86400
+    # LedManager oluşturun
 
     while True:
         
+         # Led threadini durdur
+        led_manager.stop_led_thread()
+
+        # Eski dizinleri temizlemeden önce kontrol et böyle bir dizin var mı
+        if os.path.exists(git_manager.acapp_old_dir):
+            logger.error(f"{git_manager.acapp_old_dir} dizini mevcut, eski repo yükleniyor.")
+            led_manager.start_led_thread()
+                # Servisi durdur
+            if not ServiceManager.stop_service():
+                logger.error("Servis durdurulamadı.")
+                continue
+            # Eski repoyu geri yükleme
+            restore_and_restart_service(file_manager, git_manager)
+            # Eski dizinleri temizle
+            git_manager.clean_old_directories()
+
+            # Restart update.service
+            ServiceManager.restart_service("update.service")
+
+            continue
+
         if mcu_manager.update_failed_three_times:
             # MCU güncellemesi başarısız olduysa 24 saat hiç bir işlem yapma
             logger.info(f"Güncelleme 3 kez başarısız oldu. {mcu_update_fail_erro_wait_time} saniye bekleniyor.")
             time.sleep(mcu_update_fail_erro_wait_time)
             mcu_manager.update_failed_three_times = False
         
-         # Şarj işlemi devam ediyorsa güncelleme yapma
-        if charge_manager.is_there_charge():
-            logger.info("Şarj işlemi devam ettiği için güncelleme yapılmayacak.")
-            continue
-
-
         sleep_time = 60  # Her döngüde 60 saniye beklet
 
         logger.info("Yeni güncelleme kontrolü yapılmadan önce 60 saniye bekleniyor...")
         time.sleep(sleep_time)
+
+        
+       
+
+        # Şarj işlemi devam ediyorsa güncelleme yapma
+        if charge_manager.is_there_charge():
+            logger.info("Şarj işlemi devam ettiği için güncelleme yapılmayacak.")
+            continue
+
         
         # Zip dosyasını zip_file_dir içinde bul
         zip_file_path = zip_manager.find_zip_file()
@@ -1212,10 +1368,14 @@ if __name__ == '__main__':
             os.chdir(git_manager.root_dir)
 
             # Servisi durdur
-            service_manager.stop_service()
-
-            # Eski dizinleri temizle
-            git_manager.clean_old_directories()
+            if ServiceManager.stop_service():
+                logger.info("Servis başarıyla durduruldu.")
+            else:
+                logger.error("Servis durdurulamadı.")
+                continue
+           
+            # Led threadini başlat
+            led_manager.start_led_thread()
 
             # acApp dizinini yedekle
             git_manager.backup_acapp_directory()
@@ -1223,51 +1383,61 @@ if __name__ == '__main__':
             # Zip dosyasını çıkar
             zip_extract_status = zip_manager.extract_rename_zip()
 
+            if not zip_extract_status:
+                logger.error("Zip dosyası çıkartılamadı.")
+                ServiceManager.start_service()
+                git_manager.clean_old_directories()
+                # Zip dosyasını temizle
+                zip_manager.clean_zip_file()
+                continue
+
+            # Yeni repoyu klonla
             database_update_status = file_manager.update_database_files_in_new_repo(git_manager.acapp_new_dir)
             if not database_update_status:
                 logger.error("Veritabanı dosyaları güncellenirken hata oluştu.")
-                mcu_manager.update_failed_three_times = True
-                service_manager.start_service("acapp.service")
+                ServiceManager.start_service()
                 git_manager.clean_old_directories()
+                # Zip dosyasını temizle
+                zip_manager.clean_zip_file()
                 continue
                 
             # Yeni ve eski firmware dosyasını karşılaştır
             old_firmware_dir = os.path.join(git_manager.acapp_old_dir, "mcufirmware")
             new_firmware_dir = os.path.join(git_manager.acapp_new_dir, "mcufirmware")
 
+            # MCU Firmware güncelleme kontrolü
             if mcu_manager.compare_and_update_firmware(old_firmware_dir, new_firmware_dir):
                 logger.info("Firmware güncelleme kontrolü yapıldı.")
-                mcu_manager.update_failed_three_times = False
             else:
-                mcu_manager.update_failed_three_times = True # 24 saat sonra tekrar dene
-                logger.info("Firmware güncelleme başarısız oldu. 24 saat sonra tekrar denenecek.")
-                if service_manager.start_service("acapp.service"):
-                    logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
+                if ServiceManager.start_service():
+                    logger.info("MCU Firmware güncelleme başarısız oldu. Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
                     git_manager.clean_old_directories()
+                    # Zip dosyasını temizle
+                    zip_manager.clean_zip_file()
                 continue
+            
 
             # Son işlemleri yap
             final_operations_status = perform_final_operations(file_manager, git_manager)
             if not final_operations_status:
-                logger.error("Son işlemler başarısız oldu. Eski repo ve dosyalar geri yüklenecek.")
-                restore_and_restart_service(file_manager, git_manager, service_manager)
-                mcu_manager.update_failed_three_times = True
-                git_manager.clean_old_directories()
+                # Zip dosyasını temizle
+                zip_manager.clean_zip_file()
                 continue
             else:
                 # Servisi başlat ve geri dönen değeri kontrol et
-                if service_manager.start_service("acapp.service"):
+                if ServiceManager.start_service():
                     logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
                     # Eski dizinleri temizle
                     git_manager.clean_old_directories()
                     # Zip dosyasını temizle
                     zip_manager.clean_zip_file()
-
+                    # update.service'i yeniden başlat
+                    ServiceManager.restart_service("update.service")
+                    continue
                 else:
                     logger.error("Servis başlatılamadı ya da PID değişti, yeni repo sorunlu olabilir. Eski repo geri yüklenecek.")
-                    restore_and_restart_service(file_manager, git_manager, service_manager)
-                    mcu_manager.update_failed_three_times = True
-                    git_manager.clean_old_directories()
+                    # Zip dosyasını temizle
+                    zip_manager.clean_zip_file()
                     continue
         
         else:
@@ -1278,11 +1448,16 @@ if __name__ == '__main__':
                     os.chdir(git_manager.root_dir)
 
                     # Servisi durdur
-                    service_manager.stop_service()
+                    if ServiceManager.stop_service():
+                        logger.info("Servis başarıyla durduruldu.")
+                    else:
+                        logger.error("Servis durdurulamadı.")
+                        continue
 
-                    # Eski dizinleri temizle
-                    git_manager.clean_old_directories()
-
+                    
+                    # Led threadini başlat
+                    led_manager.start_led_thread()
+                    
                     # acApp dizinini yedekle
                     git_manager.backup_acapp_directory()
 
@@ -1293,7 +1468,7 @@ if __name__ == '__main__':
                     if not database_update_status:
                         logger.error("Veritabanı dosyaları güncellenirken hata oluştu.")
                         mcu_manager.update_failed_three_times = True
-                        service_manager.start_service("acapp.service")
+                        ServiceManager.start_service()
                         git_manager.clean_old_directories()
                         continue
                         
@@ -1303,11 +1478,10 @@ if __name__ == '__main__':
 
                     if mcu_manager.compare_and_update_firmware(old_firmware_dir, new_firmware_dir):
                         logger.info("Firmware güncelleme kontrolü yapıldı.")
-                        mcu_manager.update_failed_three_times = False
                     else:
                         mcu_manager.update_failed_three_times = True # 24 saat sonra tekrar dene
                         logger.info("Firmware güncelleme başarısız oldu. 24 saat sonra tekrar denenecek.")
-                        if service_manager.start_service("acapp.service"):
+                        if ServiceManager.start_service():
                             logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
                             git_manager.clean_old_directories()
                         continue
@@ -1316,20 +1490,19 @@ if __name__ == '__main__':
                     final_operations_status = perform_final_operations(file_manager, git_manager)
                     if not final_operations_status:
                         logger.error("Son işlemler başarısız oldu. Eski repo ve dosyalar geri yüklenecek.")
-                        restore_and_restart_service(file_manager, git_manager, service_manager)
                         mcu_manager.update_failed_three_times = True
-                        git_manager.clean_old_directories()
                         continue
                     else:
-                          # Servisi başlat ve geri dönen değeri kontrol et
-                        if service_manager.start_service("acapp.service"):
+                        # Servisi başlat ve geri dönen değeri kontrol et
+                        if ServiceManager.start_service():
                             logger.info("Servis başarıyla başlatıldı ve sorunsuz çalışıyor. Eski repo ve dosyalar siliniyor.")
                             git_manager.clean_old_directories()
+                                                        # update.service'i yeniden başlat
+                            ServiceManager.restart_service("update.service")
+                            continue
                         else:
                             logger.error("Servis başlatılamadı ya da PID değişti, yeni repo sorunlu olabilir. Eski repo geri yüklenecek.")
-                            restore_and_restart_service(file_manager, git_manager, service_manager)
                             mcu_manager.update_failed_three_times = True
-                            git_manager.clean_old_directories()
                             continue
                 else:
                     logger.info("Git'te yeni bir değişiklik yok, işlem yapılmadı.")

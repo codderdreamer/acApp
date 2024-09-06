@@ -101,13 +101,13 @@ class EV():
         try:
             # Mikro saniyeli formatı kullanarak datetime nesnesine dönüştür
             expiry = datetime.strptime(self.expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
-            now = datetime.utcnow()
+            now = datetime.now()
             return now > expiry
         except ValueError:
             try:
                 # Mikro saniyesiz formatı kullanarak datetime nesnesine dönüştür
                 expiry = datetime.strptime(self.expiry_date, '%Y-%m-%dT%H:%M:%SZ')
-                now = datetime.utcnow()
+                now = datetime.now()
                 return now > expiry
             except ValueError as e:
                 print(f"Error parsing expiry_date: {e}")
@@ -126,8 +126,17 @@ class EV():
                 self.expiry_date = None
                 self.parent_id = None
                 # ChargePoint'i kullanılabilir hale getir
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                # Set device state to IDLE
+                self.application.deviceState = DeviceState.IDLE
+
+                # Set LED state to StandBy
+                self.application.led_state = LedState.StandBy
+
+
                 print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation expired and has been cleared.")
+            else:
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation is still valid.")
 
     def remote_start_thread(self):
         # Eğer kablo bağlı değilse

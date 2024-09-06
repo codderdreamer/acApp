@@ -70,7 +70,7 @@ class EV():
     def ocpp_offline(self):
         print(Color.Red.value, "Ocpp Offline")
         self.application.led_state =LedState.DeviceOffline
-        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
+        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted,"Offline")
 
     def ocpp_online(self):
         # led rfid verified yada faild iken standby yanmasın

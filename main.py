@@ -59,6 +59,7 @@ class Application():
         self.availability = AvailabilityType.operative
         self.bluetooth_error = None
         self.__chargePointStatus = None
+        self.info = None
         self.__error_code = None
         self.__deviceState = None
         self.__led_state = None
@@ -208,9 +209,10 @@ class Application():
         if error_code != self.error_code or status != self.chargePointStatus:
             self.error_code = error_code
             self.chargePointStatus = status
-            print("Error info:",info)
+            self.info = info
+            print("Error info:",self.info)
             if self.ocppActive:
-                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=info),self.loop)
+                asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=self.info),self.loop)
     
     def ocpp_control(self):
         while True:

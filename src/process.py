@@ -458,8 +458,9 @@ class Process:
         
         if (self.application.cardType != CardType.BillingCard):
             self.delete_charge()
-        if self.application.cardType == CardType.BillingCard and (self.application.ocppActive):
-            self.delete_charge()
+        else:
+            if self.application.info != "Offline":
+                self.delete_charge()
 
         self.application.serialPort.set_command_pid_cp_pwm(0)
         time.sleep(0.3)

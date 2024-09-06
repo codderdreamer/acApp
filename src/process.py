@@ -283,6 +283,7 @@ class Process:
                     pass
                 self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
                 print("Cihaz şarjda...")
+                self.application.ev.charge = True
                 if time.time() - time_start > 20:
                     self.charge_try_counter = 0
             except Exception as e:

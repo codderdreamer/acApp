@@ -46,6 +46,7 @@ class Application():
         # os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
         os.system("/root/acApp/bash/bluetooth_set.sh")
         time.sleep(5)
+        self.initilly = True
         self.test_led = False
         self.test_charge = False
         self.testWebSocket = None
@@ -94,6 +95,7 @@ class Application():
         self.chargePointStatus = ChargePointStatus.available
 
         self.create_error = False
+        
 
     @property
     def led_state(self):

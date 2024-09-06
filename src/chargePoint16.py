@@ -37,7 +37,7 @@ class ChargePoint16(cp):
         self.remote_start_stop_status = None
         self.server_time = None
 
-        self.initilly = True
+        
 
     def reboot(self):
         time.sleep(7)
@@ -249,12 +249,12 @@ class ChargePoint16(cp):
         interval: int
         """
         try :
-            print("--------------- self.initilly",self.initilly)
-            if self.initilly:
+            print("--------------- self.initilly",self.application.initilly)
+            if self.application.initilly:
                 Thread(target=self.send_stop_thread,daemon=True).start()
                 self.application.process.delete_charge()
-                self.initilly = False
-                print("---------------------- self.initilly = False")
+                self.application.initilly = False
+                print("---------------------- self.application.initilly = False")
             
             if self.application.cardType == CardType.BillingCard:
                 for request in self.application.request_list:

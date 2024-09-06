@@ -503,6 +503,7 @@ class EV():
                 self.start_stop_authorize = False
 
         else:  # Cihaz offline ise
+            print("Device is offline")
             authorization_result = self.check_offline_authorization(value)
             print("Authorization Result:", authorization_result)
             if authorization_result == AuthorizationStatus.accepted:

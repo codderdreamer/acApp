@@ -417,6 +417,7 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print("send_start_transaction Exception:",e)
+            self.application.deviceState = DeviceState.FAULT
 
     # 9. STATUS NOTIFICATION
     async def send_status_notification(

@@ -13,9 +13,15 @@ class Process:
         self.transaction_id = None
         self.locker_error = False
         self.charge_try_counter = 0
+        db_idtag = self.application.databaseModule.get_charge()["id_tag"]
+        db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
 
-        self.transaction_id = self.application.databaseModule.get_charge()["transaction_id"]
-        self.id_tag = self.application.databaseModule.get_charge()["id_tag"]
+        if db_idtag != None and db_idtag != "":
+            self.id_tag = int(db_idtag)
+
+        if db_tansactionid != None and db_tansactionid != "":
+            self.transaction_id = int(db_tansactionid)
+
         self.initially_charge = self.application.databaseModule.get_charge()["charge"] == "True"
         print("********************************** self.initially_charge",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
 

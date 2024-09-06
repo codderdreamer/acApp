@@ -160,7 +160,7 @@ class Application():
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:
                 if self.charge_stopped != True:
-                    self.control_A_B_C = True
+                    # self.control_A_B_C = True
                     Thread(target=self.process.connected,daemon=True).start()
     
             elif self.__deviceState == DeviceState.WAITING_AUTH:
@@ -173,30 +173,30 @@ class Application():
                 
             elif self.__deviceState == DeviceState.CHARGING:
                 if self.charge_stopped != True:
-                    self.control_C_B = True
+                    # self.control_C_B = True
                     Thread(target=self.process.charging,daemon=True).start()
 
             elif self.__deviceState == DeviceState.FAULT:
-                self.control_A_B_C = False
-                self.control_C_B = False
+                # self.control_A_B_C = False
+                # self.control_C_B = False
                 Thread(target=self.process.fault,daemon=True).start()
 
             elif self.__deviceState == DeviceState.IDLE:
                 self.charge_stopped = False
-                self.control_A_B_C = False
-                self.control_C_B = False
+                # self.control_A_B_C = False
+                # self.control_C_B = False
                 Thread(target=self.process.idle,daemon=True).start()
                 
             elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
                 self.charge_stopped = True
-                self.control_A_B_C = False
-                self.control_C_B = False
+                # self.control_A_B_C = False
+                # self.control_C_B = False
                 Thread(target=self.process.stopped_by_evse,daemon=True).start()
                 
             elif self.__deviceState == DeviceState.STOPPED_BY_USER:
                 self.charge_stopped = True
-                self.control_A_B_C = False
-                self.control_C_B = False
+                # self.control_A_B_C = False
+                # self.control_C_B = False
                 Thread(target=self.process.stopped_by_user,daemon=True).start()
                 
             elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
@@ -206,7 +206,7 @@ class Application():
                 Thread(target=self.process.suspended_ev,daemon=True).start()
             
             elif self.__deviceState == DeviceState.OFFLINE:
-                self.control_C_B = False
+                # self.control_C_B = False
                 pass
 
 

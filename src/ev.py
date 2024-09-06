@@ -254,6 +254,14 @@ class EV():
     @control_pilot.setter
     def control_pilot(self, value):
         if self.__control_pilot != value:
+            if self.__control_pilot == ControlPlot.stateC.value and value == ControlPlot.stateB.value:
+                self.application.control_C_B = True
+            else:
+                self.application.control_C_B = False
+            if self.__control_pilot == ControlPlot.stateB.value and value == ControlPlot.stateC.value:
+                self.application.control_A_B_C = True
+            else:
+                self.application.control_A_B_C = False
             self.__control_pilot = value
             print(Color.Yellow.value,"Control Pilot",value)
             if self.__control_pilot == ControlPlot.stateA.value:

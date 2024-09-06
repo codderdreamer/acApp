@@ -17,7 +17,7 @@ class Process:
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
 
         if db_idtag != None and db_idtag != "":
-            self.id_tag = int(db_idtag)
+            self.id_tag = db_idtag
 
         if db_tansactionid != None and db_tansactionid != "":
             self.transaction_id = int(db_tansactionid)

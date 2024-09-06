@@ -551,14 +551,18 @@ class EV():
                     return  # Or handle the error as appropriate for your application
 
                 if self.charge:
+                    print("şarj devam ediyor")
                     if self.application.process.id_tag == value:
+                        print("self.application.process.id_tag == value")
                         self.application.chargePoint.authorize = None
                         authorization_result = self.authorize_billing_card(value)
                         if authorization_result == AuthorizationStatus.accepted:
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
                     else:
+                        print("self.application.process.id_tag != value")
                         self.application.chargePoint.handle_authorization_failed()
                 else:
+                    print("şarj yok")
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)
                     if authorization_result == AuthorizationStatus.accepted:

@@ -159,18 +159,21 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
-                if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                    self.application.deviceState = DeviceState.IDLE
-                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                    self.application.deviceState = DeviceState.CONNECTED
-                elif self.application.ev.control_pilot == ControlPlot.stateC.value:
-                    self.application.deviceState = DeviceState.CHARGING
+                
                 self.server_time = response.current_time
                 self.application.ocppActive = True
                 if self.application.availability == AvailabilityType.operative:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 else:
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
+                
+                if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                    self.application.deviceState = DeviceState.IDLE
+                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    self.application.deviceState = DeviceState.CONNECTED
+                elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    self.application.deviceState = DeviceState.CHARGING
+                    
                 self.application.ev.load_reservations()
                 await self.send_heartbeat()
             return response

@@ -173,6 +173,7 @@ class Process:
         
     def waiting_auth(self):
         print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
+        self.application.led_state =LedState.Connecting
         self.application.ev.charge = False
         if self.application.cardType == CardType.StartStopCard:
             time_start = time.time()
@@ -291,6 +292,7 @@ class Process:
 
     def charging(self):
         print(Color.Yellow.value,"Cihaz şarja başlayacak...")
+        self.application.led_state =LedState.Connecting
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:

@@ -7,7 +7,7 @@ Type=idle
 ExecStart=/usr/bin/python3 /root/acApp/main.py
 StandardOutput=inherit
 StandardError=inherit
-Restart=restart
+Restart=on-failure  # Hata durumunda servisi yeniden başlat
 User=root
 
 [Install]

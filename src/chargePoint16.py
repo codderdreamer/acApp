@@ -239,6 +239,7 @@ class ChargePoint16(cp):
                 time.sleep(1)
                 self.application.process.transaction_id = None
                 self.application.process.id_tag = None
+                self.application.process.initially_charge = False
         except Exception as e:
             print("send_stop_thread Exception:",e)
 

@@ -172,7 +172,7 @@ class EV():
                 if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
                     self.ocpp_offline()
                 elif self.application.availability == AvailabilityType.inoperative:
-                    if self.control_pilot != ControlPlot.stateC.value:
+                    if self.control_pilot != ControlPlot.stateC.value and self.application.led_state != LedState.RfidFailed and self.application.led_state != LedState.RfidVerified:
                         self.application.led_state = LedState.DeviceInoperative
                 elif self.is_there_rcd_trip_error():
                     self.application.deviceState = DeviceState.FAULT

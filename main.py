@@ -160,7 +160,7 @@ class Application():
                 if value == DeviceState.CONNECTED or value == DeviceState.SUSPENDED_EV or value == DeviceState.CHARGING:
                     return
             if value == DeviceState.WAITING_STATE_C:
-                if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                if self.ev.control_pilot == ControlPlot.stateC.value:
                     return
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value

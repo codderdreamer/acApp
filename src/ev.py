@@ -548,6 +548,7 @@ class EV():
             print("Authorization Result:", authorization_result)
             if authorization_result == AuthorizationStatus.accepted:
                 print("Authorized for billing card: ", value)
+                self.application.process.id_tag = value
                 self.application.chargePoint.authorize = AuthorizationStatus.accepted
                 self.application.chargePoint.handle_authorization_accepted()
                 self.start_stop_authorize = True
@@ -564,6 +565,7 @@ class EV():
                 self.authorize = AuthorizationStatus.accepted
                 self.application.chargePoint.handle_authorization_accepted()
                 print("Authorized for billing card: ", value)
+                self.application.process.id_tag = value
                 self.start_stop_authorize = True
             else:
                 print("Unauthorized for billing card :", value)
@@ -605,7 +607,7 @@ class EV():
                     return  # Or handle the error as appropriate for your application
 
                 if self.charge:
-                    print("şarj devam ediyor")
+                    print("şarj aktif, transaction stopped")
                     if self.application.process.id_tag == value:
                         print("self.application.process.id_tag == value")
                         self.application.chargePoint.authorize = None
@@ -629,7 +631,7 @@ class EV():
                         print("self.application.process.id_tag != value")
                         self.application.chargePoint.handle_authorization_failed()
                 else:
-                    print("şarj yok")
+                    print("transaction started")
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)
                     if authorization_result == AuthorizationStatus.accepted:

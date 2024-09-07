@@ -388,7 +388,7 @@ class SerialPort():
                 self.application.ev.pid_relay_control = Relay.On
             elif data[7] == "0":
                 self.application.ev.pid_relay_control = Relay.Off
-            print("self.application.ev.pid_relay_control",self.application.ev.pid_relay_control)
+            print(Color.Macenta.value,"*********************** get response relay",self.application.ev.pid_relay_control)
 
     def set_response_pid_led_control(self, data):
         if data[2] == self.pid_led_control:

@@ -186,6 +186,8 @@ class Process:
                     break
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
                     break
+                if self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    self.application.led_state = LedState.Connecting
                 time.sleep(1)
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
                 time_start = time.time()
@@ -200,6 +202,8 @@ class Process:
                             self.id_tag = self.application.ev.id_tag
                             self._lock_connector_set_control_pilot()
                             break
+                        if self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value:
+                            self.application.led_state = LedState.Connecting
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
                         break
                     time.sleep(1)  

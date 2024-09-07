@@ -186,10 +186,11 @@ class EV():
                 self.application.serialPort.set_command_pid_cp_pwm(0)
                 time.sleep(0.5)
                 self.application.serialPort.get_command_pid_cp_pwm()
+                time.sleep(0.5)
                 if self.application.ev.pid_cp_pwm == 0:
                     print(Color.Green.value,"pwm 0 setlendi")
                     break
-                if time.time() - time_start > 5:
+                if time.time() - time_start > 10:
                     print(Color.Red.value, "Pwm 0'a düşürülemedi! Pwm:",self.application.ev.pid_cp_pwm)
                     break
                 time.sleep(1)

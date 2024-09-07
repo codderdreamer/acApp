@@ -367,7 +367,7 @@ class SerialPort():
 
     def get_response_pid_cp_pwm(self, data):
         if data[2] == self.pid_cp_pwm_control:
-            print("get response:a",data)
+            print("get response:",data)
             digit_100 = int(data[7]) * 100
             digit_10 = int(data[8]) * 10
             digit_1 = int(data[9])

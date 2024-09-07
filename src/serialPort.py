@@ -361,7 +361,7 @@ class SerialPort():
             digit_1 = int(data[9])
             digit_01 = int(data[10]) / 10
             original_number = digit_100 + digit_10 + digit_1 + digit_01
-            pid_cp_pwm = int(original_number) if original_number.is_integer() else original_number
+            pid_cp_pwm = original_number
 
     def get_response_pid_cp_pwm(self, data):
         if data[2] == self.pid_cp_pwm_control:
@@ -370,7 +370,8 @@ class SerialPort():
             digit_1 = int(data[9])
             digit_01 = int(data[10]) / 10
             original_number = digit_100 + digit_10 + digit_1 + digit_01
-            self.application.ev.pid_cp_pwm = int(original_number) if original_number.is_integer() else original_number
+            self.application.ev.pid_cp_pwm = original_number
+            print("self.application.ev.pid_cp_pwm",self.application.ev.pid_cp_pwm)
 
     def set_response_pid_relay_control(self, data):
         if data[2] == self.pid_relay_control:

@@ -189,7 +189,8 @@ class EV():
                     break
                 if time.time() - time_start > 30:
                     print(Color.Red.value, "Pwm 0'a düşürülemedi! Pwm:",self.application.ev.pid_cp_pwm)
-                time.sleep(0.3)
+                    break
+                time.sleep(1)
             if self.application.process.relay_control(Relay.Off):
                 print(Color.Green.value,"Röle başarılı Off")
             else:

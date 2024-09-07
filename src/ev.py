@@ -636,6 +636,7 @@ class EV():
                     authorization_result = self.authorize_billing_card(value)
                     if authorization_result == AuthorizationStatus.accepted:
                         self.application.process.there_is_transaction = True
+                        self.application.process.id_tag = value
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
                         if self.control_pilot == ControlPlot.stateA.value:
                             Thread(target=self.remote_start_thread,daemon=True).start()

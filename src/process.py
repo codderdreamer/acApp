@@ -15,7 +15,7 @@ class Process:
         self.charge_try_counter = 0
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
-
+        self.waiting_auth_value = False
         if db_idtag != None and db_idtag != "":
             self.id_tag = db_idtag
 
@@ -172,25 +172,25 @@ class Process:
         return
         
     def waiting_auth(self):
+        self.waiting_auth_value = True
         print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
         self.application.led_state =LedState.Connecting
         self.application.ev.charge = False
         if self.application.cardType == CardType.StartStopCard:
             time_start = time.time()
             while True:
-                print("...")
+                print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
                 if self.application.ev.start_stop_authorize:
                     self.id_tag = self.application.ev.card_id
                     self._lock_connector_set_control_pilot()
                     break
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
-                    return
+                    break
                 time.sleep(1)
-        
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
                 time_start = time.time()
                 while True:
-                    print("...")
+                    print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
                     if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                             self.id_tag = self.application.ev.card_id
@@ -201,8 +201,9 @@ class Process:
                             self._lock_connector_set_control_pilot()
                             break
                     if self.application.deviceState != DeviceState.WAITING_AUTH:
-                        return
+                        break
                     time.sleep(1)  
+        self.waiting_auth_value = False
 
     def waiting_state_c(self):
         print(Color.Yellow.value,"Cihazın şarja geçmesi bekleniyor... Şarja geçmezse 5 dk sonra sonlanacak...")

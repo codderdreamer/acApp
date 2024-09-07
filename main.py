@@ -156,6 +156,10 @@ class Application():
     @deviceState.setter
     def deviceState(self, value):
         if self.__deviceState != value:
+            if self.process.waiting_auth_value:
+                if value == DeviceState.CONNECTED or value == DeviceState.SUSPENDED_EV or value == DeviceState.CHARGING:
+                    return
+
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:

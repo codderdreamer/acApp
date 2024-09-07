@@ -160,6 +160,10 @@ class EV():
     def clean_charge_variables(self):
         try:
             print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")
+            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+                self.application.meter_values_on = False
             if hasattr(self.application, 'chargePoint') and self.application.chargePoint is not None:
                 Thread(target=self.application.chargePoint.send_stop_thread,daemon=True).start()
             self.application.ev.start_stop_authorize = False
@@ -168,9 +172,6 @@ class EV():
             self.application.ev.charge = False
             if hasattr(self.application, 'chargePoint') and self.application.chargePoint is not None:
                 self.application.chargePoint.authorize = None
-            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-                    self.application.meter_values_on = False
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.process.transaction_id = None
             self.application.process.id_tag = None
             self.application.process.initially_charge = False

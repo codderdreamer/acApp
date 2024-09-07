@@ -567,11 +567,11 @@ class Process:
                              
     def stopped_by_user(self):
         self.application.ev.stop_pwm_off_relay()
-        self.application.ev.clean_charge_variables()
         self.application.led_state =LedState.ChargingStopped
         if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
             self.application.meter_values_on = False
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+        self.application.ev.clean_charge_variables()
             
 

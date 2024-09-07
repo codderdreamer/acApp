@@ -30,10 +30,12 @@ class Process:
         while True:
             if self.application.ev.pid_relay_control == relay:
                 return True
+            print(Color.Yellow.value,"relay komut verildi:",relay)
             self.application.serialPort.set_command_pid_relay_control(relay)
             time.sleep(0.5)
             self.application.serialPort.get_command_pid_relay_control()
             time.sleep(0.5)
+            print(Color.Yellow.value,"relay okundu:",relay)
             if self.application.ev.pid_relay_control == relay:
                 return True
             else:
@@ -318,7 +320,7 @@ class Process:
             self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
             self.application.ev.charge = True
             self.application.led_state =LedState.Charging
-            self.application.serialPort.set_command_pid_relay_control(Relay.On)
+            self.relay_control(Relay.On)
             self.set_max_current()
             self.charge_while()   
         elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
@@ -362,7 +364,7 @@ class Process:
                     return
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
                     self.set_max_current()
-                    self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                    self.relay_control(Relay.On)
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
                     if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                         self.application.serialPort.get_command_pid_current()
@@ -379,7 +381,7 @@ class Process:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
                 self.application.ev.charge = True
                 self.application.led_state =LedState.Charging
-                self.application.serialPort.set_command_pid_relay_control(Relay.On)
+                self.relay_control(Relay.On)
                 self.set_max_current()
                 time_start = time.time()
                 self.charge_while()
@@ -497,7 +499,7 @@ class Process:
     def suspended_ev(self):
         print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
         self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_ev)
-        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
+        self.relay_control(Relay.Off)
         time_start = time.time()
         self.application.led_state = LedState.ChargingStopped
         self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))

@@ -604,13 +604,14 @@ class EV():
                     print("Error: chargePoint is None. Cannot proceed with authorization.")
                     return  # Or handle the error as appropriate for your application
 
-                if self.charge:
+                if self.charge or self.application.process.there_is_transaction:
                     print("şarj devam ediyor")
                     if self.application.process.id_tag == value:
                         print("self.application.process.id_tag == value")
                         self.application.chargePoint.authorize = None
                         authorization_result = self.authorize_billing_card(value)
                         if authorization_result == AuthorizationStatus.accepted:
+                            self.application.process.there_is_transaction = False
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
                     else:
                         print("self.application.process.id_tag != value")
@@ -620,9 +621,10 @@ class EV():
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)
                     if authorization_result == AuthorizationStatus.accepted:
+                        self.application.process.there_is_transaction = True
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
                         if self.control_pilot == ControlPlot.stateA.value:
-                            Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
+                            Thread(target=self.remote_start_thread,daemon=True).start()
                     else :
                         self.application.chargePoint.authorize = None
                         print(Color.Red.value,"Autorize başarısız!")

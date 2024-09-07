@@ -9,6 +9,7 @@ from src.logger import ac_app_logger as logger
 class Process:
     def __init__(self, application) -> None:
         self.application = application
+        self.there_is_transaction = False
         self.id_tag = None
         self.transaction_id = None
         self.locker_error = False
@@ -16,6 +17,7 @@ class Process:
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False
+
         if db_idtag != None and db_idtag != "":
             self.id_tag = db_idtag
 
@@ -241,7 +243,6 @@ class Process:
             except Exception as e:
                 print("meter_values_thread Exception:", e)
 
-            
     def charge_while(self):
         print(Color.Yellow.value,"Cihaz şarja başlıyor... *************************************************************")
         if self.application.deviceState != DeviceState.CHARGING:
@@ -528,9 +529,7 @@ class Process:
                 result = future.result()
             except Exception as e:
                 print("Error sending stop transaction:", e)
-
-
-            
+     
     def idle(self):
         self.application.ev.stop_pwm_off_relay()
         self.application.ev.clean_charge_variables()

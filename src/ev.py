@@ -153,14 +153,54 @@ class EV():
                     else:
                         self.application.led_state =LedState.StandBy
                         self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
-                        self.application.ev.start_stop_authorize = False
-                        self.application.chargePoint.authorize = None
-                        self.application.ev.card_id = ""
-                        self.application.ev.id_tag = None
-                        self.application.ev.charge = False
+                        self.clean_charge_variables()
                     break
                 time.sleep(0.2)
 
+    def clean_charge_variables(self):
+        try:
+            print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")
+            self.application.ev.start_stop_authorize = False
+            self.application.ev.card_id = ""
+            self.application.ev.id_tag = None
+            self.application.ev.charge = False
+            if hasattr(self.application, 'chargePoint') and self.application.chargePoint is not None:
+                self.application.chargePoint.authorize = None
+            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+                    self.application.meter_values_on = False
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+            if hasattr(self.application, 'chargePoint') and self.application.chargePoint is not None:
+                Thread(target=self.application.chargePoint.send_stop_thread,daemon=True).start()
+            self.application.process.transaction_id = None
+            self.application.process.id_tag = None
+            self.application.process.initially_charge = False
+            self.application.databaseModule.set_charge("False", "", "")
+        except Exception as e:
+            print(Color.Red.value,"clean_charge_variables Exception:",e)
+
+    def stop_pwm_off_relay(self):
+        try:
+            time_start = time.time()
+            while True:
+                self.application.serialPort.set_command_pid_cp_pwm(0)
+                print(Color.Yellow.value,"pwm 0 setleniyor...")
+                if self.application.ev.pid_cp_pwm == 0:
+                    print(Color.Green.value,"pwm 0 setlendi")
+                    break
+                if time.time() - time_start > 30:
+                    print(Color.Red.value, "Pwm 0'a düşürülemedi! Pwm:",self.application.ev.pid_cp_pwm)
+                time.sleep(0.3)
+            if self.application.process.relay_control(Relay.Off):
+                print(Color.Green.value,"Röle başarılı Off")
+            else:
+                print(Color.Red.value,"Röle Off başarısız.")
+            if self.application.socketType == SocketType.Type2:
+                if self.application.process.unlock():
+                    print(Color.Green.value,"Kilit açıldı.")
+                else:
+                    print("Kilit açılamadı.")
+        except Exception as e:
+            print("stop_pwm_off_relay Exception:",e)
 
     def control_error_list(self):
         time.sleep(10)

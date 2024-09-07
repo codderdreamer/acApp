@@ -571,6 +571,7 @@ class SerialPort():
                         self.get_response_pid_rfid(incoming)
                         self.get_response_pid_evse_temp(incoming)
                         self.get_response_pid_error_list(incoming)
+                        self.get_response_pid_cp_pwm(incoming)
                     elif incoming[1] == self.set_response:
                         self.set_response_pid_cp_pwm(incoming)
                         self.set_response_pid_relay_control(incoming)

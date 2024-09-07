@@ -173,7 +173,7 @@ class ChargePoint16(cp):
                     self.application.deviceState = DeviceState.CONNECTED
                 elif self.application.ev.control_pilot == ControlPlot.stateC.value:
                     self.application.deviceState = DeviceState.CHARGING
-                    
+
                 self.application.ev.load_reservations()
                 await self.send_heartbeat()
             return response
@@ -261,7 +261,7 @@ class ChargePoint16(cp):
             print("--------------- self.initilly",self.application.initilly)
             if self.application.initilly:
                 Thread(target=self.send_stop_thread,daemon=True).start()
-                self.application.process.delete_charge()
+                self.application.ev.clean_charge_variables()
                 self.application.initilly = False
                 print("---------------------- self.application.initilly = False")
             

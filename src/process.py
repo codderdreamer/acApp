@@ -381,23 +381,10 @@ class Process:
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
 
-    def delete_charge(self):
-        try:
-            print("**************** şarj geçmişi siliniyor ...")
-            self.application.ev.start_stop_authorize = False
-            if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
-                self.application.chargePoint.authorize = None
-            self.application.ev.card_id = ""
-            self.application.ev.id_tag = None
-            self.application.ev.charge = False
-            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-                    self.application.meter_values_on = False
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-        except Exception as e:
-            print("delete_charge Exception:",e)
-
     def fault(self):
         print("Fauld Process")
+        self.application.ev.stop_pwm_off_relay()
+
         if PidErrorList.RcdTripError in self.application.serialPort.error_list:
             self.application.led_state =LedState.RcdError
             self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
@@ -457,19 +444,11 @@ class Process:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted)
         
         if (self.application.cardType != CardType.BillingCard):
-            self.application.databaseModule.set_charge("False", "", "")
-            self.delete_charge()
+            self.application.ev.clean_charge_variables()
         else:
             if self.application.info != "Offline":
-                self.application.databaseModule.set_charge("False", "", "")
-                self.delete_charge()
+                self.application.ev.clean_charge_variables()
 
-        self.application.serialPort.set_command_pid_cp_pwm(0)
-        time.sleep(0.3)
-        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        if self.application.socketType == SocketType.Type2:
-            self.unlock()
-                
         while True:
             if self.application.ev.control_pilot != ControlPlot.stateA.value:
                 time.sleep(1)
@@ -483,6 +462,7 @@ class Process:
     def suspended_evse(self):
         print("Suspended evse function")
         time_start = time.time()
+        self.application.ev.stop_pwm_off_relay()
         self.charge_try_counter += 1
         self.application.meter_values_on = False
         if self.charge_try_counter == 4:
@@ -493,11 +473,6 @@ class Process:
         for value in self.application.serialPort.error_list:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
             self.application.led_state =LedState.Fault
-        self.application.serialPort.set_command_pid_cp_pwm(0)
-        time.sleep(0.3)
-        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        if self.application.socketType == SocketType.Type2:
-            self.unlock()
         # self.application.ev.charge = False
         while True:
             time.sleep(1)
@@ -522,6 +497,7 @@ class Process:
         self.application.led_state = LedState.ChargingStopped
         self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
         while True:
+            print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
             if self.application.chargePointStatus == ChargePointStatus.faulted:
                 self.application.deviceState = DeviceState.FAULT
                 break
@@ -534,13 +510,8 @@ class Process:
             time.sleep(0.3)
        
     def stopped_by_evse(self):
-        self.application.databaseModule.set_charge("False", "", "")
-        self.application.ev.start_stop_authorize = False
-        if self.application.cardType == CardType.BillingCard and self.application.ocppActive:
-            self.application.chargePoint.authorize = None
-        self.application.ev.card_id = ""
-        self.application.ev.id_tag = None
-        self.application.ev.charge = False
+        self.application.ev.stop_pwm_off_relay()
+        self.application.ev.clean_charge_variables()
         self.application.led_state =LedState.ChargingStopped
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
         if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
@@ -551,17 +522,15 @@ class Process:
             except Exception as e:
                 print("Error sending stop transaction:", e)
 
-        self.application.serialPort.set_command_pid_cp_pwm(0)
-        time.sleep(0.3)
-        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        if self.application.socketType == SocketType.Type2:
-            self.unlock()
+
             
     def idle(self):
+        self.application.ev.stop_pwm_off_relay()
+        self.application.ev.clean_charge_variables()
         self.charge_try_counter = 0
         self.locker_error = False
-        self.application.databaseModule.set_charge("False","","")
         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+
         if self.application.ev.reservation_id != None:
             print(Color.Green.value,"Bir reservasyon var. reservation_id:", self.application.ev.reservation_id)
             self.application.led_state =LedState.WaitingPluging
@@ -585,40 +554,19 @@ class Process:
             if self.application.availability == AvailabilityType.operative:
                 self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 
-        self.application.ev.start_stop_authorize = False
-        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
-            self.application.chargePoint.authorize = None
-        self.application.ev.card_id = ""
-        self.application.ev.id_tag = None
-        self.application.ev.charge = False
         self.application.led_state =LedState.StandBy
         
         
         
-        self.application.serialPort.set_command_pid_cp_pwm(0)
-        time.sleep(0.3)
-        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        if self.application.socketType == SocketType.Type2:
-            self.unlock()
+        
                              
     def stopped_by_user(self):
-        self.application.databaseModule.set_charge("False", "", "")
-        self.application.ev.start_stop_authorize = False
-        
-        if (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive):
-            self.application.chargePoint.authorize = None
-        self.application.ev.card_id = ""
-        self.application.ev.id_tag = None
-        self.application.ev.charge = False
+        self.application.ev.stop_pwm_off_relay()
+        self.application.ev.clean_charge_variables()
         self.application.led_state =LedState.ChargingStopped
-        
         if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
             self.application.meter_values_on = False
             asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
             self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
             
-        self.application.serialPort.set_command_pid_cp_pwm(0)
-        time.sleep(0.3)
-        self.application.serialPort.set_command_pid_relay_control(Relay.Off)
-        if self.application.socketType == SocketType.Type2:
-            self.unlock()
+

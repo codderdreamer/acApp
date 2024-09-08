@@ -244,7 +244,10 @@ class ChargePoint16(cp):
             if self.application.process.initially_charge and self.application.cardType == CardType.BillingCard:
                 print("Daha önce başlamış bir şarj vardı. Durduruluyor...")
                 print("self.application.process.transaction_id",self.application.process.transaction_id,"self.application.process.id_tag",self.application.process.id_tag)
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
+                if self.application.process.transaction_id != None:
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
+                else:
+                    print(Color.Red.value,"Daha önceden başlamıs bir şarj var fakat transaction id None, stop gönderilmedi.")
                 time.sleep(1)
                 self.application.process.transaction_id = None
                 self.application.process.id_tag = None

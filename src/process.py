@@ -522,13 +522,6 @@ class Process:
         self.application.ev.clean_charge_variables()
         self.application.led_state =LedState.ChargingStopped
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-            self.application.meter_values_on = False
-            try:
-                future = asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(), self.application.loop)
-                result = future.result()
-            except Exception as e:
-                print("Error sending stop transaction:", e)
      
     def idle(self):
         self.application.ev.stop_pwm_off_relay()
@@ -549,30 +542,13 @@ class Process:
                 if value == PidErrorList.RcdInitializeError:
                     return
                 
-        if (self.application.cardType == CardType.BillingCard) and self.application.ev.charge:
-            self.application.meter_values_on = False
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
-            if self.application.availability == AvailabilityType.operative:
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-        else:
-            # cihaz inoperatif durumda değilse
-            if self.application.availability == AvailabilityType.operative:
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+        if self.application.availability == AvailabilityType.operative:
+            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
                 
         self.application.led_state =LedState.StandBy
-        
-        
-        
-        
                              
     def stopped_by_user(self):
         self.application.ev.stop_pwm_off_relay()
-        self.application.led_state =LedState.ChargingStopped
-        if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
-            self.application.meter_values_on = False
-            asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
         self.application.ev.clean_charge_variables()
-            
+        self.application.led_state =LedState.ChargingStopped
 

@@ -80,12 +80,9 @@ class Application():
         self.softwareSettings = SoftwareSettings(self,logger)
         self.flaskModule = FlaskModuleThread(self).start()
         self.webSocketServer = WebSocketServer(self,logger)
-        print("process")
         self.process = Process(self)
-        print("ev")
         self.ev = EV(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
-        print("serial")
         self.serialPort = SerialPort(self,logger)
         if self.settings.deviceSettings.externalMidMeter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)

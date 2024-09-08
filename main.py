@@ -152,7 +152,7 @@ class Application():
                 if self.ev.control_pilot == ControlPlot.stateC.value:
                     return
             if self.process.rcd_trip_error:
-                if value != DeviceState.IDLE:
+                if value == DeviceState.IDLE:
                     pass
                 elif value == DeviceState.FAULT:
                     pass

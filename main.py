@@ -335,9 +335,12 @@ class Application():
  
     def ocpp_task(self):
         while True:
-            if self.cardType == CardType.BillingCard:
-                res = loop.run_until_complete(self.ocppStart())
-                self.ocppActive = False
+            try:
+                if self.cardType == CardType.BillingCard:
+                    res = loop.run_until_complete(self.ocppStart())
+                    self.ocppActive = False
+            except Exception as e:
+                print("ocpp_task Exception:",e)
             time.sleep(10)
             
 if __name__ == "__main__":

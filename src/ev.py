@@ -133,7 +133,7 @@ class EV():
                 self.expiry_date = None
                 self.parent_id = None
                 # ChargePoint'i kullanılabilir hale getir
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                 print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation expired and has been cleared.")
 
     def remote_start_thread(self):
@@ -158,7 +158,7 @@ class EV():
                             self.application.led_state = LedState.WaitingPluging
                     else:
                         self.application.led_state =LedState.StandBy
-                        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
+                        self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
                         self.clean_charge_variables()
                     break
                 time.sleep(0.2)
@@ -171,7 +171,7 @@ class EV():
                     print(Color.Yellow.value,"Stop transaction gönderiliyor...")
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
                     if not self.application.initilly:
-                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
                 self.application.meter_values_on = False
                 time.sleep(3)
             print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")

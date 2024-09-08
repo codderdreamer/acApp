@@ -163,9 +163,9 @@ class ChargePoint16(cp):
                 self.server_time = response.current_time
                 self.application.ocppActive = True
                 if self.application.availability == AvailabilityType.operative:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 else:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
                 
                 if self.application.ev.control_pilot == ControlPlot.stateA.value:
                     self.application.deviceState = DeviceState.IDLE
@@ -642,10 +642,10 @@ class ChargePoint16(cp):
             # Durumu güncelle
             if self.application.ev.control_pilot == ControlPlot.stateA.value:
                 self.application.led_state = LedState.StandBy
-                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.available.value)
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
             elif self.application.ev.control_pilot == ControlPlot.stateB.value:
                 self.application.led_state = LedState.Connecting
-                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
 
 
             response = call_result.CancelReservationPayload(
@@ -692,11 +692,11 @@ class ChargePoint16(cp):
         try :
             if type == AvailabilityType.operative:
                 self.application.availability = AvailabilityType.operative
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 self.application.databaseModule.set_availability(AvailabilityType.operative.value)
             elif type == AvailabilityType.inoperative:
                 self.application.availability = AvailabilityType.inoperative
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
             print("after_change_availability Exception:",e)
@@ -998,7 +998,7 @@ class ChargePoint16(cp):
             status = id_tag_info['status']
             if status == AuthorizationStatus.accepted.value:
                 self.application.ev.id_tag = id_tag
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                 self.application.chargePoint.authorize = AuthorizationStatus.accepted
                 Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
             else:
@@ -1014,7 +1014,7 @@ class ChargePoint16(cp):
                 if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
                         print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
                         self.application.ev.id_tag = id_tag
-                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
                         Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
                 else:
@@ -1066,7 +1066,7 @@ class ChargePoint16(cp):
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.parent_id = parent_id_tag
                 # ChargePoint durumunu güncelle
-                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing.value)
                 self.application.led_state = LedState.WaitingPluging
 
             # Yanıt gönder

@@ -156,7 +156,7 @@ class Process:
                 self.application.deviceState = DeviceState.FAULT
                 return
 
-        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.preparing)
+        self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
         self.application.ev.charge = False
         self.application.led_state =LedState.Connecting
 
@@ -220,7 +220,7 @@ class Process:
     def waiting_state_c(self):
         print(Color.Yellow.value,"Cihazın şarja geçmesi bekleniyor... Şarja geçmezse 5 dk sonra sonlanacak...")
         self.application.ev.charge = False
-        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.preparing)
+        self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
         time.sleep(1)
         
         time_start = time.time()
@@ -293,7 +293,7 @@ class Process:
                     self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                 elif self.application.modbusModule.connection == True:
                     pass
-                self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.charging)
                 print("Cihaz şarjda...")
                 self.application.ev.charge = True
                 # if time.time() - time_start > 20:
@@ -305,7 +305,7 @@ class Process:
     def charging(self):
         print(Color.Yellow.value,"Cihaz şarja başlayacak...")
         self.application.led_state =LedState.Connecting
-        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:
@@ -370,7 +370,7 @@ class Process:
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
                     self.set_max_current()
                     self.relay_control(Relay.On)
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.charging)
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.charging)
                     if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
                         self.application.serialPort.get_command_pid_current()
                         self.application.serialPort.get_command_pid_voltage()
@@ -500,7 +500,7 @@ class Process:
 
     def suspended_ev(self):
         print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
-        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.suspended_ev)
+        self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.suspended_ev)
         self.relay_control(Relay.Off)
         time_start = time.time()
         self.application.led_state = LedState.ChargingStopped
@@ -524,7 +524,7 @@ class Process:
         self.application.ev.stop_pwm_off_relay()
         self.application.ev.clean_charge_variables()
         self.application.led_state =LedState.ChargingStopped
-        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
      
     def idle(self):
         self.rcd_trip_error = False
@@ -538,7 +538,7 @@ class Process:
         if self.application.ev.reservation_id != None:
             print(Color.Green.value,"Bir reservasyon var. reservation_id:", self.application.ev.reservation_id)
             self.application.led_state =LedState.WaitingPluging
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
             return
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
@@ -548,7 +548,7 @@ class Process:
                     return
         if len(self.application.serialPort.error_list) == 0:
             if self.application.availability == AvailabilityType.operative:
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                     
             self.application.led_state =LedState.StandBy
                              

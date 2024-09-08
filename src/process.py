@@ -19,7 +19,7 @@ class Process:
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False
-
+        self.rfid_verified = None
         if db_idtag != None and db_idtag != "" and db_idtag != "None":
             self.id_tag = db_idtag
 

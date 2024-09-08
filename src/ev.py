@@ -485,7 +485,7 @@ class EV():
             print("Authorized for unknown id")
             return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
         
-        self.application.led_state =LedState.RfidFailed
+        self.application.process.rfid_verified = False
         return AuthorizationStatus.invalid  # allowOfflineTxForUnknownId False ise, Red olarak geri dön.
 
     def check_local_auth_list(self, value):
@@ -620,7 +620,7 @@ class EV():
                     else:
                         self.application.chargePoint.handle_authorization_failed()
                 else:
-                    self.application.led_state = LedState.RfidFailed
+                    self.application.process.rfid_verified = False
                     
             elif (self.application.cardType == CardType.BillingCard):
                 print("Billing Card Detected :", value)
@@ -681,9 +681,9 @@ class EV():
 
                         if self.charge and (self.application.process.id_tag == value):
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
-                            self.application.led_state =LedState.RfidVerified
+                            self.application.process.rfid_verified = True
                         elif self.charge == False:
-                            self.application.led_state =LedState.RfidVerified
+                            self.application.process.rfid_verified = True
                             if self.__control_pilot != "B":
                                 time.sleep(2)
                                 self.application.led_state =LedState.WaitingPluging

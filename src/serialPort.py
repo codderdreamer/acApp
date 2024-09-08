@@ -74,7 +74,6 @@ class SerialPort():
     def set_led_state_thread(self):
         while True:
             try:
-                # print(self.application.led_state,self.application.led_state != LedState.RfidVerified,self.application.led_state != LedState.RfidFailed,self.application.led_state != LedState.RfidVerified or self.application.led_state != LedState.RfidFailed)
                 if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
                     self.set_command_pid_led_control(self.application.led_state)
                     print("Led güncelleme -> ",self.application.led_state)
@@ -393,60 +392,20 @@ class SerialPort():
     def set_response_pid_led_control(self, data):
         if data[2] == self.pid_led_control:
             result = data[7]
-            # if result == LedState.StandBy.value:
-            #     print("set_response_pid_led_control --> ",LedState.StandBy.name)
-            # elif result == LedState.Connecting.value:
-            #     print("set_response_pid_led_control --> ",LedState.Connecting.name)
-            # elif result == LedState.RfidVerified.value:
-            #     print("set_response_pid_led_control --> ",LedState.RfidVerified.name)
-            # elif result == LedState.Charging.value:
-            #     print("set_response_pid_led_control --> ",LedState.Charging.name)
-            # elif result == LedState.RfidFailed.value:
-            #     print("set_response_pid_led_control --> ",LedState.RfidFailed.name)
-            # elif result == LedState.NeedReplugging.value:
-            #     print("set_response_pid_led_control --> ",LedState.NeedReplugging.name)
-            # elif result == LedState.Fault.value:
-            #     print("set_response_pid_led_control --> ",LedState.Fault.name)
-            # elif result == LedState.ChargingStopped.value:
-            #     print("set_response_pid_led_control --> ",LedState.ChargingStopped.name)
 
     def get_response_pid_led_control(self,data):
         if data[2] == self.pid_led_control:
             self.application.ev.pid_led_control = data[7]
             result = data[7]
-            # if result == LedState.StandBy.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.StandBy.name)
-            # elif result == LedState.Connecting.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.Connecting.name)
-            # elif result == LedState.RfidVerified.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.RfidVerified.name)
-            # elif result == LedState.Charging.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.Charging.name)
-            # elif result == LedState.RfidFailed.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.RfidFailed.name)
-            # elif result == LedState.NeedReplugging.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.NeedReplugging.name)
-            # elif result == LedState.Fault.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.Fault.name)
-            # elif result == LedState.ChargingStopped.value:
-            #     print("self.application.ev.pid_led_control --> ",LedState.ChargingStopped.name)
 
     def set_response_pid_locker_control(self,data):
         if data[2] == self.pid_locker_control:
             result = data[7]
-            # if result == LockerState.Lock.value:
-            #     print("Locker control set to Lock")
-            # elif result == LockerState.Unlock.value:
-            #     print("Locker control set to Unlock")
 
     def get_response_pid_locker_control(self, data):
         if data[2] == self.pid_locker_control:
             self.application.ev.pid_locker_control = data[7]
             result = data[7]
-            # if result == LockerState.Lock.value:
-            #     print("Locker state: Lock")
-            # elif result == LockerState.Unlock.value:
-            #     print("Locker state: Unlock")
 
     def get_response_pid_current(self, data):
         if data[2] == self.pid_current:

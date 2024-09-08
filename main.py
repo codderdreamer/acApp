@@ -90,8 +90,22 @@ class Application():
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         Thread(target=self.read_charge_values_thred, daemon=True).start()
         Thread(target=self.control_output,daemon=True).start()
+        Thread(target=self.led_state_thread,daemon=True).start()
         self.deviceState = DeviceState.IDLE
         self.chargePointStatus = ChargePointStatus.available
+
+    def led_state_thread(self):
+        while True:
+            if self.availability == AvailabilityType.inoperative:
+                self.led_state = LedState.DeviceInoperative
+            elif self.process.rfid_verified == True:
+                self.led_state = LedState.RfidVerified
+                self.process.rfid_verified = None
+            elif self.process.rfid_verified == False:
+                self.led_state = LedState.RfidFailed
+                self.process.rfid_verified = None
+
+            time.sleep(1)
 
 
     @property

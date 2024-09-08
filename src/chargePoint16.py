@@ -85,7 +85,7 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.authorize = response.id_tag_info['status']
                 if self.authorize != AuthorizationStatus.accepted:
-                    self.application.led_state =LedState.RfidFailed
+                    self.application.process.rfid_verified = False
                 return response
             else:
                 self.application.request_list.append(request)
@@ -93,7 +93,7 @@ class ChargePoint16(cp):
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
                 else:
-                    self.application.led_state =LedState.RfidFailed
+                    self.application.process.rfid_verified = False
         
         except Exception as e:
             print("send_authorize Exception:",e)
@@ -102,8 +102,8 @@ class ChargePoint16(cp):
         """
         Yetkilendirme kabul edildiğinde yapılacak işlemler.
         """
-        self.application.led_state =LedState.RfidVerified
-        if self.application.ev.control_pilot == "A" and not self.application.ev.charge:
+        self.application.process.rfid_verified = True
+        if self.application.ev.control_pilot == ControlPlot.stateA.value and not self.application.ev.charge:
             print("-------------------------------------------------------------------  Araç bağlı değil")
             self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
             time.sleep(3)
@@ -116,7 +116,7 @@ class ChargePoint16(cp):
         """
         Yetkilendirme başarısız olduğunda yapılacak işlemler.
         """
-        self.application.led_state =LedState.RfidFailed
+        self.application.process.rfid_verified = False
         
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(

@@ -523,7 +523,7 @@ class Process:
         self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
      
     def idle(self):
-        self.process.rcd_trip_error = False
+        self.rcd_trip_error = False
         self.application.ev.stop_pwm_off_relay()
         self.application.ev.clean_charge_variables()
         self.charge_try_counter = 0

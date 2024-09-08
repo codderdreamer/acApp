@@ -210,7 +210,7 @@ class EV():
             print("stop_pwm_off_relay Exception:",e)
 
     def control_error_list(self):
-        time.sleep(10)
+        time.sleep(15)
         time_start = time.time()
         while True:
             try:

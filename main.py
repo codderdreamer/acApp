@@ -151,7 +151,7 @@ class Application():
             if value == DeviceState.WAITING_STATE_C:
                 if self.ev.control_pilot == ControlPlot.stateC.value:
                     return
-            if self.process.rcd_trip_error:
+            if self.process.rcd_trip_error or self.process.locker_initialize_error:
                 if value == DeviceState.IDLE:
                     pass
                 elif value == DeviceState.FAULT:

@@ -88,6 +88,12 @@ class EV():
         else:
             return False
         
+    def is_there_locker_initialize_error(self):
+        if PidErrorList.LockerInitializeError in self.application.serialPort.error_list:
+            return True
+        else:
+            return False
+        
     def is_there_other_error(self):
         if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
@@ -164,7 +170,8 @@ class EV():
                 if self.application.process.transaction_id != None:
                     print(Color.Yellow.value,"Stop transaction gönderiliyor...")
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
+                    if not self.application.initilly:
+                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
                 self.application.meter_values_on = False
                 time.sleep(3)
             print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")
@@ -228,6 +235,12 @@ class EV():
                     self.application.deviceState = DeviceState.FAULT
                     self.application.led_state = LedState.RcdError
                     self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
+                    self.clean_charge_variables()
+                elif self.is_there_locker_initialize_error():
+                    self.application.process.locker_initialize_error = True
+                    self.application.deviceState = DeviceState.FAULT
+                    self.application.led_state = LedState.LockerError
+                    self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")
                     self.clean_charge_variables()
                 elif self.is_there_other_error():
                     if self.application.process.charge_try_counter > 3:

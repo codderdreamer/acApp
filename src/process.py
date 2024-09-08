@@ -15,6 +15,7 @@ class Process:
         self.locker_error = False
         self.charge_try_counter = 0
         self.rcd_trip_error = False
+        self.locker_initialize_error = False
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False
@@ -143,7 +144,7 @@ class Process:
         # if self.application.chargePointStatus == ChargePointStatus.faulted:
         #     return
 
-        if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
+        if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value and self.charge_try_counter != 0:
             self.application.deviceState = DeviceState.SUSPENDED_EV
             return
 
@@ -151,6 +152,7 @@ class Process:
             self.application.serialPort.get_command_pid_proximity_pilot()
             time.sleep(0.5)
             if self.application.ev.proximity_pilot_current == 0:
+                print(Color.Red.value,"proximity_pilot_current : 0 hata")
                 self.application.deviceState = DeviceState.FAULT
                 return
 
@@ -468,7 +470,6 @@ class Process:
             
     def suspended_evse(self):
         print("Suspended evse function")
-        time_start = time.time()
         self.application.ev.stop_pwm_off_relay()
         self.charge_try_counter += 1
         self.application.meter_values_on = False
@@ -481,6 +482,7 @@ class Process:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
             self.application.led_state =LedState.Fault
         # self.application.ev.charge = False
+        time_start = time.time()
         while True:
             time.sleep(1)
             if time.time() - time_start > 30:
@@ -526,6 +528,7 @@ class Process:
      
     def idle(self):
         self.rcd_trip_error = False
+        self.locker_initialize_error = False
         self.application.ev.stop_pwm_off_relay()
         self.application.ev.clean_charge_variables()
         self.charge_try_counter = 0

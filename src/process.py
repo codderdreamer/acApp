@@ -18,7 +18,7 @@ class Process:
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False
 
-        if db_idtag != None and db_idtag != "":
+        if db_idtag != None and db_idtag != "" and db_idtag != "None":
             self.id_tag = db_idtag
 
         if db_tansactionid != None and db_tansactionid != "" and db_tansactionid != "None":

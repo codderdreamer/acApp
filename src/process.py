@@ -21,7 +21,7 @@ class Process:
         if db_idtag != None and db_idtag != "":
             self.id_tag = db_idtag
 
-        if db_tansactionid != None and db_tansactionid != "":
+        if db_tansactionid != None and db_tansactionid != "" and db_tansactionid != "None":
             print("db_tansactionid",db_tansactionid)
             self.transaction_id = int(db_tansactionid)
 

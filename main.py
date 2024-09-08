@@ -151,6 +151,14 @@ class Application():
             if value == DeviceState.WAITING_STATE_C:
                 if self.ev.control_pilot == ControlPlot.stateC.value:
                     return
+            if self.process.rcd_trip_error:
+                if value != DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    return
+
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value
             if self.__deviceState == DeviceState.CONNECTED:

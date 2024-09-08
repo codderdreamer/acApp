@@ -159,19 +159,20 @@ class EV():
 
     def clean_charge_variables(self):
         try:
-            print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")
+            
             if (self.application.cardType == CardType.BillingCard):
                 if self.application.process.transaction_id != None:
+                    print(Color.Yellow.value,"Stop transaction gönderiliyor...")
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
                     self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.finishing)
                 self.application.meter_values_on = False
-            if hasattr(self.application, 'chargePoint') and self.application.chargePoint is not None:
-                Thread(target=self.application.chargePoint.send_stop_thread,daemon=True).start()
+                time.sleep(3)
+            print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")
             self.application.ev.start_stop_authorize = False
             self.application.ev.card_id = ""
             self.application.ev.id_tag = None
             self.application.ev.charge = False
-            if hasattr(self.application, 'chargePoint') and self.application.chargePoint is not None:
+            if (self.application.cardType == CardType.BillingCard):
                 self.application.chargePoint.authorize = None
             self.application.process.transaction_id = None
             self.application.process.id_tag = None
@@ -223,6 +224,7 @@ class EV():
                     if self.control_pilot != ControlPlot.stateC.value and self.application.led_state != LedState.RfidFailed and self.application.led_state != LedState.RfidVerified:
                         self.application.led_state = LedState.DeviceInoperative
                 elif self.is_there_rcd_trip_error():
+                    self.application.process.rcd_trip_error = True
                     self.application.deviceState = DeviceState.FAULT
                     self.application.led_state = LedState.RcdError
                     self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")

@@ -14,6 +14,7 @@ class Process:
         self.transaction_id = None
         self.locker_error = False
         self.charge_try_counter = 0
+        self.rcd_trip_error = False
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False

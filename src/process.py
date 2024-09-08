@@ -294,8 +294,8 @@ class Process:
                 self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.charging)
                 print("Cihaz şarjda...")
                 self.application.ev.charge = True
-                if time.time() - time_start > 20:
-                    self.charge_try_counter = 0
+                # if time.time() - time_start > 20:
+                #     self.charge_try_counter = 0
             except Exception as e:
                 print("**************************************************** charge_while Exception", e)
             time.sleep(1)
@@ -541,11 +541,11 @@ class Process:
                     return
                 if value == PidErrorList.RcdInitializeError:
                     return
-                
-        if self.application.availability == AvailabilityType.operative:
-            self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-                
-        self.application.led_state =LedState.StandBy
+        if len(self.application.serialPort.error_list) == 0:
+            if self.application.availability == AvailabilityType.operative:
+                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                    
+            self.application.led_state =LedState.StandBy
                              
     def stopped_by_user(self):
         self.application.ev.stop_pwm_off_relay()

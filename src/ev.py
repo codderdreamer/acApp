@@ -231,12 +231,15 @@ class EV():
                     self.clean_charge_variables()
                 elif self.is_there_other_error():
                     if self.application.process.charge_try_counter > 3:
+                        self.application.led_state = LedState.NeedReplugging
                         self.application.deviceState = DeviceState.FAULT
                     elif (self.control_pilot == ControlPlot.stateB.value) or (self.control_pilot == ControlPlot.stateC.value):
                         self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     elif (self.control_pilot == ControlPlot.stateA.value):
+                        self.application.led_state = LedState.Fault
                         self.application.deviceState = DeviceState.FAULT
                     else:
+                        self.application.led_state = LedState.Fault
                         self.application.deviceState = DeviceState.FAULT
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved) and (self.application.serialPort.error == False):
                     self.ocpp_online()

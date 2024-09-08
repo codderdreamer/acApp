@@ -224,6 +224,9 @@ class EV():
                         self.application.led_state = LedState.DeviceInoperative
                 elif self.is_there_rcd_trip_error():
                     self.application.deviceState = DeviceState.FAULT
+                    self.application.led_state = LedState.RcdError
+                    self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
+                    self.clean_charge_variables()
                 elif self.is_there_other_error():
                     if self.application.process.charge_try_counter > 3:
                         self.application.deviceState = DeviceState.FAULT

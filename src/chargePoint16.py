@@ -431,6 +431,8 @@ class ChargePoint16(cp):
             self.application.process.transaction_id = response.transaction_id
             print("response.id_tag_info['status']",response.id_tag_info['status'])
             self.start_transaction_result = response.id_tag_info['status']
+            if self.start_transaction_result != AuthorizationStatus.accepted:
+                self.application.ev.clean_charge_variables()
             if reservation_id and self.start_transaction_result == AuthorizationStatus.accepted:
                 print("Reservation accepted")
                 self.application.ev.reservation_id = None

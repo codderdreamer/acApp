@@ -90,12 +90,9 @@ class Application():
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
         Thread(target=self.read_charge_values_thred, daemon=True).start()
         Thread(target=self.control_output,daemon=True).start()
-        # Thread(target=self.simu_test,daemon=True).start()
         self.deviceState = DeviceState.IDLE
         self.chargePointStatus = ChargePointStatus.available
 
-        self.create_error = False
-        
 
     @property
     def led_state(self):
@@ -108,14 +105,6 @@ class Application():
             self.__led_state = value
             Thread(target=self.serialPort.set_command_pid_led_control, args=(value,),daemon=True).start()
 
-    def simu_test(self):
-        while True:
-            x = input()
-            if x == "1":
-                self.create_error = True
-            elif x == "2":
-                self.create_error = False
-            time.sleep(1)
 
     def control_output(self):
         while True:

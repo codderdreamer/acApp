@@ -393,10 +393,7 @@ class Process:
         print("Fauld Process")
         self.application.ev.stop_pwm_off_relay()
 
-        if PidErrorList.RcdTripError in self.application.serialPort.error_list:
-            self.application.led_state =LedState.RcdError
-            self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
-        elif len(self.application.serialPort.error_list) > 0:
+        if len(self.application.serialPort.error_list) > 0:
             for value in self.application.serialPort.error_list:
                 if value == PidErrorList.LockerInitializeError:
                     self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")

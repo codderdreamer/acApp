@@ -538,8 +538,6 @@ class SerialPort():
                 error_list.append(PidErrorList.PhaseSequenceFailure)
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
-            if (self.application.create_error):
-                error_list.append(PidErrorList.OverVoltageFailure)
 
             if len(error_list) > 0:
                 print(Color.Red.value,error_list)

@@ -514,6 +514,8 @@ class Process:
                     break
             else:
                 break
+            if self.application.deviceState != DeviceState.SUSPENDED_EV:
+                break
             time.sleep(0.3)
        
     def stopped_by_evse(self):

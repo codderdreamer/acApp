@@ -158,6 +158,8 @@ class Application():
                     pass
                 else:
                     return
+            if self.process.charge_try_counter != 0:
+                if value 
 
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value

@@ -96,14 +96,44 @@ class Application():
 
     def led_state_thread(self):
         while True:
-            if self.availability == AvailabilityType.inoperative:
+            if self.ev.is_there_rcd_error():
+                self.led_state = LedState.RcdError
+            elif self.ev.is_there_locker_initialize_error():
+                self.led_state = LedState.LockerError
+            elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter > 3:
+                self.led_state = LedState.NeedReplugging
+            elif self.chargePointStatus == ChargePointStatus.faulted and len(self.serialPort.error_list) > 0:
+                self.led_state = LedState.Fault
+            elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter != 0:
+                self.led_state = LedState.Fault
+            elif self.chargePointStatus == ChargePointStatus.faulted and self.process.locker_error:
+                self.led_state = LedState.LockerError
+            elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
+                self.led_state = LedState.Fault
+            elif self.chargePointStatus == ChargePointStatus.faulted and (self.ev.control_pilot == ControlPlot.stateB.value or self.ev.control_pilot == ControlPlot.stateC.value):
+                self.led_state = LedState.NeedReplugging
+            elif self.chargePointStatus == ChargePointStatus.faulted:
+                self.led_state = LedState.Fault
+            elif self.availability == AvailabilityType.inoperative and self.ev.charge == False:
                 self.led_state = LedState.DeviceInoperative
+            elif self.deviceState == DeviceState.OFFLINE:
+                self.led_state = DeviceState.OFFLINE
             elif self.process.rfid_verified == True:
                 self.led_state = LedState.RfidVerified
                 self.process.rfid_verified = None
             elif self.process.rfid_verified == False:
                 self.led_state = LedState.RfidFailed
                 self.process.rfid_verified = None
+            elif self.deviceState == DeviceState.SUSPENDED_EV or self.deviceState == DeviceState.STOPPED_BY_EVSE or self.deviceState == DeviceState.STOPPED_BY_USER:
+                self.led_state = LedState.ChargingStopped
+            elif (self.chargePointStatus == ChargePointStatus.preparing or self.chargePointStatus == ChargePointStatus.reserved) and self.ev.control_pilot == ControlPlot.stateA.value:
+                self.led_state = LedState.WaitingPluging
+            elif self.chargePointStatus == ChargePointStatus.available and self.ev.control_pilot == ControlPlot.stateA.value:
+                self.led_state = LedState.StandBy
+            elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateB.value:
+                self.led_state = LedState.Connecting
+            elif self.chargePointStatus == ChargePointStatus.charging:
+                self.led_state = LedState.Charging
 
             time.sleep(1)
 
@@ -352,8 +382,6 @@ class Application():
         except Exception as e:
             print("ocppStart Exception:", e)
             self.ocppActive = False
-            if self.chargePointStatus == ChargePointStatus.charging:
-                self.led_state = LedState.Charging
  
     def ocpp_task(self):
         while True:

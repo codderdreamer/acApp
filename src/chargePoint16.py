@@ -107,7 +107,6 @@ class ChargePoint16(cp):
             print("-------------------------------------------------------------------  Araç bağlı değil")
             self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
             time.sleep(3)
-            self.application.led_state =LedState.WaitingPluging
         if self.application.ev.charge:
             self.application.deviceState = DeviceState.STOPPED_BY_USER
 
@@ -641,10 +640,8 @@ class ChargePoint16(cp):
 
             # Durumu güncelle
             if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                self.application.led_state = LedState.StandBy
                 self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
             elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                self.application.led_state = LedState.Connecting
                 self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
 
 
@@ -1066,8 +1063,7 @@ class ChargePoint16(cp):
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.parent_id = parent_id_tag
                 # ChargePoint durumunu güncelle
-                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing.value)
-                self.application.led_state = LedState.WaitingPluging
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
 
             # Yanıt gönder
             response = call_result.ReserveNowPayload(

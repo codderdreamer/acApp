@@ -65,7 +65,6 @@ class SerialPort():
         Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
         Thread(target=self.get_command_pid_error_list,daemon=True).start()
-        Thread(target=self.get_command_pid_error_list_init,daemon=True).start()
         Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
         Thread(target=self.get_energy_thread,daemon=True).start()
         Thread(target=self.set_led_state_thread,daemon=True).start()
@@ -315,15 +314,6 @@ class SerialPort():
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
             time.sleep(30)
-
-    def get_command_pid_error_list_init(self):
-        time.sleep(15)
-        if len(self.error_list) > 0:
-            for value in self.error_list:
-                if value == PidErrorList.LockerInitializeError:
-                    self.application.led_state =LedState.LockerError
-                elif value == PidErrorList.RcdInitializeError:
-                    self.application.led_state =LedState.RcdError
             
     def get_command_pid_error_list(self):
         time.sleep(10)

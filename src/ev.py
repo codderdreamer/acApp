@@ -63,27 +63,23 @@ class EV():
             self.expiry_date = reservation.get('expiry_date')
             self.parent_id = reservation.get('parent_id')
             self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.reserved)
-            if self.control_pilot == ControlPlot.stateA.value:
-                self.application.led_state = LedState.WaitingPluging
 
             
     def ocpp_offline(self):
         print(Color.Red.value, "Ocpp Offline")
-        self.application.led_state = LedState.DeviceOffline
         self.application.deviceState = DeviceState.OFFLINE
         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted,"Offline")
 
     def ocpp_online(self):
-        # led rfid verified yada faild iken standby yanmasın
-        if not (self.application.led_state == LedState.RfidFailed or self.application.led_state == LedState.RfidVerified):
-            self.application.led_state =LedState.StandBy
         if self.application.availability == AvailabilityType.operative:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
         else:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
 
-    def is_there_rcd_trip_error(self):
+    def is_there_rcd_error(self):
         if PidErrorList.RcdTripError in self.application.serialPort.error_list:
+            return True
+        elif PidErrorList.RcdInitializeError in self.application.serialPort.error_list:
             return True
         else:
             return False
@@ -144,7 +140,6 @@ class EV():
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
             print("self.application.ev.control_pilot", self.application.ev.control_pilot)
-            self.application.led_state =LedState.WaitingPluging
             while True:
                 print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
@@ -154,10 +149,7 @@ class EV():
                     print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
                     if self.reservation_id:
                         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.reserved)
-                        if self.control_pilot == ControlPlot.stateA.value:
-                            self.application.led_state = LedState.WaitingPluging
                     else:
-                        self.application.led_state =LedState.StandBy
                         self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
                         self.clean_charge_variables()
                     break
@@ -227,32 +219,24 @@ class EV():
                 
                 if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
                     self.ocpp_offline()
-                elif self.application.availability == AvailabilityType.inoperative:
-                    if self.control_pilot != ControlPlot.stateC.value and self.application.led_state != LedState.RfidFailed and self.application.led_state != LedState.RfidVerified:
-                        self.application.led_state = LedState.DeviceInoperative
-                elif self.is_there_rcd_trip_error():
+                elif self.is_there_rcd_error():
                     self.application.process.rcd_trip_error = True
                     self.application.deviceState = DeviceState.FAULT
-                    self.application.led_state = LedState.RcdError
                     self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
                     self.clean_charge_variables()
                 elif self.is_there_locker_initialize_error():
                     self.application.process.locker_initialize_error = True
                     self.application.deviceState = DeviceState.FAULT
-                    self.application.led_state = LedState.LockerError
                     self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")
                     self.clean_charge_variables()
                 elif self.is_there_other_error():
                     if self.application.process.charge_try_counter > 3:
-                        self.application.led_state = LedState.NeedReplugging
                         self.application.deviceState = DeviceState.FAULT
                     elif (self.control_pilot == ControlPlot.stateB.value) or (self.control_pilot == ControlPlot.stateC.value):
                         self.application.deviceState = DeviceState.SUSPENDED_EVSE
                     elif (self.control_pilot == ControlPlot.stateA.value):
-                        self.application.led_state = LedState.Fault
                         self.application.deviceState = DeviceState.FAULT
                     else:
-                        self.application.led_state = LedState.Fault
                         self.application.deviceState = DeviceState.FAULT
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved) and (self.application.serialPort.error == False):
                     self.ocpp_online()
@@ -684,15 +668,12 @@ class EV():
                             self.application.process.rfid_verified = True
                         elif self.charge == False:
                             self.application.process.rfid_verified = True
-                            if self.__control_pilot != "B":
-                                time.sleep(2)
-                                self.application.led_state =LedState.WaitingPluging
                         else:
-                            self.application.led_state =LedState.RfidFailed
+                            self.application.process.rfid_verified = False
                         break
                 if finded == False:
                     self.start_stop_authorize = False
-                    self.application.led_state =LedState.RfidFailed
+                    self.application.process.rfid_verified = False
         
         self.__card_id = value
 

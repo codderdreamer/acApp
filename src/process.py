@@ -22,6 +22,7 @@ class Process:
             self.id_tag = db_idtag
 
         if db_tansactionid != None and db_tansactionid != "":
+            print("db_tansactionid",db_tansactionid)
             self.transaction_id = int(db_tansactionid)
 
         self.initially_charge = self.application.databaseModule.get_charge()["charge"] == "True"

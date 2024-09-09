@@ -29,25 +29,6 @@ class Settings():
         self.diagnosticsStatusSettings = DiagnosticsStatusSettings()  # Yeni eklendi
         
         self.change_ocpp = False
-        self.__websocketIp = None
-
-        
-
-    @property
-    def websocketIp(self):
-        return self.__websocketIp
-
-    @websocketIp.setter
-    def websocketIp(self, value):
-        if self.__websocketIp is None:
-            self.__websocketIp = value
-            self.set_websocket_ip(value)
-            self.application.flaskModule.host = self.__websocketIp
-            self.application.flaskModule.start()
-        elif self.__websocketIp != value:
-            self.__websocketIp = value
-            self.set_websocket_ip(value)
-            self.application.flaskModule.host = self.__websocketIp
 
     def set_websocket_ip(self, ip):
         try:

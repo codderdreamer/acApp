@@ -165,7 +165,6 @@ class SerialPort():
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
-        print("set command data:",send_data)
         
 
     def get_command_pid_cp_pwm(self):
@@ -175,7 +174,6 @@ class SerialPort():
         checksum = self.calculate_checksum(data)
         send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
         self.send_data_list.append(send_data)
-        print("get command data:",send_data)
         
     def set_command_pid_relay_control(self,relay:Relay):
         '''
@@ -341,7 +339,6 @@ class SerialPort():
 
     def get_response_pid_cp_pwm(self, data):
         if data[2] == self.pid_cp_pwm_control:
-            print("get response:",data)
             digit_100 = int(data[7]) * 100
             digit_10 = int(data[8]) * 10
             digit_1 = int(data[9])

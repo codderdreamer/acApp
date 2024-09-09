@@ -14,6 +14,7 @@ class Process:
         self.transaction_id = None
         self.locker_error = False
         self.charge_try_counter = 0
+        self.try_charge = False
         self.rcd_trip_error = False
         self.locker_initialize_error = False
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
@@ -277,14 +278,12 @@ class Process:
             time.sleep(1)
 
     def charging(self):
+        if len(self.application.serialPort.error_list) > 0:
+            print("Hata var!")
+            return
+        
         print(Color.Yellow.value,"Cihaz şarja başlayacak...")
         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
-        if len(self.application.serialPort.error_list) > 0:
-            for value in self.application.serialPort.error_list:
-                if value == PidErrorList.LockerInitializeError:
-                    return
-                if value == PidErrorList.RcdInitializeError:
-                    return
                 
         if self.application.control_A_B_C != True: # A'dan C'ye geçmiş ise
             print("Cihaz A state'inden C statine geçmiş.")
@@ -435,6 +434,7 @@ class Process:
             self.application.deviceState = DeviceState.FAULT
             return
         print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
+        self.try_charge = True
         for value in self.application.serialPort.error_list:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
         time_start = time.time()
@@ -442,10 +442,13 @@ class Process:
             time.sleep(1)
             if time.time() - time_start > 30:
                 print(Color.Yellow.value,"30 saniye doldu.")
+                self.try_charge = False
                 break
             if self.application.deviceState != DeviceState.SUSPENDED_EVSE:
+                self.try_charge = False
                 return
             if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                self.try_charge = False
                 return
         if self.application.deviceState == DeviceState.SUSPENDED_EVSE:
             if self.application.ev.control_pilot == ControlPlot.stateB.value:

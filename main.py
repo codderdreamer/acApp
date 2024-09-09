@@ -95,11 +95,17 @@ class Application():
         self.chargePointStatus = ChargePointStatus.available
 
     def led_state_thread(self):
+        rcd_error = False
         while True:
             if self.ev.is_there_rcd_error():
                 self.led_state = LedState.RcdError
+                rcd_error = True
+            elif rcd_error:
+                self.led_state = LedState.RcdError
             elif self.ev.is_there_locker_initialize_error():
                 self.led_state = LedState.LockerError
+            elif self.ev.is_there_other_error():
+                self.led_state = LedState.Fault
             elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter > 3:
                 self.led_state = LedState.NeedReplugging
             elif self.chargePointStatus == ChargePointStatus.faulted and len(self.serialPort.error_list) > 0:
@@ -110,9 +116,13 @@ class Application():
                 self.led_state = LedState.LockerError
             elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
                 self.led_state = LedState.Fault
+            elif self.process.try_charge:
+                self.led_state = LedState.Fault
             elif self.chargePointStatus == ChargePointStatus.faulted and (self.ev.control_pilot == ControlPlot.stateB.value or self.ev.control_pilot == ControlPlot.stateC.value):
                 self.led_state = LedState.NeedReplugging
             elif self.chargePointStatus == ChargePointStatus.faulted:
+                self.led_state = LedState.Fault
+            elif self.chargePointStatus == ChargePointStatus.suspended_evse:
                 self.led_state = LedState.Fault
             elif self.availability == AvailabilityType.inoperative and self.ev.charge == False:
                 self.led_state = LedState.DeviceInoperative
@@ -132,8 +142,13 @@ class Application():
                 self.led_state = LedState.StandBy
             elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateB.value:
                 self.led_state = LedState.Connecting
+            elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateC.value:
+                self.led_state = LedState.Connecting
             elif self.chargePointStatus == ChargePointStatus.charging:
                 self.led_state = LedState.Charging
+
+            if self.ev.control_pilot == ControlPlot.stateA.value:
+                rcd_error = False
 
             time.sleep(1)
 
@@ -196,6 +211,13 @@ class Application():
                 if self.ev.control_pilot == ControlPlot.stateC.value:
                     return
             if self.process.rcd_trip_error or self.process.locker_initialize_error:
+                if value == DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    return
+            if self.process.charge_try_counter == 4:
                 if value == DeviceState.IDLE:
                     pass
                 elif value == DeviceState.FAULT:

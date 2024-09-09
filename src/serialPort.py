@@ -95,6 +95,7 @@ class SerialPort():
         # counter = 0
         while True:
             try:
+                print("self.send_data_list",self.send_data_list)
                 if len(self.send_data_list) > 0:
                     # counter += 1
                     # print("write counter",counter)

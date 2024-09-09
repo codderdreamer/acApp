@@ -231,6 +231,12 @@ class Application():
                     pass
                 else:
                     return
+                
+            if self.__deviceState == DeviceState.STOPPED_BY_USER:
+                if value == DeviceState.IDLE:
+                    pass
+                else:
+                    return
 
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value

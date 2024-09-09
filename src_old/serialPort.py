@@ -491,14 +491,7 @@ class SerialPort():
             if len(error_list) > 0:
                 print(Color.Red.value,error_list)
                 self.error = True
-
-            if error_list != self.error_list:
-                if len(error_list) > 0:
-                    for error in error_list:
-                        self.application.testWebSocket.send_error(error.value)
-                else:
-                    self.application.testWebSocket.send_error("")
-            
+    
             self.error_list = error_list
 
     def read(self):

@@ -26,7 +26,7 @@ class Settings():
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
         self.configuration = Configuration(application)
-        self.diagnosticsStatusSettings = DiagnosticsStatusSettings()  # Yeni eklendi
+        self.diagnosticsStatusSettings = DiagnosticsStatusSettings()
         
         self.change_ocpp = False
 
@@ -257,7 +257,6 @@ class Settings():
                 second = sjon["Data"]["2"]
                 third = sjon["Data"]["3"]
                 self.application.databaseModule.set_network_priority(enableWorkmode, first, second, third)
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_network_priority())
         except Exception as e:
             print("set_network_priority Exception:", e)
@@ -272,7 +271,6 @@ class Settings():
                 pin = sjon["Data"]["pin"]
                 self.application.databaseModule.set_settings_4g(apn, user, password, enableModification, pin)
                 self.application.softwareSettings.set_4G()
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_Settings4G())
         except Exception as e:
             print("set_Settings4G Exception:",e)
@@ -287,7 +285,6 @@ class Settings():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable, dhcpcEnable, ip, netmask, gateway)
                 self.application.softwareSettings.set_eth()
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_ethernet_settings())
         except Exception as e:
             print("set_ethernet_settings Exception:",e)
@@ -318,7 +315,6 @@ class Settings():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable, mod, ssid, password, encryptionType, wifidhcpcEnable, ip, netmask, gateway)
                 self.application.softwareSettings.set_wifi()
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_wifi_settings())
         except Exception as e:
             print("set_wifi_settings Exception:",e)
@@ -451,7 +447,6 @@ class Settings():
     def get_diagnostics_last_update_time(self) -> str:
         return self.diagnosticsStatusSettings.get_last_update_time()
 
-# Definition of other classes used in Settings class
 class NetworkPriority():
     def __init__(self) -> None:
         self.enableWorkmode = None

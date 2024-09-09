@@ -224,6 +224,13 @@ class Application():
                     pass
                 else:
                     return
+            if self.process.wait_fault:
+                if value == DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    return
 
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value

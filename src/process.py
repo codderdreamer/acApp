@@ -15,6 +15,7 @@ class Process:
         self.locker_error = False
         self.charge_try_counter = 0
         self.try_charge = False
+        self.wait_fault = False
         self.rcd_trip_error = False
         self.locker_initialize_error = False
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
@@ -242,6 +243,7 @@ class Process:
             print("if not self.application.ev.pid_relay_control self.application.ev.control_pilot",self.application.ev.control_pilot)
             self.application.deviceState = DeviceState.FAULT
             return
+        
         while True:
             try:
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
@@ -416,6 +418,7 @@ class Process:
                 self.application.ev.clean_charge_variables()
 
         while True:
+            self.wait_fault = True
             if self.application.ev.control_pilot != ControlPlot.stateA.value:
                 time.sleep(1)
             elif len(self.application.serialPort.error_list) > 0:
@@ -483,6 +486,7 @@ class Process:
         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
      
     def idle(self):
+        self.wait_fault = False
         self.rcd_trip_error = False
         self.locker_initialize_error = False
         self.application.ev.stop_pwm_off_relay()

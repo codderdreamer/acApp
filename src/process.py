@@ -62,7 +62,7 @@ class Process:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(1)
             if self.application.ev.pid_locker_control == LockerState.Unlock:
-                print(Color.Yellow.value,"Kilit açıldı.")
+                print(Color.Green.value,"Kilit açıldı.")
                 break
             else:
                 time.sleep(1)

@@ -19,7 +19,7 @@ class EV():
         self.pid_cp_pwm = None                  # float
         self.pid_relay_control = None
         self.pid_led_control = None
-        self.pid_locker_control = None
+        self.__pid_locker_control = None
 
         self.current_L1 = 0
         self.current_L2 = 0
@@ -258,6 +258,16 @@ class EV():
             except Exception as e:
                 print("send_message Exception:", e)
             time.sleep(3)
+
+    @property
+    def pid_locker_control(self):
+        return self.__pid_locker_control
+
+    @pid_locker_control.setter
+    def pid_locker_control(self, value):
+        if self.__pid_locker_control != value:
+            self.__pid_locker_control = value 
+            print(Color.Yellow.value,value)
 
     @property
     def led_state(self):

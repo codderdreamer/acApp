@@ -59,7 +59,7 @@ class Process:
             time.sleep(0.3)
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
-            if self.application.ev.pid_locker_control == LockerState.Unlock.value:
+            if self.application.ev.pid_locker_control == LockerState.Unlock:
                 print(Color.Yellow.value,"Kilit açıldı.")
                 break
             else:
@@ -77,7 +77,7 @@ class Process:
         while True:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
-            if self.application.ev.pid_locker_control == LockerState.Unlock.value:
+            if self.application.ev.pid_locker_control == LockerState.Unlock:
                 print(Color.Yellow.value,"Kilit açıldı.")
                 return True
             else:
@@ -105,7 +105,7 @@ class Process:
         while True:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
-            if self.application.ev.pid_locker_control == LockerState.Lock.value:
+            if self.application.ev.pid_locker_control == LockerState.Lock:
                 print(Color.Yellow.value,"Kilit kitlendi.")
                 self.set_max_current()
                 self.application.deviceState = DeviceState.WAITING_STATE_C

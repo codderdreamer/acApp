@@ -56,34 +56,17 @@ class Process:
             self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
             time.sleep(0.5)
             self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-            time.sleep(0.3)
+            time.sleep(0.5)
             self.application.serialPort.get_command_pid_locker_control()
-            time.sleep(0.3)
+            time.sleep(1)
             if self.application.ev.pid_locker_control == LockerState.Unlock:
                 print(Color.Yellow.value,"Kilit açıldı.")
                 break
             else:
                 time.sleep(1)
-                if time.time() - time_start > 20:
-                    print(Color.Red.value,"20 saniyede kilit açılamadı!")
+                if time.time() - time_start > 10:
+                    print(Color.Red.value,"10 saniyede kilit açılamadı!")
                     break
-
-    def unlock_connector(self):
-        print("Kilit açılıyor...")
-        self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-        time.sleep(0.7)
-        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-        time_start = time.time()
-        while True:
-            self.application.serialPort.get_command_pid_locker_control()
-            time.sleep(0.3)
-            if self.application.ev.pid_locker_control == LockerState.Unlock:
-                print(Color.Yellow.value,"Kilit açıldı.")
-                return True
-            else:
-                if time.time() - time_start > 2:
-                    print(Color.Red.value,"2 saniyede kilit açılamadı!")
-                    return False
 
     def set_max_current(self):
         if self.application.socketType == SocketType.Type2:

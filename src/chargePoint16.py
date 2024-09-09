@@ -1357,7 +1357,7 @@ class ChargePoint16(cp):
                     status = UnlockStatus.unlocked
                 )
             else:
-                if self.application.process.unlock_connector():
+                if self.application.process.unlock():
                     response = call_result.UnlockConnectorPayload(
                         status = UnlockStatus.unlocked
                     )

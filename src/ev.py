@@ -202,10 +202,7 @@ class EV():
             else:
                 print(Color.Red.value,"Röle Off başarısız.")
             if self.application.socketType == SocketType.Type2:
-                if self.application.process.unlock():
-                    print(Color.Green.value,"Kilit açıldı.")
-                else:
-                    print("Kilit açılamadı.")
+                self.application.process.unlock()
         except Exception as e:
             print("stop_pwm_off_relay Exception:",e)
 

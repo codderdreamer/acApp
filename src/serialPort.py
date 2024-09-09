@@ -13,10 +13,11 @@ class SerialPort():
         self.logger = logger
         self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
         self.send_data_list = []
-
         self.error = False
-        
         self.error_list = []
+
+        self.time_20 = time.time()
+        self.time_10 = time.time()
 
         self.stx = b'\x02'
         self.lf = b'\n'
@@ -62,43 +63,33 @@ class SerialPort():
 
         Thread(target=self.read,daemon=True).start()
         Thread(target=self.write,daemon=True).start()
-        Thread(target=self.get_command_PID_control_pilot,daemon=True).start()
-        Thread(target=self.get_command_pid_rfid,daemon=True).start()
-        Thread(target=self.get_command_pid_error_list,daemon=True).start()
-        Thread(target=self.get_command_pid_evse_temp,daemon=True).start()
-        Thread(target=self.get_energy_thread,daemon=True).start()
-        Thread(target=self.set_led_state_thread,daemon=True).start()
-        self.set_command_pid_rfid()
 
-    def set_led_state_thread(self):
+        Thread(target=self.serial_port_thread,daemon=True).start()
+        Thread(target=self.get_command_pid_rfid,daemon=True).start()
+
+
+    def serial_port_thread(self):
         while True:
-            try:
+            if time.time() - self.time_20 > 20:
                 if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
-                    self.set_command_pid_led_control(self.application.led_state)
+                    self.time_20 = time.time()
                     print("Led güncelleme -> ",self.application.led_state)
-                    time.sleep(20)
-            except Exception as e:
-                pass
+                    self.set_command_pid_led_control(self.application.led_state)
+                    self.get_command_pid_evse_temp()
+            self.get_command_PID_control_pilot()
+            self.get_command_pid_error_list()
+            if time.time() - self.time_10 > 10:
+                self.time_10 = time.time()
+                self.get_command_pid_energy(EnergyType.kwh)
+                self.get_command_pid_proximity_pilot()
+
             time.sleep(1)
 
 
-    def get_energy_thread(self):
-        while True:
-            try:
-                self.get_command_pid_energy(EnergyType.kwh)
-                self.get_command_pid_proximity_pilot()
-            except Exception as e:
-                print("get_energy_thread Exception:",e)
-            time.sleep(10)
-
     def write(self):
-        # counter = 0
         while True:
             try:
-                print("self.send_data_list",len(self.send_data_list))
                 if len(self.send_data_list) > 0:
-                    # counter += 1
-                    # print("write counter",counter)
                     self.serial.write(self.send_data_list[0])
                     self.send_data_list.pop(0)
             except Exception as e:
@@ -130,15 +121,12 @@ class SerialPort():
         State E : Error
         State F : Unknown error
         '''
-        time.sleep(10)
-        while True:
-            self.parameter_data = "001"
-            self.connector_id = "1"
-            data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-            time.sleep(1)
+        self.parameter_data = "001"
+        self.connector_id = "1"
+        data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        self.send_data_list.append(send_data)
 
     def get_command_pid_proximity_pilot(self):
         '''
@@ -307,24 +295,18 @@ class SerialPort():
             time.sleep(0.5)
 
     def get_command_pid_evse_temp(self):
-        time.sleep(10)
-        while True:
-            self.parameter_data = "002"
-            data = self.get_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "R"
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-            time.sleep(30)
+        self.parameter_data = "002"
+        data = self.get_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "R"
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        self.send_data_list.append(send_data)
             
     def get_command_pid_error_list(self):
-        time.sleep(10)
-        while True:
-            self.parameter_data = "001"
-            data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-            time.sleep(1)
+        self.parameter_data = "001"
+        data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
+        checksum = self.calculate_checksum(data)
+        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+        self.send_data_list.append(send_data)
         
 
     #   ************************ RESPONSE  *****************************************************
@@ -447,8 +429,6 @@ class SerialPort():
                     self.set_time_rfid = time.time()
                     self.application.ev.card_id = card_id
                     
-                    
-
     def get_response_pid_evse_temp(self, data):
         if data[2] == self.pid_evse_temp:
             temp_sign = data[8]
@@ -492,13 +472,6 @@ class SerialPort():
             if len(error_list) > 0:
                 print(Color.Red.value,error_list)
                 self.error = True
-
-            if error_list != self.error_list:
-                if len(error_list) > 0:
-                    for error in error_list:
-                        self.application.testWebSocket.send_error(error.value)
-                else:
-                    self.application.testWebSocket.send_error("")
             
             self.error_list = error_list
 
@@ -508,10 +481,7 @@ class SerialPort():
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
-                print(incoming)
                 if len(incoming) > 0:
-                    # counter += 1
-                    # print("read counter", counter)
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

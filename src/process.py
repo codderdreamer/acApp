@@ -82,22 +82,23 @@ class Process:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
 
     def lock_control(self):
-        print("Kilit kitleniyor...")
-        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-        time.sleep(0.7)
-        self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
         time_start = time.time()
         while True:
+            print("Kilit kitleniyor...")
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+            time.sleep(0.5)
+            self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+            time.sleep(0.5)
             self.application.serialPort.get_command_pid_locker_control()
-            time.sleep(0.3)
+            time.sleep(1)
             if self.application.ev.pid_locker_control == LockerState.Lock:
                 print(Color.Yellow.value,"Kilit kitlendi.")
                 self.set_max_current()
                 self.application.deviceState = DeviceState.WAITING_STATE_C
                 return True
             else:
-                if time.time() - time_start > 3:
-                    print(Color.Red.value,"3 saniyede kilit açılamadı!")
+                if time.time() - time_start > 10:
+                    print(Color.Red.value,"10 saniyede LockerState Lock olmadı!")
                     return False
 
     def _lock_connector_set_control_pilot(self):

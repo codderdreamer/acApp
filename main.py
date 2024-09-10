@@ -160,21 +160,24 @@ class Application():
             elif (self.chargePointStatus == ChargePointStatus.preparing or self.chargePointStatus == ChargePointStatus.reserved) and self.ev.control_pilot == ControlPlot.stateA.value:
                 self.led_state = LedState.WaitingPluging
                 print("L20")
+            elif (self.ev.start_stop_authorize) and self.ev.control_pilot == ControlPlot.stateA.value:
+                self.led_state = LedState.WaitingPluging
+                print("L21")
             elif self.chargePointStatus == ChargePointStatus.available and self.ev.control_pilot == ControlPlot.stateA.value:
                 self.led_state = LedState.StandBy
-                print("L21")
+                print("L22")
             elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateB.value:
                 self.led_state = LedState.Connecting
-                print("L22")
+                print("L23")
             elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateC.value:
                 self.led_state = LedState.Connecting
-                print("L23")
+                print("L24")
             elif self.chargePointStatus == ChargePointStatus.charging:
                 self.led_state = LedState.Charging
-                print("L24")
+                print("L25")
             elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.cardType == CardType.LocalPnC or self.cardType == CardType.StartStopCard):
                 self.led_state = LedState.StandBy
-                print("L25")
+                print("L26")
 
             if self.ev.control_pilot == ControlPlot.stateA.value:
                 rcd_error = False

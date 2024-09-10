@@ -486,13 +486,15 @@ class Process:
         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
      
     def idle(self):
+        self.waiting_auth_value = False
         self.wait_fault = False
         self.rcd_trip_error = False
         self.locker_initialize_error = False
-        self.application.ev.stop_pwm_off_relay()
-        self.application.ev.clean_charge_variables()
         self.charge_try_counter = 0
         self.locker_error = False
+        self.application.ev.stop_pwm_off_relay()
+        self.application.ev.clean_charge_variables()
+    
         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
 
         if self.application.ev.reservation_id != None:

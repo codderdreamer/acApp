@@ -104,6 +104,8 @@ class Application():
                 self.led_state = LedState.RcdError
             elif self.ev.is_there_locker_initialize_error():
                 self.led_state = LedState.LockerError
+            elif self.process.charge_try_counter > 3:
+                self.led_state = LedState.NeedReplugging
             elif self.ev.is_there_other_error():
                 self.led_state = LedState.Fault
             elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter > 3:

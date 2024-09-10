@@ -230,7 +230,10 @@ class EV():
                     if self.application.process.charge_try_counter > 3:
                         self.application.deviceState = DeviceState.FAULT
                     elif (self.control_pilot == ControlPlot.stateB.value) or (self.control_pilot == ControlPlot.stateC.value):
-                        self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                        if self.application.process.charge_try_counter < 4:
+                            self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                        else:
+                            self.application.deviceState = DeviceState.FAULT
                     elif (self.control_pilot == ControlPlot.stateA.value):
                         self.application.deviceState = DeviceState.FAULT
                     else:

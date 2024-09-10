@@ -1,0 +1,231 @@
+[2024-09-10 17:15:49]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:15:49]  Device State: DeviceState.SUSPENDED_EVSE
+[2024-09-10 17:15:49] Suspended evse function
+[2024-09-10 17:15:49]  pwm 0 setleniyor...
+[2024-09-10 17:15:49]  Pid CP PWM : 0
+[2024-09-10 17:15:50] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:15:50]  Led State: LedState.Fault
+[2024-09-10 17:15:50] self.application.ev.pid_cp_pwm 0.0
+Interface 'ppp0' not existent.
+[2024-09-10 17:15:50]  pwm 0 setlendi
+[2024-09-10 17:15:50]  relay komut verildi: Relay.Off
+[2024-09-10 17:15:50]  Röle: Relay.Off
+[2024-09-10 17:15:50]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:15:51]  *********************** get response relay Relay.Off
+[2024-09-10 17:15:51]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:15:51]  relay okundu: Relay.Off
+[2024-09-10 17:15:51]  Röle başarılı Off
+[2024-09-10 17:15:51] Kilit açılıyor...
+[2024-09-10 17:15:51]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-10 17:15:52]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-10 17:15:52]  Control Pilot B
+[2024-09-10 17:15:52]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:15:52]  MCU gelen response: LockerState.Unlock
+[2024-09-10 17:15:53]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:15:53]  Kilit açıldı.
+[2024-09-10 17:15:53]  30 saniye sonra şarja geçmeyi deneyecek. Counter: 1
+[2024-09-10 17:15:53]  Error Code: ChargePointErrorCode.other_error
+[2024-09-10 17:15:53]  Charge Point Status: ChargePointStatus.suspended_evse
+[2024-09-10 17:15:53] Error info: OverVoltageFailure
+[2024-09-10 17:15:54]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:15:55]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:15:56]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:15:57]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:15:58]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:15:59]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:00]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:01]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:02]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:03]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:04]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:05]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:06]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:07]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:08] Led güncelleme ->  LedState.Fault
+[2024-09-10 17:16:08]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:09]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:10]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:11]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:12]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:13]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:14]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:15]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:16]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:17]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:18]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:19]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:20]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:21]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:22]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:23]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:23]  30 saniye doldu.
+[2024-09-10 17:16:23]  Device State: DeviceState.CONNECTED
+[2024-09-10 17:16:23]  Device State: DeviceState.SUSPENDED_EV
+[2024-09-10 17:16:23]  Device State: DeviceState.SUSPENDED_EVSE
+[2024-09-10 17:16:23] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-10 17:16:23] Suspended evse function
+[2024-09-10 17:16:23]  Error Code: ChargePointErrorCode.no_error
+[2024-09-10 17:16:23]  pwm 0 setleniyor...
+[2024-09-10 17:16:23]  Charge Point Status: ChargePointStatus.suspended_ev
+[2024-09-10 17:16:23]  Pid CP PWM : 0
+[2024-09-10 17:16:23] Error info: None
+[2024-09-10 17:16:23]  Pid CP PWM : 10
+[2024-09-10 17:16:23] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-10 17:16:23] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:16:23] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '1', '0', '0', '0', '6', '7', '\n']
+[2024-09-10 17:16:24] self.application.ev.pid_cp_pwm 10.0
+[2024-09-10 17:16:24]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:25]  Control Pilot C
+[2024-09-10 17:16:25]  Device State: DeviceState.CHARGING
+[2024-09-10 17:16:25] Hata var!
+[2024-09-10 17:16:25]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:25]  Device State: DeviceState.SUSPENDED_EVSE
+[2024-09-10 17:16:25]  pwm 0 setleniyor...
+[2024-09-10 17:16:25] Suspended evse function
+[2024-09-10 17:16:25]  Pid CP PWM : 0
+[2024-09-10 17:16:25]  pwm 0 setleniyor...
+[2024-09-10 17:16:25]  Pid CP PWM : 0
+[2024-09-10 17:16:25] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:16:25] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:16:26] self.application.ev.pid_cp_pwm 0.0
+[2024-09-10 17:16:26] self.application.ev.pid_cp_pwm 0.0
+[2024-09-10 17:16:26]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:26]  pwm 0 setlendi
+[2024-09-10 17:16:26]  pwm 0 setlendi
+[2024-09-10 17:16:26]  Röle başarılı Off
+[2024-09-10 17:16:26]  Röle başarılı Off
+[2024-09-10 17:16:26] Kilit açılıyor...
+[2024-09-10 17:16:26] Kilit açılıyor...
+[2024-09-10 17:16:26]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-10 17:16:26]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-10 17:16:27]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-10 17:16:27]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-10 17:16:27]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:27]  MCU gelen response: LockerState.Unlock
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:27]  MCU gelen response: LockerState.Unlock
+[2024-09-10 17:16:28] Led güncelleme ->  LedState.Fault
+[2024-09-10 17:16:28]  Control Pilot B
+[2024-09-10 17:16:28]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:28]  Kilit açıldı.
+[2024-09-10 17:16:28]  30 saniye sonra şarja geçmeyi deneyecek. Counter: 2
+[2024-09-10 17:16:28]  Error Code: ChargePointErrorCode.other_error
+[2024-09-10 17:16:28]  Kilit açıldı.
+[2024-09-10 17:16:28]  Charge Point Status: ChargePointStatus.suspended_evse
+[2024-09-10 17:16:28]  30 saniye sonra şarja geçmeyi deneyecek. Counter: 3
+[2024-09-10 17:16:28] Error info: OverVoltageFailure
+[2024-09-10 17:16:29]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:30]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:31]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:32]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:33]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:34]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:35]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:36]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:37]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:38]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:39]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:40]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:41]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:42]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:43]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:44]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:45]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:46]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:47]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:48] Led güncelleme ->  LedState.Fault
+[2024-09-10 17:16:48]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:49]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:50]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:51]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:52]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:53]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:54]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:55]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:56]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:57]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:16:58]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:16:58]  30 saniye doldu.
+[2024-09-10 17:16:58]  Device State: DeviceState.CONNECTED
+[2024-09-10 17:16:58]  30 saniye doldu.
+[2024-09-10 17:16:58]  Device State: DeviceState.SUSPENDED_EV
+[2024-09-10 17:16:58]  Device State: DeviceState.SUSPENDED_EVSE
+[2024-09-10 17:16:58] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-10 17:16:58] Suspended evse function
+[2024-09-10 17:16:58]  Error Code: ChargePointErrorCode.no_error
+[2024-09-10 17:16:58]  pwm 0 setleniyor...
+[2024-09-10 17:16:58]  Charge Point Status: ChargePointStatus.suspended_ev
+[2024-09-10 17:16:58]  Pid CP PWM : 0
+[2024-09-10 17:16:58] Error info: None
+[2024-09-10 17:16:58]  Pid CP PWM : 10
+[2024-09-10 17:16:58] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-10 17:16:58] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:16:58] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '1', '0', '0', '0', '6', '7', '\n']
+[2024-09-10 17:16:59] self.application.ev.pid_cp_pwm 10.0
+[2024-09-10 17:16:59]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:17:00]  Control Pilot C
+[2024-09-10 17:17:00]  Device State: DeviceState.CHARGING
+[2024-09-10 17:17:00] Hata var!
+[2024-09-10 17:17:00]  [<PidErrorList.OverVoltageFailure: 8>]
+Interface 'ppp0' not existent.
+[2024-09-10 17:17:00]  Device State: DeviceState.SUSPENDED_EVSE
+[2024-09-10 17:17:00]  pwm 0 setleniyor...
+[2024-09-10 17:17:00]  Pid CP PWM : 0
+[2024-09-10 17:17:00] Suspended evse function
+[2024-09-10 17:17:00]  pwm 0 setleniyor...
+[2024-09-10 17:17:00]  Pid CP PWM : 0
+[2024-09-10 17:17:00] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:17:00] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-10 17:17:01] self.application.ev.pid_cp_pwm 0.0
+[2024-09-10 17:17:01] self.application.ev.pid_cp_pwm 0.0
+[2024-09-10 17:17:01]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:17:01]  pwm 0 setlendi
+[2024-09-10 17:17:01]  pwm 0 setlendi
+[2024-09-10 17:17:01]  Röle başarılı Off
+[2024-09-10 17:17:01]  Röle başarılı Off
+[2024-09-10 17:17:01] Kilit açılıyor...
+[2024-09-10 17:17:01] Kilit açılıyor...
+[2024-09-10 17:17:01]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-10 17:17:01]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-10 17:17:02]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-10 17:17:02]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-10 17:17:02]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:17:02]  MCU gelen response: LockerState.Unlock
+Interface 'ppp0' not existent.
+[2024-09-10 17:17:02]  MCU gelen response: LockerState.Unlock
+[2024-09-10 17:17:03]  Control Pilot B
+[2024-09-10 17:17:03]  [<PidErrorList.OverVoltageFailure: 8>]
+[2024-09-10 17:17:03]  Kilit açıldı.
+[2024-09-10 17:17:03]  Kilit açıldı.
+[2024-09-10 17:17:03]  Device State: DeviceState.FAULT
+[2024-09-10 17:17:03]  30 saniye sonra şarja geçmeyi deneyecek. Counter: 5

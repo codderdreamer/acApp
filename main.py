@@ -222,7 +222,7 @@ class Application():
                 else:
                     print("3")
                     return
-            if self.process.charge_try_counter == 4:
+            if self.process.charge_try_counter > 3:
                 if value == DeviceState.IDLE:
                     pass
                 elif value == DeviceState.FAULT:

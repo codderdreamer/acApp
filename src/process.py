@@ -93,8 +93,7 @@ class Process:
             time.sleep(1)
             if self.application.ev.pid_locker_control == LockerState.Lock:
                 print(Color.Yellow.value,"Kilit kitlendi.")
-                self.set_max_current()
-                self.application.deviceState = DeviceState.WAITING_STATE_C
+                
                 return True
             else:
                 if time.time() - time_start > 10:
@@ -105,16 +104,13 @@ class Process:
         self.application.testWebSocket.send_socket_type(self.application.socketType.value)
         if self.application.socketType == SocketType.Type2:
             result = self.lock_control()
-            control_counter = 0
-            if not result:
-                while control_counter < 2 and not result:
-                    result = self.lock_control()
-                    control_counter += 1
-                if not result:
-                    print(Color.Red.value, "Locker Error")
-                    self.locker_error = True
-                    self.application.deviceState = DeviceState.FAULT
-            self.application.testWebSocket.send_locker_state_lock(result)
+            if result == False:
+                print(Color.Red.value, "Locker Error")
+                self.locker_error = True
+                self.application.deviceState = DeviceState.FAULT
+            else:
+                self.set_max_current()
+                self.application.deviceState = DeviceState.WAITING_STATE_C
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
             self.application.deviceState = DeviceState.WAITING_STATE_C

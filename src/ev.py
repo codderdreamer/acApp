@@ -262,9 +262,10 @@ class EV():
 
     @pid_locker_control.setter
     def pid_locker_control(self, value):
+        print(Color.Yellow.value,"MCU gelen response:",value)
         if self.__pid_locker_control != value:
             self.__pid_locker_control = value 
-            print(Color.Yellow.value,value)
+            
 
     @property
     def led_state(self):

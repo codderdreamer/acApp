@@ -148,6 +148,8 @@ class Application():
                 self.led_state = LedState.Connecting
             elif self.chargePointStatus == ChargePointStatus.charging:
                 self.led_state = LedState.Charging
+            elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.cardType == CardType.LocalPnC or self.cardType == CardType.StartStopCard):
+                self.led_state = LedState.StandBy
 
             if self.ev.control_pilot == ControlPlot.stateA.value:
                 rcd_error = False

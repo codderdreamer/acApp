@@ -67,7 +67,7 @@ class SerialPort():
         Thread(target=self.serial_port_thread,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
 
-        Thread(target=self.test,daemon=True).start()
+        # Thread(target=self.test,daemon=True).start()
 
     def test(self):
         while True:

@@ -1376,7 +1376,7 @@ class ChargePoint16(cp):
             asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.downloaded), self.application.loop)
 
             self.application.databaseModule.set_firmware_status(FirmwareStatus.installing.value, str(datetime.now()))
-            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.install_rebooting), self.application.loop)
+            asyncio.run_coroutine_threadsafe(self.send_firmware_status_notification(FirmwareStatus.installing), self.application.loop)
             
         else:
             print("Hata: Dosya indirilirken bir sorun oluştu.")

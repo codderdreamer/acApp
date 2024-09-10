@@ -3,12 +3,13 @@ Description=Acapp Service
 After=network.target
 
 [Service]
-Type=idle
+Type=simple
 ExecStart=/usr/bin/python3 /root/acApp/main.py
-StandardOutput=inherit
-StandardError=inherit
-Restart=on-failure  # Hata durumunda servisi yeniden başlat
+Restart=always
+RestartSec=5
 User=root
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

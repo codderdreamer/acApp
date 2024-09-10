@@ -681,8 +681,10 @@ class EV():
                             self.application.process.rfid_verified = True
                         elif self.charge == False:
                             self.application.process.rfid_verified = True
+                            self.start_stop_authorize = True
                         else:
                             self.application.process.rfid_verified = False
+                            self.start_stop_authorize = False
                         break
                 if finded == False:
                     self.start_stop_authorize = False

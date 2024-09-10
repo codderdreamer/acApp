@@ -423,8 +423,12 @@ class Process:
                 time.sleep(1)
             elif len(self.application.serialPort.error_list) > 0:
                 time.sleep(1)
+            elif self.application.ev.control_pilot == ControlPlot.stateA.value:
+                self.wait_fault = False
+                break
             else:
                 if self.application.availability == AvailabilityType.operative:
+                    self.wait_fault = False
                     self.application.deviceState = DeviceState.IDLE
                     break
             

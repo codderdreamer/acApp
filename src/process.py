@@ -489,6 +489,7 @@ class Process:
         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
      
     def idle(self):
+        self.try_charge = False
         self.waiting_auth_value = False
         self.wait_fault = False
         self.rcd_trip_error = False

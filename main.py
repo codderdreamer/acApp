@@ -147,7 +147,7 @@ class Application():
                 self.led_state = LedState.DeviceInoperative
                 print("L16")
             elif self.deviceState == DeviceState.OFFLINE:
-                self.led_state = DeviceState.OFFLINE
+                self.led_state = LedState.DeviceOffline
                 print("L17")
             elif self.process.rfid_verified == True:
                 self.led_state = LedState.RfidVerified

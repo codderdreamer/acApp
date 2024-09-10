@@ -393,7 +393,7 @@ class SerialPort():
             if data[7] == LockerState.Unlock.value:
                 self.application.ev.pid_locker_control = LockerState.Unlock
             elif data[7] == LockerState.Lock.value:
-                self.application.ev.pid_locker_control = LockerState.Unlock
+                self.application.ev.pid_locker_control = LockerState.Lock
 
     def get_response_pid_current(self, data):
         if data[2] == self.pid_current:

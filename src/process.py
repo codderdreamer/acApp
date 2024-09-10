@@ -90,14 +90,14 @@ class Process:
         while True:
             self.application.serialPort.get_command_pid_locker_control()
             time.sleep(0.3)
-            if self.application.ev.pid_locker_control == LockerState.Lock.value:
+            if self.application.ev.pid_locker_control == LockerState.Lock:
                 print(Color.Yellow.value,"Kilit kitlendi.")
                 self.set_max_current()
                 self.application.deviceState = DeviceState.WAITING_STATE_C
                 return True
             else:
                 if time.time() - time_start > 3:
-                    print(Color.Red.value,"3 saniyede kilit açılamadı!")
+                    print(Color.Red.value,"3 saniyede kilit kitlenmedi!")
                     return False
 
     def _lock_connector_set_control_pilot(self):

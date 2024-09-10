@@ -128,56 +128,59 @@ class Application():
             elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
                 self.led_state = LedState.Fault
                 print("L10")
+            elif self.deviceState == DeviceState.OFFLINE:
+                self.led_state = LedState.DeviceOffline
+                print("L11")
             elif self.process.try_charge:
                 self.led_state = LedState.Fault
-                print("L11")
+                print("L12")
             elif self.chargePointStatus == ChargePointStatus.faulted and (self.ev.control_pilot == ControlPlot.stateB.value or self.ev.control_pilot == ControlPlot.stateC.value):
                 self.led_state = LedState.NeedReplugging
-                print("L12")
+                print("L13")
             elif self.chargePointStatus == ChargePointStatus.faulted:
                 self.led_state = LedState.Fault
-                print("L13")
+                print("L14")
             elif self.chargePointStatus == ChargePointStatus.suspended_evse:
                 self.led_state = LedState.Fault
-                print("L14")
+                print("L15")
             elif self.availability == AvailabilityType.inoperative and self.ev.charge == False:
                 self.led_state = LedState.DeviceInoperative
-                print("L15")
+                print("L16")
             elif self.deviceState == DeviceState.OFFLINE:
                 self.led_state = DeviceState.OFFLINE
-                print("L16")
+                print("L17")
             elif self.process.rfid_verified == True:
                 self.led_state = LedState.RfidVerified
                 self.process.rfid_verified = None
-                print("L17")
+                print("L18")
             elif self.process.rfid_verified == False:
                 self.led_state = LedState.RfidFailed
                 self.process.rfid_verified = None
-                print("L18")
+                print("L19")
             elif self.deviceState == DeviceState.SUSPENDED_EV or self.deviceState == DeviceState.STOPPED_BY_EVSE or self.deviceState == DeviceState.STOPPED_BY_USER:
                 self.led_state = LedState.ChargingStopped
-                print("L19")
+                print("L20")
             elif (self.chargePointStatus == ChargePointStatus.preparing or self.chargePointStatus == ChargePointStatus.reserved) and self.ev.control_pilot == ControlPlot.stateA.value:
                 self.led_state = LedState.WaitingPluging
-                print("L20")
+                print("L21")
             elif (self.ev.start_stop_authorize) and self.ev.control_pilot == ControlPlot.stateA.value:
                 self.led_state = LedState.WaitingPluging
-                print("L21")
+                print("L22")
             elif self.chargePointStatus == ChargePointStatus.available and self.ev.control_pilot == ControlPlot.stateA.value:
                 self.led_state = LedState.StandBy
-                print("L22")
+                print("L23")
             elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateB.value:
                 self.led_state = LedState.Connecting
-                print("L23")
+                print("L24")
             elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateC.value:
                 self.led_state = LedState.Connecting
-                print("L24")
+                print("L25")
             elif self.chargePointStatus == ChargePointStatus.charging:
                 self.led_state = LedState.Charging
-                print("L25")
+                print("L26")
             elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.cardType == CardType.LocalPnC or self.cardType == CardType.StartStopCard):
                 self.led_state = LedState.StandBy
-                print("L26")
+                print("L27")
 
             if self.ev.control_pilot == ControlPlot.stateA.value:
                 rcd_error = False

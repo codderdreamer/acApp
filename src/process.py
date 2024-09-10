@@ -82,35 +82,38 @@ class Process:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
 
     def lock_control(self):
+        print("Kilit kitleniyor...")
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+        time.sleep(0.7)
+        self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
         time_start = time.time()
         while True:
-            print("Kilit kitleniyor...")
-            self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-            time.sleep(0.5)
-            self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-            time.sleep(0.5)
             self.application.serialPort.get_command_pid_locker_control()
-            time.sleep(1)
-            if self.application.ev.pid_locker_control == LockerState.Lock:
+            time.sleep(0.3)
+            if self.application.ev.pid_locker_control == LockerState.Lock.value:
                 print(Color.Yellow.value,"Kilit kitlendi.")
-                
+                self.set_max_current()
+                self.application.deviceState = DeviceState.WAITING_STATE_C
                 return True
             else:
-                if time.time() - time_start > 10:
-                    print(Color.Red.value,"10 saniyede LockerState Lock olmadı!")
+                if time.time() - time_start > 3:
+                    print(Color.Red.value,"3 saniyede kilit açılamadı!")
                     return False
 
     def _lock_connector_set_control_pilot(self):
         self.application.testWebSocket.send_socket_type(self.application.socketType.value)
         if self.application.socketType == SocketType.Type2:
             result = self.lock_control()
-            if result == False:
-                print(Color.Red.value, "Locker Error")
-                self.locker_error = True
-                self.application.deviceState = DeviceState.FAULT
-            else:
-                self.set_max_current()
-                self.application.deviceState = DeviceState.WAITING_STATE_C
+            control_counter = 0
+            if not result:
+                while control_counter < 2 and not result:
+                    result = self.lock_control()
+                    control_counter += 1
+                if not result:
+                    print(Color.Red.value, "Locker Error")
+                    self.locker_error = True
+                    self.application.deviceState = DeviceState.FAULT
+            self.application.testWebSocket.send_locker_state_lock(result)
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
             self.application.deviceState = DeviceState.WAITING_STATE_C

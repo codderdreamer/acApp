@@ -67,6 +67,21 @@ class SerialPort():
         Thread(target=self.serial_port_thread,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
 
+        Thread(target=self.test,daemon=True).start()
+
+    def test(self):
+        while True:
+            try:
+                x = input()
+                if x == "1":
+                    self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
+                if x == "2":
+                    self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
+                self.application.serialPort.get_command_pid_locker_control()
+            except Exception as e:
+                pass
+            time.sleep(1)
+
 
     def serial_port_thread(self):
         while True:

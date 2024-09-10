@@ -434,6 +434,9 @@ class Process:
             
     def suspended_evse(self):
         print("Suspended evse function")
+        if self.try_charge:
+            return
+        self.try_charge = True
         self.application.ev.stop_pwm_off_relay()
         self.charge_try_counter += 1
         self.application.meter_values_on = False
@@ -441,7 +444,6 @@ class Process:
             self.application.deviceState = DeviceState.FAULT
             return
         print(Color.Yellow.value,"30 saniye sonra şarja geçmeyi deneyecek. Counter:",self.charge_try_counter)
-        self.try_charge = True
         for value in self.application.serialPort.error_list:
             self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.suspended_evse,value.name)
         time_start = time.time()
@@ -451,9 +453,6 @@ class Process:
                 print(Color.Yellow.value,"30 saniye doldu.")
                 self.try_charge = False
                 break
-            if self.application.deviceState != DeviceState.SUSPENDED_EVSE:
-                self.try_charge = False
-                return
             if self.application.ev.control_pilot == ControlPlot.stateA.value:
                 self.try_charge = False
                 return

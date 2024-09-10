@@ -280,9 +280,9 @@ class Process:
             time.sleep(1)
 
     def charging(self):
-        if len(self.application.serialPort.error_list) > 0:
-            print("Hata var!")
-            return
+        # if len(self.application.serialPort.error_list) > 0:
+        #     print("Hata var!")
+        #     return
         
         print(Color.Yellow.value,"Cihaz şarja başlayacak...")
         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)

@@ -240,6 +240,8 @@ class EV():
                         self.application.deviceState = DeviceState.FAULT
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved) and (self.application.serialPort.error == False):
                     self.ocpp_online()
+                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.LocalPnC or self.application.cardType == CardType.StartStopCard):
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 if self.application.ocppActive:
                     if self.application.settings.configuration.MinimumStatusDuration:
                         if time.time() - time_start > int(self.application.settings.configuration.MinimumStatusDuration):

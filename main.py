@@ -252,6 +252,17 @@ class Application():
                 else:
                     print("7")
                     return
+                
+            if self.process.try_charge:
+                if value == DeviceState.SUSPENDED_EVSE:
+                    pass
+                elif value == DeviceState.IDLE:
+                    pass
+                else:
+                    print("8")
+                    return
+
+
 
             print(Color.Cyan.value, "Device State:", value)
             self.__deviceState = value

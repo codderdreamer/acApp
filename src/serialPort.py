@@ -228,6 +228,7 @@ class SerialPort():
         '''
         Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
         '''
+        print(Color.Green.value,"MCU'ya gönderilen komut:",locker_state)
         self.parameter_data = "002"
         data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
         checksum = self.calculate_checksum(data)

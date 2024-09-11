@@ -490,7 +490,7 @@ class SerialPort():
                 print(Color.Red.value,error_list)
                 self.error = True
             
-            self.error_list = error_list
+            # self.error_list = error_list
 
     def read(self):
         # counter = 0

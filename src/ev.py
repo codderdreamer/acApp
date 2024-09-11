@@ -646,7 +646,10 @@ class EV():
                         authorization_result = self.authorize_billing_card(value)
                         if authorization_result == AuthorizationStatus.accepted:
                             self.application.process.there_is_transaction = False
-                            self.application.deviceState = DeviceState.STOPPED_BY_USER
+                            if self.control_pilot == ControlPlot.stateA.value:
+                                self.application.deviceState = DeviceState.IDLE
+                            else:
+                                self.application.deviceState = DeviceState.STOPPED_BY_USER
                     else:
                         print("self.application.process.id_tag != value")
                         self.application.chargePoint.handle_authorization_failed()

@@ -90,7 +90,7 @@ class SerialPort():
                     self.time_20 = time.time()
                     print("Led güncelleme -> ",self.application.led_state)
                     self.set_command_pid_led_control(self.application.led_state)
-                    self.get_command_pid_evse_temp()
+                self.get_command_pid_evse_temp()
             self.get_command_PID_control_pilot()
             self.get_command_pid_error_list()
             if time.time() - self.time_10 > 10:
@@ -104,6 +104,7 @@ class SerialPort():
     def write(self):
         while True:
             try:
+                print("self.send_data_list",len(self.send_data_list),time.time())
                 if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
                     print("seri port write success", time.time())

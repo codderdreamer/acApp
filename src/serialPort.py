@@ -86,7 +86,6 @@ class SerialPort():
 
     def serial_port_thread(self):
         while True:
-            print("********************************:", threading.active_count())
             if time.time() - self.time_20 > 20:
                 if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
                     self.time_20 = time.time()
@@ -106,10 +105,8 @@ class SerialPort():
     def write(self):
         while True:
             try:
-                print("self.send_data_list",len(self.send_data_list),time.time())
                 if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
-                    print("seri port write success", time.time())
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("write Exception:",e)

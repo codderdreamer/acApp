@@ -104,10 +104,10 @@ class SerialPort():
     def write(self):
         while True:
             try:
-                # print("self.send_data_list",len(self.send_data_list),time.time())
+                print("self.send_data_list",len(self.send_data_list),time.time())
                 if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
-                    # print("seri port write success", time.time())
+                    print("seri port write success", time.time())
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("write Exception:",e)

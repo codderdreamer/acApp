@@ -44,11 +44,10 @@ class EV():
         self.parent_id = None
         self.check_and_clear_expired_reservation()
 
-        self.send_message_thread_start = False
-
         self.start_stop_authorize = False
         self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
+        Thread(target=self.send_message,daemon=True).start()
 
         self.charging_again = False
 
@@ -253,14 +252,13 @@ class EV():
             time.sleep(1)
 
     def send_message(self):
-        print("charge")
-        self.send_message_thread_start = True
-        while self.send_message_thread_start:
-            try:
-                self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
-            except Exception as e:
-                print("send_message Exception:", e)
-            time.sleep(3)
+        while True:
+            if self.charge:
+                try:
+                    self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
+                except Exception as e:
+                    print("send_message Exception:", e)
+                time.sleep(3)
 
     @property
     def pid_locker_control(self):
@@ -348,12 +346,6 @@ class EV():
         if self.__charge != value:
             print(Color.Yellow.value,"Charge:",value)
         self.__charge = value
-        if value:
-            Thread(target=self.send_message,daemon=True).start()
-        else:
-            self.send_message_thread_start = False
-            self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
-
    
     def send_authorization_request(self, value):
         """

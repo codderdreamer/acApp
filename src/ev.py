@@ -253,6 +253,7 @@ class EV():
             time.sleep(1)
 
     def send_message(self):
+        print("charge")
         self.send_message_thread_start = True
         while self.send_message_thread_start:
             try:

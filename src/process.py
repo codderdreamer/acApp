@@ -130,9 +130,9 @@ class Process:
         #     return
 
         # if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value and self.charge_try_counter != 0:
-        if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
-            self.application.deviceState = DeviceState.SUSPENDED_EV
-            return
+        # if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
+        #     self.application.deviceState = DeviceState.SUSPENDED_EV
+        #     return
 
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
@@ -147,19 +147,31 @@ class Process:
 
         if self.application.cardType == CardType.LocalPnC:
             self._lock_connector_set_control_pilot()
-            self.application.deviceState = DeviceState.WAITING_STATE_C
+            if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
+                self.application.deviceState = DeviceState.SUSPENDED_EV
+                return
+            else:
+                self.application.deviceState = DeviceState.WAITING_STATE_C
 
         elif self.application.cardType == CardType.BillingCard:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                 self._lock_connector_set_control_pilot()
-                self.application.deviceState = DeviceState.WAITING_STATE_C
+                if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    self.application.deviceState = DeviceState.SUSPENDED_EV
+                    return
+                else:
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
 
         elif self.application.cardType == CardType.StartStopCard:
             if self.application.ev.start_stop_authorize:
                 self._lock_connector_set_control_pilot()
-                self.application.deviceState = DeviceState.WAITING_STATE_C
+                if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    self.application.deviceState = DeviceState.SUSPENDED_EV
+                    return
+                else:
+                    self.application.deviceState = DeviceState.WAITING_STATE_C
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
         return

@@ -1,0 +1,177 @@
+
+[2024-09-11 15:18:15] L4
+[2024-09-11 15:18:16] L4
+[2024-09-11 15:18:17]  Control Pilot A
+[2024-09-11 15:18:17]  Device State: DeviceState.IDLE
+[2024-09-11 15:18:17]  pwm 0 setleniyor...
+[2024-09-11 15:18:17]  Pid CP PWM : 0
+[2024-09-11 15:18:17] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-11 15:18:17]  Charge Point Status: ChargePointStatus.available
+[2024-09-11 15:18:17] Error info: None
+[2024-09-11 15:18:17]  Led State: LedState.StandBy
+[2024-09-11 15:18:17] L23
+[2024-09-11 15:18:17] self.application.ev.pid_cp_pwm 0.0
+[2024-09-11 15:18:18]  pwm 0 setlendi
+[2024-09-11 15:18:18]  Röle başarılı Off
+[2024-09-11 15:18:18] Kilit açılıyor...
+[2024-09-11 15:18:18]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-11 15:18:18] L23
+[2024-09-11 15:18:18]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-11 15:18:19]  MCU gelen response: LockerState.Unlock
+[2024-09-11 15:18:19] L23
+[2024-09-11 15:18:20]  Kilit açıldı.
+[2024-09-11 15:18:20]  **************** şarj geçmişi siliniyor ...
+[2024-09-11 15:18:20]  Charge: False
+[2024-09-11 15:18:20] L23
+[2024-09-11 15:18:21] L23
+[2024-09-11 15:18:22] L23
+[2024-09-11 15:18:23]  Control Pilot B
+[2024-09-11 15:18:23]  Device State: DeviceState.CONNECTED
+[2024-09-11 15:18:23]  Charge Point Status: ChargePointStatus.preparing
+[2024-09-11 15:18:23] Error info: None
+[2024-09-11 15:18:23] Kilit kitleniyor...
+[2024-09-11 15:18:23]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-11 15:18:23]  Led State: LedState.Connecting
+[2024-09-11 15:18:23] L24
+[2024-09-11 15:18:24]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-11 15:18:24]  MCU gelen response: LockerState.Lock
+[2024-09-11 15:18:24]  Kilit kitlendi.
+[2024-09-11 15:18:24]  Pid CP PWM : 10
+[2024-09-11 15:18:24]  Device State: DeviceState.WAITING_STATE_C
+[2024-09-11 15:18:24]  Cihazın şarja geçmesi bekleniyor... Şarja geçmezse 5 dk sonra sonlanacak...
+[2024-09-11 15:18:24] L24
+[2024-09-11 15:18:24] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '1', '0', '0', '0', '6', '7', '\n']
+[2024-09-11 15:18:25] L24
+[2024-09-11 15:18:26]  Control Pilot C
+[2024-09-11 15:18:26]  Device State: DeviceState.CHARGING
+[2024-09-11 15:18:26]  Cihaz şarja başlayacak...
+[2024-09-11 15:18:26]  Charge: True
+[2024-09-11 15:18:26]  relay komut verildi: Relay.On
+[2024-09-11 15:18:26]  Röle: Relay.On
+[2024-09-11 15:18:26] L25
+[2024-09-11 15:18:26]  *********************** get response relay Relay.On
+[2024-09-11 15:18:27]  relay okundu: Relay.On
+[2024-09-11 15:18:27]  Pid CP PWM : 10
+[2024-09-11 15:18:27]  Cihaz şarja başlıyor... *************************************************************
+[2024-09-11 15:18:27]  Charge Point Status: ChargePointStatus.charging
+[2024-09-11 15:18:27] Error info: None
+[2024-09-11 15:18:27] Cihaz şarjda...
+[2024-09-11 15:18:27] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '1', '0', '0', '0', '6', '7', '\n']
+[2024-09-11 15:18:27]  Led State: LedState.Charging
+[2024-09-11 15:18:27] L26
+[2024-09-11 15:18:28] Cihaz şarjda...
+[2024-09-11 15:18:28] L26
+[2024-09-11 15:18:29] Cihaz şarjda...
+[2024-09-11 15:18:29] L26
+[2024-09-11 15:18:30] Cihaz şarjda...
+[2024-09-11 15:18:30]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:30]  Device State: unlock
+[2024-09-11 15:18:30] Suspended evse function
+[2024-09-11 15:18:30]  pwm 0 setleniyor...
+[2024-09-11 15:18:30]  Pid CP PWM : 0
+[2024-09-11 15:18:30]  Led State: LedState.Fault
+[2024-09-11 15:18:30] L5
+[2024-09-11 15:18:30] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-11 15:18:31] self.application.ev.pid_cp_pwm 0.0
+[2024-09-11 15:18:31]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:31]  pwm 0 setlendi
+[2024-09-11 15:18:31]  relay komut verildi: Relay.Off
+[2024-09-11 15:18:31]  Röle: Relay.Off
+[2024-09-11 15:18:31] L5
+[2024-09-11 15:18:32]  *********************** get response relay Relay.Off
+[2024-09-11 15:18:32]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:32]  relay okundu: Relay.Off
+[2024-09-11 15:18:32]  Röle başarılı Off
+[2024-09-11 15:18:32] Kilit açılıyor...
+[2024-09-11 15:18:32]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-11 15:18:32] L5
+[2024-09-11 15:18:33]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-11 15:18:33] Led güncelleme ->  LedState.Fault
+[2024-09-11 15:18:33]  Control Pilot B
+[2024-09-11 15:18:33]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:33] L5
+[2024-09-11 15:18:34]  MCU gelen response: LockerState.Unlock
+[2024-09-11 15:18:34]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:34]  Kilit açıldı.
+[2024-09-11 15:18:34]  30 saniye sonra şarja geçmeyi deneyecek. Counter: 1
+[2024-09-11 15:18:34]  Error Code: ChargePointErrorCode.other_error
+[2024-09-11 15:18:34]  Charge Point Status: ChargePointStatus.suspended_evse
+[2024-09-11 15:18:34] Error info: UnderVoltageFailure
+[2024-09-11 15:18:34] L5
+[2024-09-11 15:18:35]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:35] L5
+[2024-09-11 15:18:36]  [<PidErrorList.UnderVoltageFailure: 12>]
+[2024-09-11 15:18:36] L5
+[2024-09-11 15:18:37] L12
+[2024-09-11 15:18:38] L12
+[2024-09-11 15:18:39] L12
+[2024-09-11 15:18:40] L12
+[2024-09-11 15:18:41] L12
+[2024-09-11 15:18:42] L12
+[2024-09-11 15:18:43] L12
+[2024-09-11 15:18:44] L12
+[2024-09-11 15:18:45] L12
+[2024-09-11 15:18:46] L12
+[2024-09-11 15:18:47] L12
+[2024-09-11 15:18:48] L12
+[2024-09-11 15:18:49] L12
+[2024-09-11 15:18:50] L12
+[2024-09-11 15:18:51] L12
+[2024-09-11 15:18:52] L12
+[2024-09-11 15:18:53] Led güncelleme ->  LedState.Fault
+[2024-09-11 15:18:53] L12
+[2024-09-11 15:18:54] L12
+[2024-09-11 15:18:55] L12
+[2024-09-11 15:18:56] L12
+[2024-09-11 15:18:57] L12
+[2024-09-11 15:18:58] L12
+[2024-09-11 15:18:59] L12
+[2024-09-11 15:19:00] L12
+[2024-09-11 15:19:01] L12
+[2024-09-11 15:19:02] L12
+[2024-09-11 15:19:03] L12
+[2024-09-11 15:19:04]  30 saniye doldu.
+[2024-09-11 15:19:04]  Device State: DeviceState.CONNECTED
+[2024-09-11 15:19:04]  Device State: DeviceState.SUSPENDED_EV
+[2024-09-11 15:19:04] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:04]  Error Code: ChargePointErrorCode.no_error
+[2024-09-11 15:19:04]  Charge Point Status: ChargePointStatus.suspended_ev
+[2024-09-11 15:19:04] Error info: None
+[2024-09-11 15:19:04]  Pid CP PWM : 10
+[2024-09-11 15:19:04] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:04] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '1', '0', '0', '0', '6', '7', '\n']
+[2024-09-11 15:19:04]  Led State: LedState.ChargingStopped
+[2024-09-11 15:19:04] L20
+[2024-09-11 15:19:04] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:05] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:05] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:05] L20
+[2024-09-11 15:19:05] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:06] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:06]  Control Pilot C
+[2024-09-11 15:19:06]  Device State: DeviceState.CHARGING
+[2024-09-11 15:19:06]  Cihaz şarja başlayacak...
+[2024-09-11 15:19:06]  Charge Point Status: ChargePointStatus.preparing
+[2024-09-11 15:19:06] Error info: None
+[2024-09-11 15:19:06]  relay komut verildi: Relay.On
+[2024-09-11 15:19:06]  Röle: Relay.On
+[2024-09-11 15:19:06] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
+[2024-09-11 15:19:06]  Led State: LedState.Connecting
+[2024-09-11 15:19:06] L25
+[2024-09-11 15:19:06]  *********************** get response relay Relay.On
+[2024-09-11 15:19:07]  relay okundu: Relay.On
+[2024-09-11 15:19:07]  Pid CP PWM : 10
+[2024-09-11 15:19:07]  Cihaz şarja başlıyor... *************************************************************
+[2024-09-11 15:19:07]  Charge Point Status: ChargePointStatus.charging
+[2024-09-11 15:19:07] Error info: None
+[2024-09-11 15:19:07] Cihaz şarjda...
+[2024-09-11 15:19:07] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '1', '0', '0', '0', '6', '7', '\n']
+[2024-09-11 15:19:07]  Led State: LedState.Charging
+[2024-09-11 15:19:07] L26
+[2024-09-11 15:19:08] Cihaz şarjda...
+[2024-09-11 15:19:08] L26
+[2024-09-11 15:19:09] Cihaz şarjda...
+[2024-09-11 15:19:09] L26
+[2024-09-11 15:19:10] Cihaz şarjda...
+[2024-09-11 15:19:10] L26
+[2024-09-11 15:19:11] Cihaz şarjda...

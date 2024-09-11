@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 import asyncio
 from ocpp.v16.enums import *
+import threading
 
 class SerialPort():
     def __init__(self, application, logger) -> None:
@@ -85,6 +86,7 @@ class SerialPort():
 
     def serial_port_thread(self):
         while True:
+            print("********************************:", threading.active_count())
             if time.time() - self.time_20 > 20:
                 if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
                     self.time_20 = time.time()

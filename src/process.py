@@ -5,9 +5,9 @@ from ocpp.v16.enums import *
 from threading import Thread
 from datetime import datetime
 from src.logger import ac_app_logger as logger
-from application import Application
+
 class Process:
-    def __init__(self, application:Application) -> None:
+    def __init__(self, application) -> None:
         self.application = application
         self.there_is_transaction = False
         self.id_tag = self.application.settings.chargingInformation.id_tag

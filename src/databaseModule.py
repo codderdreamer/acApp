@@ -501,6 +501,8 @@ class DatabaseModule():
             self.cursor.execute(query,value)
             self.charge_database.commit()
 
+            print("***********heyyy")
+
             self.application.settings.chargingInformation.charge = self.application.utils.is_variable_true(charge)
             if self.application.utils.is_variable_none(id_tag):
                 self.application.settings.chargingInformation.id_tag = None

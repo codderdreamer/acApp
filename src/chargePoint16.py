@@ -356,7 +356,6 @@ class ChargePoint16(cp):
                 "Power.Active.Import": {
                     "value": str(self.application.ev.power),
                     "measurand": Measurand.power_active_import,
-                    "phase": Phase.l1,
                     "unit": UnitOfMeasure.kw
                 },
                 "Temperature": {

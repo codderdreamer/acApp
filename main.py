@@ -45,7 +45,7 @@ if __name__ == "__main__":
         app.serialPort = serialPort
         app.modbusModule = modbusModule
         app.deviceStateModule = deviceStateModule
-        app.run()
+        # app.run()
         # app.ocpp_task()
     except Exception as e:
         print("__main__ Exception:", e)

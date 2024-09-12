@@ -23,6 +23,9 @@ ACAPP_OLD_DIR = "/root/acApp_old"
 ACAPP_NEW_DIR = "/root/acApp_new"
 SERIAL_PORT_PATH = "/dev/ttyS2"
 OCPP_FIRMWARE_DIR = "/root/acAppFirmwareFiles"
+HARDWARE_BOOT_PIN = 11
+SOFTWARE_BOOT_PIN = 13
+RESET_PIN = 10
 
 
 class LedState(Enum):
@@ -602,40 +605,51 @@ class MCUManager:
         except subprocess.CalledProcessError as e:
             logger.error(f"GPIO ayarlanırken hata: {e}")
 
-    def pe_10_set(self):
+
+    def mcu_boot_mode(self):
         try:
-            self.set_gpio('e', 10, 1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', HARDWARE_BOOT_PIN, 0)
+            self.set_gpio('e', RESET_PIN, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.3)
-            self.set_gpio('e', 10, 0)
-        except Exception as e:
-            logger.error(f"pe_10_set hatası: {e}")
-
-    def pe_11_set(self):
-        try:
+            self.set_gpio('e', RESET_PIN, 0)
             time.sleep(0.5)
-            self.set_gpio('e', 11, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
             time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
-            time.sleep(0.1)
-
-            self.set_gpio('e', 11, 0)
-            time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.1)
 
-            self.set_gpio('e', 11, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
             time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.1)
 
-            self.set_gpio('e', 11, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
             time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
+            time.sleep(0.1)
+
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
+            time.sleep(0.1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.1)
             
         except Exception as e:
-            logger.error(f"pe_11_set hatası: {e}")
+            logger.error(f"mcu_boot_mode hatası: {e}")
+
+    def mcu_reset_mode(self):
+        try:
+            # GPIO reset işlemi
+            time.sleep(0.1)
+            self.set_gpio('e', RESET_PIN, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
+            time.sleep(0.1)
+            self.set_gpio('e', RESET_PIN, 1)
+            time.sleep(0.5)
+            self.set_gpio('e', RESET_PIN, 0)
+            time.sleep(0.1)
+        except Exception as e:
+            logger.error(f"mcu_reset_mode hatası: {e}")
 
     def update_mcu_firmware(self, firmware_path):
         """
@@ -644,9 +658,8 @@ class MCUManager:
         try:
             led_manager.stop_led_thread()
             logger.info("MCU boot moduna geçiyor...")
-            # GPIO ayarları için ayrı thread'ler başlat
-            threading.Thread(target=self.pe_10_set, daemon=True).start()
-            threading.Thread(target=self.pe_10_set, daemon=True).start()
+            # MCU boot moduna geç
+            self.mcu_boot_mode()
 
             logger.debug(f"Firmware yolu: {firmware_path}")
 
@@ -661,14 +674,9 @@ class MCUManager:
             log_output = log_result.stdout
             logger.debug(f"Firmware update log: {log_output}")
 
-            # GPIO reset işlemi
-            time.sleep(0.1)
-            self.set_gpio('e', 10, 0)
-            self.set_gpio('e', 11, 0)
-            time.sleep(0.1)
-            self.set_gpio('e', 10, 1)
-            time.sleep(0.5)
-            self.set_gpio('e', 10, 0)
+
+            # MCU reset moduna geç
+            self.mcu_reset_mode()
 
             led_manager.start_led_thread()
 

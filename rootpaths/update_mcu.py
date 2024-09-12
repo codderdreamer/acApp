@@ -1,7 +1,9 @@
 import subprocess
-import threading
 import time
 import argparse
+HARDWARE_BOOT_PIN = 11
+SOFTWARE_BOOT_PIN = 13
+RESET_PIN = 10
 
 
 class MCUManager:
@@ -19,40 +21,50 @@ class MCUManager:
         except subprocess.CalledProcessError as e:
             print(f"GPIO ayarlanırken hata: {e}")
 
-    def pe_10_set(self):
+    def mcu_boot_mode(self):
         try:
-            self.set_gpio('e', 10, 1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', HARDWARE_BOOT_PIN, 0)
+            self.set_gpio('e', RESET_PIN, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.3)
-            self.set_gpio('e', 10, 0)
-        except Exception as e:
-            print(f"pe_10_set hatası: {e}")
-
-    def pe_11_set(self):
-        try:
+            self.set_gpio('e', RESET_PIN, 0)
             time.sleep(0.5)
-            self.set_gpio('e', 11, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
             time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
-            time.sleep(0.1)
-
-            self.set_gpio('e', 11, 0)
-            time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.1)
 
-            self.set_gpio('e', 11, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
             time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.1)
 
-            self.set_gpio('e', 11, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
             time.sleep(0.1)
-            self.set_gpio('e', 11, 1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
+            time.sleep(0.1)
+
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
+            time.sleep(0.1)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 1)
             time.sleep(0.1)
             
         except Exception as e:
-            print(f"pe_11_set hatası: {e}")
+            print(f"mcu_boot_mode hatası: {e}")
+
+    def mcu_reset_mode(self):
+        try:
+            # GPIO reset işlemi
+            time.sleep(0.1)
+            self.set_gpio('e', RESET_PIN, 0)
+            self.set_gpio('e', SOFTWARE_BOOT_PIN, 0)
+            time.sleep(0.1)
+            self.set_gpio('e', RESET_PIN, 1)
+            time.sleep(0.5)
+            self.set_gpio('e', RESET_PIN, 0)
+            time.sleep(0.1)
+        except Exception as e:
+            print(f"mcu_reset_mode hatası: {e}")
 
     def update_mcu_firmware(self, firmware_path):
         """
@@ -60,9 +72,8 @@ class MCUManager:
         """
         try:
             print("MCU boot moduna geçiyor...")
-            # GPIO ayarları için ayrı thread'ler başlat
-            threading.Thread(target=self.pe_10_set, daemon=True).start()
-            threading.Thread(target=self.pe_10_set, daemon=True).start()
+            # MCU boot moduna geç
+            self.mcu_boot_mode()
 
             print(f"Firmware yolu: {firmware_path}")
 
@@ -78,14 +89,8 @@ class MCUManager:
             log_output = log_result.stdout
             print(f"Firmware update log: {log_output}")
 
-            # GPIO reset işlemi
-            time.sleep(0.1)
-            self.set_gpio('e', 10, 0)
-            self.set_gpio('e', 11, 0)
-            time.sleep(0.1)
-            self.set_gpio('e', 10, 1)
-            time.sleep(0.5)
-            self.set_gpio('e', 10, 0)
+            # MCU reset moduna geç
+            self.mcu_reset_mode()
 
             # Yükleme başarılı mı kontrol et
             if "File downloaded successfully" in log_output:

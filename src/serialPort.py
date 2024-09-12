@@ -58,8 +58,12 @@ class SerialPort():
         self.delete_time_rfid = time.time()
         self.led_state = LedState.StandBy
         
+        os.system("gpio-test.64 w e 11 0 > /dev/null 2>&1")
+        time.sleep(0.5)
+
         os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
         time.sleep(0.5)
+        
         os.system("gpio-test.64 w e 10 0 > /dev/null 2>&1")
 
         Thread(target=self.read,daemon=True).start()

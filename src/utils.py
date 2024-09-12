@@ -6,7 +6,7 @@ class Utils():
         
         
     def is_variable_none(self, value):
-        return value in ["None", "none", ""]
+        return value in ["None", "none", "", None]
     
     def is_variable_true(self, value):
         return value in ["True", "true"]

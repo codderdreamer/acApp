@@ -304,6 +304,22 @@ class Process:
             print("Cihaz A state'inden C statine geçmiş.")
             self.application.deviceState = DeviceState.CONNECTED
             return
+        
+        if self.id_tag and self.application.cardType == CardType.BillingCard and self.application.ocppActive:
+            if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                self.set_max_current()
+                self.relay_control(Relay.On)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.charging)
+                if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+                    self.application.serialPort.get_command_pid_current()
+                    self.application.serialPort.get_command_pid_voltage()
+                    self.application.serialPort.get_command_pid_power(PowerType.kw)
+                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+                self.application.meter_values_on = True
+                Thread(target=self.meter_values_thread,daemon=True).start()
+                self.charge_while()
+                return
+
         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
             self.id_tag = self.application.ev.card_id
         if self.application.ev.id_tag != None:
@@ -479,6 +495,7 @@ class Process:
         print("Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...")
         self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.suspended_ev)
         self.relay_control(Relay.Off)
+        self.application.meter_values_on = False
         time_start = time.time()
         self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
         while True:

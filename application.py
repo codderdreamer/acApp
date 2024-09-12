@@ -43,60 +43,64 @@ class Application():
     def __init__(self, loop):
         print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
         self.utils = Utils()
-        os.system("service bluetooth restart")
-        time.sleep(2)
-        os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
-        # os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
-        os.system("/root/acApp/bash/bluetooth_set.sh")
-        time.sleep(5)
-        self.initilly = True
-        self.test_led = False
-        self.test_charge = False
-        self.logger = logger
-        self.loop = loop
-        self.charge_stopped = False
-        self.chargePoint = None
-        self.request_list = []
-        self.model = None
-        self.masterCard = None
-        self.availability = AvailabilityType.operative
-        self.bluetooth_error = None
-        self.__chargePointStatus = None
-        self.info = None
-        self.__error_code = None
-        self.__deviceState = None
-        self.__led_state = None
-        self.ocppActive = False
-        self.cardType: CardType = None
-        self.socketType = SocketType.Type2
-        self.max_current = 32
-        self.control_A_B_C = False
-        self.control_C_B = False
-        self.control_A_C = False
-        self.meter_values_on = False
         self.settings = Settings(self)
-        self.databaseModule = DatabaseModule(self)
-        self.settings.configuration.load_configuration_from_db()
-        self.bluetoothService = BluetoothService(self)
-        self.id_tag_list = self.databaseModule.get_default_local_list()
-        self.softwareSettings = SoftwareSettings(self,logger)
-        self.flaskModule = FlaskModuleThread(self).start()
-        self.webSocketServer = WebSocketServer(self,logger)
-        self.process = Process(self)
-        self.ev = EV(self)
-        self.ocpp_subprotocols = OcppVersion.ocpp16
-        self.serialPort = SerialPort(self,logger)
-        if self.settings.deviceSettings.externalMidMeter == True:
-            self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
-        elif self.settings.deviceSettings.mid_meter == True:
-            self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
-        Thread(target=self.read_charge_values_thred, daemon=True).start()
-        Thread(target=self.control_output,daemon=True).start()
-        Thread(target=self.led_state_thread,daemon=True).start()
-        self.deviceState = DeviceState.IDLE
-        self.chargePointStatus = ChargePointStatus.available
 
-        self.deviceStateModule = DeviceStateModule(self)
+
+
+        # os.system("service bluetooth restart")
+        # time.sleep(2)
+        # os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
+        # # os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
+        # os.system("/root/acApp/bash/bluetooth_set.sh")
+        # time.sleep(5)
+        # self.initilly = True
+        # self.test_led = False
+        # self.test_charge = False
+        # self.logger = logger
+        # self.loop = loop
+        # self.charge_stopped = False
+        # self.chargePoint = None
+        # self.request_list = []
+        # self.model = None
+        # self.masterCard = None
+        # self.availability = AvailabilityType.operative
+        # self.bluetooth_error = None
+        # self.__chargePointStatus = None
+        # self.info = None
+        # self.__error_code = None
+        # self.__deviceState = None
+        # self.__led_state = None
+        # self.ocppActive = False
+        # self.cardType: CardType = None
+        # self.socketType = SocketType.Type2
+        # self.max_current = 32
+        # self.control_A_B_C = False
+        # self.control_C_B = False
+        # self.control_A_C = False
+        # self.meter_values_on = False
+        # self.settings = Settings(self)
+        # self.databaseModule = DatabaseModule(self)
+        # self.settings.configuration.load_configuration_from_db()
+        # self.bluetoothService = BluetoothService(self)
+        # self.id_tag_list = self.databaseModule.get_default_local_list()
+        # self.softwareSettings = SoftwareSettings(self,logger)
+        # self.flaskModule = FlaskModuleThread(self).start()
+        # self.webSocketServer = WebSocketServer(self,logger)
+        # self.process = Process(self)
+        # self.ev = EV(self)
+        # self.ocpp_subprotocols = OcppVersion.ocpp16
+        # self.serialPort = SerialPort(self,logger)
+        # if self.settings.deviceSettings.externalMidMeter == True:
+        #     self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
+        # elif self.settings.deviceSettings.mid_meter == True:
+        #     self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
+        # Thread(target=self.read_charge_values_thred, daemon=True).start()
+        # Thread(target=self.control_output,daemon=True).start()
+        # Thread(target=self.led_state_thread,daemon=True).start()
+        # self.deviceState = DeviceState.IDLE
+        # self.chargePointStatus = ChargePointStatus.available
+
+        # self.deviceStateModule = DeviceStateModule(self)
 
     def led_state_thread(self):
         rcd_error = False

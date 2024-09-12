@@ -41,6 +41,7 @@ builtins.print = timestamped_print
 class Application():
     def __init__(self, loop):
         print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
+        self.loop = loop
         self.utils = Utils()
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
@@ -62,8 +63,6 @@ class Application():
         # self.initilly = True
         # self.test_led = False
         # self.test_charge = False
-        # self.logger = logger
-        # self.loop = loop
         # self.charge_stopped = False
         # self.chargePoint = None
         # self.request_list = []
@@ -189,7 +188,7 @@ class Application():
             elif self.chargePointStatus == ChargePointStatus.charging:
                 self.led_state = LedState.Charging
                 print("L26")
-            elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.cardType == CardType.LocalPnC or self.cardType == CardType.StartStopCard):
+            elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.deviceStateModule.cardType == CardType.LocalPnC or self.deviceStateModule.cardType == CardType.StartStopCard):
                 self.led_state = LedState.StandBy
                 print("L27")
 
@@ -365,7 +364,7 @@ class Application():
         while True:
             try:
                 time_start = None
-                if self.cardType == CardType.BillingCard:
+                if self.deviceStateModule.cardType == CardType.BillingCard:
                     
                     ip_address = self.settings.ocppSettings.domainName
                         
@@ -439,7 +438,7 @@ class Application():
     async def ocppStart(self):
         try:
             self.ocppActive = False
-            if self.cardType == CardType.BillingCard:
+            if self.deviceStateModule.cardType == CardType.BillingCard:
                 if self.settings.ocppSettings.sslEnable == SSLEnable.Disable.value:
                     ws = "ws://"
                 elif self.settings.ocppSettings.sslEnable == SSLEnable.Enable.value:
@@ -493,7 +492,7 @@ class Application():
     def ocpp_task(self):
         while True:
             try:
-                if self.cardType == CardType.BillingCard:
+                if self.deviceStateModule.cardType == CardType.BillingCard:
                     res = self.loop.run_until_complete(self.ocppStart())
                     self.ocppActive = False
             except Exception as e:

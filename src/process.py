@@ -139,7 +139,7 @@ class Process:
         self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
         self.application.ev.charge = False
 
-        if self.application.cardType == CardType.LocalPnC:
+        if self.application.deviceStateModule.cardType == CardType.LocalPnC:
             self._lock_connector_set_control_pilot()
             if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
                 self.application.deviceState = DeviceState.SUSPENDED_EV
@@ -147,7 +147,7 @@ class Process:
             else:
                 self.application.deviceState = DeviceState.WAITING_STATE_C
 
-        elif self.application.cardType == CardType.BillingCard:
+        elif self.application.deviceStateModule.cardType == CardType.BillingCard:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                 self._lock_connector_set_control_pilot()
                 if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
@@ -158,7 +158,7 @@ class Process:
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
 
-        elif self.application.cardType == CardType.StartStopCard:
+        elif self.application.deviceStateModule.cardType == CardType.StartStopCard:
             if self.application.ev.start_stop_authorize:
                 self._lock_connector_set_control_pilot()
                 if self.application.control_C_B and self.application.ev.control_pilot == ControlPlot.stateB.value:
@@ -174,7 +174,7 @@ class Process:
         self.waiting_auth_value = True
         print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
         self.application.ev.charge = False
-        if self.application.cardType == CardType.StartStopCard:
+        if self.application.deviceStateModule.cardType == CardType.StartStopCard:
             time_start = time.time()
             while True:
                 print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
@@ -185,7 +185,7 @@ class Process:
                 if self.application.deviceState != DeviceState.WAITING_AUTH:
                     break
                 time.sleep(1)
-        elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
+        elif self.application.deviceStateModule.cardType == CardType.BillingCard and self.application.ocppActive:
                 time_start = time.time()
                 while True:
                     print(Color.Yellow.value,"Cihazın Authorize olması bekleniyor...")
@@ -300,13 +300,13 @@ class Process:
             self.id_tag = self.application.ev.card_id
         if self.application.ev.id_tag != None:
             self.id_tag = self.application.ev.id_tag
-        if self.application.cardType == CardType.LocalPnC:
+        if self.application.deviceStateModule.cardType == CardType.LocalPnC:
             self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
             self.application.ev.charge = True
             self.relay_control(Relay.On)
             self.set_max_current()
             self.charge_while()   
-        elif self.application.cardType == CardType.BillingCard and self.application.ocppActive:
+        elif self.application.deviceStateModule.cardType == CardType.BillingCard and self.application.ocppActive:
             if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
                 if self.application.ev.charge == False:
@@ -358,7 +358,7 @@ class Process:
                     self.charge_while()
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
-        elif self.application.cardType == CardType.StartStopCard:
+        elif self.application.deviceStateModule.cardType == CardType.StartStopCard:
             if self.application.ev.start_stop_authorize:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
                 self.application.ev.charge = True
@@ -416,7 +416,7 @@ class Process:
         else:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted)
         
-        if (self.application.cardType != CardType.BillingCard):
+        if (self.application.deviceStateModule.cardType != CardType.BillingCard):
             self.application.ev.clean_charge_variables()
         else:
             if self.application.info != "Offline":

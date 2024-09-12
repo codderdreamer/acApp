@@ -329,11 +329,11 @@ class SoftwareSettings():
         try:
             card_type = self.application.settings.functionsEnable.card_type
             if card_type == CardType.StartStopCard.value:
-                self.application.cardType = CardType.StartStopCard
+                self.application.deviceStateModule.cardType = CardType.StartStopCard
             elif card_type == CardType.LocalPnC.value:
-                self.application.cardType = CardType.LocalPnC
+                self.application.deviceStateModule.cardType = CardType.LocalPnC
             elif card_type == CardType.BillingCard.value:
-                self.application.cardType = CardType.BillingCard
+                self.application.deviceStateModule.cardType = CardType.BillingCard
         except Exception as e:
             print("set_functions_enable Exception:",e)
 

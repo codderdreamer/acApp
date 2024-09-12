@@ -168,7 +168,7 @@ class EV():
     def clean_charge_variables(self):
         try:
             
-            if (self.application.cardType == CardType.BillingCard):
+            if (self.application.deviceStateModule.cardType == CardType.BillingCard):
                 if self.application.process.transaction_id != None:
                     print(Color.Yellow.value,"Stop transaction gönderiliyor...")
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
@@ -181,7 +181,7 @@ class EV():
             self.application.ev.card_id = ""
             self.application.ev.id_tag = None
             self.application.ev.charge = False
-            if (self.application.cardType == CardType.BillingCard):
+            if (self.application.deviceStateModule.cardType == CardType.BillingCard):
                 self.application.chargePoint.authorize = None
             self.application.process.transaction_id = None
             self.application.process.id_tag = None
@@ -224,7 +224,7 @@ class EV():
                 # Rezervasyon süresinin dolup dolmadığını kontrol et
                 self.check_and_clear_expired_reservation()
                 
-                if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
+                if (self.application.ocppActive == False) and (self.application.deviceStateModule.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
                     self.ocpp_offline()
                 elif self.is_there_rcd_error():
                     self.application.process.rcd_trip_error = True
@@ -248,9 +248,9 @@ class EV():
                         self.application.deviceState = DeviceState.FAULT
                     else:
                         self.application.deviceState = DeviceState.FAULT
-                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved) and (self.application.serialPort.error == False):
+                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.deviceStateModule.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved) and (self.application.serialPort.error == False):
                     self.ocpp_online()
-                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.LocalPnC or self.application.cardType == CardType.StartStopCard):
+                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.deviceStateModule.cardType == CardType.LocalPnC or self.application.deviceStateModule.cardType == CardType.StartStopCard):
                     self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 if self.application.ocppActive:
                     if self.application.settings.configuration.MinimumStatusDuration:
@@ -623,7 +623,7 @@ class EV():
                 else:
                     self.application.process.rfid_verified = False
                     
-            elif (self.application.cardType == CardType.BillingCard):
+            elif (self.application.deviceStateModule.cardType == CardType.BillingCard):
                 print("Billing Card Detected :", value)
                 
                 if self.application.chargePoint is None:
@@ -671,7 +671,7 @@ class EV():
                         self.application.chargePoint.authorize = None
                         print(Color.Red.value,"Autorize başarısız!")
                         
-            elif self.application.cardType == CardType.StartStopCard:
+            elif self.application.deviceStateModule.cardType == CardType.StartStopCard:
                 print("Start Stop Card Detected :", value)
                 finded = False
                 card_id_list = self.application.databaseModule.get_default_local_list()

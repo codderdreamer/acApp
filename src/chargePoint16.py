@@ -240,7 +240,7 @@ class ChargePoint16(cp):
 
     def send_stop_thread(self):
         try:
-            if self.application.process.initially_charge and self.application.cardType == CardType.BillingCard:
+            if self.application.process.initially_charge and self.application.deviceStateModule.cardType == CardType.BillingCard:
                 print("Daha önce başlamış bir şarj vardı. Durduruluyor...")
                 print("self.application.process.transaction_id",self.application.process.transaction_id,"self.application.process.id_tag",self.application.process.id_tag)
                 if self.application.process.transaction_id != None and self.application.process.transaction_id != "None" and self.application.process.transaction_id != "":
@@ -267,7 +267,7 @@ class ChargePoint16(cp):
                 self.application.initilly = False
                 print("---------------------- self.application.initilly = False")
             
-            if self.application.cardType == CardType.BillingCard:
+            if self.application.deviceStateModule.cardType == CardType.BillingCard:
                 for request in self.application.request_list:
                     print("Requested List")
                     print("\n\n???????????????????????????????????????????? request",request)
@@ -276,7 +276,7 @@ class ChargePoint16(cp):
                 print("\n \n--------------------------------------------------run_coroutine_threadsafe finish ---------------------------\n")
                 
             request = call.HeartbeatPayload()
-            while self.application.cardType == CardType.BillingCard:
+            while self.application.deviceStateModule.cardType == CardType.BillingCard:
                 if self.application.settings.change_ocpp:
                     self.application.settings.change_ocpp = False
                     break
@@ -1147,7 +1147,7 @@ class ChargePoint16(cp):
     @after(Action.Reset)
     def after_reset(self,type: ResetType):
         try :
-            if (self.application.cardType == CardType.BillingCard) and self.application.meter_values_on:
+            if (self.application.deviceStateModule.cardType == CardType.BillingCard) and self.application.meter_values_on:
                 print("Şarj var durduruluyor")
                 self.application.deviceState = DeviceState.STOPPED_BY_EVSE
                 Thread(target=self.reboot,daemon=True).start()

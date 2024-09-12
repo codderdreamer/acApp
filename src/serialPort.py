@@ -57,6 +57,8 @@ class SerialPort():
         self.set_time_rfid = time.time()
         self.delete_time_rfid = time.time()
         self.led_state = LedState.StandBy
+
+        self.time_start = time.time()
         
         os.system("gpio-test.64 w e 11 0 > /dev/null 2>&1")
         time.sleep(0.5)
@@ -72,17 +74,13 @@ class SerialPort():
         Thread(target=self.serial_port_thread,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
 
-        # Thread(target=self.test,daemon=True).start()
+        Thread(target=self.test,daemon=True).start()
 
     def test(self):
         while True:
             try:
-                x = input()
-                if x == "1":
-                    self.application.serialPort.set_command_pid_locker_control(LockerState.Lock)
-                if x == "2":
-                    self.application.serialPort.set_command_pid_locker_control(LockerState.Unlock)
-                self.application.serialPort.get_command_pid_locker_control()
+                if time.time() - self.time_start > 10:
+                    print(Color.Red.value,"Seri port iletişimi kesildi!!!!!!!!!!!!!!!!!!!!!!!!!")
             except Exception as e:
                 pass
             time.sleep(1)
@@ -101,14 +99,15 @@ class SerialPort():
                 self.time_10 = time.time()
                 self.get_command_pid_energy(EnergyType.kwh)
                 self.get_command_pid_proximity_pilot()
-
             time.sleep(1)
 
     def write(self):
+        self.time_start = time.time()
         while True:
             try:
                 if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
+                    self.time_start = time.time()
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("write Exception:",e)
@@ -502,7 +501,7 @@ class SerialPort():
                 self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
                 self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
                 self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
-                # print(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
+                print(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
         except Exception as e:
             print("get_response_pid_current",e)
 
@@ -618,11 +617,14 @@ class SerialPort():
             print("get_response_pid_error_list",e)
             
     def read(self):
-        # counter = 0
+        incoming = ""
         while True:
             try:
-                incoming = self.serial.readline()
-                incoming = incoming.decode('utf-8')
+                try:
+                    incoming = self.serial.readline()
+                    incoming = incoming.decode('utf-8')
+                except:
+                    print(Color.Red.value,"Seri port data bozuk geldi")
                 if len(incoming) > 0:
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:

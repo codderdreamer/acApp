@@ -34,6 +34,12 @@ class ModbusModule:
         
         # Thread(target=self.read_all_data, daemon=True).start()
 
+    def set_slave_id(self):
+        if self.application.settings.deviceSettings.externalMidMeter:
+            self.application.modbusModule.change_slave_address(self.deviceSettings.externalMidMeterSlaveAddress)
+        elif self.application.settings.deviceSettings.mid_meter:
+            self.application.modbusModule.change_slave_address(self.deviceSettings.midMeterSlaveAddress)
+
     def change_slave_address(self, new_slave_address):
         self.slave_address = new_slave_address
         self.instrument = minimalmodbus.Instrument(self.port, self.slave_address)

@@ -6,7 +6,6 @@ from datetime import datetime
 from src.enums import *
 from threading import Thread
 import os
-from src.logger import ac_app_logger as logger
 
 class DatabaseModule():
     def __init__(self,application) -> None:
@@ -308,9 +307,9 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            self.application.settings.deviceSettings.mid_meter = (data_dict["midMeter"] == "True")
+            self.application.settings.deviceSettings.mid_meter = self.application.utils.is_variable_true(data_dict["midMeter"])
             self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
-            self.application.settings.deviceSettings.externalMidMeter = (data_dict["externalMidMeter"]=="True")
+            self.application.settings.deviceSettings.externalMidMeter = self.application.utils.is_variable_true(data_dict["externalMidMeter"])
             self.application.settings.deviceSettings.externalMidMeterSlaveAddress = int(data_dict["externalMidMeterSlaveAddress"])
             return bool(data_dict["midMeter"])
         except Exception as e:

@@ -63,6 +63,8 @@ class Application():
         Thread(target=self.serialPort.write,daemon=True).start()
         Thread(target=self.serialPort.serial_port_thread,daemon=True).start()
         Thread(target=self.serialPort.get_command_pid_rfid,daemon=True).start()
+        
+
 
 
         # self.initilly = True
@@ -109,7 +111,6 @@ class Application():
         # self.deviceState = DeviceState.IDLE
         # self.chargePointStatus = ChargePointStatus.available
 
-        # self.deviceStateModule = DeviceStateModule(self)
 
 
 

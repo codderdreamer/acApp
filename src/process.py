@@ -244,13 +244,18 @@ class Process:
         if self.application.deviceState != DeviceState.CHARGING:
             return
         time_start = time.time()
+        print(Color.Green.value,"************************************************** 1")
         self.application.databaseModule.set_charge("True", str(self.id_tag), str(self.transaction_id))
+        print(Color.Green.value,"************************************************** 2")
         self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
         # self.application.serialPort.get_command_pid_relay_control()
         # time.sleep(1)
+        print(Color.Green.value,"************************************************** 3")
 
         if self.application.deviceState != DeviceState.CHARGING:
             return
+        
+        print(Color.Green.value,"************************************************** 4")
 
         if self.relay_control(Relay.On) == False:
             print("if not self.application.ev.pid_relay_control self.application.ev.control_pilot",self.application.ev.control_pilot)
@@ -259,12 +264,15 @@ class Process:
         
         while True:
             try:
+                print(Color.Green.value,"************************************************** 5")
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
                     break
+                print(Color.Green.value,"************************************************** 6")
                 if self.application.settings.deviceSettings.externalMidMeter:
                     print(Color.Blue.value,"External Mid Meter aktif.")
                 elif self.application.settings.deviceSettings.mid_meter:
                     print(Color.Blue.value,"Mid Meter aktif.")
+                print(Color.Green.value,"************************************************** 7")
                 if (self.application.settings.deviceSettings.mid_meter or self.application.settings.deviceSettings.externalMidMeter) and not self.application.modbusModule.connection:
                     if self.application.ev.control_pilot == ControlPlot.stateC.value:
                         if time.time() - time_start > 10:
@@ -285,6 +293,7 @@ class Process:
                     self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
                 elif self.application.modbusModule.connection == True:
                     pass
+                print(Color.Green.value,"************************************************** 8")
                 self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.charging)
                 print("Cihaz şarjda...")
                 self.application.ev.charge = True

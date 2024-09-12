@@ -55,7 +55,7 @@ class Application():
         self.modbusModule : ModbusModule = None
         self.deviceStateModule : DeviceStateModule = None
 
-        self.settings.application = self
+        self.settings.application = None
         # self.databaseModule.application = self
         # self.bluetoothService.application = self
         # self.softwareSettings.application = self

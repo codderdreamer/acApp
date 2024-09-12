@@ -7,11 +7,12 @@ from src.modbusModule import ModbusModule
 from src.logger import ac_app_logger as logger
 import os
 import base64 
+from application import Application
 
 
 class Settings():
     def __init__(self) -> None:
-        self.application = None
+        self.application : Application = None
         self.networkPriority = NetworkPriority()
         self.settings4G = Settings4G()
         self.ethernetSettings = EthernetSettings()

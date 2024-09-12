@@ -485,11 +485,11 @@ class SerialPort():
             if (int(data[21]) == 1):
                 error_list.append(PidErrorList.OverPowerFailure)
 
-            # if len(error_list) > 0:
-            #     print(Color.Red.value,error_list)
-            #     self.error = True
+            if len(error_list) > 0:
+                print(Color.Red.value,error_list)
+                self.error = True
             
-            # self.error_list = error_list
+            self.error_list = error_list
 
     def read(self):
         # counter = 0

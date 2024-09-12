@@ -97,90 +97,93 @@ class Application():
     def led_state_thread(self):
         rcd_error = False
         while True:
-            if self.ev.is_there_rcd_error():
-                self.led_state = LedState.RcdError
-                rcd_error = True
-                print("L1")
-            elif rcd_error:
-                self.led_state = LedState.RcdError
-                print("L2")
-            elif self.ev.is_there_locker_initialize_error():
-                self.led_state = LedState.LockerError
-                print("L3")
-            elif self.process.charge_try_counter > 3:
-                self.led_state = LedState.NeedReplugging
-                print("L4")
-            elif self.ev.is_there_other_error():
-                self.led_state = LedState.Fault
-                print("L5")
-            elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter > 3:
-                self.led_state = LedState.NeedReplugging
-                print("L6")
-            elif self.chargePointStatus == ChargePointStatus.faulted and len(self.serialPort.error_list) > 0:
-                self.led_state = LedState.Fault
-                print("L7")
-            elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter != 0:
-                self.led_state = LedState.Fault
-                print("L8")
-            elif self.chargePointStatus == ChargePointStatus.faulted and self.process.locker_error:
-                self.led_state = LedState.LockerError
-                print("L9")
-            elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
-                self.led_state = LedState.Fault
-                print("L10")
-            elif self.deviceState == DeviceState.OFFLINE:
-                self.led_state = LedState.DeviceOffline
-                print("L11")
-            elif self.process.try_charge:
-                self.led_state = LedState.Fault
-                print("L12")
-            elif self.chargePointStatus == ChargePointStatus.faulted and (self.ev.control_pilot == ControlPlot.stateB.value or self.ev.control_pilot == ControlPlot.stateC.value):
-                self.led_state = LedState.NeedReplugging
-                print("L13")
-            elif self.chargePointStatus == ChargePointStatus.faulted:
-                self.led_state = LedState.Fault
-                print("L14")
-            elif self.chargePointStatus == ChargePointStatus.suspended_evse:
-                self.led_state = LedState.Fault
-                print("L15")
-            elif self.availability == AvailabilityType.inoperative and self.ev.charge == False:
-                self.led_state = LedState.DeviceInoperative
-                print("L16")
-            elif self.process.rfid_verified == True:
-                self.led_state = LedState.RfidVerified
-                self.process.rfid_verified = None
-                print("L18")
-            elif self.process.rfid_verified == False:
-                self.led_state = LedState.RfidFailed
-                self.process.rfid_verified = None
-                print("L19")
-            elif self.deviceState == DeviceState.SUSPENDED_EV or self.deviceState == DeviceState.STOPPED_BY_EVSE or self.deviceState == DeviceState.STOPPED_BY_USER:
-                self.led_state = LedState.ChargingStopped
-                print("L20")
-            elif (self.chargePointStatus == ChargePointStatus.preparing or self.chargePointStatus == ChargePointStatus.reserved) and self.ev.control_pilot == ControlPlot.stateA.value:
-                self.led_state = LedState.WaitingPluging
-                print("L21")
-            elif (self.ev.start_stop_authorize) and self.ev.control_pilot == ControlPlot.stateA.value:
-                self.led_state = LedState.WaitingPluging
-                print("L22")
-            elif self.chargePointStatus == ChargePointStatus.available and self.ev.control_pilot == ControlPlot.stateA.value:
-                self.led_state = LedState.StandBy
-                print("L23")
-            elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateB.value:
-                self.led_state = LedState.Connecting
-                print("L24")
-            elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateC.value:
-                self.led_state = LedState.Connecting
-                print("L25")
-            elif self.chargePointStatus == ChargePointStatus.charging:
-                self.led_state = LedState.Charging
-                print("L26")
-            elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.cardType == CardType.LocalPnC or self.cardType == CardType.StartStopCard):
-                self.led_state = LedState.StandBy
-                print("L27")
+            try:
+                if self.ev.is_there_rcd_error():
+                    self.led_state = LedState.RcdError
+                    rcd_error = True
+                    print("L1")
+                elif rcd_error:
+                    self.led_state = LedState.RcdError
+                    print("L2")
+                elif self.ev.is_there_locker_initialize_error():
+                    self.led_state = LedState.LockerError
+                    print("L3")
+                elif self.process.charge_try_counter > 3:
+                    self.led_state = LedState.NeedReplugging
+                    print("L4")
+                elif self.ev.is_there_other_error():
+                    self.led_state = LedState.Fault
+                    print("L5")
+                elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter > 3:
+                    self.led_state = LedState.NeedReplugging
+                    print("L6")
+                elif self.chargePointStatus == ChargePointStatus.faulted and len(self.serialPort.error_list) > 0:
+                    self.led_state = LedState.Fault
+                    print("L7")
+                elif self.chargePointStatus == ChargePointStatus.faulted and self.process.charge_try_counter != 0:
+                    self.led_state = LedState.Fault
+                    print("L8")
+                elif self.chargePointStatus == ChargePointStatus.faulted and self.process.locker_error:
+                    self.led_state = LedState.LockerError
+                    print("L9")
+                elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
+                    self.led_state = LedState.Fault
+                    print("L10")
+                elif self.deviceState == DeviceState.OFFLINE:
+                    self.led_state = LedState.DeviceOffline
+                    print("L11")
+                elif self.process.try_charge:
+                    self.led_state = LedState.Fault
+                    print("L12")
+                elif self.chargePointStatus == ChargePointStatus.faulted and (self.ev.control_pilot == ControlPlot.stateB.value or self.ev.control_pilot == ControlPlot.stateC.value):
+                    self.led_state = LedState.NeedReplugging
+                    print("L13")
+                elif self.chargePointStatus == ChargePointStatus.faulted:
+                    self.led_state = LedState.Fault
+                    print("L14")
+                elif self.chargePointStatus == ChargePointStatus.suspended_evse:
+                    self.led_state = LedState.Fault
+                    print("L15")
+                elif self.availability == AvailabilityType.inoperative and self.ev.charge == False:
+                    self.led_state = LedState.DeviceInoperative
+                    print("L16")
+                elif self.process.rfid_verified == True:
+                    self.led_state = LedState.RfidVerified
+                    self.process.rfid_verified = None
+                    print("L18")
+                elif self.process.rfid_verified == False:
+                    self.led_state = LedState.RfidFailed
+                    self.process.rfid_verified = None
+                    print("L19")
+                elif self.deviceState == DeviceState.SUSPENDED_EV or self.deviceState == DeviceState.STOPPED_BY_EVSE or self.deviceState == DeviceState.STOPPED_BY_USER:
+                    self.led_state = LedState.ChargingStopped
+                    print("L20")
+                elif (self.chargePointStatus == ChargePointStatus.preparing or self.chargePointStatus == ChargePointStatus.reserved) and self.ev.control_pilot == ControlPlot.stateA.value:
+                    self.led_state = LedState.WaitingPluging
+                    print("L21")
+                elif (self.ev.start_stop_authorize) and self.ev.control_pilot == ControlPlot.stateA.value:
+                    self.led_state = LedState.WaitingPluging
+                    print("L22")
+                elif self.chargePointStatus == ChargePointStatus.available and self.ev.control_pilot == ControlPlot.stateA.value:
+                    self.led_state = LedState.StandBy
+                    print("L23")
+                elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateB.value:
+                    self.led_state = LedState.Connecting
+                    print("L24")
+                elif self.chargePointStatus == ChargePointStatus.preparing and self.ev.control_pilot == ControlPlot.stateC.value:
+                    self.led_state = LedState.Connecting
+                    print("L25")
+                elif self.chargePointStatus == ChargePointStatus.charging:
+                    self.led_state = LedState.Charging
+                    print("L26")
+                elif (self.ev.control_pilot == ControlPlot.stateA.value) and (self.cardType == CardType.LocalPnC or self.cardType == CardType.StartStopCard):
+                    self.led_state = LedState.StandBy
+                    print("L27")
 
-            if self.ev.control_pilot == ControlPlot.stateA.value:
-                rcd_error = False
+                if self.ev.control_pilot == ControlPlot.stateA.value:
+                    rcd_error = False
+            except Exception as e:
+                print("led_state_thread Exception:",e)
 
             time.sleep(1)
 

@@ -7,10 +7,9 @@ from src.enums import *
 from threading import Thread
 import os
 from src.logger import ac_app_logger as logger
-from application import Application
 
 class DatabaseModule():
-    def __init__(self, application : Application) -> None:
+    def __init__(self, application) -> None:
         self.application = application
         self.full_configuration = []
         self.get_model()

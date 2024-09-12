@@ -485,7 +485,7 @@ class Application():
         while True:
             try:
                 if self.cardType == CardType.BillingCard:
-                    res = loop.run_until_complete(self.ocppStart())
+                    res = self.loop.run_until_complete(self.ocppStart())
                     self.ocppActive = False
             except Exception as e:
                 print("ocpp_task Exception:",e)

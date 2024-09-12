@@ -244,11 +244,11 @@ class Application():
         if self.__deviceState != value:
             if self.process.waiting_auth_value:
                 if value == DeviceState.CONNECTED or value == DeviceState.SUSPENDED_EV or value == DeviceState.CHARGING:
-                    print("1")
+                    print("D1")
                     return
             if value == DeviceState.WAITING_STATE_C:
                 if self.ev.control_pilot == ControlPlot.stateC.value:
-                    print("2")
+                    print("D2")
                     return
             if self.process.rcd_trip_error or self.process.locker_initialize_error:
                 if value == DeviceState.IDLE:
@@ -256,7 +256,7 @@ class Application():
                 elif value == DeviceState.FAULT:
                     pass
                 else:
-                    print("3")
+                    print("D3")
                     return
             if self.process.charge_try_counter > 3:
                 if value == DeviceState.IDLE:
@@ -264,7 +264,7 @@ class Application():
                 elif value == DeviceState.FAULT:
                     pass
                 else:
-                    print("4")
+                    print("D4")
                     return
             if self.process.wait_fault:
                 if value == DeviceState.IDLE:
@@ -272,14 +272,21 @@ class Application():
                 elif value == DeviceState.FAULT:
                     pass
                 else:
-                    print("5")
+                    print("D5")
                     return
                 
             if self.__deviceState == DeviceState.STOPPED_BY_USER:
                 if value == DeviceState.IDLE:
                     pass
                 else:
-                    print("6")
+                    print("D6")
+                    return
+            
+            if self.__deviceState == DeviceState.STOPPED_BY_EVSE:
+                if value == DeviceState.IDLE:
+                    pass
+                else:
+                    print("D9")
                     return
                 
             if self.process.locker_error:
@@ -288,7 +295,7 @@ class Application():
                 elif value == DeviceState.FAULT:
                     pass
                 else:
-                    print("7")
+                    print("D7")
                     return
                 
             if self.process.try_charge:
@@ -297,7 +304,7 @@ class Application():
                 elif value == DeviceState.IDLE:
                     pass
                 else:
-                    print("8")
+                    print("D8")
                     return
 
 

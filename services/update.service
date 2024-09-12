@@ -6,7 +6,8 @@ Type=idle
 ExecStart=/usr/bin/python3 /root/update.py
 StandardOutput=inherit
 StandardError=inherit
-Restart=restart
+Restart=always
+RestartSec=5s
 User=root
 
 [Install]

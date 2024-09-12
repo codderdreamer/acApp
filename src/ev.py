@@ -19,7 +19,7 @@ class EV():
         self.pid_cp_pwm = None                  # float
         self.pid_relay_control = None
         self.pid_led_control = None
-        self.pid_locker_control = None
+        self.__pid_locker_control = None
 
         self.current_L1 = 0
         self.current_L2 = 0
@@ -44,11 +44,10 @@ class EV():
         self.parent_id = None
         self.check_and_clear_expired_reservation()
 
-        self.send_message_thread_start = False
-
         self.start_stop_authorize = False
         self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
+        Thread(target=self.send_message,daemon=True).start()
 
         self.charging_again = False
 
@@ -63,26 +62,29 @@ class EV():
             self.expiry_date = reservation.get('expiry_date')
             self.parent_id = reservation.get('parent_id')
             self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.reserved)
-            if self.control_pilot == ControlPlot.stateA.value:
-                self.application.led_state = LedState.WaitingPluging
 
             
     def ocpp_offline(self):
         print(Color.Red.value, "Ocpp Offline")
-        self.application.led_state =LedState.DeviceOffline
-        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted)
+        self.application.deviceState = DeviceState.OFFLINE
+        self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.faulted,"Offline")
 
     def ocpp_online(self):
-        # led rfid verified yada faild iken standby yanmasın
-        if not (self.application.led_state == LedState.RfidFailed or self.application.led_state == LedState.RfidVerified):
-            self.application.led_state =LedState.StandBy
         if self.application.availability == AvailabilityType.operative:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
         else:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
 
-    def is_there_rcd_trip_error(self):
+    def is_there_rcd_error(self):
         if PidErrorList.RcdTripError in self.application.serialPort.error_list:
+            return True
+        elif PidErrorList.RcdInitializeError in self.application.serialPort.error_list:
+            return True
+        else:
+            return False
+        
+    def is_there_locker_initialize_error(self):
+        if PidErrorList.LockerInitializeError in self.application.serialPort.error_list:
             return True
         else:
             return False
@@ -146,7 +148,6 @@ class EV():
         time_start = time.time()
         if self.application.ev.control_pilot != "B":
             print("self.application.ev.control_pilot", self.application.ev.control_pilot)
-            self.application.led_state =LedState.WaitingPluging
             while True:
                 print(f"{connection_timeout} sn içinde kablo bağlantısı bekleniyor! control pilot:", self.application.ev.control_pilot)
                 if self.application.ev.control_pilot == "B" or self.application.ev.control_pilot == "C":
@@ -156,22 +157,65 @@ class EV():
                     print(f"Kablo bağlantısı sağlanamadı {connection_timeout} saniye süre doldu!")
                     if self.reservation_id:
                         self.application.change_status_notification(ChargePointErrorCode.other_error, ChargePointStatus.reserved)
-                        if self.control_pilot == ControlPlot.stateA.value:
-                            self.application.led_state = LedState.WaitingPluging
                     else:
-                        self.application.led_state =LedState.StandBy
-                        self.application.change_status_notification(ChargePointErrorCode.noError, ChargePointStatus.available)
-                        self.application.ev.start_stop_authorize = False
-                        self.application.chargePoint.authorize = None
-                        self.application.ev.card_id = ""
-                        self.application.ev.id_tag = None
-                        self.application.ev.charge = False
+                        self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
+                        self.clean_charge_variables()
                     break
                 time.sleep(0.2)
 
+    def clean_charge_variables(self):
+        try:
+            
+            if (self.application.cardType == CardType.BillingCard):
+                if self.application.process.transaction_id != None:
+                    print(Color.Yellow.value,"Stop transaction gönderiliyor...")
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+                    if not self.application.initilly:
+                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
+                self.application.meter_values_on = False
+                time.sleep(3)
+            print(Color.Yellow.value,"**************** şarj geçmişi siliniyor ...")
+            self.application.ev.start_stop_authorize = False
+            self.application.ev.card_id = ""
+            self.application.ev.id_tag = None
+            self.application.ev.charge = False
+            if (self.application.cardType == CardType.BillingCard):
+                self.application.chargePoint.authorize = None
+            self.application.process.transaction_id = None
+            self.application.process.id_tag = None
+            self.application.process.initially_charge = False
+            self.application.process.there_is_transaction = False
+            self.application.databaseModule.set_charge("False", "", "")
+        except Exception as e:
+            print(Color.Red.value,"clean_charge_variables Exception:",e)
+
+    def stop_pwm_off_relay(self):
+        try:
+            time_start = time.time()
+            while True:
+                print(Color.Yellow.value,"pwm 0 setleniyor...")
+                self.application.serialPort.set_command_pid_cp_pwm(0)
+                time.sleep(0.5)
+                self.application.serialPort.get_command_pid_cp_pwm()
+                time.sleep(0.5)
+                if self.application.ev.pid_cp_pwm == 0:
+                    print(Color.Green.value,"pwm 0 setlendi")
+                    break
+                if time.time() - time_start > 10:
+                    print(Color.Red.value, "Pwm 0'a düşürülemedi! Pwm:",self.application.ev.pid_cp_pwm)
+                    break
+                time.sleep(1)
+            if self.application.process.relay_control(Relay.Off):
+                print(Color.Green.value,"Röle başarılı Off")
+            else:
+                print(Color.Red.value,"Röle Off başarısız.")
+            if self.application.socketType == SocketType.Type2:
+                self.application.process.unlock()
+        except Exception as e:
+            print("stop_pwm_off_relay Exception:",e)
 
     def control_error_list(self):
-        time.sleep(10)
+        time.sleep(15)
         time_start = time.time()
         while True:
             try:
@@ -180,22 +224,32 @@ class EV():
                 
                 if (self.application.ocppActive == False) and (self.application.cardType == CardType.BillingCard) and (self.application.chargePointStatus != ChargePointStatus.charging) and (self.application.serialPort.error == False):
                     self.ocpp_offline()
-                elif self.application.availability == AvailabilityType.inoperative:
-                    if self.control_pilot != ControlPlot.stateC.value:
-                        self.application.led_state = LedState.DeviceInoperative
-                elif self.is_there_rcd_trip_error():
+                elif self.is_there_rcd_error():
+                    self.application.process.rcd_trip_error = True
                     self.application.deviceState = DeviceState.FAULT
+                    self.application.change_status_notification(ChargePointErrorCode.ground_failure,ChargePointStatus.faulted,"RcdTripError")
+                    self.clean_charge_variables()
+                elif self.is_there_locker_initialize_error():
+                    self.application.process.locker_initialize_error = True
+                    self.application.deviceState = DeviceState.FAULT
+                    self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")
+                    self.clean_charge_variables()
                 elif self.is_there_other_error():
                     if self.application.process.charge_try_counter > 3:
                         self.application.deviceState = DeviceState.FAULT
                     elif (self.control_pilot == ControlPlot.stateB.value) or (self.control_pilot == ControlPlot.stateC.value):
-                        self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                        if self.application.process.charge_try_counter < 4:
+                            self.application.deviceState = DeviceState.SUSPENDED_EVSE
+                        else:
+                            self.application.deviceState = DeviceState.FAULT
                     elif (self.control_pilot == ControlPlot.stateA.value):
                         self.application.deviceState = DeviceState.FAULT
                     else:
                         self.application.deviceState = DeviceState.FAULT
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.BillingCard) and (self.application.ocppActive == True) and (self.application.chargePointStatus != ChargePointStatus.preparing) and (self.application.chargePointStatus != ChargePointStatus.reserved) and (self.application.serialPort.error == False):
                     self.ocpp_online()
+                elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.LocalPnC or self.application.cardType == CardType.StartStopCard):
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 if self.application.ocppActive:
                     if self.application.settings.configuration.MinimumStatusDuration:
                         if time.time() - time_start > int(self.application.settings.configuration.MinimumStatusDuration):
@@ -207,13 +261,24 @@ class EV():
             time.sleep(1)
 
     def send_message(self):
-        self.send_message_thread_start = True
-        while self.send_message_thread_start:
-            try:
-                self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
-            except Exception as e:
-                print("send_message Exception:", e)
-            time.sleep(3)
+        while True:
+            if self.charge:
+                try:
+                    self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
+                except Exception as e:
+                    print("send_message Exception:", e)
+                time.sleep(3)
+
+    @property
+    def pid_locker_control(self):
+        return self.__pid_locker_control
+
+    @pid_locker_control.setter
+    def pid_locker_control(self, value):
+        print(Color.Yellow.value,"MCU gelen response:",value)
+        if self.__pid_locker_control != value:
+            self.__pid_locker_control = value 
+            
 
     @property
     def led_state(self):
@@ -262,6 +327,14 @@ class EV():
     @control_pilot.setter
     def control_pilot(self, value):
         if self.__control_pilot != value:
+            if self.__control_pilot == ControlPlot.stateC.value and value == ControlPlot.stateB.value:
+                self.application.control_C_B = True
+            else:
+                self.application.control_C_B = False
+            if self.__control_pilot == ControlPlot.stateB.value and value == ControlPlot.stateC.value:
+                self.application.control_A_B_C = True
+            else:
+                self.application.control_A_B_C = False
             self.__control_pilot = value
             print(Color.Yellow.value,"Control Pilot",value)
             if self.__control_pilot == ControlPlot.stateA.value:
@@ -282,12 +355,6 @@ class EV():
         if self.__charge != value:
             print(Color.Yellow.value,"Charge:",value)
         self.__charge = value
-        if value:
-            Thread(target=self.send_message,daemon=True).start()
-        else:
-            self.send_message_thread_start = False
-            self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_charging())
-
    
     def send_authorization_request(self, value):
         """
@@ -417,7 +484,7 @@ class EV():
             print("Authorized for unknown id")
             return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
         
-        self.application.led_state =LedState.RfidFailed
+        self.application.process.rfid_verified = False
         return AuthorizationStatus.invalid  # allowOfflineTxForUnknownId False ise, Red olarak geri dön.
 
     def check_local_auth_list(self, value):
@@ -503,6 +570,7 @@ class EV():
             print("Authorization Result:", authorization_result)
             if authorization_result == AuthorizationStatus.accepted:
                 print("Authorized for billing card: ", value)
+                self.application.process.id_tag = value
                 self.application.chargePoint.authorize = AuthorizationStatus.accepted
                 self.application.chargePoint.handle_authorization_accepted()
                 self.start_stop_authorize = True
@@ -512,12 +580,14 @@ class EV():
                 self.start_stop_authorize = False
 
         else:  # Cihaz offline ise
+            print("Device is offline")
             authorization_result = self.check_offline_authorization(value)
             print("Authorization Result:", authorization_result)
             if authorization_result == AuthorizationStatus.accepted:
                 self.authorize = AuthorizationStatus.accepted
                 self.application.chargePoint.handle_authorization_accepted()
                 print("Authorized for billing card: ", value)
+                self.application.process.id_tag = value
                 self.start_stop_authorize = True
             else:
                 print("Unauthorized for billing card :", value)
@@ -549,7 +619,7 @@ class EV():
                     else:
                         self.application.chargePoint.handle_authorization_failed()
                 else:
-                    self.application.led_state = LedState.RfidFailed
+                    self.application.process.rfid_verified = False
                     
             elif (self.application.cardType == CardType.BillingCard):
                 print("Billing Card Detected :", value)
@@ -559,20 +629,42 @@ class EV():
                     return  # Or handle the error as appropriate for your application
 
                 if self.charge:
+                    print("şarj aktif, transaction stopped")
                     if self.application.process.id_tag == value:
+                        print("self.application.process.id_tag == value")
                         self.application.chargePoint.authorize = None
                         authorization_result = self.authorize_billing_card(value)
                         if authorization_result == AuthorizationStatus.accepted:
+                            self.application.process.there_is_transaction = False
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
                     else:
+                        print("self.application.process.id_tag != value")
+                        self.application.chargePoint.handle_authorization_failed()
+                elif self.application.process.there_is_transaction:
+                    print("transaction stopped")
+                    if self.application.process.id_tag == value:
+                        print("self.application.process.id_tag == value")
+                        self.application.chargePoint.authorize = None
+                        authorization_result = self.authorize_billing_card(value)
+                        if authorization_result == AuthorizationStatus.accepted:
+                            self.application.process.there_is_transaction = False
+                            if self.control_pilot == ControlPlot.stateA.value:
+                                self.application.deviceState = DeviceState.IDLE
+                            else:
+                                self.application.deviceState = DeviceState.STOPPED_BY_USER
+                    else:
+                        print("self.application.process.id_tag != value")
                         self.application.chargePoint.handle_authorization_failed()
                 else:
+                    print("transaction started")
                     self.application.chargePoint.authorize = None
                     authorization_result = self.authorize_billing_card(value)
                     if authorization_result == AuthorizationStatus.accepted:
+                        self.application.process.there_is_transaction = True
+                        self.application.process.id_tag = value
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
                         if self.control_pilot == ControlPlot.stateA.value:
-                            Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
+                            Thread(target=self.remote_start_thread,daemon=True).start()
                     else :
                         self.application.chargePoint.authorize = None
                         print(Color.Red.value,"Autorize başarısız!")
@@ -591,18 +683,17 @@ class EV():
 
                         if self.charge and (self.application.process.id_tag == value):
                             self.application.deviceState = DeviceState.STOPPED_BY_USER
-                            self.application.led_state =LedState.RfidVerified
+                            self.application.process.rfid_verified = True
                         elif self.charge == False:
-                            self.application.led_state =LedState.RfidVerified
-                            if self.__control_pilot != "B":
-                                time.sleep(2)
-                                self.application.led_state =LedState.WaitingPluging
+                            self.application.process.rfid_verified = True
+                            self.start_stop_authorize = True
                         else:
-                            self.application.led_state =LedState.RfidFailed
+                            self.application.process.rfid_verified = False
+                            self.start_stop_authorize = False
                         break
                 if finded == False:
                     self.start_stop_authorize = False
-                    self.application.led_state =LedState.RfidFailed
+                    self.application.process.rfid_verified = False
         
         self.__card_id = value
 

@@ -35,10 +35,25 @@ class ChargePoint16(cp):
         self.logger = logger
         self.start_transaction_result = None
         self.remote_start_stop_status = None
+        self.server_time = None
+
+        
 
     def reboot(self):
         time.sleep(7)
         os.system("reboot")
+
+    def calculate_time(self):
+        try:
+            server_time_datetime = datetime.strptime(self.server_time, '%Y-%m-%dT%H:%M:%S.%fZ')  
+            current_time = datetime.utcnow()
+            time_difference = current_time - server_time_datetime
+            adjusted_time = server_time_datetime + time_difference
+            return adjusted_time.strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+        except Exception as e:
+            print("calculate_time Exception:", e)
+            return datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+
         
 
     async def send_data(self,request):
@@ -70,7 +85,7 @@ class ChargePoint16(cp):
                 LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
                 self.authorize = response.id_tag_info['status']
                 if self.authorize != AuthorizationStatus.accepted:
-                    self.application.led_state =LedState.RfidFailed
+                    self.application.process.rfid_verified = False
                 return response
             else:
                 self.application.request_list.append(request)
@@ -78,7 +93,7 @@ class ChargePoint16(cp):
                 if self.application.ev.card_id == self.application.process.id_tag:
                     self.authorize = AuthorizationStatus.accepted
                 else:
-                    self.application.led_state =LedState.RfidFailed
+                    self.application.process.rfid_verified = False
         
         except Exception as e:
             print("send_authorize Exception:",e)
@@ -87,12 +102,11 @@ class ChargePoint16(cp):
         """
         Yetkilendirme kabul edildiğinde yapılacak işlemler.
         """
-        self.application.led_state =LedState.RfidVerified
-        if self.application.ev.control_pilot == "A" and not self.application.ev.charge:
+        self.application.process.rfid_verified = True
+        if self.application.ev.control_pilot == ControlPlot.stateA.value and not self.application.ev.charge:
             print("-------------------------------------------------------------------  Araç bağlı değil")
             self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
             time.sleep(3)
-            self.application.led_state =LedState.WaitingPluging
         if self.application.ev.charge:
             self.application.deviceState = DeviceState.STOPPED_BY_USER
 
@@ -101,7 +115,7 @@ class ChargePoint16(cp):
         """
         Yetkilendirme başarısız olduğunda yapılacak işlemler.
         """
-        self.application.led_state =LedState.RfidFailed
+        self.application.process.rfid_verified = False
         
     # 2. BOOT NOTIFICATION
     async def send_boot_notification(
@@ -144,11 +158,21 @@ class ChargePoint16(cp):
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
             if response.status == RegistrationStatus.accepted:
                 print("Connected to central system.")
+                
+                self.server_time = response.current_time
                 self.application.ocppActive = True
                 if self.application.availability == AvailabilityType.operative:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 else:
-                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
+                    self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
+                
+                if self.application.ev.control_pilot == ControlPlot.stateA.value:
+                    self.application.deviceState = DeviceState.IDLE
+                elif self.application.ev.control_pilot == ControlPlot.stateB.value:
+                    self.application.deviceState = DeviceState.CONNECTED
+                elif self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    self.application.deviceState = DeviceState.CHARGING
+
                 self.application.ev.load_reservations()
                 await self.send_heartbeat()
             return response
@@ -214,19 +238,35 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_firmware_status_notification Exception:",e)
 
+    def send_stop_thread(self):
+        try:
+            if self.application.process.initially_charge and self.application.cardType == CardType.BillingCard:
+                print("Daha önce başlamış bir şarj vardı. Durduruluyor...")
+                print("self.application.process.transaction_id",self.application.process.transaction_id,"self.application.process.id_tag",self.application.process.id_tag)
+                if self.application.process.transaction_id != None and self.application.process.transaction_id != "None" and self.application.process.transaction_id != "":
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
+                else:
+                    print(Color.Red.value,"Daha önceden başlamıs bir şarj var fakat transaction id None, stop gönderilmedi.")
+                time.sleep(1)
+                self.application.process.transaction_id = None
+                self.application.process.id_tag = None
+                self.application.process.initially_charge = False
+        except Exception as e:
+            print("send_stop_thread Exception:",e)
+
     # 6. HEARTBEAT
     async def send_heartbeat(self):
         """
         interval: int
         """
         try :
-            if self.application.databaseModule.get_charge()["charge"] == "True" and self.application.cardType == CardType.BillingCard:
-                self.application.process.transaction_id = self.application.databaseModule.get_charge()["transaction_id"]
-                self.application.process.id_tag = self.application.databaseModule.get_charge()["id_tag"]
-                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
-                time.sleep(1)
-                self.application.process.transaction_id = None
-                self.application.process.id_tag = None
+            print("--------------- self.initilly",self.application.initilly)
+            if self.application.initilly:
+                Thread(target=self.send_stop_thread,daemon=True).start()
+                self.application.ev.clean_charge_variables()
+                self.application.initilly = False
+                print("---------------------- self.application.initilly = False")
+            
             if self.application.cardType == CardType.BillingCard:
                 for request in self.application.request_list:
                     print("Requested List")
@@ -344,7 +384,7 @@ class ChargePoint16(cp):
                 connector_id=1,
                 transaction_id=self.application.process.transaction_id,
                 meter_value=[{
-                    "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                    "timestamp": self.calculate_time(),
                     "sampledValue": sampled_data
                 }]
             )
@@ -375,7 +415,7 @@ class ChargePoint16(cp):
         reservation_id: int | None = None
         """
         try :
-            timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            timestamp = self.calculate_time()
             
             request = call.StartTransactionPayload(
                 connector_id,
@@ -390,6 +430,8 @@ class ChargePoint16(cp):
             self.application.process.transaction_id = response.transaction_id
             print("response.id_tag_info['status']",response.id_tag_info['status'])
             self.start_transaction_result = response.id_tag_info['status']
+            if self.start_transaction_result != AuthorizationStatus.accepted:
+                self.application.ev.clean_charge_variables()
             if reservation_id and self.start_transaction_result == AuthorizationStatus.accepted:
                 print("Reservation accepted")
                 self.application.ev.reservation_id = None
@@ -403,6 +445,7 @@ class ChargePoint16(cp):
             return response
         except Exception as e:
             print("send_start_transaction Exception:",e)
+            self.application.deviceState = DeviceState.FAULT
 
     # 9. STATUS NOTIFICATION
     async def send_status_notification(
@@ -423,7 +466,7 @@ class ChargePoint16(cp):
         vendor_error_code: str | None = None
         """
         try :
-            timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            timestamp = self.calculate_time()
             
             if self.application.availability == AvailabilityType.inoperative:
                 status = ChargePointStatus.unavailable
@@ -525,7 +568,7 @@ class ChargePoint16(cp):
 
   
             meter_value=[{
-                "timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z",
+                "timestamp": self.calculate_time(),
                 "sampledValue": sampled_data
             }]
 
@@ -548,7 +591,7 @@ class ChargePoint16(cp):
         """
         print("send_stop_transaction")
         meter_stop = int(self.application.ev.energy*1000)
-        timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+        timestamp = self.calculate_time()
         transaction_id = self.application.process.transaction_id
         reason = None
         id_tag = self.application.process.id_tag
@@ -597,11 +640,9 @@ class ChargePoint16(cp):
 
             # Durumu güncelle
             if self.application.ev.control_pilot == ControlPlot.stateA.value:
-                self.application.led_state = LedState.StandBy
-                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.available.value)
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
             elif self.application.ev.control_pilot == ControlPlot.stateB.value:
-                self.application.led_state = LedState.Connecting
-                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
 
 
             response = call_result.CancelReservationPayload(
@@ -648,11 +689,11 @@ class ChargePoint16(cp):
         try :
             if type == AvailabilityType.operative:
                 self.application.availability = AvailabilityType.operative
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
                 self.application.databaseModule.set_availability(AvailabilityType.operative.value)
             elif type == AvailabilityType.inoperative:
                 self.application.availability = AvailabilityType.inoperative
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.unavailable)
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.unavailable)
                 self.application.databaseModule.set_availability(AvailabilityType.inoperative.value)
         except Exception as e:
             print("after_change_availability Exception:",e)
@@ -825,7 +866,7 @@ class ChargePoint16(cp):
         try:
 
             #set database diagnostics status to uploading
-            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            current_time = self.calculate_time()
             self.application.databaseModule.set_diagnostics_status(DiagnosticsStatus.uploading.value, current_time)
             #send diagnostics status notification
             asyncio.run_coroutine_threadsafe(
@@ -863,7 +904,7 @@ class ChargePoint16(cp):
                     time.sleep(retry_interval if retry_interval else 0)
 
             # Diagnostic status'u güncelleme
-            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            current_time = self.calculate_time()
             new_status = DiagnosticsStatus.uploaded if response and response.status_code == 200 else DiagnosticsStatus.upload_failed
             self.application.databaseModule.set_diagnostics_status(new_status.value, current_time)
 
@@ -875,7 +916,7 @@ class ChargePoint16(cp):
 
         except Exception as e:
             print("run_diagnostics_thread Exception:", e)
-            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            current_time = self.calculate_time()
             self.application.databaseModule.set_diagnostics_status(DiagnosticsStatus.upload_failed.value, current_time)
             asyncio.run_coroutine_threadsafe(
                 self.send_diagnostics_status_notification(DiagnosticsStatus.upload_failed),
@@ -942,7 +983,26 @@ class ChargePoint16(cp):
         except Exception as e:
             print("on_remote_start_transaction Exception:",e)
             
-    
+    def set_authorize(self,id_tag):
+        try :
+            self.application.chargePoint.authorize = None
+            request = asyncio.run_coroutine_threadsafe(
+                self.application.chargePoint.send_authorize(id_tag=id_tag), 
+                self.application.loop
+            )
+            response = request.result()
+            id_tag_info = response.id_tag_info
+            status = id_tag_info['status']
+            if status == AuthorizationStatus.accepted.value:
+                self.application.ev.id_tag = id_tag
+                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
+                self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
+            else:
+                print(Color.Red.value,"Yetkilendirme yapılamadı!")
+                self.application.ev.id_tag = None
+        except Exception as e:
+            print("set_authorize Exception:",e)
                 
     @after(Action.RemoteStartTransaction)
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
@@ -951,29 +1011,14 @@ class ChargePoint16(cp):
                 if self.application.settings.configuration.AuthorizeRemoteTxRequests == "false":
                         print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
                         self.application.ev.id_tag = id_tag
-                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
+                        self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)
                         self.application.chargePoint.authorize = AuthorizationStatus.accepted
                         Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
                 else:
                     print("AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.")
                     print("Yetkilendirme talebi gönderiliyor")
                     # Merkezi sisteme yetkilendirme talebi gönder
-                    self.application.chargePoint.authorize = None
-                    request = asyncio.run_coroutine_threadsafe(
-                        self.application.chargePoint.send_authorize(id_tag=id_tag), 
-                        self.application.loop
-                    )
-                    response = request.result()
-                    id_tag_info = response.id_tag_info
-                    status = id_tag_info['status']
-                    if status == AuthorizationStatus.accepted.value:
-                        self.application.ev.id_tag = id_tag
-                        self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.preparing)
-                        self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                        Thread(target=self.application.ev.remote_start_thread,daemon=True).start()
-                    else:
-                        print(Color.Red.value,"Yetkilendirme yapılamadı!")
-                        self.application.ev.id_tag = None
+                    Thread(target=self.set_authorize,args=(id_tag,),daemon=True).start()
         except Exception as e:
             print("after_remote_start_transaction Exception:",e)
             
@@ -1018,8 +1063,7 @@ class ChargePoint16(cp):
                 self.application.ev.expiry_date = expiry_date
                 self.application.ev.parent_id = parent_id_tag
                 # ChargePoint durumunu güncelle
-                self.application.change_status_notification(ChargePointErrorCode.noError.value, ChargePointStatus.preparing.value)
-                self.application.led_state = LedState.WaitingPluging
+                self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.preparing)
 
             # Yanıt gönder
             response = call_result.ReserveNowPayload(
@@ -1313,7 +1357,7 @@ class ChargePoint16(cp):
                     status = UnlockStatus.unlocked
                 )
             else:
-                if self.application.process.unlock_connector():
+                if self.application.process.unlock():
                     response = call_result.UnlockConnectorPayload(
                         status = UnlockStatus.unlocked
                     )

@@ -26,28 +26,9 @@ class Settings():
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
         self.configuration = Configuration(application)
-        self.diagnosticsStatusSettings = DiagnosticsStatusSettings()  # Yeni eklendi
+        self.diagnosticsStatusSettings = DiagnosticsStatusSettings()
         
         self.change_ocpp = False
-        self.__websocketIp = None
-
-        
-
-    @property
-    def websocketIp(self):
-        return self.__websocketIp
-
-    @websocketIp.setter
-    def websocketIp(self, value):
-        if self.__websocketIp is None:
-            self.__websocketIp = value
-            self.set_websocket_ip(value)
-            self.application.flaskModule.host = self.__websocketIp
-            self.application.flaskModule.start()
-        elif self.__websocketIp != value:
-            self.__websocketIp = value
-            self.set_websocket_ip(value)
-            self.application.flaskModule.host = self.__websocketIp
 
     def set_websocket_ip(self, ip):
         try:
@@ -276,7 +257,6 @@ class Settings():
                 second = sjon["Data"]["2"]
                 third = sjon["Data"]["3"]
                 self.application.databaseModule.set_network_priority(enableWorkmode, first, second, third)
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_network_priority())
         except Exception as e:
             print("set_network_priority Exception:", e)
@@ -291,7 +271,6 @@ class Settings():
                 pin = sjon["Data"]["pin"]
                 self.application.databaseModule.set_settings_4g(apn, user, password, enableModification, pin)
                 self.application.softwareSettings.set_4G()
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_Settings4G())
         except Exception as e:
             print("set_Settings4G Exception:",e)
@@ -306,7 +285,6 @@ class Settings():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_ethernet_settings(ethernetEnable, dhcpcEnable, ip, netmask, gateway)
                 self.application.softwareSettings.set_eth()
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_ethernet_settings())
         except Exception as e:
             print("set_ethernet_settings Exception:",e)
@@ -337,7 +315,6 @@ class Settings():
                 gateway = sjon["Data"]["gateway"]
                 self.application.databaseModule.set_wifi_settings(wifiEnable, mod, ssid, password, encryptionType, wifidhcpcEnable, ip, netmask, gateway)
                 self.application.softwareSettings.set_wifi()
-                # Thread(target=self.application.softwareSettings.set_network_priority, daemon=True).start()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_wifi_settings())
         except Exception as e:
             print("set_wifi_settings Exception:",e)
@@ -392,8 +369,6 @@ class Settings():
                 whether_to_open_the_qr_code_process = sjon["Data"]["whether_to_open_the_qr_code_process"]
                 local_startup_whether_to_go_ocpp_background = sjon["Data"]["local_startup_whether_to_go_ocpp_background"]
                 whether_to_transfer_private_data = sjon["Data"]["whether_to_transfer_private_data"]
-                if card_type == CardType.LocalPnC.value or card_type == CardType.StartStopCard.value:
-                    self.application.led_state =LedState.StandBy
                 self.application.databaseModule.set_functions_enable(card_type, whether_to_open_the_qr_code_process, local_startup_whether_to_go_ocpp_background, whether_to_transfer_private_data)
                 self.application.softwareSettings.set_functions_enable()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_functions_enable())
@@ -472,7 +447,6 @@ class Settings():
     def get_diagnostics_last_update_time(self) -> str:
         return self.diagnosticsStatusSettings.get_last_update_time()
 
-# Definition of other classes used in Settings class
 class NetworkPriority():
     def __init__(self) -> None:
         self.enableWorkmode = None

@@ -54,9 +54,11 @@ class Application():
         self.serialPort = SerialPort(self)
         self.modbusModule = ModbusModule(self)
         self.deviceStateModule = DeviceStateModule(self)
+
+    def run(self):
+        self.databaseModule.read_all_tables()
+
         
-
-
 
         # os.system("service bluetooth restart")
         # time.sleep(2)

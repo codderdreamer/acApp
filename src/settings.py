@@ -28,7 +28,6 @@ class Settings():
         self.configuration = Configuration(application)
         self.chargingInformation = ChargingInformation()
         self.diagnosticsStatusSettings = DiagnosticsStatusSettings()
-        
         self.change_ocpp = False
 
     def set_websocket_ip(self, ip):

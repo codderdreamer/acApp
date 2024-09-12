@@ -14,7 +14,7 @@ from src.bluetoothService import advertising
 from src.bluetoothService import gatt_server
 import time
 from datetime import datetime
-from src.logger import ac_app_logger as logger
+import os
 
 
 class BluetoothService():
@@ -29,6 +29,7 @@ class BluetoothService():
 
     def run(self):
         try:
+            self.restart_bluetooth()
             self.parser = argparse.ArgumentParser()
             self.parser.add_argument('-a', '--adapter-name', type=str, help='Adapter name', default='')
             self.args = self.parser.parse_args()
@@ -42,6 +43,15 @@ class BluetoothService():
             self.mainloop.run()
         except Exception as e:
             print("BluetoothService run Exception:", e)
+
+    def restart_bluetooth(self):
+        try:
+            os.system("service bluetooth restart")
+            time.sleep(2)
+            os.system("/root/acApp/bash/bluetooth_set.sh")
+            time.sleep(5)
+        except Exception as e:
+            print("restart_bluetooth Exception:", e)
 
     def register_agent(self):
         try:

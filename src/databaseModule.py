@@ -17,6 +17,7 @@ class DatabaseModule():
         
 
     def read_all_tables(self):
+        print("Database tabloları okunuyor..")
         self.get_charge()
         self.get_model()
         self.get_master_card()
@@ -38,6 +39,7 @@ class DatabaseModule():
         self.user = self.get_user_login()["UserName"]
         self.reset_diagnostics_status()
         self.reset_firmware_status()
+        print("Database tabloları okundu")
         
     def get_charge(self):
         data_dict = {}

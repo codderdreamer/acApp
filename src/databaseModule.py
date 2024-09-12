@@ -509,6 +509,7 @@ class DatabaseModule():
             else:
                 self.application.settings.chargingInformation.id_tag = id_tag
             if self.application.utils.is_variable_none(transaction_id):
+                print("88888")
                 self.application.settings.chargingInformation.transaction_id = None
             else:
                 self.application.settings.chargingInformation.transaction_id = int(transaction_id)

@@ -55,21 +55,27 @@ class Application():
         self.modbusModule = ModbusModule(self)
         self.deviceStateModule = DeviceStateModule(self)
 
+        self.initilly = True  # sadece başlangıçta bir kere çalışması için var
+
     def run(self):
         self.databaseModule.read_all_tables()
+        self.set_initial_charge()
         self.softwareSettings.set_functions_enable()
+        self.softwareSettings.set_timezoon()
+        self.softwareSettings.set_bluetooth_settings()
+
         self.serialPort.seri_port_reset()
         Thread(target=self.serialPort.read,daemon=True).start()
         Thread(target=self.serialPort.write,daemon=True).start()
         Thread(target=self.serialPort.serial_port_thread,daemon=True).start()
         Thread(target=self.serialPort.get_command_pid_rfid,daemon=True).start()
-        
+        #Thread(target=self.set_eth, daemon=True).start()
+        # Thread(target=self.set_4G, daemon=True).start()
+        # Thread(target=self.set_wifi, daemon=True).start()
+        # Thread(target=self.control_device_status, daemon=True).start()
+        # Thread(target=self.check_internet_connection, daemon=True).start()
 
-
-
-        # self.initilly = True
-        # self.test_led = False
-        # self.test_charge = False
+    
         # self.charge_stopped = False
         # self.chargePoint = None
         # self.request_list = []
@@ -112,7 +118,12 @@ class Application():
         # self.chargePointStatus = ChargePointStatus.available
 
 
-
+    def set_initial_charge(self):
+        self.process.id_tag = self.settings.chargingInformation.id_tag
+        self.process.transaction_id = self.settings.chargingInformation.transaction_id
+        self.process.initially_charge = self.settings.chargingInformation.charge
+        print(Color.Yellow.value,"Initial Charge:",self.process.initially_charge,
+              "transaction_id",self.process.transaction_id,"id_tag",self.process.id_tag)
 
 
     def control_output(self):

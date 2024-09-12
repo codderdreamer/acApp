@@ -22,10 +22,7 @@ class Process:
         self.waiting_auth_value = False
         self.rfid_verified = None
 
-        self.id_tag = self.application.settings.chargingInformation.id_tag
-        self.transaction_id = self.application.settings.chargingInformation.transaction_id
-        self.initially_charge = self.application.settings.chargingInformation.charge
-        print(Color.Yellow.value,"Initial Charge:",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
+        
         
 
     def relay_control(self,relay:Relay):

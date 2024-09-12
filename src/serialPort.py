@@ -69,19 +69,21 @@ class SerialPort():
 
     def serial_port_thread(self):
         while True:
-            if time.time() - self.time_20 > 20:
-                if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
-                    self.time_20 = time.time()
-                    print("Led güncelleme -> ",self.application.deviceStateModule.led_state)
-                    self.set_command_pid_led_control(self.application.deviceStateModule.led_state)
-                self.get_command_pid_evse_temp()
-            self.get_command_PID_control_pilot()
-            self.get_command_pid_error_list()
-            if time.time() - self.time_10 > 10:
-                self.time_10 = time.time()
-                self.get_command_pid_energy(EnergyType.kwh)
-                self.get_command_pid_proximity_pilot()
-
+            try:
+                if time.time() - self.time_20 > 20:
+                    if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
+                        self.time_20 = time.time()
+                        print("Led güncelleme -> ",self.application.deviceStateModule.led_state)
+                        self.set_command_pid_led_control(self.application.deviceStateModule.led_state)
+                    self.get_command_pid_evse_temp()
+                self.get_command_PID_control_pilot()
+                self.get_command_pid_error_list()
+                if time.time() - self.time_10 > 10:
+                    self.time_10 = time.time()
+                    self.get_command_pid_energy(EnergyType.kwh)
+                    self.get_command_pid_proximity_pilot()
+            except Exception as e:
+                print("serial_port_thread Exception:",e)
             time.sleep(1)
 
 
@@ -96,16 +98,19 @@ class SerialPort():
             time.sleep(0.1)
 
     def calculate_checksum(self,data):
-        checksum =  int.from_bytes(self.stx, "big")
-        for i in data:
-            checksum += ord(i)
-        checksum = checksum%256
-        checksum = str(checksum)
-        lenght = len(checksum)
-        if lenght < 3:
-            for i in  range(0,3-lenght):
-                checksum = "0" + checksum
-        return checksum
+        try:
+            checksum =  int.from_bytes(self.stx, "big")
+            for i in data:
+                checksum += ord(i)
+            checksum = checksum%256
+            checksum = str(checksum)
+            lenght = len(checksum)
+            if lenght < 3:
+                for i in  range(0,3-lenght):
+                    checksum = "0" + checksum
+            return checksum
+        except Exception as e:
+            print("calculate_checksum Exception:",e)
     
     #   ************************ SEND *****************************************************
 
@@ -120,12 +125,15 @@ class SerialPort():
         State E : Error
         State F : Unknown error
         '''
-        self.parameter_data = "001"
-        self.connector_id = "1"
-        data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            self.connector_id = "1"
+            data = self.get_command + self.pid_control_pilot + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_PID_control_pilot Exception:",e)
 
     def get_command_pid_proximity_pilot(self):
         '''
@@ -139,40 +147,49 @@ class SerialPort():
         13 Amperlik bir kablo ise bu durumda araçtan, kablonun maximum kapasitesi kadar(13A) akım çekilmesi 
         talep edilir. (Bu işlem Control Pilot ucundaki PWM duty genişliği ile ayarlanır. (Bknz:PID_CP_PWM)
         '''
-        self.parameter_data = "001"
-        self.connector_id = "1"
-        data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            self.connector_id = "1"
+            data = self.get_command + self.pid_proximity_pilot + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_proximity_pilot Exception:",e)
             
     def set_command_pid_cp_pwm(self,max_current):
         '''
         Control Pilot PWM sinyalini set edebilmek(kontrol etmek) için aşağıdaki paket gönderilir
         '''
-        print(Color.Yellow.value,f"Pid CP PWM : {max_current} ")
-        max_current = float(max_current)
-        digit_100 = int(max_current // 100) % 10
-        digit_10 = int(max_current // 10) % 10
-        digit_1 = int(max_current) % 10
-        digit_01 = int(max_current * 10) % 10 
-        max_current = f"{digit_100}{digit_10}{digit_1}{digit_01}"
-        
-        self.parameter_data = "005"
-        self.connector_id = "1"
-        data = self.set_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            print(Color.Yellow.value,f"Pid CP PWM : {max_current} ")
+            max_current = float(max_current)
+            digit_100 = int(max_current // 100) % 10
+            digit_10 = int(max_current // 10) % 10
+            digit_1 = int(max_current) % 10
+            digit_01 = int(max_current * 10) % 10 
+            max_current = f"{digit_100}{digit_10}{digit_1}{digit_01}"
+            
+            self.parameter_data = "005"
+            self.connector_id = "1"
+            data = self.set_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_proximity_pilot Exception:",e)
         
 
     def get_command_pid_cp_pwm(self):
-        self.parameter_data = "001"
-        self.connector_id = "1"
-        data = self.get_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            self.connector_id = "1"
+            data = self.get_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_cp_pwm Exception:",e)
         
     def set_command_pid_relay_control(self,relay:Relay):
         '''

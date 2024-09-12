@@ -15,13 +15,7 @@ class SoftwareSettings():
     def __init__(self,application) -> None:
         self.application = application
         self.__success_interfaces = []
-        # Thread(target=self.set_eth, daemon=True).start()
-        # Thread(target=self.set_4G, daemon=True).start()
-        # Thread(target=self.set_wifi, daemon=True).start()
-        # Thread(target=self.control_device_status, daemon=True).start()
-        # self.set_timezoon()
-        # self.set_bluetooth_settings()
-        # Thread(target=self.check_internet_connection, daemon=True).start()
+
 
     @property
     def success_interfaces(self):

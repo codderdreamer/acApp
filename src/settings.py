@@ -620,7 +620,7 @@ class DiagnosticsStatusSettings():
 
     def set_status(self, status: str):
         self.status = status
-        self.last_update_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+        self.last_update_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
         self.databaseModule.set_diagnostics_status(self.status, self.last_update_time)
 
     def get_status(self) -> str:

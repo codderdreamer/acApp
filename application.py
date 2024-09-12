@@ -6,28 +6,14 @@ from src.chargePoint16 import ChargePoint16
 from threading import Thread
 from src.enums import *
 import time
-from src.ev import EV
-from src.serialPort import SerialPort
-from src.settings import Settings
-from src.databaseModule import DatabaseModule
-from src.softwareSettings import SoftwareSettings
-from src.websocketServer import WebSocketServer
-from src.bluetoothService.bluetoothService import BluetoothService
-from src.process import Process
 from ocpp.v16.enums import *
 from datetime import datetime
-from src.modbusModule import ModbusModule
-from src.flaskModule import FlaskModuleThread
-from src.testServer import TestServer
 import subprocess
 import os
 from src.webSocket import *
 import builtins
-from src.logger import ac_app_logger as logger
 import ssl
 import base64
-from src.utils import Utils
-from src.deviceStateModule import DeviceStateModule
 
 file = open("/root/output.txt", "a")
 
@@ -42,18 +28,18 @@ builtins.print = timestamped_print
 class Application():
     def __init__(self, loop):
         print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
-        self.utils : Utils = None
-        self.settings : Settings = None
-        self.databaseModule : DatabaseModule = None
-        self.bluetoothService : BluetoothService = None
-        self.softwareSettings : SoftwareSettings = None
-        self.flaskModule : FlaskModuleThread = None
-        self.webSocketServer : WebSocketServer = None
-        self.process : Process = None
-        self.ev : EV = None
-        self.serialPort : SerialPort = None
-        self.modbusModule : ModbusModule = None
-        self.deviceStateModule : DeviceStateModule = None
+        self.utils  = None
+        self.settings  = None
+        self.databaseModule  = None
+        self.bluetoothService  = None
+        self.softwareSettings  = None
+        self.flaskModule  = None
+        self.webSocketServer  = None
+        self.process  = None
+        self.ev = None
+        self.serialPort  = None
+        self.modbusModule  = None
+        self.deviceStateModule  = None
 
     def run(self):
         self.set_application()

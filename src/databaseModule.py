@@ -12,6 +12,10 @@ class DatabaseModule():
     def __init__(self, application) -> None:
         self.application = application
         self.full_configuration = []
+        self.user = None
+        
+
+    def read_all_tables(self):
         self.get_charge()
         self.get_model()
         self.get_master_card()

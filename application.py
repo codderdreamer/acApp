@@ -44,6 +44,7 @@ class Application():
         print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
         self.utils = Utils()
         self.settings = Settings(self)
+        self.databaseModule = DatabaseModule(self)
 
 
 

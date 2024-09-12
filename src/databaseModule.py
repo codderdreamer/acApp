@@ -12,6 +12,7 @@ class DatabaseModule():
     def __init__(self, application) -> None:
         self.application = application
         self.full_configuration = []
+        self.get_charge()
         self.get_model()
         self.get_master_card()
         self.get_socket_type()
@@ -498,6 +499,17 @@ class DatabaseModule():
             value = (transaction_id,"transaction_id")
             self.cursor.execute(query,value)
             self.charge_database.commit()
+
+            self.application.settings.chargingInformation.charge = self.application.utils.is_variable_true(charge)
+            if self.application.utils.is_variable_none(id_tag):
+                self.application.settings.chargingInformation.id_tag = None
+            else:
+                self.application.settings.chargingInformation.id_tag = id_tag
+            if self.application.utils.is_variable_none(transaction_id):
+                self.application.settings.chargingInformation.transaction_id = None
+            else:
+                self.application.settings.chargingInformation.transaction_id = int(transaction_id)
+
         except Exception as e:
             print("set_charge Exception:", e)
 

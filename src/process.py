@@ -5,35 +5,24 @@ from ocpp.v16.enums import *
 from threading import Thread
 from datetime import datetime
 from src.logger import ac_app_logger as logger
-
+from application import Application
 class Process:
-    def __init__(self, application) -> None:
+    def __init__(self, application:Application) -> None:
         self.application = application
         self.there_is_transaction = False
-        self.id_tag = None
-        self.transaction_id = None
+        self.id_tag = self.application.settings.chargingInformation.id_tag
+        self.transaction_id = self.application.settings.chargingInformation.transaction_id
         self.locker_error = False
         self.charge_try_counter = 0
         self.try_charge = False
         self.wait_fault = False
         self.rcd_trip_error = False
         self.locker_initialize_error = False
-
-        ################### review yapılan alan ###################
-        db_idtag = self.application.databaseModule.get_charge()["id_tag"]
-        db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False
         self.rfid_verified = None
-        if db_idtag != None and db_idtag != "" and db_idtag != "None":
-            self.id_tag = db_idtag
-
-        if db_tansactionid != None and db_tansactionid != "" and db_tansactionid != "None":
-            print("db_tansactionid",db_tansactionid)
-            self.transaction_id = int(db_tansactionid)
-
-        self.initially_charge = self.application.databaseModule.get_charge()["charge"] == "True"
-        print("********************************** self.initially_charge",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
-        ################### review yapılan alan ###################
+        self.initially_charge = self.application.settings.chargingInformation.charge
+        print(Color.Yellow.value,"Initial Charge:",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
+        
 
 
     def relay_control(self,relay:Relay):

@@ -42,30 +42,26 @@ builtins.print = timestamped_print
 class Application():
     def __init__(self, loop):
         print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
-        self.utils = Utils()
-        self.settings = Settings(self)
-        self.databaseModule = DatabaseModule(self)
-        self.bluetoothService = BluetoothService(self)
-        self.softwareSettings = SoftwareSettings(self)
-        self.flaskModule = FlaskModuleThread(self)
-        self.webSocketServer = WebSocketServer(self)
-        self.process = Process(self)
-        self.ev = EV(self)
-        self.serialPort = SerialPort(self)
-        self.modbusModule = ModbusModule(self)
-        self.deviceStateModule = DeviceStateModule(self)
+        self.utils : Utils = None
+        self.settings : Settings = None
+        self.databaseModule : DatabaseModule = None
+        self.bluetoothService : BluetoothService = None
+        self.softwareSettings : SoftwareSettings = None
+        self.flaskModule : FlaskModuleThread = None
+        self.webSocketServer : WebSocketServer = None
+        self.process : Process = None
+        self.ev : EV = None
+        self.serialPort : SerialPort = None
+        self.modbusModule : ModbusModule = None
+        self.deviceStateModule : DeviceStateModule = None
 
     def run(self):
         self.databaseModule.read_all_tables()
+        self.softwareSettings.set_functions_enable()
 
         
 
-        # os.system("service bluetooth restart")
-        # time.sleep(2)
-        # os.system("gpio-test.64 w d 20 0 > /dev/null 2>&1")
-        # # os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
-        # os.system("/root/acApp/bash/bluetooth_set.sh")
-        # time.sleep(5)
+
         # self.initilly = True
         # self.test_led = False
         # self.test_charge = False

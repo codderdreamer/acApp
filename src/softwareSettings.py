@@ -12,10 +12,9 @@ from subprocess import Popen, PIPE, STDOUT
 
 
 class SoftwareSettings():
-    def __init__(self, application) -> None:
-        self.application = application
+    def __init__(self) -> None:
+        self.application = None
         self.__success_interfaces = []
-        # self.set_functions_enable()
         # Thread(target=self.set_eth, daemon=True).start()
         # Thread(target=self.set_4G, daemon=True).start()
         # Thread(target=self.set_wifi, daemon=True).start()

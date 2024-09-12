@@ -9,12 +9,10 @@ import os
 from src.logger import ac_app_logger as logger
 
 class DatabaseModule():
-    def __init__(self, application) -> None:
-        self.application = application
+    def __init__(self) -> None:
+        self.application = None
         self.full_configuration = []
         self.user = None
-        # self.read_all_tables()
-        
 
     def read_all_tables(self):
         print("Database tabloları okunuyor..")

@@ -10,8 +10,8 @@ import base64
 
 
 class Settings():
-    def __init__(self, application) -> None:
-        self.application = application
+    def __init__(self) -> None:
+        self.application = None
         self.networkPriority = NetworkPriority()
         self.settings4G = Settings4G()
         self.ethernetSettings = EthernetSettings()

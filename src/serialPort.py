@@ -9,8 +9,8 @@ from ocpp.v16.enums import *
 import threading
 
 class SerialPort():
-    def __init__(self, application) -> None:
-        self.application = application
+    def __init__(self) -> None:
+        self.application = None
         self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
         self.send_data_list = []
         self.error = False

@@ -1,5 +1,7 @@
-
+from src.enums import *
 
 class DeviceStateModule():
-    def __init__(self,application) -> None:
-        self.application = application
+    def __init__(self) -> None:
+        self.application = None
+
+        self.cardType : CardType = None

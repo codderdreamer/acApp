@@ -18,8 +18,8 @@ import os
 
 
 class BluetoothService():
-    def __init__(self, application) -> None:
-        self.application = application
+    def __init__(self) -> None:
+        self.application = None
         self.parser = None
         self.args = None
         self.adapter_name = None
@@ -48,6 +48,7 @@ class BluetoothService():
         try:
             os.system("service bluetooth restart")
             time.sleep(2)
+            # os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
             os.system("/root/acApp/bash/bluetooth_set.sh")
             time.sleep(5)
         except Exception as e:

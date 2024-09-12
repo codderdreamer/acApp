@@ -46,13 +46,13 @@ class ChargePoint16(cp):
     def calculate_time(self):
         try:
             server_time_datetime = datetime.strptime(self.server_time, '%Y-%m-%dT%H:%M:%S.%fZ')  
-            current_time = datetime.utcnow()
+            current_time = datetime.now()
             time_difference = current_time - server_time_datetime
             adjusted_time = server_time_datetime + time_difference
             return adjusted_time.strftime('%Y-%m-%dT%H:%M:%S') + "Z"
         except Exception as e:
             print("calculate_time Exception:", e)
-            return datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
+            return datetime.now().strftime('%Y-%m-%dT%H:%M:%S') + "Z"
 
         
 
@@ -242,7 +242,6 @@ class ChargePoint16(cp):
         try:
             if self.application.process.initially_charge and self.application.cardType == CardType.BillingCard:
                 print("Daha önce başlamış bir şarj vardı. Durduruluyor...")
-                print("self.application.process.transaction_id",self.application.process.transaction_id,"self.application.process.id_tag",self.application.process.id_tag)
                 if self.application.process.transaction_id != None and self.application.process.transaction_id != "None" and self.application.process.transaction_id != "":
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
                 else:
@@ -1019,6 +1018,18 @@ class ChargePoint16(cp):
                     print("Yetkilendirme talebi gönderiliyor")
                     # Merkezi sisteme yetkilendirme talebi gönder
                     Thread(target=self.set_authorize,args=(id_tag,),daemon=True).start()
+
+                # if authorize == AuthorizationStatus.accepted ise start_transaction gönder
+                if self.application.chargePoint.authorize == self.application.chargePoint.authorize:
+                    print("Yetkilendirme başarılı, şarj başlatılıyor.")
+                    asyncio.run_coroutine_threadsafe(
+                        self.application.chargePoint.send_start_transaction(connector_id=connector_id, id_tag=id_tag, meter_start=0),
+                        self.application.loop
+                    )
+                else:
+                    print("Yetkilendirme başarısız, şarj başlatılamadı.")
+                    self.application.ev.clean_charge_variables()
+
         except Exception as e:
             print("after_remote_start_transaction Exception:",e)
             

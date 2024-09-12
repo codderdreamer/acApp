@@ -25,7 +25,7 @@ class Settings():
         self.deviceSettings = DeviceSettings()
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
-        self.configuration = Configuration(application)
+        self.configuration = Configuration(self.application)
         self.chargingInformation = ChargingInformation()
         self.diagnosticsStatusSettings = DiagnosticsStatusSettings()
         self.change_ocpp = False

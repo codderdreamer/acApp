@@ -21,31 +21,31 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         utils = Utils()
-        # settings = Settings()
-        # databaseModule = DatabaseModule()
-        # bluetoothService = BluetoothService()
-        # softwareSettings = SoftwareSettings()
-        # flaskModule = FlaskModuleThread()
-        # webSocketServer = WebSocketServer()
-        # process = Process()
-        # ev = EV()
-        # serialPort = SerialPort()
-        # modbusModule = ModbusModule()
-        # deviceStateModule = DeviceStateModule()
-        # app = Application(loop)
-        # app.utils = utils
-        # app.settings = settings
-        # app.databaseModule = databaseModule
-        # app.bluetoothService = bluetoothService
-        # app.softwareSettings = softwareSettings
-        # app.flaskModule = flaskModule
-        # app.webSocketServer = webSocketServer
-        # app.process = process
-        # app.ev = ev
-        # app.serialPort = serialPort
-        # app.modbusModule = modbusModule
-        # app.deviceStateModule = deviceStateModule
-        # app.run()
+        settings = Settings()
+        databaseModule = DatabaseModule()
+        bluetoothService = BluetoothService()
+        softwareSettings = SoftwareSettings()
+        flaskModule = FlaskModuleThread()
+        webSocketServer = WebSocketServer()
+        process = Process()
+        ev = EV()
+        serialPort = SerialPort()
+        modbusModule = ModbusModule()
+        deviceStateModule = DeviceStateModule()
+        app = Application(loop)
+        app.utils = utils
+        app.settings = settings
+        app.databaseModule = databaseModule
+        app.bluetoothService = bluetoothService
+        app.softwareSettings = softwareSettings
+        app.flaskModule = flaskModule
+        app.webSocketServer = webSocketServer
+        app.process = process
+        app.ev = ev
+        app.serialPort = serialPort
+        app.modbusModule = modbusModule
+        app.deviceStateModule = deviceStateModule
+        app.run()
         # app.ocpp_task()
     except Exception as e:
         print("__main__ Exception:", e)

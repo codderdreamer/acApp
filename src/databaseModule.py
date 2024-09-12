@@ -512,6 +512,7 @@ class DatabaseModule():
                 print("88888")
                 self.application.settings.chargingInformation.transaction_id = None
             else:
+                print("transaction_id",type(transaction_id),transaction_id)
                 self.application.settings.chargingInformation.transaction_id = int(transaction_id)
 
         except Exception as e:

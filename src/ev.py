@@ -42,14 +42,16 @@ class EV():
         self.reservation_id_tag =  None
         self.expiry_date = None
         self.parent_id = None
-        self.check_and_clear_expired_reservation()
-
-        self.start_stop_authorize = False
-        self.__led_state = None
-        Thread(target=self.control_error_list,daemon=True).start()
-        Thread(target=self.send_message,daemon=True).start()
 
         self.charging_again = False
+        self.start_stop_authorize = False
+        self.__led_state = None
+
+        # self.check_and_clear_expired_reservation()
+        # Thread(target=self.control_error_list,daemon=True).start()
+        # Thread(target=self.send_message,daemon=True).start()
+
+        
 
     def load_reservations(self):
         """

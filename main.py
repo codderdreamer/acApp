@@ -6,7 +6,7 @@ if __name__ == "__main__":
     try:
         loop = asyncio.get_event_loop()
         app = Application(loop)
-        app.ocpp_task()
+        # app.ocpp_task()
     except Exception as e:
         print("__main__ Exception:", e)
     while True:

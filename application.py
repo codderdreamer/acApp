@@ -52,7 +52,6 @@ class Application():
         self.initilly = True
         self.test_led = False
         self.test_charge = False
-        self.testWebSocket = None
         self.logger = logger
         self.loop = loop
         self.charge_stopped = False

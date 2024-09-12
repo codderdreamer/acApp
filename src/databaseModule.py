@@ -33,6 +33,7 @@ class DatabaseModule():
         self.user = self.get_user_login()["UserName"]
         self.reset_diagnostics_status()
         self.reset_firmware_status()
+        self.set_charge(False,None,None)
         
         
     def get_charge(self):
@@ -488,15 +489,15 @@ class DatabaseModule():
             self.cursor = self.charge_database.cursor()
             query = "UPDATE ev SET key = ? WHERE value = ?"
             
-            value = (charge,"charge")
+            value = (str(charge),"charge")
             self.cursor.execute(query,value)
             self.charge_database.commit()
             
-            value = (id_tag,"id_tag")
+            value = (str(id_tag),"id_tag")
             self.cursor.execute(query,value)
             self.charge_database.commit()
             
-            value = (transaction_id,"transaction_id")
+            value = (str(transaction_id),"transaction_id")
             self.cursor.execute(query,value)
             self.charge_database.commit()
 

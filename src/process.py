@@ -24,7 +24,6 @@ class Process:
         print(Color.Yellow.value,"Initial Charge:",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
         
 
-
     def relay_control(self,relay:Relay):
         counter = 0
         while True:
@@ -94,7 +93,6 @@ class Process:
                     return False
 
     def _lock_connector_set_control_pilot(self):
-        self.application.testWebSocket.send_socket_type(self.application.socketType.value)
         if self.application.socketType == SocketType.Type2:
             result = self.lock_control()
             control_counter = 0
@@ -106,7 +104,6 @@ class Process:
                     print(Color.Red.value, "Locker Error")
                     self.locker_error = True
                     self.application.deviceState = DeviceState.FAULT
-            self.application.testWebSocket.send_locker_state_lock(result)
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
             self.application.deviceState = DeviceState.WAITING_STATE_C
@@ -237,8 +234,7 @@ class Process:
         if self.application.deviceState != DeviceState.CHARGING:
             return
         time_start = time.time()
-        self.application.databaseModule.set_charge("True", str(self.id_tag), str(self.transaction_id))
-        self.application.testWebSocket.send_there_is_mid_meter(self.application.settings.deviceSettings.mid_meter)
+        self.application.databaseModule.set_charge(True, self.id_tag, self.transaction_id)
         # self.application.serialPort.get_command_pid_relay_control()
         # time.sleep(1)
 
@@ -266,7 +262,6 @@ class Process:
                             elif self.application.settings.deviceSettings.mid_meter:
                                 print(Color.Red.value,"Mid Meter bağlanamadı!")
                             self.application.deviceState = DeviceState.FAULT
-                            self.application.testWebSocket.send_mid_meter_state(False)
                             break
                     else:
                         break

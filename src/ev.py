@@ -185,7 +185,7 @@ class EV():
             self.application.process.id_tag = None
             self.application.process.initially_charge = False
             self.application.process.there_is_transaction = False
-            self.application.databaseModule.set_charge("False", "", "")
+            self.application.databaseModule.set_charge(False, None, None)
         except Exception as e:
             print(Color.Red.value,"clean_charge_variables Exception:",e)
 

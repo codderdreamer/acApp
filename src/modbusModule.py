@@ -58,7 +58,6 @@ class ModbusModule:
                     print(Color.Blue.value,"External Mid Meter Bağlandı")
                 elif self.application.settings.deviceSettings.mid_meter:
                     print(Color.Blue.value,"Mid Meter Bağlandı")
-                self.application.testWebSocket.send_mid_meter_state(True)
                 self.firstEnergy = self.read_input_float(register_address=73)
         self.__connection = value
 

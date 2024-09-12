@@ -45,7 +45,7 @@ class Application():
         self.utils = Utils()
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
-
+        self.bluetoothService = BluetoothService(self)
 
 
         # os.system("service bluetooth restart")

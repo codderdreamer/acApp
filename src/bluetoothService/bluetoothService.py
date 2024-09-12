@@ -14,7 +14,6 @@ from src.bluetoothService import advertising
 from src.bluetoothService import gatt_server
 import time
 from datetime import datetime
-
 from src.logger import ac_app_logger as logger
 
 
@@ -26,7 +25,7 @@ class BluetoothService():
         self.adapter_name = None
         self.bus = None
         self.mainloop = None
-        Thread(target=self.run, daemon=True).start()
+        # Thread(target=self.run, daemon=True).start()
 
     def run(self):
         try:

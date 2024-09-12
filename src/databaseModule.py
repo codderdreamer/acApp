@@ -310,7 +310,6 @@ class DatabaseModule():
             self.settings_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
-            print(data_dict)
             self.application.settings.deviceSettings.mid_meter = (data_dict["midMeter"] == "True")
             self.application.settings.deviceSettings.midMeterSlaveAddress = int(data_dict["midMeterSlaveAddress"])
             self.application.settings.deviceSettings.externalMidMeter = (data_dict["externalMidMeter"]=="True")
@@ -505,8 +504,6 @@ class DatabaseModule():
             value = (str(transaction_id),"transaction_id")
             self.cursor.execute(query,value)
             self.charge_database.commit()
-
-            print("***********heyyy")
 
             self.application.settings.chargingInformation.charge = self.application.utils.is_variable_true(charge)
             if self.application.utils.is_variable_none(id_tag):
@@ -989,7 +986,6 @@ class DatabaseModule():
             cursor.execute(query)
             data = cursor.fetchall()
             configuration_db.close()
-            print(Color.Cyan.value,"get_configuration",data)
             for column in data:
                 key = column[0]
                 readonly = column[1]

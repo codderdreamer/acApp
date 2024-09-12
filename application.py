@@ -55,6 +55,19 @@ class Application():
         self.modbusModule : ModbusModule = None
         self.deviceStateModule : DeviceStateModule = None
 
+        self.settings.application = self
+        self.databaseModule.application = self
+        self.bluetoothService.application = self
+        self.softwareSettings.application = self
+        self.flaskModule.application = self
+        self.webSocketServer.application = self
+        self.process.application = self
+        self.ev.application = self
+        self.serialPort.application = self
+        self.modbusModule.application = self
+        self.deviceStateModule.application = self
+
+
     def run(self):
         self.databaseModule.read_all_tables()
         self.softwareSettings.set_functions_enable()

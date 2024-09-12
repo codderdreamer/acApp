@@ -18,6 +18,8 @@ class Process:
         self.wait_fault = False
         self.rcd_trip_error = False
         self.locker_initialize_error = False
+
+        ################### review yapılan alan ###################
         db_idtag = self.application.databaseModule.get_charge()["id_tag"]
         db_tansactionid = self.application.databaseModule.get_charge()["transaction_id"]
         self.waiting_auth_value = False
@@ -31,6 +33,8 @@ class Process:
 
         self.initially_charge = self.application.databaseModule.get_charge()["charge"] == "True"
         print("********************************** self.initially_charge",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
+        ################### review yapılan alan ###################
+
 
     def relay_control(self,relay:Relay):
         counter = 0

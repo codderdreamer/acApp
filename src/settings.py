@@ -26,6 +26,7 @@ class Settings():
         self.deviceStatus = DeviceStatus()
         self.networkip = NeworkIP()
         self.configuration = Configuration(application)
+        self.chargingInformation = ChargingInformation()
         self.diagnosticsStatusSettings = DiagnosticsStatusSettings()
         
         self.change_ocpp = False
@@ -606,6 +607,12 @@ class Configuration():
                 setattr(self, config['key'], config['value'])
         except Exception as e:
             print("load_configuration_from_db Exception:", e)
+
+class ChargingInformation():
+    def __init__(self) -> None:
+        self.charge : bool = None
+        self.id_tag : str = None
+        self.transaction_id : int= None
 
 class DiagnosticsStatusSettings():
     def __init__(self) -> None:

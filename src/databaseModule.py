@@ -7,9 +7,10 @@ from src.enums import *
 from threading import Thread
 import os
 from src.logger import ac_app_logger as logger
+from application import Application
 
 class DatabaseModule():
-    def __init__(self, application) -> None:
+    def __init__(self, application : Application) -> None:
         self.application = application
         self.full_configuration = []
         self.get_model()
@@ -45,6 +46,18 @@ class DatabaseModule():
             self.charge_database.close()
             for row in data:
                 data_dict[row[0]] = row[1]
+            self.application.settings.chargingInformation.charge = self.application.utils.is_variable_true(data_dict["charge"])
+            if self.application.utils.is_variable_none(data_dict["id_tag"]):
+                self.application.settings.chargingInformation.id_tag = None
+            else:
+                self.application.settings.chargingInformation.id_tag = data_dict["id_tag"]
+            if self.application.utils.is_variable_none(data_dict["transaction_id"]):
+                self.application.settings.chargingInformation.transaction_id = None
+            else:
+                self.application.settings.chargingInformation.transaction_id = int(data_dict["transaction_id"])
+            print("self.application.settings.chargingInformation.charge",self.application.settings.chargingInformation.charge)
+            print("self.application.settings.chargingInformation.id_tag",self.application.settings.chargingInformation.id_tag)
+            print("self.application.settings.chargingInformation.transaction_id",self.application.settings.chargingInformation.transaction_id)
             return data_dict
         except Exception as e:
             print("get_charge Exception:", e)

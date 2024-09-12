@@ -501,7 +501,7 @@ class SerialPort():
                 self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
                 self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
                 self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
-                print(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
+                # print(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
         except Exception as e:
             print("get_response_pid_current",e)
 

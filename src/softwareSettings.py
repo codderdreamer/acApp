@@ -12,8 +12,8 @@ from subprocess import Popen, PIPE, STDOUT
 
 
 class SoftwareSettings():
-    def __init__(self) -> None:
-        self.application = None
+    def __init__(self,application) -> None:
+        self.application = application
         self.__success_interfaces = []
         # Thread(target=self.set_eth, daemon=True).start()
         # Thread(target=self.set_4G, daemon=True).start()

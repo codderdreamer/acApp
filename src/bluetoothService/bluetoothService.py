@@ -18,8 +18,8 @@ import os
 
 
 class BluetoothService():
-    def __init__(self) -> None:
-        self.application = None
+    def __init__(self,application) -> None:
+        self.application = application
         self.parser = None
         self.args = None
         self.adapter_name = None

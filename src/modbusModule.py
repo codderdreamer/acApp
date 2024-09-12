@@ -6,12 +6,12 @@ from src.logger import ac_app_logger as logger
 from src.enums import *
 
 class ModbusModule:
-    def __init__(self, slave_address=None, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
+    def __init__(self, application, slave_address=None, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
         self.port = '/dev/ttyS5'
         self.slave_address = slave_address
         self.baudrate = baudrate
 
-        self.application = None
+        self.application = application
         self.instrument = minimalmodbus.Instrument(self.port, slave_address)
         self.instrument.serial.baudrate = baudrate
         self.instrument.serial.parity = parity

@@ -7,8 +7,8 @@ from datetime import datetime
 from src.logger import ac_app_logger as logger
 
 class Process:
-    def __init__(self) -> None:
-        self.application = None
+    def __init__(self,application) -> None:
+        self.application = application
         self.there_is_transaction = False
         self.initially_charge = None
         self.id_tag = None

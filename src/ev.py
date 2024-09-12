@@ -9,8 +9,8 @@ import os
 from src.logger import ac_app_logger as logger
 
 class EV():
-    def __init__(self):
-        self.application = None
+    def __init__(self,application) -> None:
+        self.application = application
 
         self.__control_pilot = ControlPlot.stateA.value             # A,B,C,D,E, F
         self.__proximity_pilot = None           # ProximityPilot  : N, E, 1, 2, 3, 6

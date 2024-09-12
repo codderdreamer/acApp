@@ -14,6 +14,19 @@ from src.webSocket import *
 import builtins
 import ssl
 import base64
+from src.chargePoint16 import ChargePoint16
+from src.ev import EV
+from src.serialPort import SerialPort
+from src.settings import Settings
+from src.databaseModule import DatabaseModule
+from src.softwareSettings import SoftwareSettings
+from src.websocketServer import WebSocketServer
+from src.bluetoothService.bluetoothService import BluetoothService
+from src.process import Process
+from src.modbusModule import ModbusModule
+from src.flaskModule import FlaskModuleThread
+from src.utils import Utils
+from src.deviceStateModule import DeviceStateModule
 
 file = open("/root/output.txt", "a")
 
@@ -28,38 +41,22 @@ builtins.print = timestamped_print
 class Application():
     def __init__(self, loop):
         print(Color.Yellow.value, "------------------------------------------------- Application Run Started ------------------------------------------------")
-        self.utils  = None
-        self.settings  = None
-        self.databaseModule  = None
-        self.bluetoothService  = None
-        self.softwareSettings  = None
-        self.flaskModule  = None
-        self.webSocketServer  = None
-        self.process  = None
-        self.ev = None
-        self.serialPort  = None
-        self.modbusModule  = None
-        self.deviceStateModule  = None
+        self.utils = Utils()
+        self.settings = Settings(self)
+        self.databaseModule = DatabaseModule(self)
+        self.bluetoothService = BluetoothService(self)
+        self.softwareSettings = SoftwareSettings(self)
+        self.flaskModule = FlaskModuleThread(self)
+        self.webSocketServer = WebSocketServer(self)
+        self.process = Process(self)
+        self.ev = EV(self)
+        self.serialPort = SerialPort(self)
+        self.modbusModule = ModbusModule(self)
+        self.deviceStateModule = DeviceStateModule(self)
 
     def run(self):
-        self.set_application()
         self.databaseModule.read_all_tables()
         self.softwareSettings.set_functions_enable()
-
-    def set_application(self):
-        self.settings.application = self
-        self.databaseModule.application = self
-        self.bluetoothService.application = self
-        self.softwareSettings.application = self
-        self.flaskModule.application = self
-        self.webSocketServer.application = self
-        self.process.application = self
-        self.ev.application = self
-        self.serialPort.application = self
-        self.modbusModule.application = self
-        self.deviceStateModule.application = self
-
-        
 
 
         # self.initilly = True

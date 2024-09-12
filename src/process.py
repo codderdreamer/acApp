@@ -266,6 +266,9 @@ class Process:
             try:
                 print(Color.Green.value,"************************************************** 5")
                 if self.application.deviceState != DeviceState.CHARGING or self.application.ev.charge == False or self.application.serialPort.error:
+                    print(self.application.deviceState != DeviceState.CHARGING)
+                    print(self.application.ev.charge == False)
+                    print(self.application.serialPort.error)
                     print("break !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11")
                     break
                 print(Color.Green.value,"************************************************** 6")

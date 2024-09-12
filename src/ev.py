@@ -135,7 +135,7 @@ class EV():
                 self.application.deviceState = DeviceState.IDLE
 
                 # Set LED state to StandBy
-                self.application.led_state = LedState.StandBy
+                self.application.deviceStateModule.led_state = LedState.StandBy
 
 
                 print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation expired and has been cleared.")

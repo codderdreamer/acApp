@@ -15,6 +15,7 @@ class SerialPort():
         self.send_data_list = []
         self.error = False
         self.error_list = []
+        self.connection_time = time.time()
 
         self.time_20 = time.time()
         self.time_10 = time.time()
@@ -56,25 +57,23 @@ class SerialPort():
         self.set_time_rfid = time.time()
         self.delete_time_rfid = time.time()
         self.led_state = LedState.StandBy
-        
-        # os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
-        # time.sleep(0.5)
-        # os.system("gpio-test.64 w e 10 0 > /dev/null 2>&1")
 
-        # Thread(target=self.read,daemon=True).start()
-        # Thread(target=self.write,daemon=True).start()
-
-        # Thread(target=self.serial_port_thread,daemon=True).start()
-        # Thread(target=self.get_command_pid_rfid,daemon=True).start()
-
+    def seri_port_reset(self):
+        try:
+            os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
+            time.sleep(0.5)
+            os.system("gpio-test.64 w e 10 0 > /dev/null 2>&1")
+            time.sleep(1)
+        except Exception as e:
+            print("seri_port_reset Exception:",e)
 
     def serial_port_thread(self):
         while True:
             if time.time() - self.time_20 > 20:
-                if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
+                if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
                     self.time_20 = time.time()
-                    print("Led güncelleme -> ",self.application.led_state)
-                    self.set_command_pid_led_control(self.application.led_state)
+                    print("Led güncelleme -> ",self.application.deviceStateModule.led_state)
+                    self.set_command_pid_led_control(self.application.deviceStateModule.led_state)
                 self.get_command_pid_evse_temp()
             self.get_command_PID_control_pilot()
             self.get_command_pid_error_list()
@@ -214,7 +213,7 @@ class SerialPort():
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-            self.application.led_state = self.led_state
+            self.application.deviceStateModule.led_state = self.led_state
         
 
     def get_command_pid_led_control(self):
@@ -476,12 +475,13 @@ class SerialPort():
             self.error_list = error_list
 
     def read(self):
-        # counter = 0
+        self.connection_time = time.time()
         while True:
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 if len(incoming) > 0:
+                    self.connection_time = time.time()
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

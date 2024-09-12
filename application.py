@@ -10,7 +10,6 @@ from ocpp.v16.enums import *
 from datetime import datetime
 import subprocess
 import os
-from src.webSocket import *
 import builtins
 import ssl
 import base64

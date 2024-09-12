@@ -89,7 +89,7 @@ class MCUManager:
 
             # Yükleme başarılı mı kontrol et
             if "File downloaded successfully" in log_output:
-                print("Firmware başarıyla yüklendi.")
+                print("MCU Firmware başarıyla yüklendi.")
                 return True
             else:
                 print("Firmware yüklenirken bir hata oluştu.")

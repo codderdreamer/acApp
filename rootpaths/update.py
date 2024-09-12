@@ -402,8 +402,36 @@ class NetworkManager:
         # Eğer yanıt kodu 200 değilse de False döner
         return False
 
-
 class GitManager:
+    def __init__(self):
+        self.current_branch = None
+
+    def set_current_branch(self):
+        """
+        Mevcut branch'i öğrenir ve current_branch değişkenine kaydeder.
+        """
+        try:
+            # Git repo dizinine geç
+            os.chdir(ACAPP_DIR)
+
+            # Geçerli branch'i öğren
+            result = subprocess.run(
+                ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True
+            )
+            if result.returncode == 0:
+                self.current_branch = result.stdout.strip()
+                logger.debug(f"Geçerli branch: {self.current_branch}")
+            else:
+                logger.debug(f"Branch öğrenilemedi: {result.stderr}")
+        except Exception as e:
+            logger.error(f"Branch bilgisi alınırken hata oluştu: {e}")
+
+        # ROOT_DIR'e geri dön
+        os.chdir(ROOT_DIR)
+
     def clean_update_directories(self):
         """
         acApp_old ve acApp_new dizinlerini kaldırır eğer mevcutlarsa.
@@ -468,20 +496,36 @@ class GitManager:
             
     def check_for_git_changes(self):
         """
-        Git değişikliklerini kontrol eder.
+        Mevcut branch'teki git değişikliklerini kontrol eder ve aynı branch'e geçer.
         """
         try:
+            # Branch'i güncelle
+            self.set_current_branch()
+
+            if not self.current_branch:
+                logger.error("Branch bilgisi alınamadı, değişiklik kontrolü yapılmadı.")
+                return False
+
+            # acApp dizinine geç
             os.chdir(ACAPP_DIR)
+
+            # Fetch yap
             subprocess.run(['git', 'fetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-            changes = subprocess.run(['git', 'log', 'HEAD..origin/main', '--oneline'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+
+            # Mevcut branch'teki güncellemeleri kontrol et
+            changes = subprocess.run(
+                ['git', 'log', f'HEAD..origin/{self.current_branch}', '--oneline'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True
+            )
 
             if changes.stdout.strip():  # Eğer bir değişiklik varsa
-                logger.info(f"Git'te yeni değişiklikler mevcut:\n{changes.stdout.strip()}")
-                # change dir
+                logger.info(f"Git'te {self.current_branch} branch'inde yeni değişiklikler mevcut:\n{changes.stdout.strip()}")
                 os.chdir(ROOT_DIR)
                 return True
             else:
-                logger.info("Yazılım güncel, değişiklik yok.")
+                logger.info(f"{self.current_branch} branch'i güncel, değişiklik yok.")
                 os.chdir(ROOT_DIR)
                 return False
         except Exception as e:
@@ -491,26 +535,45 @@ class GitManager:
 
     def clone_new_repo(self):
         """
-        Git'ten yeni repoyu acApp_new dizinine klonlar.
+        Git'ten yeni repoyu acApp_new dizinine klonlar ve ilgili branch'e geçer.
         """
         try:
             logger.debug(f"Git reposu {GIT_REPO_URL} klonlanıyor...")
-            # Change directory
+
+            # ROOT_DIR'e geç
             os.chdir(ROOT_DIR)
 
-            # if new repo directory exists, remove it
+            # Eğer acApp_new dizini varsa, kaldır
             if os.path.exists(ACAPP_NEW_DIR):
                 shutil.rmtree(ACAPP_NEW_DIR)
                 logger.debug(f"{ACAPP_NEW_DIR} dizini başarıyla kaldırıldı.")
-                
+
+            # Repo'yu klonla
             result = subprocess.run(['git', 'clone', GIT_REPO_URL, ACAPP_NEW_DIR], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 
             if result.returncode == 0:
                 logger.info(f"Git reposu başarıyla {ACAPP_NEW_DIR} dizinine klonlandı.")
+
+                # Yeni klonlanan repo dizinine geç
+                os.chdir(ACAPP_NEW_DIR)
+
+                # Set branch to current_branch
+                if self.current_branch:
+                    checkout_result = subprocess.run(['git', 'checkout', self.current_branch], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    if checkout_result.returncode == 0:
+                        logger.info(f"{self.current_branch} branch'ine geçildi.")
+                    else:
+                        logger.error(f"{self.current_branch} branch'ine geçilemedi: {checkout_result.stderr}")
+                else:
+                    logger.error("Geçerli branch bilgisi mevcut değil, branch geçişi yapılamadı.")
             else:
                 logger.error(f"Git klonlama başarısız oldu: {result.stderr}")
+
         except Exception as e:
             logger.error(f"Git klonlama sırasında hata oluştu: {e}")
+        finally:
+            # İşlem sonrasında ROOT_DIR'e geri dön
+            os.chdir(ROOT_DIR)
 
     def clean_old_directory(self):
         """
@@ -611,7 +674,7 @@ class MCUManager:
 
             # Yükleme başarılı mı kontrol et
             if "File downloaded successfully" in log_output:
-                logger.info("Firmware başarıyla yüklendi.")
+                logger.info("MCU Firmware başarıyla yüklendi.")
                 return True
             else:
                 logger.error("Firmware yüklenirken bir hata oluştu.")
@@ -1405,6 +1468,7 @@ class ErrorManager:
         self.update_fail_wait_manager = update_fail_wait_manager
         self.git_manager = git_manager
         self.ocpp_update_manager = ocpp_update_manager
+        restore_retry_count = 0
     
     @staticmethod
     def save_install_status(status, context):
@@ -1493,9 +1557,9 @@ class ErrorManager:
                                InstallStatus.UPDATE_DATABASE_FAILED.value,
                                ]:
                 # Başarılı tüm dosyaları sil
-                ErrorManager.clear_install_status()
                 self.git_manager.clean_update_directories()
                 self.ocpp_update_manager.clean_firmware_file()
+                ErrorManager.clear_install_status()
                 return False
 
             elif last_status in [InstallStatus.START_OPERATION.value, 
@@ -1515,12 +1579,10 @@ class ErrorManager:
             elif last_status in [InstallStatus.FINAL_OPERATION_FAILED.value]:
                 # İşlem başlamış ancak kesintiye uğramış, eski dosyaları geri yükle ve fw dosyası sil
                 self.restore_manager.restore_previous_version()
-                self.ocpp_update_manager.clean_firmware_file()
                 return False
             elif last_status == InstallStatus.SERVICE_START_FAILED.value:
                 # Servis başlatılamadı, eski dosyaları geri yükle ve fw dosyası sil
                 self.restore_manager.restore_previous_version()
-                self.ocpp_update_manager.clean_firmware_file()
                 return False
             else:
                 # Bilinmeyen bir hata durumu varsa devam et
@@ -1571,18 +1633,29 @@ class ErrorManager:
                 # Başarılı durumda eskileri sil
                 self.git_manager.clean_update_directories()
                 ErrorManager.clear_install_status()
+                self.restore_retry_count = 0
                 return False
             elif last_status == InstallStatus.SERVICE_START_FAILED.value:
                 # İşlem başlamış ancak servis başlatılamamış, root backup dosyalarını geri yükle
                 logger.info("Servis başlatılamadı, eski dosyalar düzgün çalışmadı.")
-                self.restore_manager.restore_previous_version()
-                return False
+                if self.restore_retry_count < 10:
+                    self.restore_manager.restore_previous_version()
+                    self.restore_retry_count += 1
+                    return False
+                else:
+                    self.restore_retry_count = 0
+                    ErrorManager.clear_install_status()
+                    return False
             else:
-                # Diğer durumlar için restore işlemi tekrar edilmeli
-                self.restore_manager.restore_previous_version()
-                return False
+                if self.restore_retry_count < 10:
+                    self.restore_manager.restore_previous_version()
+                    self.restore_retry_count += 1
+                    return False
+                else:
+                    self.restore_retry_count = 0
+                    ErrorManager.clear_install_status()
+                    return False
 
-        
         # clear install status
         ErrorManager.clear_install_status()
         return True  

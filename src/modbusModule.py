@@ -6,14 +6,13 @@ from src.logger import ac_app_logger as logger
 from src.enums import *
 
 class ModbusModule:
-    def __init__(self, application, port, slave_address, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
-        print(f"Mid meter Modbus ayarlanıyor... port:{port}, slave_address:{slave_address}, baudrate:{baudrate}")
-        self.port = port
+    def __init__(self, application, slave_address=None, baudrate=9600, parity=serial.PARITY_NONE, stopbits=1, bytesize=8):
+        self.port = '/dev/ttyS5'
         self.slave_address = slave_address
         self.baudrate = baudrate
 
         self.application = application
-        self.instrument = minimalmodbus.Instrument(port, slave_address)
+        self.instrument = minimalmodbus.Instrument(self.port, slave_address)
         self.instrument.serial.baudrate = baudrate
         self.instrument.serial.parity = parity
         self.instrument.serial.stopbits = stopbits
@@ -33,7 +32,7 @@ class ModbusModule:
         self.__connection = False
         self.firstEnergy = None
         
-        Thread(target=self.read_all_data, daemon=True).start()
+        # Thread(target=self.read_all_data, daemon=True).start()
 
     def change_slave_address(self, new_slave_address):
         self.slave_address = new_slave_address

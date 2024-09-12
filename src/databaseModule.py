@@ -13,6 +13,7 @@ class DatabaseModule():
         self.application = application
         self.full_configuration = []
         self.user = None
+        # self.read_all_tables()
         
 
     def read_all_tables(self):

@@ -46,6 +46,16 @@ class Application():
         self.settings = Settings(self)
         self.databaseModule = DatabaseModule(self)
         self.bluetoothService = BluetoothService(self)
+        self.softwareSettings = SoftwareSettings(self)
+        self.flaskModule = FlaskModuleThread(self)
+        self.webSocketServer = WebSocketServer(self)
+        self.process = Process(self)
+        self.ev = EV(self)
+        self.serialPort = SerialPort(self)
+        self.modbusModule = ModbusModule(self)
+        self.deviceStateModule = DeviceStateModule(self)
+        
+
 
 
         # os.system("service bluetooth restart")

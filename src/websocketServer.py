@@ -7,14 +7,13 @@ from src.enums import *
 from datetime import datetime
 
 class WebSocketServer():
-    def __init__(self, application, logger) -> None:
+    def __init__(self, application) -> None:
         self.application = application
-        self.logger = logger
         self.websocketServer = websocket_server.WebsocketServer('0.0.0.0', 8000)
         self.websocketServer.set_fn_new_client(self.NewClientws)
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
-        threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
+        # threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         
     def NewClientws(self, client, server):
         if client:

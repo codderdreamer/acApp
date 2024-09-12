@@ -10,8 +10,9 @@ class Process:
     def __init__(self, application) -> None:
         self.application = application
         self.there_is_transaction = False
-        self.id_tag = self.application.settings.chargingInformation.id_tag
-        self.transaction_id = self.application.settings.chargingInformation.transaction_id
+        self.initially_charge = None
+        self.id_tag = None
+        self.transaction_id = None
         self.locker_error = False
         self.charge_try_counter = 0
         self.try_charge = False
@@ -20,8 +21,11 @@ class Process:
         self.locker_initialize_error = False
         self.waiting_auth_value = False
         self.rfid_verified = None
-        self.initially_charge = self.application.settings.chargingInformation.charge
-        print(Color.Yellow.value,"Initial Charge:",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
+
+        # self.id_tag = self.application.settings.chargingInformation.id_tag
+        # self.transaction_id = self.application.settings.chargingInformation.transaction_id
+        # self.initially_charge = self.application.settings.chargingInformation.charge
+        # print(Color.Yellow.value,"Initial Charge:",self.initially_charge,"self.transaction_id",self.transaction_id,"self.id_tag",self.id_tag)
         
 
     def relay_control(self,relay:Relay):

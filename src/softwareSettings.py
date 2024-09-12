@@ -12,18 +12,17 @@ from subprocess import Popen, PIPE, STDOUT
 
 
 class SoftwareSettings():
-    def __init__(self, application, logger) -> None:
+    def __init__(self, application) -> None:
         self.application = application
-        self.logger = logger
         self.__success_interfaces = []
-        self.set_functions_enable()
-        Thread(target=self.set_eth, daemon=True).start()
-        Thread(target=self.set_4G, daemon=True).start()
-        Thread(target=self.set_wifi, daemon=True).start()
-        Thread(target=self.control_device_status, daemon=True).start()
-        self.set_timezoon()
-        self.set_bluetooth_settings()
-        Thread(target=self.check_internet_connection, daemon=True).start()
+        # self.set_functions_enable()
+        # Thread(target=self.set_eth, daemon=True).start()
+        # Thread(target=self.set_4G, daemon=True).start()
+        # Thread(target=self.set_wifi, daemon=True).start()
+        # Thread(target=self.control_device_status, daemon=True).start()
+        # self.set_timezoon()
+        # self.set_bluetooth_settings()
+        # Thread(target=self.check_internet_connection, daemon=True).start()
 
     @property
     def success_interfaces(self):

@@ -1557,7 +1557,7 @@ class DatabaseModule():
             print(f"Error retrieving reservation with reservation_id {reservation_id}: {e}")
             return None
         
-    def get_first_energy():
+    def get_first_energy(self):
         """
         Veritabanındaki 'ev' tablosundan 'first_energy' value'suna karşılık gelen key değerini döndürür.
 
@@ -1591,7 +1591,7 @@ class DatabaseModule():
             # Veritabanı bağlantısını kapat
             conn.close()
 
-    def set_first_energy(key_value: str):
+    def set_first_energy(self, key_value: str):
         """
         Veritabanındaki 'ev' tablosuna 'first_energy' value'suna karşılık gelen key'i ayarlar.
         Eğer 'first_energy' değeri mevcutsa, key değerini günceller; değilse yeni bir kayıt ekler.

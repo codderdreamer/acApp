@@ -243,7 +243,9 @@ class ChargePoint16(cp):
             if self.application.process.initially_charge and self.application.cardType == CardType.BillingCard:
                 print("Daha önce başlamış bir şarj vardı. Durduruluyor...")
                 if self.application.process.transaction_id != None and self.application.process.transaction_id != "None" and self.application.process.transaction_id != "":
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(Reason.power_loss),self.application.loop)
+                    first_energy = self.application.databaseModule.get_first_energy()
+                    meter_stop = int((self.application.ev.energy - first_energy)*1000)
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(meter_stop, Reason.power_loss),self.application.loop)
                 else:
                     print(Color.Red.value,"Daha önceden başlamıs bir şarj var fakat transaction id None, stop gönderilmedi.")
                 time.sleep(1)
@@ -420,6 +422,9 @@ class ChargePoint16(cp):
                 timestamp,
                 reservation_id
             )
+            # Set first energy value in database
+            self.application.databaseModule.set_first_energy(self.application.ev.first_energy)
+            
             LOGGER_CHARGE_POINT.info("Request:%s", request)
             response = await self.call(request)
             LOGGER_CENTRAL_SYSTEM.info("Response:%s", response)
@@ -575,7 +580,7 @@ class ChargePoint16(cp):
 
     # 10. STOP TTANSACTION
     async def send_stop_transaction(
-                                    self, reason = None
+                                    self, meter_stop, reason = None 
                                     ):
         """
         meter_stop: int,
@@ -586,7 +591,6 @@ class ChargePoint16(cp):
         transaction_data: List | None = None
         """
         print("send_stop_transaction")
-        meter_stop = int(self.application.ev.energy*1000)
         timestamp = self.calculate_time()
         transaction_id = self.application.process.transaction_id
         reason = reason

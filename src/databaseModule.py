@@ -1556,3 +1556,65 @@ class DatabaseModule():
         except sqlite3.Error as e:
             print(f"Error retrieving reservation with reservation_id {reservation_id}: {e}")
             return None
+        
+    def get_first_energy():
+        """
+        Veritabanındaki 'ev' tablosundan 'first_energy' value'suna karşılık gelen key değerini döndürür.
+
+        Returns:
+            str: 'first_energy' value'suna karşılık gelen key değeri.
+                Eğer kayıt yoksa None döner.
+        """
+        try:
+            # Veritabanına bağlan
+            conn = sqlite3.connect('/root/Charge.sqlite')
+            cursor = conn.cursor()
+
+            # 'first_energy' kaydını sorgula
+            select_query = "SELECT key FROM ev WHERE value = 'first_energy'"
+            cursor.execute(select_query)
+            result = cursor.fetchone()
+
+            # Sonuç kontrolü
+            if result:
+                print(f"'first_energy' key retrieved: {result[0]}")
+                return result[0]
+            else:
+                print("'first_energy' value not found.")
+                return None
+
+        except sqlite3.Error as e:
+            print(f"Database error during get_first_energy: {e}")
+            return None
+
+        finally:
+            # Veritabanı bağlantısını kapat
+            conn.close()
+
+    def set_first_energy(key_value: str):
+        """
+        Veritabanındaki 'ev' tablosuna 'first_energy' value'suna karşılık gelen key'i ayarlar.
+        Eğer 'first_energy' değeri mevcutsa, key değerini günceller; değilse yeni bir kayıt ekler.
+
+        Args:
+            key_value (str): 'first_energy' value'suna karşılık gelen key değeri.
+        """
+        try:
+            # Veritabanına bağlan
+            conn = sqlite3.connect('/root/Charge.sqlite')
+            cursor = conn.cursor()
+
+            # Mevcut 'first_energy' kaydını güncelle
+            update_query = "UPDATE ev SET key = ? WHERE value = 'first_energy'"
+            cursor.execute(update_query, (key_value,))
+            print(f"'first_energy' value has been updated with key: {key_value}.")
+        
+            # Değişiklikleri kaydet ve bağlantıyı kapat
+            conn.commit()
+
+        except sqlite3.Error as e:
+            print(f"Database error during set_first_energy: {e}")
+
+        finally:
+            # Veritabanı bağlantısını kapat
+            conn.close()

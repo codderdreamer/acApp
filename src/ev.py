@@ -172,7 +172,9 @@ class EV():
             if (self.application.cardType == CardType.BillingCard) and self.application.ocppActive:
                 if self.application.process.transaction_id != None:
                     print(Color.Yellow.value,"Stop transaction gönderiliyor...")
-                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)
+                    # meter_stop 
+                    meter_stop = int(self.application.ev.energy*1000)
+                    asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(meter_stop),self.application.loop)
                     if not self.application.initilly:
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.finishing)
                 self.application.meter_values_on = False

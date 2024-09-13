@@ -8,6 +8,7 @@ class DeviceStateModule():
         self.application = application
         self.__cardType : CardType = None
         self.__led_state : LedState = None
+        self.__deviceState : DeviceState = None
 
     @property
     def cardType(self):
@@ -17,6 +18,7 @@ class DeviceStateModule():
     def cardType(self, value):
         if self.__cardType != value:
             print(Color.Yellow.value, "CardType:", value)
+            self.__cardType = value
 
     @property
     def led_state(self):
@@ -28,6 +30,121 @@ class DeviceStateModule():
             print(Color.Macenta.value, "Led State:", value)
             self.__led_state = value
             Thread(target=self.application.serialPort.set_command_pid_led_control, args=(value,),daemon=True).start()
+
+    @property
+    def deviceState(self):
+        return self.__deviceState
+
+    @deviceState.setter
+    def deviceState(self, value):
+        if self.__deviceState != value:
+            
+            if self.application.process.waiting_auth_value:
+                if value == DeviceState.CONNECTED or value == DeviceState.SUSPENDED_EV or value == DeviceState.CHARGING:
+                    print("D1")
+                    return
+            if value == DeviceState.WAITING_STATE_C:
+                if self.application.ev.control_pilot == ControlPlot.stateC.value:
+                    print("D2")
+                    return
+            if self.application.process.rcd_trip_error or self.application.process.locker_initialize_error:
+                if value == DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    print("D3")
+                    return
+            if self.application.process.charge_try_counter > 3:
+                if value == DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    print("D4")
+                    return
+            if self.application.process.wait_fault:
+                if value == DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    print("D5")
+                    return
+                
+            if self.__deviceState == DeviceState.STOPPED_BY_USER:
+                if value == DeviceState.IDLE:
+                    pass
+                else:
+                    print("D6")
+                    return
+                
+            if self.__deviceState == DeviceState.STOPPED_BY_EVSE:
+                if value == DeviceState.IDLE:
+                    pass
+                else:
+                    print("D7")
+                    return
+                
+            if self.application.process.locker_error:
+                if value == DeviceState.IDLE:
+                    pass
+                elif value == DeviceState.FAULT:
+                    pass
+                else:
+                    print("D8")
+                    return
+                
+            if self.application.process.try_charge:
+                if value == DeviceState.SUSPENDED_EVSE:
+                    pass
+                elif value == DeviceState.IDLE:
+                    pass
+                else:
+                    print("D9")
+                    return
+
+            print(Color.Yellow.value, "deviceState:", value)
+            self.__deviceState = value
+            if self.__deviceState == DeviceState.CONNECTED:
+                if self.charge_stopped != True:
+                    Thread(target=self.application.process.connected,daemon=True).start()
+    
+            elif self.__deviceState == DeviceState.WAITING_AUTH:
+                if self.charge_stopped != True:
+                    Thread(target=self.application.process.waiting_auth,daemon=True).start()
+            
+            elif self.__deviceState == DeviceState.WAITING_STATE_C:
+                if self.charge_stopped != True:
+                    Thread(target=self.application.process.waiting_state_c,daemon=True).start()
+                
+            elif self.__deviceState == DeviceState.CHARGING:
+                if self.charge_stopped != True:
+                    Thread(target=self.application.process.charging,daemon=True).start()
+
+            elif self.__deviceState == DeviceState.FAULT:
+                Thread(target=self.application.process.fault,daemon=True).start()
+
+            elif self.__deviceState == DeviceState.IDLE:
+                self.charge_stopped = False
+                Thread(target=self.application.process.idle,daemon=True).start()
+                
+            elif self.__deviceState == DeviceState.STOPPED_BY_EVSE:
+                self.charge_stopped = True
+                Thread(target=self.application.process.stopped_by_evse,daemon=True).start()
+                
+            elif self.__deviceState == DeviceState.STOPPED_BY_USER:
+                self.charge_stopped = True
+                Thread(target=self.application.process.stopped_by_user,daemon=True).start()
+                
+            elif self.__deviceState == DeviceState.SUSPENDED_EVSE:
+                Thread(target=self.application.process.suspended_evse,daemon=True).start()
+
+            elif self.__deviceState == DeviceState.SUSPENDED_EV:
+                Thread(target=self.application.process.suspended_ev,daemon=True).start()
+            
+            elif self.__deviceState == DeviceState.OFFLINE:
+                pass
 
     def led_state_thread(self):
         rcd_error = False
@@ -118,3 +235,5 @@ class DeviceStateModule():
                 rcd_error = False
 
             time.sleep(1)
+
+        

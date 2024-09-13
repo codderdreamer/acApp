@@ -165,8 +165,11 @@ class EV():
 
     def clean_charge_variables(self):
         try:
+            # Eğer program ilk açılıyorsa ve billing cardda ise verileri temizleme, ocppye bağlanınca temizlencek
+            if self.application.initilly and (self.application.cardType == CardType.BillingCard):
+                return
             
-            if (self.application.cardType == CardType.BillingCard):
+            if (self.application.cardType == CardType.BillingCard) and self.application.ocppActive:
                 if self.application.process.transaction_id != None:
                     print(Color.Yellow.value,"Stop transaction gönderiliyor...")
                     asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_stop_transaction(),self.application.loop)

@@ -136,7 +136,7 @@ class Process:
 
         if self.application.socketType == SocketType.Type2:
             self.application.serialPort.get_command_pid_proximity_pilot()
-            time.sleep(0.5)
+            time.sleep(1)
             if self.application.ev.proximity_pilot_current == 0:
                 print(Color.Red.value,"proximity_pilot_current : 0 hata")
                 self.application.deviceState = DeviceState.FAULT

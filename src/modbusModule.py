@@ -29,6 +29,7 @@ class ModbusModule:
         self.current_L3 = None
         self.power = None
         self.energy = None
+        self.import_energy_register_kwh = None
         
         self.__connection = False
         self.firstEnergy = None
@@ -87,6 +88,7 @@ class ModbusModule:
                 self.current_L3 = self.read_input_float(register_address=11)
                 self.power = round(self.read_input_float(register_address=53)/1000,2)
                 self.energy = self.read_input_float(register_address=73)
+                self.import_energy_register_kwh = self.energy
                 counter = 0
                 # print("-----------MID METER-----------------")
                 # print("MID METER self.volt_l1",self.volt_l1)

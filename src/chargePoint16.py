@@ -310,7 +310,7 @@ class ChargePoint16(cp):
             # Map the measurand strings to actual data
             measurand_mapping = {
                 "Energy.Active.Import.Register": {
-                    "value": str(self.application.ev.energy),
+                    "value": str(self.application.ev.import_energy_register_kwh),
                     "measurand": Measurand.energy_active_import_register,
                     "unit": UnitOfMeasure.kwh
                 },
@@ -401,7 +401,6 @@ class ChargePoint16(cp):
                                         self,
                                         connector_id:int,
                                         id_tag:str,
-                                        meter_start:int,
                                         reservation_id: int=None
                                     ):
         """
@@ -410,9 +409,9 @@ class ChargePoint16(cp):
         meter_start: int
         reservation_id: int | None = None
         """
+        meter_start = int(self.application.ev.import_energy_register_kwh * 1000)
         try :
             timestamp = self.calculate_time()
-            
             request = call.StartTransactionPayload(
                 connector_id,
                 id_tag,
@@ -497,7 +496,7 @@ class ChargePoint16(cp):
             # Map the measurand strings to actual data
             measurand_mapping = {
                 "Energy.Active.Import.Register": {
-                    "value": str(self.application.ev.energy),
+                    "value": str(round(self.application.ev.import_energy_register_kwh,2)),
                     "measurand": Measurand.energy_active_import_register,
                     "unit": UnitOfMeasure.kwh
                 },
@@ -586,7 +585,7 @@ class ChargePoint16(cp):
         transaction_data: List | None = None
         """
         print("send_stop_transaction")
-        meter_stop = int(self.application.ev.energy*1000)
+        meter_stop = int(self.application.ev.import_energy_register_kwh * 1000)
         timestamp = self.calculate_time()
         transaction_id = self.application.process.transaction_id
         reason = reason
@@ -1020,7 +1019,7 @@ class ChargePoint16(cp):
                 if self.application.chargePoint.authorize == self.application.chargePoint.authorize:
                     print("Yetkilendirme başarılı, şarj başlatılıyor.")
                     asyncio.run_coroutine_threadsafe(
-                        self.application.chargePoint.send_start_transaction(connector_id=connector_id, id_tag=id_tag, meter_start=0),
+                        self.application.chargePoint.send_start_transaction(connector_id=connector_id, id_tag=id_tag),
                         self.application.loop
                     )
                 else:

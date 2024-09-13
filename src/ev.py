@@ -29,6 +29,7 @@ class EV():
         self.voltage_L3 = 0
         self.power = 0
         self.energy = 0
+        self.import_energy_register_kwh = 0
 
         self.temperature = None
 

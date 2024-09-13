@@ -51,6 +51,7 @@ class SerialPort():
         self.power = 0
         self.energy = 0
         self.firstEnergy = 0
+        self.import_energy_register_kwh = 0
         
         self.parameter_data = "001"
         self.connector_id = "1"
@@ -528,10 +529,10 @@ class SerialPort():
         try:
             if data[2] == self.pid_energy:
                 # print(f"Device state: {self.application.deviceState}")
+                self.import_energy_register_kwh = int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001
                 if self.application.deviceState == DeviceState.IDLE:
-                    self.firstEnergy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
-                self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3) - self.firstEnergy
-                # print(f"Energy: {self.energy}")
+                    self.firstEnergy = round(self.import_energy_register_kwh, 3)
+                self.energy = round(self.import_energy_register_kwh - self.firstEnergy, 3)
         except Exception as e:
             print("get_response_pid_energy",e)
 

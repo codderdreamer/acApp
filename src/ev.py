@@ -380,7 +380,7 @@ class EV():
 
             if status == AuthorizationStatus.accepted.value:
                 # Yetkilendirme başarılıysa ve AuthorizationCacheEnabled True ise
-                if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+                if self.application.settings.configuration.AuthorizationCacheEnabled.lower() == "true":
                     # Merkezi sistem yanıtından expiry_date ve parent_id bilgilerini al
                     expiry_date = id_tag_info.get('expiry_date')
                     parent_id = id_tag_info.get('parent_id')
@@ -429,7 +429,7 @@ class EV():
             else:
                 return AuthorizationStatus.invalid
         # LocalPreAuthorize bayrağını kontrol edin
-        if self.application.settings.configuration.LocalPreAuthorize == "true":
+        if self.application.settings.configuration.LocalPreAuthorize.lower() == "true":
             # Eğer LocalPreAuthorize True ise, LocalAuthListEnabled bayrağını kontrol edin
             print("LocalPreAuthorize is True")
             local_auth_result = self.check_local_auth_list(value)
@@ -438,7 +438,7 @@ class EV():
                 return local_auth_result  
             
             # Eğer ocppTag localAuthList içinde bulunmazsa ve AuthorizationCacheEnabled True ise
-            if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+            if self.application.settings.configuration.AuthorizationCacheEnabled.lower() == "true":
                 print("AuthorizationCacheEnabled is True")
                 cache_auth_result = self.check_authorization_cache(value)
                 if cache_auth_result == AuthorizationStatus.accepted:
@@ -467,7 +467,7 @@ class EV():
             return AuthorizationStatus.accepted
         
         # LocalAuthorizeOffline bayrağını kontrol edin
-        if self.application.settings.configuration.LocalAuthorizeOffline == "false":
+        if self.application.settings.configuration.LocalAuthorizeOffline.tolower() == "false":
             print("LocalAuthorizeOffline is False so Unauthorized")
             return AuthorizationStatus.invalid  # LocalAuthorizeOffline False ise, Red olarak geri dön.
 
@@ -478,14 +478,14 @@ class EV():
             return local_auth_result  # LocalAuthList içinde bulunursa ve Accepted durumundaysa, Yetkilendirildi olarak geri dön.
 
         # Authorization Cache kontrolü
-        if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+        if self.application.settings.configuration.AuthorizationCacheEnabled.lower() == "true":
             cache_auth_result = self.check_authorization_cache(value)
             if cache_auth_result == AuthorizationStatus.accepted:
                 print("Authorized from AuthorizationCache")
                 return cache_auth_result  # AuthorizationCache içinde bulunursa, Yetkilendirildi olarak geri dön.
 
         # Bilinmeyen Kimlik Doğrulayıcıların Yetkilendirilmesi
-        if self.application.settings.configuration.AllowOfflineTxForUnknownId == "true":
+        if self.application.settings.configuration.AllowOfflineTxForUnknownId.lower() == "true":
             print("Authorized for unknown id")
             return AuthorizationStatus.accepted  # allowOfflineTxForUnknownId True ise, Bilinmeyen Kart, İzin Ver olarak geri dön.
         
@@ -497,7 +497,7 @@ class EV():
         Local Authorization List içinde verilen id_tag'i kontrol eder.
         AuthorizationStatus ve diğer bilgileri içeren idTagInfo yapısını döner.
         """
-        if self.application.settings.configuration.LocalAuthListEnabled == "true":
+        if self.application.settings.configuration.LocalAuthListEnabled.lower() == "true":
             id_tag_info = self.application.databaseModule.get_card_status_from_local_list(value)
 
             status = id_tag_info.get('status')
@@ -535,7 +535,7 @@ class EV():
         Authorization Cache içinde verilen id_tag'i kontrol eder.
         AuthorizationStatus ve diğer bilgileri içeren idTagInfo yapısını döner.
         """
-        if self.application.settings.configuration.AuthorizationCacheEnabled == "true":
+        if self.application.settings.configuration.AuthorizationCacheEnabled.lower() == "true":
 
             id_tag_info = self.application.databaseModule.get_card_status_from_auth_cache(value)
             print("id_tag_info:", id_tag_info)

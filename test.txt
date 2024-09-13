@@ -1,495 +1,435 @@
-9:10:09] L23
-[2024-09-12 19:10:10]  Control Pilot B
-[2024-09-12 19:10:10]  Device State: DeviceState.CONNECTED
-[2024-09-12 19:10:10]  Proximity Pilot Current: 32
-[2024-09-12 19:10:10]  Charge Point Status: ChargePointStatus.preparing
-[2024-09-12 19:10:10] Error info: None
-[2024-09-12 19:10:10]  Device State: DeviceState.WAITING_AUTH
-[2024-09-12 19:10:10]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:10]  Cihazın Authorize olması bekleniyor...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-12T19:10:10Z', info=None, vendor_id=None, vendor_error_code=None)
+[2024-09-13 11:51:01] L20
+[2024-09-13 11:51:01]  Control Pilot A
+[2024-09-13 11:51:01]  Device State: DeviceState.IDLE
+[2024-09-13 11:51:01]  pwm 0 setleniyor...
+[2024-09-13 11:51:01]  Pid CP PWM : 0
+[2024-09-13 11:51:02] L28
+[2024-09-13 11:51:02] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-13 11:51:02]  Charge Point Status: ChargePointStatus.available
+[2024-09-13 11:51:02] Error info: None
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:02Z', info=None, vendor_id=None, vendor_error_code=None)
 INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:11]  Led State: LedState.Connecting
-[2024-09-12 19:10:11] L24
-[2024-09-12 19:10:11]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:12] L24
-[2024-09-12 19:10:12]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:02] self.application.ev.pid_cp_pwm 0.0
+[2024-09-13 11:51:02]  pwm 0 setlendi
+[2024-09-13 11:51:02]  Röle başarılı Off
+[2024-09-13 11:51:02] Kilit açılıyor...
+[2024-09-13 11:51:02]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-13 11:51:03]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-13 11:51:03]  Led State: LedState.StandBy
+[2024-09-13 11:51:03] L23
+[2024-09-13 11:51:04] L23
+[2024-09-13 11:51:04]  MCU gelen response: LockerState.Unlock
+[2024-09-13 11:51:04]  Kilit açıldı.
+[2024-09-13 11:51:05] L23
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:05.842Z')
+[2024-09-13 11:51:06] L23
+[2024-09-13 11:51:06]  Control Pilot B
+[2024-09-13 11:51:06]  Device State: DeviceState.CONNECTED
+[2024-09-13 11:51:07]  Charge Point Status: ChargePointStatus.preparing
+[2024-09-13 11:51:07] Error info: None
+[2024-09-13 11:51:07]  **************** şarj geçmişi siliniyor ...
+[2024-09-13 11:51:07]  Device State: DeviceState.WAITING_AUTH
+[2024-09-13 11:51:07]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:07]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-13T11:51:07Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:51:07]  Charge Point Status: ChargePointStatus.available
+[2024-09-13 11:51:07] Error info: None
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:07Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:51:08]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:09] Led güncelleme ->  LedState.StandBy
+[2024-09-13 11:51:09]  Cihazın Authorize olması bekleniyor...
+
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:10Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:51:10]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:10.914Z')
+[2024-09-13 11:51:11]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:12]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:13]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:14]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:15]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:15.980Z')
+[2024-09-13 11:51:16]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:17]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:18]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:19]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:20Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:51:20]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:21.063Z')
+[2024-09-13 11:51:21]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:22]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:23]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:24]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:25]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:26.141Z')
+[2024-09-13 11:51:26]  Control Pilot A
+[2024-09-13 11:51:26]  Device State: DeviceState.IDLE
+[2024-09-13 11:51:26]  pwm 0 setleniyor...
+[2024-09-13 11:51:26]  Pid CP PWM : 0
+[2024-09-13 11:51:26]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:27] L23
+[2024-09-13 11:51:27] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-13 11:51:27] self.application.ev.pid_cp_pwm 0.0
+[2024-09-13 11:51:27]  pwm 0 setlendi
+[2024-09-13 11:51:27]  Röle başarılı Off
+[2024-09-13 11:51:27] Kilit açılıyor...
+[2024-09-13 11:51:27]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-13 11:51:28]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-13 11:51:28] L23
+[2024-09-13 11:51:29] L23
+[2024-09-13 11:51:29]  MCU gelen response: LockerState.Unlock
+[2024-09-13 11:51:29] Led güncelleme ->  LedState.StandBy
+[2024-09-13 11:51:29]  Kilit açıldı.
+[2024-09-13 11:51:30] L23
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:30Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:31.213Z')
+[2024-09-13 11:51:31]  Control Pilot B
+[2024-09-13 11:51:31]  Device State: DeviceState.CONNECTED
+[2024-09-13 11:51:32]  Charge Point Status: ChargePointStatus.preparing
+[2024-09-13 11:51:32] Error info: None
+[2024-09-13 11:51:32]  Device State: DeviceState.WAITING_AUTH
+[2024-09-13 11:51:32]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:32]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-13T11:51:32Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:51:32]  Led State: LedState.Connecting
+[2024-09-13 11:51:32] L24
+[2024-09-13 11:51:32]  **************** şarj geçmişi siliniyor ...
+[2024-09-13 11:51:32]  Charge Point Status: ChargePointStatus.available
+[2024-09-13 11:51:32] Error info: None
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:32Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:51:33]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:34]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:35]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:36.279Z')
+[2024-09-13 11:51:36]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:37]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:38]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:39]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:40]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:40Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:41.354Z')
+[2024-09-13 11:51:41]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:42]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:43]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:44]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:45]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:46.436Z')
+[2024-09-13 11:51:46]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:47]  Cihazın Authorize olması bekleniyor...
 INFO:central_system:Request:TriggerMessagePayload(requested_message='StatusNotification', connector_id=1)
 INFO:charge_point:Response:TriggerMessagePayload(status=<TriggerMessageStatus.accepted: 'Accepted'>)
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-12T19:10:13Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:48Z', info=None, vendor_id=None, vendor_error_code=None)
 INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:13] L24
-[2024-09-12 19:10:13]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:48]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:49]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:49] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:51:50]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:51:50Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
 INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:14.245Z')
-[2024-09-12 19:10:14] L24
-[2024-09-12 19:10:14]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:15] L24
-[2024-09-12 19:10:15]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:16] L24
-[2024-09-12 19:10:16]  Cihazın Authorize olması bekleniyor...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-12T19:10:16Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:51.509Z')
+[2024-09-13 11:51:51]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:52]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:53]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:54]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:55]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+[2024-09-13 11:51:56]  Cihazın Authorize olması bekleniyor...
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:51:56.594Z')
+[2024-09-13 11:51:57]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:58]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:51:59]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:00]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:52:00Z', info=None, vendor_id=None, vendor_error_code=None)
 INFO:central_system:Response:StatusNotificationPayload()
+INFO:charge_point:Request:HeartbeatPayload()
+[2024-09-13 11:52:01]  Cihazın Authorize olması bekleniyor...
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:01.674Z')
+[2024-09-13 11:52:02]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:03]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:04]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:05]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:06]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:06.770Z')
+[2024-09-13 11:52:07]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:08]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:09]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:09] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:52:10]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:52:10Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:52:11]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:11.854Z')
+[2024-09-13 11:52:12]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:13]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:14]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:15]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:16]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:16.921Z')
+[2024-09-13 11:52:17]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:18]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:19]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:20]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:52:21Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:52:21]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:22.010Z')
+[2024-09-13 11:52:22]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:23]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:24]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:25]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:26]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:27.080Z')
+[2024-09-13 11:52:27]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:28]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:29]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:30] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:52:30]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:52:31Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:52:31]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:32.142Z')
+[2024-09-13 11:52:33]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:34]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:35]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:36]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:37]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:37.228Z')
+[2024-09-13 11:52:38]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:39]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:40]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:41]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:52:41Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:52:42]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:42.300Z')
+[2024-09-13 11:52:43]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:44]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:45]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:46]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:47]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:47.355Z')
+[2024-09-13 11:52:48]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:49]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:50] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:52:50]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:51]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:52:51Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:52:52]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:52.421Z')
+[2024-09-13 11:52:53]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:54]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:55]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:56]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:57]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:52:57.490Z')
+[2024-09-13 11:52:58]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:52:59]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:00]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:53:01Z', info=None, vendor_id=None, vendor_error_code=None)
+[2024-09-13 11:53:01]  Cihazın Authorize olması bekleniyor...
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:53:02]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:02.556Z')
+[2024-09-13 11:53:03]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:04]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:05]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:06]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:07]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:07.599Z')
+[2024-09-13 11:53:08]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:09]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:10] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:53:10]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:53:11Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:53:11]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:12]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:12.666Z')
+[2024-09-13 11:53:13]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:14]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:15]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:16]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:17]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:17.751Z')
+[2024-09-13 11:53:18]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:19]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:20]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:53:21Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:53:21]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:22]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:22.834Z')
+[2024-09-13 11:53:23]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:24]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:25]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:26]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:27]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:27.901Z')
+[2024-09-13 11:53:28]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:29]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:30] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:53:30]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:53:31Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:53:31]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:32]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:32.969Z')
+[2024-09-13 11:53:33]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:34]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:35]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:36]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:37]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:38.030Z')
+[2024-09-13 11:53:38]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:39]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:40]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:53:41Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:53:41]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:42]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:43.094Z')
+[2024-09-13 11:53:43]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:44]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:45]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:46]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:47]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:48.156Z')
+[2024-09-13 11:53:48]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:49]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:50] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:53:50]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:53:51Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:53:51]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:52]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:53.222Z')
+[2024-09-13 11:53:53]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:54]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:55]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:56]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:57]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:53:58.286Z')
+[2024-09-13 11:53:58]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:53:59]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:00]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:54:01Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:54:01]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:02]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:03.332Z')
+[2024-09-13 11:54:03]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:04]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:05]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:07]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:08]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:08.387Z')
+[2024-09-13 11:54:09]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:10]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:10] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:54:11]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:54:11Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:54:12]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:13]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:13.447Z')
+[2024-09-13 11:54:14]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:15]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:16]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:17]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:18]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:18.500Z')
+[2024-09-13 11:54:19]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:20]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:21]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:54:21Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:54:22]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:23]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:23.557Z')
+[2024-09-13 11:54:24]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:25]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:26]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:27]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:28]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:28.595Z')
+[2024-09-13 11:54:29]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:30]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:30] Led güncelleme ->  LedState.Connecting
+[2024-09-13 11:54:31]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:54:31Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:StatusNotificationPayload()
+[2024-09-13 11:54:32]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:33]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:HeartbeatPayload()
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:33.659Z')
+[2024-09-13 11:54:34]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:35]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:36]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:37]  Cihazın Authorize olması bekleniyor...
 
-[2024-09-12 19:10:17] L24
-[2024-09-12 19:10:17]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:18] L24
-[2024-09-12 19:10:18]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:38]  Cihazın Authorize olması bekleniyor...
 INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:19.290Z')
-[2024-09-12 19:10:19] L24
-[2024-09-12 19:10:19]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:20] L24
-[2024-09-12 19:10:20]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:21] L24
-[2024-09-12 19:10:21]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:22] Led güncelleme ->  LedState.Connecting
-[2024-09-12 19:10:22] L24
-[2024-09-12 19:10:22]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:23] L24
-[2024-09-12 19:10:23]  Cihazın Authorize olması bekleniyor...
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:24.338Z')
-[2024-09-12 19:10:24] L24
-[2024-09-12 19:10:24]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:25] L24
-[2024-09-12 19:10:25]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:26] L24
-[2024-09-12 19:10:26]  Cihazın Authorize olması bekleniyor...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-12T19:10:27Z', info=None, vendor_id=None, vendor_error_code=None)
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:38.960Z')
+[2024-09-13 11:54:39]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:40]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:41]  Cihazın Authorize olması bekleniyor...
+INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T11:54:41Z', info=None, vendor_id=None, vendor_error_code=None)
 INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:27] L24
-[2024-09-12 19:10:27]  Cihazın Authorize olması bekleniyor...
-INFO:central_system:Request:RemoteStartTransactionPayload(id_tag='M240912143548505', connector_id=1, charging_profile=None)
-INFO:charge_point:Response:RemoteStartTransactionPayload(status=<RemoteStartStopStatus.accepted: 'Accepted'>)
-[2024-09-12 19:10:28] AuthorizeRemoteTxRequests : true, Autorize olduktan sonra başlayacak.
-[2024-09-12 19:10:28] Yetkilendirme talebi gönderiliyor
-[2024-09-12 19:10:28] Yetkilendirme başarılı, şarj başlatılıyor.
-INFO:charge_point:Request:AuthorizePayload(id_tag='M240912143548505')
-INFO:charge_point:Request:StartTransactionPayload(connector_id=1, id_tag='M240912143548505', meter_start=0, timestamp='2024-09-12T19:10:28Z', reservation_id=None)
-INFO:central_system:Response:AuthorizePayload(id_tag_info={'expiry_date': '2026-09-12T14:35:49.000Z', 'parent_id_tag': 'M240912143548505', 'status': 'Accepted'})
-INFO:central_system:Response:StartTransactionPayload(transaction_id=3, id_tag_info={'expiry_date': '2026-09-12T14:35:49.000Z', 'parent_id_tag': 'M240912143548505', 'status': 'Accepted'})
-[2024-09-12 19:10:28] response.id_tag_info['status'] Accepted
-[2024-09-12 19:10:28] L24
-[2024-09-12 19:10:28]  Cihazın Authorize olması bekleniyor...
-[2024-09-12 19:10:28] Kilit kitleniyor...
-[2024-09-12 19:10:28]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-13 11:54:42]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:43]  Cihazın Authorize olması bekleniyor...
 INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:29.396Z')
-[2024-09-12 19:10:29]  MCU'ya gönderilen komut: LockerState.Lock
-[2024-09-12 19:10:29] L24
-[2024-09-12 19:10:29]  MCU gelen response: LockerState.Lock
-[2024-09-12 19:10:29]  Kilit kitlendi.
-[2024-09-12 19:10:29]  Pid CP PWM : 7
-[2024-09-12 19:10:29]  Device State: DeviceState.WAITING_STATE_C
-[2024-09-12 19:10:29]  Cihazın şarja geçmesi bekleniyor... Şarja geçmezse 5 dk sonra sonlanacak...
-[2024-09-12 19:10:29] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '7', '0', '0', '7', '3', '\n']
-[2024-09-12 19:10:30] L24
-[2024-09-12 19:10:31] L24
-[2024-09-12 19:10:32]  Control Pilot C
-[2024-09-12 19:10:32]  Device State: DeviceState.CHARGING
-[2024-09-12 19:10:32]  Cihaz şarja başlayacak...
-[2024-09-12 19:10:32]  Pid CP PWM : 7
-[2024-09-12 19:10:32]  relay komut verildi: Relay.On
-[2024-09-12 19:10:32]  Röle: Relay.On
-[2024-09-12 19:10:32] L25
-[2024-09-12 19:10:32] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '7', '0', '0', '7', '3', '\n']
-[2024-09-12 19:10:33]  *********************** get response relay Relay.On
-[2024-09-12 19:10:33]  relay okundu: Relay.On
-[2024-09-12 19:10:33]  Charge Point Status: ChargePointStatus.charging
-[2024-09-12 19:10:33] Error info: None
-[2024-09-12 19:10:33]  Cihaz şarja başlıyor... *************************************************************
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:10:33Z', info=None, vendor_id=None, vendor_error_code=None)
-[2024-09-12 19:10:33] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Current.Import.L1', 'Current.Import.L2', 'Current.Import.L3', 'Voltage.L1', 'Voltage.L2', 'Voltage.L3']
-[2024-09-12 19:10:33] max_length: 5
-INFO:charge_point:Request: MeterValuesPayload(connector_id=1, meter_value=[{'timestamp': '2024-09-12T19:10:33Z', 'sampledValue': [{'value': '0.0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0.002', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': '0.005', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l1: 'L1'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}, {'value': '0.004', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l2: 'L2'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}, {'value': '0.004', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l3: 'L3'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}]}], transaction_id=3)
-[2024-09-12 19:10:33]  Led State: LedState.Charging
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:33] L26
-INFO:central_system:Response: MeterValuesPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:34.476Z')
-[2024-09-12 19:10:34] L26
-[2024-09-12 19:10:35] L26
-[2024-09-12 19:10:36] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:10:37Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:37] L26
-[2024-09-12 19:10:38] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:39.570Z')
-[2024-09-12 19:10:39] L26
-[2024-09-12 19:10:40] L26
-[2024-09-12 19:10:41] L26
-[2024-09-12 19:10:42] Led güncelleme ->  LedState.Charging
-[2024-09-12 19:10:42] L26
-[2024-09-12 19:10:43] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:44.656Z')
-[2024-09-12 19:10:44] L26
-[2024-09-12 19:10:45] L26
-[2024-09-12 19:10:46] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:10:47Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:47] L26
-[2024-09-12 19:10:48] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:49.750Z')
-[2024-09-12 19:10:49] L26
-[2024-09-12 19:10:50] L26
-[2024-09-12 19:10:51] L26
-[2024-09-12 19:10:52] L26
-[2024-09-12 19:10:53] L26
-INFO:charge_point:Request:HeartbeatPayload()
-[2024-09-12 19:10:54] L26
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:54.842Z')
-[2024-09-12 19:10:55] L26
-[2024-09-12 19:10:56] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:10:57Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:10:57] L26
-[2024-09-12 19:10:58] L26
-INFO:charge_point:Request:HeartbeatPayload()
-[2024-09-12 19:10:59] L26
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:10:59.916Z')
-[2024-09-12 19:11:00] L26
-[2024-09-12 19:11:01] L26
-[2024-09-12 19:11:02] Led güncelleme ->  LedState.Charging
-[2024-09-12 19:11:02] L26
-[2024-09-12 19:11:03] L26
-[2024-09-12 19:11:04] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:04.998Z')
-[2024-09-12 19:11:05] L26
-[2024-09-12 19:11:06] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:11:07Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:08] L26
-[2024-09-12 19:11:09] L26
-[2024-09-12 19:11:10] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:10.061Z')
-[2024-09-12 19:11:11] L26
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /admin/charging HTTP/1.1" 200 -
-[2024-09-12 19:11:11] Client disconnected client[id]:2  client['address'] =('192.168.1.115', 22571)
-[2024-09-12 19:11:11] Client disconnected client[id]:1  client['address'] =('192.168.1.115', 22570)
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/css/nucleo-icons.css HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/css/nucleo-svg.css HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/css/argon-dashboard.css?v=2.0.5 HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/core/bootstrap.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/core/popper.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /static/css/main.d97d47e8.css HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/perfect-scrollbar.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/smooth-scrollbar.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/choices.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/dropzone.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/quill.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/multistep-form.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/dragula/dragula.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/plugins/jkanban/jkanban.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:11] "GET /assets/js/argon-dashboard.min.js?v=2.0.5 HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:12] "GET /static/js/main.28375737.js HTTP/1.1" 304 -
-[2024-09-12 19:11:12] L26
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:12] "GET /assets/img/logo-ct-dark.png HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:12] "GET /static/media/nucleo-icons.cba267483aa6a7cb6e33.woff2 HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:12] "GET /websocket.json HTTP/1.1" 304 -
-[2024-09-12 19:11:12] New client connected and was given id 3, ('192.168.1.115', 22595)
-[2024-09-12 19:11:13] L26
-[2024-09-12 19:11:14] L26
-[2024-09-12 19:11:15] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:15.131Z')
-[2024-09-12 19:11:16] L26
-[2024-09-12 19:11:17] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:11:17Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:18] L26
-[2024-09-12 19:11:19] L26
-[2024-09-12 19:11:20] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:20.191Z')
-[2024-09-12 19:11:21] L26
-[2024-09-12 19:11:22] L26
-[2024-09-12 19:11:22] Led güncelleme ->  LedState.Charging
-[2024-09-12 19:11:23] L26
-[2024-09-12 19:11:24] L26
-[2024-09-12 19:11:24]  Control Pilot B
-[2024-09-12 19:11:24]  Device State: DeviceState.CONNECTED
-[2024-09-12 19:11:25] L26
-[2024-09-12 19:11:25]  Charge Point Status: ChargePointStatus.preparing
-[2024-09-12 19:11:25] Error info: None
-[2024-09-12 19:11:25] Kilit kitleniyor...
-[2024-09-12 19:11:25]  MCU'ya gönderilen komut: LockerState.Unlock
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-12T19:11:25Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:25.258Z')
-[2024-09-12 19:11:25]  MCU'ya gönderilen komut: LockerState.Lock
-[2024-09-12 19:11:26]  MCU gelen response: LockerState.Lock
-[2024-09-12 19:11:26]  Led State: LedState.Connecting
-[2024-09-12 19:11:26] L24
-[2024-09-12 19:11:26]  Kilit kitlendi.
-[2024-09-12 19:11:26]  Pid CP PWM : 7
-[2024-09-12 19:11:26]  Device State: DeviceState.WAITING_STATE_C
-[2024-09-12 19:11:26]  Cihazın şarja geçmesi bekleniyor... Şarja geçmezse 5 dk sonra sonlanacak...
-[2024-09-12 19:11:26]  Device State: DeviceState.SUSPENDED_EV
-[2024-09-12 19:11:26] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:26]  Charge Point Status: ChargePointStatus.suspended_ev
-[2024-09-12 19:11:26] Error info: None
-[2024-09-12 19:11:26]  relay komut verildi: Relay.Off
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.suspended_ev: 'SuspendedEV'>, timestamp='2024-09-12T19:11:26Z', info=None, vendor_id=None, vendor_error_code=None)
-[2024-09-12 19:11:26]  Röle: Relay.Off
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:26] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '7', '0', '0', '7', '3', '\n']
-[2024-09-12 19:11:27]  *********************** get response relay Relay.Off
-[2024-09-12 19:11:27]  Led State: LedState.ChargingStopped
-[2024-09-12 19:11:27] L20
-[2024-09-12 19:11:27]  relay okundu: Relay.Off
-[2024-09-12 19:11:27]  Pid CP PWM : 7
-[2024-09-12 19:11:27] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.suspended_ev: 'SuspendedEV'>, timestamp='2024-09-12T19:11:27Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:27] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:27] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '7', '0', '0', '7', '3', '\n']
-[2024-09-12 19:11:27] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:28] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:28] L20
-[2024-09-12 19:11:28] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:28] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:29] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:29] L20
-[2024-09-12 19:11:29] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:29] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:30] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:30] L20
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:30.323Z')
-[2024-09-12 19:11:30] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:30] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:30] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:31] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:31] L20
-[2024-09-12 19:11:31] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:31]  Control Pilot C
-[2024-09-12 19:11:31]  Device State: DeviceState.CHARGING
-[2024-09-12 19:11:31]  Cihaz şarja başlayacak...
-[2024-09-12 19:11:31]  Charge Point Status: ChargePointStatus.preparing
-[2024-09-12 19:11:31] Error info: None
-[2024-09-12 19:11:31]  Pid CP PWM : 7
-[2024-09-12 19:11:31]  relay komut verildi: Relay.On
-[2024-09-12 19:11:31]  Röle: Relay.On
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.preparing: 'Preparing'>, timestamp='2024-09-12T19:11:31Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:31] Şarj durduruldu. Beklemeye alındı. 5 dk içinde şarja geçmezse hataya düşecek...
-[2024-09-12 19:11:31] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '7', '0', '0', '7', '3', '\n']
-[2024-09-12 19:11:32]  Led State: LedState.Connecting
-
-[2024-09-12 19:11:32] L25
-[2024-09-12 19:11:32] read Exception 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
-[2024-09-12 19:11:32]  relay okundu: Relay.On
-[2024-09-12 19:11:32]  relay komut verildi: Relay.On
-[2024-09-12 19:11:32]  Röle: Relay.On
-[2024-09-12 19:11:33] L25
-[2024-09-12 19:11:33]  *********************** get response relay Relay.On
-[2024-09-12 19:11:33]  relay okundu: Relay.On
-[2024-09-12 19:11:33]  Charge Point Status: ChargePointStatus.charging
-[2024-09-12 19:11:33] Error info: None
-[2024-09-12 19:11:33]  Cihaz şarja başlıyor... *************************************************************
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:11:33Z', info=None, vendor_id=None, vendor_error_code=None)
-[2024-09-12 19:11:33] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Current.Import.L1', 'Current.Import.L2', 'Current.Import.L3', 'Voltage.L1', 'Voltage.L2', 'Voltage.L3']
-[2024-09-12 19:11:33] max_length: 5
-INFO:charge_point:Request: MeterValuesPayload(connector_id=1, meter_value=[{'timestamp': '2024-09-12T19:11:33Z', 'sampledValue': [{'value': '0.05', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0.034', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': '0.689', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l1: 'L1'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}, {'value': '0.577', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l2: 'L2'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}, {'value': '0.658', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l3: 'L3'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}]}], transaction_id=3)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:central_system:Response: MeterValuesPayload()
-[2024-09-12 19:11:34]  Led State: LedState.Charging
-[2024-09-12 19:11:34] L26
-[2024-09-12 19:11:35] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:35.403Z')
-[2024-09-12 19:11:36] L26
-[2024-09-12 19:11:37] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:11:37Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:38] L26
-[2024-09-12 19:11:39] L26
-[2024-09-12 19:11:40] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:40.490Z')
-[2024-09-12 19:11:41] L26
-[2024-09-12 19:11:42] L26
-[2024-09-12 19:11:42] Led güncelleme ->  LedState.Charging
-[2024-09-12 19:11:43] L26
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:43] "GET /admin/charging HTTP/1.1" 200 -
-[2024-09-12 19:11:43] Client disconnected client[id]:3  client['address'] =('192.168.1.115', 22595)
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:43] "GET /assets/css/nucleo-icons.css HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/css/nucleo-svg.css HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/css/argon-dashboard.css?v=2.0.5 HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /static/css/main.d97d47e8.css HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/core/popper.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/core/bootstrap.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/perfect-scrollbar.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/smooth-scrollbar.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/choices.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/dropzone.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/quill.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/multistep-form.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/dragula/dragula.min.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/plugins/jkanban/jkanban.js HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/js/argon-dashboard.min.js?v=2.0.5 HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /static/js/main.28375737.js HTTP/1.1" 304 -
-[2024-09-12 19:11:44] L26
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /assets/img/logo-ct-dark.png HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /static/media/nucleo-icons.cba267483aa6a7cb6e33.woff2 HTTP/1.1" 304 -
-INFO:werkzeug:192.168.1.115 - - [12/Sep/2024 19:11:44] "GET /websocket.json HTTP/1.1" 304 -
-[2024-09-12 19:11:44] New client connected and was given id 4, ('192.168.1.115', 22616)
-[2024-09-12 19:11:45] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:45.597Z')
-[2024-09-12 19:11:46] L26
-[2024-09-12 19:11:47] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:11:47Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:48] L26
-[2024-09-12 19:11:49] L26
-[2024-09-12 19:11:50] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:50.682Z')
-[2024-09-12 19:11:51] L26
-[2024-09-12 19:11:52] L26
-[2024-09-12 19:11:53] L26
-[2024-09-12 19:11:54] L26
-[2024-09-12 19:11:55] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:11:55.769Z')
-[2024-09-12 19:11:56] L26
-[2024-09-12 19:11:57] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:11:57Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:11:58] L26
-[2024-09-12 19:11:59] L26
-[2024-09-12 19:12:00] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:00.837Z')
-[2024-09-12 19:12:01] L26
-[2024-09-12 19:12:02] L26
-[2024-09-12 19:12:02] Led güncelleme ->  LedState.Charging
-[2024-09-12 19:12:03] L26
-[2024-09-12 19:12:04] L26
-[2024-09-12 19:12:05] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:05.895Z')
-[2024-09-12 19:12:06] L26
-[2024-09-12 19:12:07] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:12:07Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:12:08] L26
-[2024-09-12 19:12:09] L26
-[2024-09-12 19:12:10] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:10.971Z')
-[2024-09-12 19:12:11] L26
-[2024-09-12 19:12:12] L26
-[2024-09-12 19:12:13] L26
-[2024-09-12 19:12:14] L26
-[2024-09-12 19:12:15] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:16.038Z')
-[2024-09-12 19:12:16] L26
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:12:17Z', info=None, vendor_id=None, vendor_error_code=None)
-[2024-09-12 19:12:17] L26
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:12:18] L26
-[2024-09-12 19:12:19] L26
-[2024-09-12 19:12:20] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:21.111Z')
-[2024-09-12 19:12:21] L26
-INFO:central_system:Request:RemoteStopTransactionPayload(transaction_id=3)
-INFO:charge_point:Response:RemoteStopTransactionPayload(status=<RemoteStartStopStatus.accepted: 'Accepted'>)
-[2024-09-12 19:12:22]  Device State: DeviceState.STOPPED_BY_EVSE
-[2024-09-12 19:12:22]  pwm 0 setleniyor...
-[2024-09-12 19:12:22]  Pid CP PWM : 0
-[2024-09-12 19:12:22] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
-[2024-09-12 19:12:22] self.application.ev.pid_cp_pwm 0.0
-[2024-09-12 19:12:22]  Led State: LedState.ChargingStopped
-[2024-09-12 19:12:22] L20
-[2024-09-12 19:12:22] Led güncelleme ->  LedState.ChargingStopped
-[2024-09-12 19:12:23]  pwm 0 setlendi
-[2024-09-12 19:12:23]  relay komut verildi: Relay.Off
-[2024-09-12 19:12:23]  Röle: Relay.Off
-[2024-09-12 19:12:23] L20
-[2024-09-12 19:12:24]  relay okundu: Relay.Off
-[2024-09-12 19:12:24]  relay komut verildi: Relay.Off
-[2024-09-12 19:12:24]  Röle: Relay.Off
-[2024-09-12 19:12:24]  *********************** get response relay Relay.Off
-[2024-09-12 19:12:24] L20
-[2024-09-12 19:12:25]  relay okundu: Relay.Off
-[2024-09-12 19:12:25]  Röle başarılı Off
-[2024-09-12 19:12:25] Kilit açılıyor...
-[2024-09-12 19:12:25]  MCU'ya gönderilen komut: LockerState.Lock
-[2024-09-12 19:12:25]  *********************** get response relay Relay.Off
-[2024-09-12 19:12:25]  Control Pilot B
-[2024-09-12 19:12:25]  Device State: DeviceState.CONNECTED
-[2024-09-12 19:12:25]  MCU'ya gönderilen komut: LockerState.Unlock
-[2024-09-12 19:12:25]  Led State: LedState.Charging
-[2024-09-12 19:12:25] L26
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:26.192Z')
-[2024-09-12 19:12:26] L26
-[2024-09-12 19:12:27]  MCU gelen response: LockerState.Unlock
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-12T19:12:27Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:12:27] L26
-[2024-09-12 19:12:28] Kilit açılıyor...
-[2024-09-12 19:12:28]  MCU'ya gönderilen komut: LockerState.Lock
-[2024-09-12 19:12:28]  MCU'ya gönderilen komut: LockerState.Unlock
-[2024-09-12 19:12:28] L26
-[2024-09-12 19:12:29]  MCU gelen response: LockerState.Unlock
-[2024-09-12 19:12:29] L26
-[2024-09-12 19:12:30]  Kilit açıldı.
-[2024-09-12 19:12:30]  Stop transaction gönderiliyor...
-[2024-09-12 19:12:30]  Charge Point Status: ChargePointStatus.finishing
-[2024-09-12 19:12:30] send_stop_transaction
-[2024-09-12 19:12:30] Error info: None
-[2024-09-12 19:12:30] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Temperature']
-[2024-09-12 19:12:30] max_length: 5
-INFO:charge_point:Request:StopTransactionPayload(meter_stop=70, timestamp='2024-09-12T19:12:30Z', transaction_id=3, reason=None, id_tag='M240912143548505', transaction_data=[{'timestamp': '2024-09-12T19:12:30Z', 'sampledValue': [{'value': '0.07', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0.002', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': '+32.0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.temperature: 'Temperature'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.celsius: 'Celsius'>}]}])
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.finishing: 'Finishing'>, timestamp='2024-09-12T19:12:30Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StopTransactionPayload(id_tag_info={'expiry_date': '2026-09-12T14:35:49.000Z', 'parent_id_tag': 'M240912143548505', 'status': 'Accepted'})
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:31.274Z')
-[2024-09-12 19:12:33]  **************** şarj geçmişi siliniyor ...
-
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:36.365Z')
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.finishing: 'Finishing'>, timestamp='2024-09-12T19:12:37Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:41.434Z')
-[2024-09-12 19:12:43] Led güncelleme ->  LedState.Charging
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:46.500Z')
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.finishing: 'Finishing'>, timestamp='2024-09-12T19:12:47Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:51.573Z')
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:12:56.643Z')
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.finishing: 'Finishing'>, timestamp='2024-09-12T19:12:58Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:13:01.709Z')
-[2024-09-12 19:13:03] Led güncelleme ->  LedState.Charging
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:13:06.780Z')
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.finishing: 'Finishing'>, timestamp='2024-09-12T19:13:08Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:13:11.829Z')
-NETLINK: Error: File exists
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-12T19:13:16.893Z')
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.finishing: 'Finishing'>, timestamp='2024-09-12T19:13:18Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-12 19:13:18]  Control Pilot A
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T11:54:44.032Z')
+[2024-09-13 11:54:44]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:45]  Success Interfaces: ['wlan0', 'ppp0']
+[2024-09-13 11:54:45]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:46]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:47]  Cihazın Authorize olması bekleniyor...
+[2024-09-13 11:54:47]  Success Interfaces: ['eth1', 'wlan0', 'ppp0']
+[2024-09-13 11:54:48]  Cihazın Authorize olması bekleniyor...

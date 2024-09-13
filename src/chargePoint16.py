@@ -589,7 +589,7 @@ class ChargePoint16(cp):
         meter_stop = int(self.application.ev.energy*1000)
         timestamp = self.calculate_time()
         transaction_id = self.application.process.transaction_id
-        reason = None
+        reason = reason
         id_tag = self.application.process.id_tag
         transaction_data = self.transaction_data_json()
         try :

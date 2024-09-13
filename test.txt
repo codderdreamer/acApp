@@ -1,271 +1,42 @@
-:Response:HeartbeatPayload(current_time='2024-09-13T12:18:29.299Z')
-[2024-09-13 12:18:29] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '6', '0', '0', '7', '2', '\n']
-[2024-09-13 12:18:29] L25
-[2024-09-13 12:18:29]  *********************** get response relay Relay.On
-[2024-09-13 12:18:29]  relay okundu: Relay.On
-[2024-09-13 12:18:29]  Charge Point Status: ChargePointStatus.charging
-[2024-09-13 12:18:29] Error info: None
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-13T12:18:29Z', info=None, vendor_id=None, vendor_error_code=None)
-[2024-09-13 12:18:29]  Charge: True
-[2024-09-13 12:18:29]  Cihaz şarja başlıyor... *************************************************************
-[2024-09-13 12:18:29] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Temperature', 'Current.Import.L1', ' Current.Import.L2', ' Current.Import.L3', 'Voltage.L1', 'Voltage.L2', 'Voltage.L3']
-[2024-09-13 12:18:29] max_length: 9
-INFO:charge_point:Request: MeterValuesPayload(connector_id=1, meter_value=[{'timestamp': '2024-09-13T12:18:29Z', 'sampledValue': [{'value': '85.01', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': '+31.0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.temperature: 'Temperature'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.celsius: 'Celsius'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.current_import: 'Current.Import'>, 'phase': <Phase.l1: 'L1'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.a: 'A'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.voltage: 'Voltage'>, 'phase': <Phase.l1: 'L1'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.v: 'V'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.voltage: 'Voltage'>, 'phase': <Phase.l2: 'L2'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.v: 'V'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.voltage: 'Voltage'>, 'phase': <Phase.l3: 'L3'>, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.v: 'V'>}]}], transaction_id=22)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-13 12:18:30] Cihaz şarjda...
-INFO:central_system:Response: MeterValuesPayload()
-[2024-09-13 12:18:30]  Led State: LedState.Charging
-[2024-09-13 12:18:30] L26
-[2024-09-13 12:18:31] Cihaz şarjda...
-[2024-09-13 12:18:31] L26
-[2024-09-13 12:18:32] Cihaz şarjda...
-[2024-09-13 12:18:32] L26
-[2024-09-13 12:18:33] Cihaz şarjda...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-13T12:18:33Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-13 12:18:33] L26
-[2024-09-13 12:18:34] Cihaz şarjda...
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:18:34.338Z')
-[2024-09-13 12:18:34] L26
-[2024-09-13 12:18:35] Cihaz şarjda...
-[2024-09-13 12:18:35] L26
-[2024-09-13 12:18:36] Cihaz şarjda...
-[2024-09-13 12:18:36] L26
-[2024-09-13 12:18:37] Cihaz şarjda...
-[2024-09-13 12:18:37] L26
-[2024-09-13 12:18:38] Cihaz şarjda...
-[2024-09-13 12:18:38] L26
-[2024-09-13 12:18:39] Cihaz şarjda...
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:18:39.361Z')
-[2024-09-13 12:18:39] L26
-[2024-09-13 12:18:40] Cihaz şarjda...
-[2024-09-13 12:18:40] L26
-[2024-09-13 12:18:41] Cihaz şarjda...
-[2024-09-13 12:18:41] L26
-[2024-09-13 12:18:42] Cihaz şarjda...
-[2024-09-13 12:18:42] L26
-[2024-09-13 12:18:43] Cihaz şarjda...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-13T12:18:43Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-13 12:18:43] L26
-[2024-09-13 12:18:44] Cihaz şarjda...
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:18:44.380Z')
-[2024-09-13 12:18:44] L26
-[2024-09-13 12:18:45] Cihaz şarjda...
-[2024-09-13 12:18:45] L26
-[2024-09-13 12:18:46] Cihaz şarjda...
-[2024-09-13 12:18:46] L26
-[2024-09-13 12:18:47]  Success Interfaces: ['eth1', 'wlan0']
-[2024-09-13 12:18:47] Cihaz şarjda...
-[2024-09-13 12:18:47] L26
-[2024-09-13 12:18:48] Cihaz şarjda...
-[2024-09-13 12:18:48] Led güncelleme ->  LedState.Charging
-[2024-09-13 12:18:48] L26
-[2024-09-13 12:18:49] Cihaz şarjda...
-[2024-09-13 12:18:49]  Success Interfaces: ['eth1', 'wlan0', 'ppp0']
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:18:49.402Z')
-[2024-09-13 12:18:49] L26
-[2024-09-13 12:18:50] Cihaz şarjda...
-[2024-09-13 12:18:50] L26
-[2024-09-13 12:18:51] Cihaz şarjda...
-[2024-09-13 12:18:51] L26
-[2024-09-13 12:18:52] Cihaz şarjda...
-[2024-09-13 12:18:52] L26
-[2024-09-13 12:18:53] Cihaz şarjda...
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.charging: 'Charging'>, timestamp='2024-09-13T12:18:53Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-13 12:18:53] L26
-[2024-09-13 12:18:54] Cihaz şarjda...
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:18:54.421Z')
-[2024-09-13 12:18:54] L26
-[2024-09-13 12:18:55] Cihaz şarjda...
-[2024-09-13 12:18:55] L26
-[2024-09-13 12:18:56] Cihaz şarjda...
-[2024-09-13 12:18:56] L26
-[2024-09-13 12:18:57] Cihaz şarjda...
-[2024-09-13 12:18:57] L26
-[2024-09-13 12:18:58] Cihaz şarjda...
-[2024-09-13 12:18:58] L26
-[2024-09-13 12:18:59] Cihaz şarjda...
-^Z
-[1]+  Stopped                 python3 main.py
-root@HERA_CHARGE_BT_TEST:~/acApp# killall -9 python3
-root@HERA_CHARGE_BT_TEST:~/acApp#
-[1]+  Killed                  python3 main.py
-root@HERA_CHARGE_BT_TEST:~/acApp#
-root@HERA_CHARGE_BT_TEST:~/acApp# python3 main.py
-[2024-09-13 12:19:07]  ------------------------------------------------- Application Run Started ------------------------------------------------
-Can't get device info: No such device
-SPRD Bluetooth init uart with init speed:1500000, final_speed:1500000, type:HCI UART H4
-SPRD Bluetooth: Attempt to load conf from /vendor/etc/bt_configure_pskey.ini
-SPRD Bluetooth: device_class ->  0x001F00
-SPRD Bluetooth: feature_set ->  0xBF, 0xFF, 0x8D, 0xFE, 0xDB, 0x3D, 0x7B, 0x87, 0xFF, 0xA7, 0xFF, 0x7F, 0x00, 0xE0, 0xF7, 0x3E
-SPRD Bluetooth: device_addr ->  0x6D, 0x6D, 0x8E, 0x8E, 0x8F, 0x8F
-SPRD Bluetooth: comp_id ->  0x01EC
-SPRD Bluetooth: g_sys_uart0_communication_supported ->  1
-SPRD Bluetooth: cp2_log_mode ->  1
-SPRD Bluetooth: LogLevel ->  0xFF
-SPRD Bluetooth: g_central_or_perpheral ->  0
-SPRD Bluetooth: Log_BitMask ->  0xFFFF
-SPRD Bluetooth: super_ssp_enable ->  0
-SPRD Bluetooth: common_rfu_b3 ->  0
-SPRD Bluetooth: common_rfu_w ->  0x00000000, 0x00000000
-SPRD Bluetooth: le_rfu_w ->  0x00000000, 0x000000000
-SPRD Bluetooth: lmp_rfu_w ->  0x00000000, 0x000000000
-SPRD Bluetooth: lc_rfu_w ->  0x00000000, 0x000000000
-SPRD Bluetooth: g_wbs_nv_117 ->  0x004D
-SPRD Bluetooth: g_wbs_nv_118 ->  0x0166
-SPRD Bluetooth: g_nbv_nv_117 ->  0x004D
-SPRD Bluetooth: g_nbv_nv_118 ->  0x0166
-SPRD Bluetooth: g_sys_sco_transmit_mode ->  0
-SPRD Bluetooth: audio_rfu_b1 ->  0
-SPRD Bluetooth: audio_rfu_b2 ->  0
-SPRD Bluetooth: audio_rfu_b3 ->  0
-SPRD Bluetooth: audio_rfu_w ->  0x00000000, 0x00000000
-SPRD Bluetooth: g_sys_sleep_in_standby_supported ->  1
-SPRD Bluetooth: g_sys_sleep_master_supported ->  1
-SPRD Bluetooth: g_sys_sleep_slave_supported ->  1
-SPRD Bluetooth: power_rfu_b1 ->  0
-SPRD Bluetooth: power_rfu_w ->  0x00000000, 0x00000000
-SPRD Bluetooth: win_ext ->  40
-SPRD Bluetooth: edr_tx_edr_delay ->  6
-SPRD Bluetooth: edr_rx_edr_delay ->  8
-SPRD Bluetooth: tx_delay ->  12
-SPRD Bluetooth: rx_delay ->  34
-SPRD Bluetooth: bb_rfu_w ->  0x00000000, 0x00000000
-SPRD Bluetooth: agc_mode ->  0
-SPRD Bluetooth: diff_or_eq ->  0xFF
-SPRD Bluetooth: ramp_mode ->  0
-SPRD Bluetooth: modem_rfu_b1 ->  0
-SPRD Bluetooth: modem_rfu_w ->  0x00000000, 0x00000000
-SPRD Bluetooth: BQB_BitMask_1 ->  0x00000000
-SPRD Bluetooth: BQB_BitMask_2 ->  0x00000000
-SPRD Bluetooth: bt_coex_threshold ->  0x04E2, 0x1F40, 0x0020, 0x00C8, 0x0006, 0x0000, 0x0000, 0x0000
-SPRD Bluetooth: other_rfu_w ->  0x00000000, 0x00000000
-SPRD Bluetooth: Attempt to load conf from /vendor/etc/bt_configure_rf.ini
-SPRD Bluetooth: g_GainValue_A ->  0xE000, 0xE000, 0xE000, 0xE000, 0xE000, 0xE000
-SPRD Bluetooth: g_ClassicPowerValue_A ->  0x4115, 0x3A15, 0x3415, 0x2E15, 0x2715, 0x2115, 0x1715, 0x1115, 0x0B15, 0x0715
-SPRD Bluetooth: g_LEPowerValue_A ->  0x3B15, 0x3715, 0x3315, 0x2F15, 0x2B15, 0x2715, 0x2315, 0x1F15, 0x1B15, 0x1715, 0x1315, 0x0F15, 0x0B15, 0x0815, 0x0415, 0x0015
-SPRD Bluetooth: g_BRChannelpwrvalue_A ->  0x0615, 0x0615, 0x0615, 0x0615, 0x0615, 0x0615, 0x0615, 0x0615
-SPRD Bluetooth: g_EDRChannelpwrvalue_A ->  0x0615, 0x0615, 0x0615, 0x0715, 0x0715, 0x0715, 0x0715, 0x0715
-SPRD Bluetooth: g_LEChannelpwrvalue_A ->  0x1515, 0x1515, 0x1515, 0x1515, 0x1515, 0x1515, 0x1515, 0x1515
-SPRD Bluetooth: g_GainValue_B ->  0xE000, 0xE000, 0xE000, 0xE000, 0xE000, 0xE000
-SPRD Bluetooth: g_ClassicPowerValue_B ->  0x4915, 0x4315, 0x4115, 0x3915, 0x3115, 0x2A15, 0x2215, 0x1B15, 0x1415, 0x0E15
-SPRD Bluetooth: g_LEPowerValue_B ->  0x4B15, 0x4B15, 0x4B15, 0x4B15, 0x4B15, 0x4615, 0x4015, 0x3B15, 0x3615, 0x3015, 0x2B15, 0x2615, 0x2015, 0x1A15, 0x1415, 0x0E15
-SPRD Bluetooth: g_BRChannelpwrvalue_B ->  0x0815, 0x0915, 0x0C15, 0x0C15, 0x0C15, 0x0C15, 0x0C15, 0x0B15
-SPRD Bluetooth: g_EDRChannelpwrvalue_B -> 0x0A15, 0x0B15, 0x0D15, 0x0E15, 0x0E15, 0x0E15, 0x0E15, 0x0D15
-SPRD Bluetooth: g_LEChannelpwrvalue_B ->  0x0E15,0x0E15,0x1115,0x1115,0x1115,0x1115,0x1115,0x1015
-SPRD Bluetooth: LE_fix_powerword ->  0x00
-SPRD Bluetooth: Classic_pc_by_channel ->  0xFF
-SPRD Bluetooth: LE_pc_by_channel ->  0xFF
-SPRD Bluetooth: RF_switch_mode ->  0x02
-SPRD Bluetooth: Data_Capture_Mode ->  0x00
-SPRD Bluetooth: Analog_IQ_Debug_Mode ->  0x00
-SPRD Bluetooth: RF_common_rfu_b3 ->  0x55
-SPRD Bluetooth: RF_common_rfu_w ->  0x555F4334, 0x55555555, 0x55555555, 0x55555555, 0x55555555
-SPRD Bluetooth: set_mac_address
-SPRD Bluetooth: marlin3_pskey_preload
-SPRD Bluetooth: sprd_vnd_send_hci_vsc
-SPRD Bluetooth: a0 fc b0 00 1f 00 00 bf ff 8d fe db 3d 7b 87 ff
-SPRD Bluetooth: a7 ff 7f 00 e0 f7 3e 15 14 13 12 11 10 ec 01 01
-SPRD Bluetooth: 01 ff 00 ff ff 00 00 00 00 00 00 00 00 00 00 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 4d 00 66 01 4d 00 66 01 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 00 00 00 00 01 01 01 00 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 28 00 00 00 06 08 0c 22 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 00 ff 00 00 00 00 00 00 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 00 00 00 00 e2 04 40 1f 20
-SPRD Bluetooth: 00 c8 00 06 00 00 00 00 00 00 00 00 00 00 00 00
-SPRD Bluetooth: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-SPRD Bluetooth: 00 00 00
-SPRD Bluetooth: Received event, len: 7
-SPRD Bluetooth: 04 0e 04 05 a0 fc 01
-SPRD Bluetooth: Bluetooth Firmware Node: 2D2D Date: 2d2d-2d-2d
-SPRD Bluetooth: yujian.qin marlin3_rf_preload
-SPRD Bluetooth: sprd_vnd_send_hci_vsc
-SPRD Bluetooth: a2 fc fc 00 e0 00 e0 00 e0 00 e0 00 e0 00 e0 15
-SPRD Bluetooth: 41 15 3a 15 34 15 2e 15 27 15 21 15 17 15 11 15
-SPRD Bluetooth: 0b 15 07 15 3b 15 37 15 33 15 2f 15 2b 15 27 15
-SPRD Bluetooth: 23 15 1f 15 1b 15 17 15 13 15 0f 15 0b 15 08 15
-SPRD Bluetooth: 04 15 00 15 06 15 06 15 06 15 06 15 06 15 06 15
-SPRD Bluetooth: 06 15 06 15 06 15 06 15 06 15 07 15 07 15 07 15
-SPRD Bluetooth: 07 15 07 15 15 15 15 15 15 15 15 15 15 15 15 15
-SPRD Bluetooth: 15 15 15 00 e0 00 e0 00 e0 00 e0 00 e0 00 e0 15
-SPRD Bluetooth: 49 15 43 15 41 15 39 15 31 15 2a 15 22 15 1b 15
-SPRD Bluetooth: 14 15 0e 15 4b 15 4b 15 4b 15 4b 15 4b 15 46 15
-SPRD Bluetooth: 40 15 3b 15 36 15 30 15 2b 15 26 15 20 15 1a 15
-SPRD Bluetooth: 14 15 0e 15 08 15 09 15 0c 15 0c 15 0c 15 0c 15
-SPRD Bluetooth: 0c 15 0b 15 0a 15 0b 15 0d 15 0e 15 0e 15 0e 15
-SPRD Bluetooth: 0e 15 0d 15 0e 15 0e 15 11 15 11 15 11 15 11 15
-SPRD Bluetooth: 11 15 10 00 00 ff ff 02 00 00 55 34 43 5f 55 55
-SPRD Bluetooth: 55 55 55 55 55 55 55 55 55 55 55 55 55 55 55
-SPRD Bluetooth: Received event, len: 7
-SPRD Bluetooth: 04 0e 04 05 a2 fc 01
-SPRD Bluetooth: hw_rf_cback hw_rf_cback response: [0xFCA2, 0x0000, 0x01]
-SPRD Bluetooth: sprd_vnd_send_hci_vsc
-SPRD Bluetooth: a1 fc 03 00 00 01
-SPRD Bluetooth: Received event, len: 7
-SPRD Bluetooth: 04 0e 04 05 a1 fc 01
-SPRD Bluetooth: hw_core_cback hw_core_cback response: [0xFCA1, 0x0001, 0x00]
-SPRD Bluetooth post process
-SPRD Bluetooth: Done setting line discpline
-Device setup complete
-[2024-09-13 12:19:14] {'availability': 'Operative', 'maxcurrent': '6', 'midMeter': 'False', 'midMeterSlaveAddress': '1', 'externalMidMeter': 'False', 'externalMidMeterSlaveAddress': '2', 'model': 'faz0_mid0_4G1_S1', 'socketType': 'Type2', 'serialNumber': '123', 'masterCard': None}
-[2024-09-13 12:19:14]  get_configuration [('AllowOfflineTxForUnknownId', 'False', 'false', 'True'), ('AuthorizationCacheEnabled', 'False', 'false', 'True'), ('AuthorizeRemoteTxRequests', 'False', 'true', 'True'), ('BlinkRepeat', 'True', '1', 'True'), ('ClockAlignedDataInterval', 'True', '10', 'False'), ('ConnectionTimeOut', 'False', '30', 'True'), ('GetConfigurationMaxKeys', 'False', '43', 'True'), ('HeartbeatInterval', 'False', '5', 'True'), ('LightIntensity', 'True', '100', 'True'), ('LocalAuthorizeOffline', 'False', 'true', 'True'), ('LocalPreAuthorize', 'False', 'false', 'True'), ('MaxEnergyOnInvalidId', 'False', '0', 'True'), ('MeterValuesAlignedData', 'True', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature,Current.Import.L1, Current.Import.L2, Current.Import.L3, Voltage.L1, Voltage.L2,\xa0Voltage.L3', 'False'), ('MeterValuesAlignedDataMaxLength', 'True', '9', 'False'), ('MeterValuesSampledData', 'False', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature,Current.Import.L1, Current.Import.L2, Current.Import.L3,Voltage.L1,Voltage.L2,Voltage.L3', 'True'), ('MeterValuesSampledDataMaxLength', 'False', '9', 'True'), ('MeterValueSampleInterval', 'False', '30', 'True'), ('MinimumStatusDuration', 'True', '10', 'True'), ('NumberOfConnectors', 'True', '1', 'True'), ('ResetRetries', 'True', '0', 'False'), ('ConnectorPhaseRotation', 'True', 'RST,NotApplicable', 'True'), ('ConnectorPhaseRotationMaxLength', 'True', '2', 'False'), ('StopTransactionOnEVSideDisconnect', 'True', 'true', 'False'), ('StopTransactionOnInvalidId', 'True', 'true', 'False'), ('StopTxnAlignedData', 'True', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature', 'False'), ('StopTxnAlignedDataMaxLength', 'True', '5', 'False'), ('StopTxnSampledData', 'True', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature', 'False'), ('StopTxnSampledDataMaxLength', 'True', '5', 'False'), ('SupportedFeatureProfiles', 'True', 'Core,FirmwareManagement,LocalAuthListManagement,Reservation,SmartCharging,RemoteTrigger', 'True'), ('SupportedFeatureProfilesMaxLength', 'True', '6', 'True'), ('TransactionMessageAttempts', 'True', '3', 'False'), ('TransactionMessageRetryInterval', 'True', '5', 'False'), ('UnlockConnectorOnEVSideDisconnect', 'True', 'true', 'False'), ('WebSocketPingInterval', 'False', '20', 'True'), ('LocalAuthListEnabled', 'False', 'true', 'True'), ('LocalAuthListMaxLength', 'False', '0', 'True'), ('SendLocalListMaxLength', 'False', '0', 'True'), ('ReserveConnectorZeroSupported', 'True', 'false', 'False'), ('ChargeProfileMaxStackLevel', 'True', '3', 'False'), ('ChargingScheduleAllowedChargingRateUnit', 'True', 'w', 'False'), ('ChargingScheduleMaxPeriods', 'True', '24', 'False'), ('ConnectorSwitch3to1PhaseSupported', 'True', 'false', 'False'), ('MaxChargingProfilesInstalled', 'True', '50', 'False')]
-[2024-09-13 12:19:14] Diagnostics status has been reset.
-[2024-09-13 12:19:14] Firmware status has been reset to Idle.
-[2024-09-13 12:19:14]  get_configuration [('AllowOfflineTxForUnknownId', 'False', 'false', 'True'), ('AuthorizationCacheEnabled', 'False', 'false', 'True'), ('AuthorizeRemoteTxRequests', 'False', 'true', 'True'), ('BlinkRepeat', 'True', '1', 'True'), ('ClockAlignedDataInterval', 'True', '10', 'False'), ('ConnectionTimeOut', 'False', '30', 'True'), ('GetConfigurationMaxKeys', 'False', '43', 'True'), ('HeartbeatInterval', 'False', '5', 'True'), ('LightIntensity', 'True', '100', 'True'), ('LocalAuthorizeOffline', 'False', 'true', 'True'), ('LocalPreAuthorize', 'False', 'false', 'True'), ('MaxEnergyOnInvalidId', 'False', '0', 'True'), ('MeterValuesAlignedData', 'True', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature,Current.Import.L1, Current.Import.L2, Current.Import.L3, Voltage.L1, Voltage.L2,\xa0Voltage.L3', 'False'), ('MeterValuesAlignedDataMaxLength', 'True', '9', 'False'), ('MeterValuesSampledData', 'False', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature,Current.Import.L1, Current.Import.L2, Current.Import.L3,Voltage.L1,Voltage.L2,Voltage.L3', 'True'), ('MeterValuesSampledDataMaxLength', 'False', '9', 'True'), ('MeterValueSampleInterval', 'False', '30', 'True'), ('MinimumStatusDuration', 'True', '10', 'True'), ('NumberOfConnectors', 'True', '1', 'True'), ('ResetRetries', 'True', '0', 'False'), ('ConnectorPhaseRotation', 'True', 'RST,NotApplicable', 'True'), ('ConnectorPhaseRotationMaxLength', 'True', '2', 'False'), ('StopTransactionOnEVSideDisconnect', 'True', 'true', 'False'), ('StopTransactionOnInvalidId', 'True', 'true', 'False'), ('StopTxnAlignedData', 'True', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature', 'False'), ('StopTxnAlignedDataMaxLength', 'True', '5', 'False'), ('StopTxnSampledData', 'True', 'Energy.Active.Import.Register,Voltage,Current.Import,Power.Active.Import,Temperature', 'False'), ('StopTxnSampledDataMaxLength', 'True', '5', 'False'), ('SupportedFeatureProfiles', 'True', 'Core,FirmwareManagement,LocalAuthListManagement,Reservation,SmartCharging,RemoteTrigger', 'True'), ('SupportedFeatureProfilesMaxLength', 'True', '6', 'True'), ('TransactionMessageAttempts', 'True', '3', 'False'), ('TransactionMessageRetryInterval', 'True', '5', 'False'), ('UnlockConnectorOnEVSideDisconnect', 'True', 'true', 'False'), ('WebSocketPingInterval', 'False', '20', 'True'), ('LocalAuthListEnabled', 'False', 'true', 'True'), ('LocalAuthListMaxLength', 'False', '0', 'True'), ('SendLocalListMaxLength', 'False', '0', 'True'), ('ReserveConnectorZeroSupported', 'True', 'false', 'False'), ('ChargeProfileMaxStackLevel', 'True', '3', 'False'), ('ChargingScheduleAllowedChargingRateUnit', 'True', 'w', 'False'), ('ChargingScheduleMaxPeriods', 'True', '24', 'False'), ('ConnectorSwitch3to1PhaseSupported', 'True', 'false', 'False'), ('MaxChargingProfilesInstalled', 'True', '50', 'False')]
-[2024-09-13 12:19:14] max_keys: 43
-[2024-09-13 12:19:14] Set eth
-[2024-09-13 12:19:14] Agent registered successfully
-[2024-09-13 12:19:14] Registering GATT application...
-[2024-09-13 12:19:15] Advertisement registered
-[2024-09-13 12:19:15] GATT application registered
-[2024-09-13 12:19:15] FlaskModuleThread çalıştırıldı.
- * Serving Flask app 'src.flaskModule' (lazy loading)
+* Serving Flask app 'src.flaskModule' (lazy loading)
  * Environment: production
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
  * Debug mode: off
-[2024-09-13 12:19:15] db_tansactionid 22
-[2024-09-13 12:19:15] ********************************** self.initially_charge True self.transaction_id 22 self.id_tag M240912143548505
+[2024-09-13 12:46:11] db_tansactionid 24
+[2024-09-13 12:46:11] ********************************** self.initially_charge True self.transaction_id 24 self.id_tag M240912143548505
 WARNING:werkzeug: * Running on all addresses.
    WARNING: This is a development server. Do not use it in a production deployment.
 INFO:werkzeug: * Running on http://192.168.1.103:80/ (Press CTRL+C to quit)
-[2024-09-13 12:19:16] file size: 0
-[2024-09-13 12:19:16]  Device State: DeviceState.IDLE
-[2024-09-13 12:19:16]  pwm 0 setleniyor...
-[2024-09-13 12:19:16]  Pid CP PWM : 0
-[2024-09-13 12:19:16]  Charge Point Status: ChargePointStatus.available
-[2024-09-13 12:19:16]  Ocpp URL: ws://testevcsocpp.torasarj.net/ocpp/16/TORAHERA
-[2024-09-13 12:19:16] Using SSL without certificate
-[2024-09-13 12:19:16] ocppStart Exception: [Errno -3] Temporary failure in name resolution
-[2024-09-13 12:19:17]  Led State: LedState.StandBy
-[2024-09-13 12:19:17] L23
-[2024-09-13 12:19:18] L23
-[2024-09-13 12:19:18]  pwm 0 setleniyor...
-[2024-09-13 12:19:18]  Pid CP PWM : 0
-[2024-09-13 12:19:19] L23
-[2024-09-13 12:19:20] L23
-[2024-09-13 12:19:20]  Control Pilot B
-[2024-09-13 12:19:20]  Device State: DeviceState.CONNECTED
-[2024-09-13 12:19:20]  pwm 0 setleniyor...
-[2024-09-13 12:19:20]  Pid CP PWM : 0
-[2024-09-13 12:19:21]  Proximity Pilot Current: 32
-[2024-09-13 12:19:21] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
-[2024-09-13 12:19:21] self.application.ev.pid_cp_pwm 0.0
-[2024-09-13 12:19:21]  Error Code: ChargePointErrorCode.no_error
-[2024-09-13 12:19:21]  Charge Point Status: ChargePointStatus.preparing
-[2024-09-13 12:19:21] Error info: None
-[2024-09-13 12:19:21]  pwm 0 setlendi
-[2024-09-13 12:19:21]  relay komut verildi: Relay.Off
-[2024-09-13 12:19:21]  Röle: Relay.Off
-[2024-09-13 12:19:21] Exception in thread Thread-22:
+[2024-09-13 12:46:12] file size: 0
+[2024-09-13 12:46:12]  Device State: DeviceState.IDLE
+[2024-09-13 12:46:12]  pwm 0 setleniyor...
+[2024-09-13 12:46:12]  Pid CP PWM : 0
+[2024-09-13 12:46:12]  Charge Point Status: ChargePointStatus.available
+[2024-09-13 12:46:12]  Ocpp URL: ws://testevcsocpp.torasarj.net/ocpp/16/TORAHERA
+[2024-09-13 12:46:12] Using SSL without certificate
+[2024-09-13 12:46:12] ocppStart Exception: [Errno -3] Temporary failure in name resolution
+[2024-09-13 12:46:13]  Led State: LedState.StandBy
+[2024-09-13 12:46:13] L23
+[2024-09-13 12:46:14] L23
+[2024-09-13 12:46:14]  pwm 0 setleniyor...
+[2024-09-13 12:46:14]  Pid CP PWM : 0
+[2024-09-13 12:46:15] L23
+[2024-09-13 12:46:16] L23
+[2024-09-13 12:46:16]  pwm 0 setleniyor...
+[2024-09-13 12:46:16]  Pid CP PWM : 0
+[2024-09-13 12:46:16]  Control Pilot B
+[2024-09-13 12:46:16]  Device State: DeviceState.CONNECTED
+[2024-09-13 12:46:17] set response: ['\x02', 's', 'G', '0', '0', '5', '1', '0', '0', '0', '0', '0', '6', '6', '\n']
+[2024-09-13 12:46:17]  Proximity Pilot Current: 32
+[2024-09-13 12:46:17] self.application.ev.pid_cp_pwm 0.0
+[2024-09-13 12:46:17]  pwm 0 setlendi
+[2024-09-13 12:46:17]  relay komut verildi: Relay.Off
+[2024-09-13 12:46:17]  Röle: Relay.Off
+[2024-09-13 12:46:17]  Error Code: ChargePointErrorCode.no_error
+[2024-09-13 12:46:17]  Charge Point Status: ChargePointStatus.preparing
+[2024-09-13 12:46:17] Error info: None
+[2024-09-13 12:46:17] Exception in thread Thread-22:
 Traceback (most recent call last):
   File "/usr/lib/python3.6/threading.py", line 916, in _bootstrap_inner
     self.run()
@@ -275,97 +46,53 @@ Traceback (most recent call last):
     if self.application.chargePoint.authorize == AuthorizationStatus.accepted:
 AttributeError: 'NoneType' object has no attribute 'authorize'
 
-[2024-09-13 12:19:22]  *********************** get response relay Relay.Off
-[2024-09-13 12:19:22]  Led State: LedState.Connecting
-[2024-09-13 12:19:22] L24
-[2024-09-13 12:19:22]  relay okundu: Relay.Off
-[2024-09-13 12:19:22]  Röle başarılı Off
-[2024-09-13 12:19:22] Kilit açılıyor...
-[2024-09-13 12:19:22]  MCU'ya gönderilen komut: LockerState.Lock
-[2024-09-13 12:19:23]  MCU'ya gönderilen komut: LockerState.Unlock
-[2024-09-13 12:19:23] L24
-[2024-09-13 12:19:23]  MCU gelen response: LockerState.Unlock
-[2024-09-13 12:19:24] L24
-[2024-09-13 12:19:24]  Kilit açıldı.
-[2024-09-13 12:19:24]  Stop transaction gönderiliyor...
-[2024-09-13 12:19:24]  clean_charge_variables Exception: 'NoneType' object has no attribute 'send_stop_transaction'
-[2024-09-13 12:19:24]  Charge Point Status: ChargePointStatus.available
-[2024-09-13 12:19:24] Error info: None
-[2024-09-13 12:19:25] find_network Exception: list index out of range
-[2024-09-13 12:19:25]  Success Interfaces: ['eth1']
+[2024-09-13 12:46:18]  *********************** get response relay Relay.Off
+[2024-09-13 12:46:18]  Led State: LedState.Connecting
+[2024-09-13 12:46:18] L24
+[2024-09-13 12:46:18]  relay okundu: Relay.Off
+[2024-09-13 12:46:18]  Röle başarılı Off
+[2024-09-13 12:46:18] Kilit açılıyor...
+[2024-09-13 12:46:18]  MCU'ya gönderilen komut: LockerState.Lock
+[2024-09-13 12:46:19]  MCU'ya gönderilen komut: LockerState.Unlock
+[2024-09-13 12:46:19] L24
+[2024-09-13 12:46:20]  MCU gelen response: LockerState.Unlock
+[2024-09-13 12:46:20] L24
+[2024-09-13 12:46:20]  Kilit açıldı.
+[2024-09-13 12:46:20]  Charge Point Status: ChargePointStatus.available
+[2024-09-13 12:46:20] Error info: None
+[2024-09-13 12:46:21] find_network Exception: list index out of range
+[2024-09-13 12:46:21]  Success Interfaces: ['eth1']
 Interface 'ppp0' not existent.
-[2024-09-13 12:19:26]  Ocpp URL: ws://testevcsocpp.torasarj.net/ocpp/16/TORAHERA
-[2024-09-13 12:19:26] Using SSL without certificate
-[2024-09-13 12:19:26] Ocpp'ye bağlanmaya çalışıyor...
+[2024-09-13 12:46:22]  Ocpp URL: ws://testevcsocpp.torasarj.net/ocpp/16/TORAHERA
+[2024-09-13 12:46:22] Using SSL without certificate
+[2024-09-13 12:46:23] Ocpp'ye bağlanmaya çalışıyor...
 INFO:charge_point:Request:BootNotificationPayload(charge_point_model='TORAHERA', charge_point_vendor='TORAHERA', charge_box_serial_number=None, charge_point_serial_number=None, firmware_version=None, iccid=None, imsi=None, meter_serial_number=None, meter_type=None)
 Error: device 'ttyUSB2' not compatible with connection 'ppp0'.
-[2024-09-13 12:19:27] set_4G Exception: Command 'nmcli connection up ppp0 ifname ttyUSB2' returned non-zero exit status 4.
-INFO:central_system:Response:BootNotificationPayload(current_time='2024-09-13T12:19:26.994Z', interval=120, status='Accepted')
-[2024-09-13 12:19:27] Connected to central system.
-[2024-09-13 12:19:27] --------------- self.initilly True
-[2024-09-13 12:19:27] Daha önce başlamış bir şarj vardı. Durduruluyor...
-[2024-09-13 12:19:27]  Stop transaction gönderiliyor...
-[2024-09-13 12:19:27]  Success Interfaces: ['eth1', 'wlan0']
-NETLINK: Error: File exists
-Interface 'ppp0' not existent.
-[2024-09-13 12:19:30]  **************** şarj geçmişi siliniyor ...
-Interface 'ppp0' not existent.
-[2024-09-13 12:19:30] ---------------------- self.application.initilly = False
-[2024-09-13 12:19:30]
+[2024-09-13 12:46:23] set_4G Exception: Command 'nmcli connection up ppp0 ifname ttyUSB2' returned non-zero exit status 4.
+INFO:central_system:Response:BootNotificationPayload(current_time='2024-09-13T12:46:23.275Z', interval=120, status='Accepted')
+[2024-09-13 12:46:23] Connected to central system.
+[2024-09-13 12:46:23] --------------- self.initilly True
+[2024-09-13 12:46:23] Daha önce başlamış bir şarj vardı. Durduruluyor...
+[2024-09-13 12:46:23] ---------------------- self.application.initilly = False
+[2024-09-13 12:46:23]
 
 --------------------------------------------------run_coroutine_threadsafe finish ---------------------------
 
 INFO:charge_point:Request:HeartbeatPayload()
-[2024-09-13 12:19:30] send_stop_transaction
-[2024-09-13 12:19:30] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Temperature']
-[2024-09-13 12:19:30] max_length: 5
-INFO:charge_point:Request:StopTransactionPayload(meter_stop=85010, timestamp='2024-09-13T12:19:30Z', transaction_id=None, reason=None, id_tag=None, transaction_data=[{'timestamp': '2024-09-13T12:19:30Z', 'sampledValue': [{'value': '85.01', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': 'None', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.temperature: 'Temperature'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.celsius: 'Celsius'>}]}])
-[2024-09-13 12:19:30] send_stop_transaction Exception: ProtocolError: Payload for Action is incomplete, {'cause': "'transactionId' is a required property"}
-[2024-09-13 12:19:30] send_stop_transaction
-[2024-09-13 12:19:30] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Temperature']
-[2024-09-13 12:19:30] max_length: 5
-INFO:charge_point:Request:StopTransactionPayload(meter_stop=85010, timestamp='2024-09-13T12:19:30Z', transaction_id=None, reason=None, id_tag=None, transaction_data=[{'timestamp': '2024-09-13T12:19:30Z', 'sampledValue': [{'value': '85.01', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': 'None', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.temperature: 'Temperature'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.celsius: 'Celsius'>}]}])
-[2024-09-13 12:19:30] send_stop_transaction Exception: ProtocolError: Payload for Action is incomplete, {'cause': "'transactionId' is a required property"}
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:19:30.472Z')
+[2024-09-13 12:46:23] send_stop_transaction
+[2024-09-13 12:46:23] measurands: ['Energy.Active.Import.Register', 'Voltage', 'Current.Import', 'Power.Active.Import', 'Temperature']
+[2024-09-13 12:46:23] max_length: 5
+INFO:charge_point:Request:StopTransactionPayload(meter_stop=85150, timestamp='2024-09-13T12:46:23Z', transaction_id=24, reason=None, id_tag='M240912143548505', transaction_data=[{'timestamp': '2024-09-13T12:46:23Z', 'sampledValue': [{'value': '85.15', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.energy_active_import_register: 'Energy.Active.Import.Register'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kwh: 'kWh'>}, {'value': '0', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.power_active_import: 'Power.Active.Import'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.kw: 'kW'>}, {'value': 'None', 'context': <ReadingContext.sample_periodic: 'Sample.Periodic'>, 'format': <ValueFormat.raw: 'Raw'>, 'measurand': <Measurand.temperature: 'Temperature'>, 'phase': None, 'location': <Location.cable: 'Cable'>, 'unit': <UnitOfMeasure.celsius: 'Celsius'>}]}])
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:46:23.578Z')
+[2024-09-13 12:46:24]  Success Interfaces: ['eth1', 'wlan0']
+INFO:central_system:Response:StopTransactionPayload(id_tag_info={'expiry_date': '2026-09-12T14:35:49.000Z', 'parent_id_tag': 'M240912143548505', 'status': 'Accepted'})
 Interface 'ppp0' not existent.
-Interface 'ppp0' not existent.
-[2024-09-13 12:19:35] Led güncelleme ->  LedState.Connecting
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:19:35.889Z')
-Interface 'ppp0' not existent.
-Interface 'ppp0' not existent.
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T12:19:40Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:19:40.958Z')
 Interface 'ppp0' not existent.
 Interface 'ppp0' not existent.
 INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:19:46.029Z')
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:46:28.984Z')
 Interface 'ppp0' not existent.
-Interface 'ppp0' not existent.
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T12:19:50Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:19:51.089Z')
-Interface 'ppp0' not existent.
-Interface 'ppp0' not existent.
-[2024-09-13 12:19:55] Led güncelleme ->  LedState.Connecting
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:19:56.176Z')
-Interface 'ppp0' not existent.
-Interface 'ppp0' not existent.
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T12:20:00Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:20:01.229Z')
-Interface 'ppp0' not existent.
+[2024-09-13 12:46:31] Led güncelleme ->  LedState.Connecting
 Interface 'ppp0' not existent.
 INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:20:06.284Z')
-Interface 'ppp0' not existent.
-INFO:charge_point:Request:StatusNotificationPayload(connector_id=1, error_code=<ChargePointErrorCode.no_error: 'NoError'>, status=<ChargePointStatus.available: 'Available'>, timestamp='2024-09-13T12:20:10Z', info=None, vendor_id=None, vendor_error_code=None)
-INFO:central_system:Response:StatusNotificationPayload()
-[2024-09-13 12:20:11]  Success Interfaces: ['eth1', 'wlan0', 'ppp0']
-INFO:charge_point:Request:HeartbeatPayload()
-INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:20:11.373Z')
+INFO:central_system:Response:HeartbeatPayload(current_time='2024-09-13T12:46:34.080Z')

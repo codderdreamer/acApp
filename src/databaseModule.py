@@ -1577,10 +1577,8 @@ class DatabaseModule():
 
             # Sonuç kontrolü
             if result:
-                print(f"'first_energy' key retrieved: {result[0]}")
                 return result[0]
             else:
-                print("'first_energy' value not found.")
                 return None
 
         except sqlite3.Error as e:
@@ -1607,7 +1605,6 @@ class DatabaseModule():
             # Mevcut 'first_energy' kaydını güncelle
             update_query = "UPDATE ev SET key = ? WHERE value = 'first_energy'"
             cursor.execute(update_query, (key_value,))
-            print(f"'first_energy' value has been updated with key: {key_value}.")
         
             # Değişiklikleri kaydet ve bağlantıyı kapat
             conn.commit()

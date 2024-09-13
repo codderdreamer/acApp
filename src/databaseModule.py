@@ -1010,6 +1010,7 @@ class DatabaseModule():
                     return "Rejected"
                 else:
                     self.set_configuration(key,value)
+                    self.application.settings.configuration.load_configuration_from_db()
                     return "Accepted"
             else:
                 return "NotSupported"

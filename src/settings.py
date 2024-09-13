@@ -598,10 +598,8 @@ class Configuration():
         try:
             config_data = self.application.databaseModule.get_configuration()
             max_keys = int(self.GetConfigurationMaxKeys)
-            print("max_keys:", max_keys)
             for index, config in enumerate(config_data):
                 if index >= max_keys:
-                    print("Configuration keys limit exceeded.")
                     break
                 setattr(self, config['key'], config['value'])
         except Exception as e:

@@ -217,7 +217,7 @@ class SoftwareSettings():
             enableModification = self.application.settings.settings4G.enableModification
 
             self.delete_connection_type(connection_name)
-
+            time.sleep(3)
             subprocess.run("gpio-test.64 w d 20 0 > /dev/null 2>&1", shell=True, check=True)
             time.sleep(5)
 
@@ -235,7 +235,7 @@ class SoftwareSettings():
                     add_connection_string += f"gsm.pin {pin} "
                 add_connection_string += "> /dev/null 2>&1"
                 subprocess.run(add_connection_string, shell=True, check=True)
-                time.sleep(5)
+                time.sleep(15)
                 subprocess.run(f"nmcli connection up {connection_name} ifname ttyUSB2", shell=True, check=True)
         except Exception as e:
             print("set_4G Exception:", e)

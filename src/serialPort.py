@@ -70,16 +70,15 @@ class SerialPort():
 
     def serial_port_thread(self):
         while True:
-            print("here")
             try:
+                self.get_command_PID_control_pilot()
+                self.get_command_pid_error_list()
                 if time.time() - self.time_20 > 20:
                     if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
                         self.time_20 = time.time()
                         print("Led güncelleme -> ",self.application.deviceStateModule.led_state)
                         self.set_command_pid_led_control(self.application.deviceStateModule.led_state)
                     self.get_command_pid_evse_temp()
-                self.get_command_PID_control_pilot()
-                self.get_command_pid_error_list()
                 if time.time() - self.time_10 > 10:
                     self.time_10 = time.time()
                     self.get_command_pid_energy(EnergyType.kwh)
@@ -596,6 +595,7 @@ class SerialPort():
                 try:
                     incoming = self.serial.readline()
                     incoming = incoming.decode('utf-8')
+                    print(incoming)
                 except:
                     pass
                 finish_time = time.time()

@@ -16,6 +16,9 @@ class DeviceStateModule():
         self.__pid_cp_pwm = None                                        # MCU'dan okunan değer
         self.__relay : Relay = None                                     # MCU'dan okunan değer
         self.__led_control : LedState = None                            # MCU'dan okunan değer
+        self.__locker_control : LedState = None                         # MCU'dan okunan değer
+        self.__temperature : str = None
+   
 
     @property
     def cardType(self):
@@ -107,9 +110,25 @@ class DeviceStateModule():
             print(Color.Yellow.value, "MCU Readed Led Control:", value)
             self.__led_control = value
             
+    @property
+    def locker_control(self):
+        return self.__locker_control
 
+    @locker_control.setter
+    def locker_control(self, value):
+        if self.__locker_control != value:
+            print(Color.Yellow.value, "MCU Readed Locker Control:", value)
+            self.__locker_control = value
 
+    @property
+    def temperature(self):
+        return self.__temperature
 
+    @temperature.setter
+    def temperature(self, value):
+        if self.__temperature != value:
+            print(Color.Yellow.value, "MCU Readed Temperature:", value)
+            self.__temperature = value
 
 
 

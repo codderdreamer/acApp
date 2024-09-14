@@ -541,9 +541,9 @@ class SerialPort():
         try:
             if data[2] == self.pid_locker_control:
                 if data[7] == LockerState.Unlock.value:
-                    self.application.ev.pid_locker_control = LockerState.Unlock
+                    self.application.deviceStateModule.locker_control = LockerState.Unlock
                 elif data[7] == LockerState.Lock.value:
-                    self.application.ev.pid_locker_control = LockerState.Lock
+                    self.application.deviceStateModule.locker_control = LockerState.Lock
         except Exception as e:
             print("get_response_pid_locker_control Exception:",e)
 
@@ -619,7 +619,7 @@ class SerialPort():
             if data[2] == self.pid_evse_temp:
                 temp_sign = data[8]
                 temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
-                self.application.ev.temperature = temp_sign + str(temp)
+                self.application.deviceStateModule.temperature = temp_sign + str(temp)
         except Exception as e:
             print("get_response_pid_rfid Exception:",e)
 

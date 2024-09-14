@@ -82,18 +82,7 @@ class SerialPort():
                 self.get_command_pid_relay_control()
                 self.get_command_pid_led_control()
                 self.get_command_pid_locker_control()
-                # self.get_command_pid_rfid()
                 self.get_command_pid_evse_temp()
-                # if time.time() - self.time_20 > 20:
-                #     if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
-                #         self.time_20 = time.time()
-                #         print("Led güncelleme -> ",self.application.deviceStateModule.led_state)
-                #         self.set_command_pid_led_control(self.application.deviceStateModule.led_state)
-                #     self.get_command_pid_evse_temp()
-                # if time.time() - self.time_10 > 10:
-                #     self.time_10 = time.time()
-                #     self.get_command_pid_energy(EnergyType.kwh)
-                #     self.get_command_pid_proximity_pilot()
             except Exception as e:
                 print("serial_port_thread Exception:",e)
             time.sleep(1)
@@ -107,7 +96,7 @@ class SerialPort():
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("write Exception:",e)
-            time.sleep(0.1)
+            time.sleep(0.05)
 
     def calculate_checksum(self,data):
         try:

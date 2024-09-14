@@ -74,7 +74,7 @@ class Application():
         Thread(target=self.softwareSettings.control_device_status, daemon=True).start()
         Thread(target=self.softwareSettings.check_internet_connection, daemon=True).start()
         self.flaskModule.start()
-        print("*************")
+        Thread(target=self.webSocketServer.websocketServer.run_forever, daemon=True).start()
 
     
         # self.charge_stopped = False

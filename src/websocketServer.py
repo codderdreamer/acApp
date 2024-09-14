@@ -13,7 +13,6 @@ class WebSocketServer():
         self.websocketServer.set_fn_new_client(self.NewClientws)
         self.websocketServer.set_fn_client_left(self.ClientLeftws)
         self.websocketServer.set_fn_message_received(self.MessageReceivedws)
-        # threading.Thread(target=self.websocketServer.run_forever, daemon=True).start()
         
     def NewClientws(self, client, server):
         if client:

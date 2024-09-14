@@ -91,6 +91,7 @@ class SerialPort():
     def write(self):
         while True:
             try:
+                print("len(self.send_data_list)",len(self.send_data_list))
                 if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
                     self.send_data_list.pop(0)

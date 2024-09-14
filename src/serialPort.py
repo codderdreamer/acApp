@@ -595,6 +595,7 @@ class SerialPort():
                 incoming = incoming.decode('utf-8')
                 print(incoming)
                 if len(incoming) > 0:
+                    print(len(incoming))
                     self.connection_time = time.time()
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:

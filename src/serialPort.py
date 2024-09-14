@@ -73,6 +73,10 @@ class SerialPort():
             try:
                 self.get_command_PID_control_pilot()
                 self.get_command_pid_error_list()
+                self.get_command_pid_current()
+                self.get_command_pid_voltage()
+                self.get_command_pid_power(PowerType.kw)
+                self.get_command_pid_energy(EnergyType.kwh)
                 if time.time() - self.time_20 > 20:
                     if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
                         self.time_20 = time.time()

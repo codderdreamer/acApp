@@ -593,6 +593,7 @@ class SerialPort():
             try:
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
+                print(incoming)
                 if len(incoming) > 0:
                     self.connection_time = time.time()
                     incoming = list(incoming)

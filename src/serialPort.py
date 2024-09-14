@@ -15,7 +15,6 @@ class SerialPort():
         self.send_data_list = []
         self.error = False
         self.error_list = []
-        self.connection_time = time.time()
 
         self.time_20 = time.time()
         self.time_10 = time.time()
@@ -58,6 +57,8 @@ class SerialPort():
         self.delete_time_rfid = time.time()
         self.led_state = LedState.StandBy
 
+        connection = False
+
     def seri_port_reset(self):
         try:
             os.system("gpio-test.64 w e 10 1 > /dev/null 2>&1")
@@ -69,6 +70,7 @@ class SerialPort():
 
     def serial_port_thread(self):
         while True:
+            print("here")
             try:
                 if time.time() - self.time_20 > 20:
                     if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:
@@ -588,17 +590,20 @@ class SerialPort():
             print("get_response_pid_error_list Exception:",e)
 
     def read(self):
-        self.connection_time = time.time()
         while True:
             try:
-                print("start",time.time())
-                incoming = self.serial.readline()
-                incoming = incoming.decode('utf-8')
-                print("finish",time.time())
-                print("incoming",incoming)
-                if len(incoming) > 0:
-                    print(len(incoming))
-                    self.connection_time = time.time()
+                start_time = time.time()
+                try:
+                    incoming = self.serial.readline()
+                    incoming = incoming.decode('utf-8')
+                except:
+                    pass
+                finish_time = time.time()
+                if finish_time - start_time > 3:
+                    connection = False
+                else:
+                    connection = True
+                if len(incoming) > 1:
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

@@ -196,132 +196,174 @@ class SerialPort():
         Röleyi kontrol etmek için (‘1’ veya ‘0’) paket gönderilir.
         A durumunda gönderilmez. B yada C durumunda olmalı
         '''
-        print(Color.Yellow.value,"Röle:",relay)
-        self.parameter_data = "002"
-        data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            print(Color.Yellow.value,"Röle:",relay)
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_relay_control Exception:",e)
 
     def get_command_pid_relay_control(self):
         '''
         Rölenin 1 yada 0 olduğunu döner.
         '''
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_relay_control + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
-
-    def set_command_pid_led_control(self, led_state: LedState):
-        self.parameter_data = "002"
-        data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
-        if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
-            time.sleep(2)
-        else:
-            self.led_state = led_state
-
-        if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
-            self.parameter_data = "002"
-            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
+        try:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_relay_control + self.parameter_data + self.connector_id
             checksum = self.calculate_checksum(data)
             send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
             self.send_data_list.append(send_data)
-            self.application.deviceStateModule.led_state = self.led_state
+        except Exception as e:
+            print("get_command_pid_relay_control Exception:",e)
+
+    def set_command_pid_led_control(self, led_state: LedState):
+        try:
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+            if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
+                time.sleep(2)
+            else:
+                self.led_state = led_state
+
+            if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
+                self.parameter_data = "002"
+                data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
+                checksum = self.calculate_checksum(data)
+                send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+                self.send_data_list.append(send_data)
+                self.application.deviceStateModule.led_state = self.led_state
+        except Exception as e:
+            print("set_command_pid_led_control Exception:",e)
         
 
     def get_command_pid_led_control(self):
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_led_control + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_led_control + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_led_control Exception:",e)
 
     def set_command_pid_locker_control(self,locker_state:LockerState):
         '''
         Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
         '''
-        print(Color.Green.value,"MCU'ya gönderilen komut:",locker_state)
-        self.parameter_data = "002"
-        data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            print(Color.Green.value,"MCU'ya gönderilen komut:",locker_state)
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_locker_control Exception:",e)
 
     def get_command_pid_locker_control(self): 
         '''
         Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
         '''
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_locker_control + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_locker_control Exception:",e)
 
     def get_command_pid_current(self):
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_current + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_current + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_current Exception:",e)
         
     def get_command_pid_voltage(self):
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_voltage + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_voltage + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_voltage Exception:",e)
 
     def get_command_pid_power(self, power_type: PowerType):
-        self.parameter_data = "002"
-        data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "002"
+            data = self.get_command + self.pid_power + self.parameter_data + self.connector_id + power_type.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_power Exception:",e)
 
     def get_command_pid_energy(self, energy_type: EnergyType):
-        self.parameter_data = "002"
-        data = self.get_command + self.pid_energy + self.parameter_data + self.connector_id + energy_type.value
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "002"
+            data = self.get_command + self.pid_energy + self.parameter_data + self.connector_id + energy_type.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_energy Exception:",e)
 
     def set_command_pid_rfid(self):
         '''
         Yeni bir okuma işleminden önce Linux tarafından MCU Board’a bir kez SET komutu gönderilerek, hafızasındaki UniqID ‘nin silinmesi talep edilir
         '''
-        self.parameter_data = "002"
-        data = self.set_command + self.pid_rfid + self.parameter_data + self.connector_id + "R"
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_rfid + self.parameter_data + self.connector_id + "R"
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_rfid Exception:",e)
 
     def get_command_pid_rfid(self):
         time.sleep(10)
         while True:
-            self.parameter_data = "001"
-            data = self.get_command + self.pid_rfid + self.parameter_data + self.connector_id
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
+            try:
+                self.parameter_data = "001"
+                data = self.get_command + self.pid_rfid + self.parameter_data + self.connector_id
+                checksum = self.calculate_checksum(data)
+                send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+                self.send_data_list.append(send_data)
+            except Exception as e:
+                print("get_command_pid_rfid Exception:",e)
             time.sleep(0.5)
 
     def get_command_pid_evse_temp(self):
-        self.parameter_data = "002"
-        data = self.get_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "R"
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "002"
+            data = self.get_command + self.pid_evse_temp + self.parameter_data + self.connector_id + "R"
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_evse_temp Exception:",e)
             
     def get_command_pid_error_list(self):
-        self.parameter_data = "001"
-        data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
-        checksum = self.calculate_checksum(data)
-        send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-        self.send_data_list.append(send_data)
+        try:
+            self.parameter_data = "001"
+            data = self.get_command + self.pid_error_list + self.parameter_data + self.connector_id
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_error_list Exception:",e)
         
 
     #   ************************ RESPONSE  *****************************************************
@@ -335,161 +377,215 @@ class SerialPort():
         State E : Error
         State F : Unknown error
         '''
-        if data[2] == self.pid_control_pilot:
-            self.application.ev.control_pilot = data[7]
+        try:
+            if data[2] == self.pid_control_pilot:
+                self.application.ev.control_pilot = data[7]
+        except Exception as e:
+            print("get_response_control_pilot Exception:",e)
 
 
     def get_response_pid_proximity_pilot(self, data):
-        if data[2] == self.pid_proximity_pilot:
-            self.application.ev.proximity_pilot = data[7]
+        try:
+            if data[2] == self.pid_proximity_pilot:
+                self.application.ev.proximity_pilot = data[7]
+        except Exception as e:
+            print("get_response_pid_proximity_pilot Exception:",e)
             
     def set_response_pid_cp_pwm(self, data):
-        if data[2] == self.pid_cp_pwm_control:
-            print("set response:", data)
-            digit_100 = int(data[7]) * 100
-            digit_10 = int(data[8]) * 10
-            digit_1 = int(data[9])
-            digit_01 = int(data[10]) / 10
-            original_number = digit_100 + digit_10 + digit_1 + digit_01
-            pid_cp_pwm = original_number
+        try:
+            if data[2] == self.pid_cp_pwm_control:
+                print("set response:", data)
+                digit_100 = int(data[7]) * 100
+                digit_10 = int(data[8]) * 10
+                digit_1 = int(data[9])
+                digit_01 = int(data[10]) / 10
+                original_number = digit_100 + digit_10 + digit_1 + digit_01
+                pid_cp_pwm = original_number
+        except Exception as e:
+            print("set_response_pid_cp_pwm Exception:",e)
             
 
     def get_response_pid_cp_pwm(self, data):
-        if data[2] == self.pid_cp_pwm_control:
-            digit_100 = int(data[7]) * 100
-            digit_10 = int(data[8]) * 10
-            digit_1 = int(data[9])
-            digit_01 = int(data[10]) / 10
-            original_number = digit_100 + digit_10 + digit_1 + digit_01
-            self.application.ev.pid_cp_pwm = original_number
-            print("self.application.ev.pid_cp_pwm",self.application.ev.pid_cp_pwm)
+        try:
+            if data[2] == self.pid_cp_pwm_control:
+                digit_100 = int(data[7]) * 100
+                digit_10 = int(data[8]) * 10
+                digit_1 = int(data[9])
+                digit_01 = int(data[10]) / 10
+                original_number = digit_100 + digit_10 + digit_1 + digit_01
+                self.application.ev.pid_cp_pwm = original_number
+                print("self.application.ev.pid_cp_pwm",self.application.ev.pid_cp_pwm)
+        except Exception as e:
+            print("get_response_pid_cp_pwm Exception:",e)
 
     def set_response_pid_relay_control(self, data):
-        if data[2] == self.pid_relay_control:
-            result = data[7]
+        try:
+            if data[2] == self.pid_relay_control:
+                result = data[7]
+        except Exception as e:
+            print("set_response_pid_relay_control Exception:",e)
 
     def get_response_pid_relay_control(self, data):
-        if data[2] == self.pid_relay_control:
-            if data[7] == "1":
-                self.application.ev.pid_relay_control = Relay.On
-            elif data[7] == "0":
-                self.application.ev.pid_relay_control = Relay.Off
-            print(Color.Macenta.value,"*********************** get response relay",self.application.ev.pid_relay_control)
+        try:
+            if data[2] == self.pid_relay_control:
+                if data[7] == "1":
+                    self.application.ev.pid_relay_control = Relay.On
+                elif data[7] == "0":
+                    self.application.ev.pid_relay_control = Relay.Off
+                print(Color.Macenta.value,"*********************** get response relay",self.application.ev.pid_relay_control)
+        except Exception as e:
+            print("get_response_pid_relay_control Exception:",e)
 
     def set_response_pid_led_control(self, data):
-        if data[2] == self.pid_led_control:
-            result = data[7]
+        try:
+            if data[2] == self.pid_led_control:
+                result = data[7]
+        except Exception as e:
+            print("set_response_pid_led_control Exception:",e)
 
     def get_response_pid_led_control(self,data):
-        if data[2] == self.pid_led_control:
-            self.application.ev.pid_led_control = data[7]
-            result = data[7]
+        try:
+            if data[2] == self.pid_led_control:
+                self.application.ev.pid_led_control = data[7]
+                result = data[7]
+        except Exception as e:
+            print("get_response_pid_led_control Exception:",e)
 
     def set_response_pid_locker_control(self,data):
-        if data[2] == self.pid_locker_control:
-            result = data[7]
+        try:
+            if data[2] == self.pid_locker_control:
+                result = data[7]
+        except Exception as e:
+            print("set_response_pid_locker_control Exception:",e)
 
     def get_response_pid_locker_control(self, data):
-        if data[2] == self.pid_locker_control:
-            if data[7] == LockerState.Unlock.value:
-                self.application.ev.pid_locker_control = LockerState.Unlock
-            elif data[7] == LockerState.Lock.value:
-                self.application.ev.pid_locker_control = LockerState.Lock
+        try:
+            if data[2] == self.pid_locker_control:
+                if data[7] == LockerState.Unlock.value:
+                    self.application.ev.pid_locker_control = LockerState.Unlock
+                elif data[7] == LockerState.Lock.value:
+                    self.application.ev.pid_locker_control = LockerState.Lock
+        except Exception as e:
+            print("get_response_pid_locker_control Exception:",e)
 
     def get_response_pid_current(self, data):
-        if data[2] == self.pid_current:
-            self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
-            self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
-            self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
-            # print(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
+        try:
+            if data[2] == self.pid_current:
+                self.current_L1 = round(int(data[8])*100 + int(data[9])*10 + int(data[10])*1 + int(data[11])*0.1 + int(data[12])*0.01 + int(data[13])*0.001 , 3)
+                self.current_L2 = round(int(data[15])*100 + int(data[16])*10 + int(data[17])*1 + int(data[18])*0.1 + int(data[19])*0.01 + int(data[20])*0.001 , 3)
+                self.current_L3 = round(int(data[22])*100 + int(data[23])*10 + int(data[24])*1 + int(data[25])*0.1 + int(data[26])*0.01 + int(data[27])*0.001 , 3)
+                # print(f"Current L1: {self.current_L1}, L2: {self.current_L2}, L3: {self.current_L3}")
+        except Exception as e:
+            print("get_response_pid_current Exception:",e)
 
     def get_response_pid_voltage(self, data):
-        if data[2] == self.pid_voltage:
-            self.voltage_L1 = round(int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01 , 3)
-            self.voltage_L2 = round(int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01 , 3)
-            self.voltage_L3 = round(int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01 , 3)
-            # print(f"Voltage L1: {self.voltage_L1}, L2: {self.voltage_L2}, L3: {self.voltage_L3}")
+        try:
+            if data[2] == self.pid_voltage:
+                self.voltage_L1 = round(int(data[8])*1000 + int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 + int(data[13])*0.01 , 3)
+                self.voltage_L2 = round(int(data[15])*1000 + int(data[16])*100 + int(data[17])*10 + int(data[18])*1 + int(data[19])*0.1 + int(data[20])*0.01 , 3)
+                self.voltage_L3 = round(int(data[22])*1000 + int(data[23])*100 + int(data[24])*10 + int(data[25])*1 + int(data[26])*0.1 + int(data[27])*0.01 , 3)
+                # print(f"Voltage L1: {self.voltage_L1}, L2: {self.voltage_L2}, L3: {self.voltage_L3}")
+        except Exception as e:
+            print("get_response_pid_voltage Exception:",e)
 
     def get_response_pid_power(self,data):
-        if data[2] == self.pid_power:
-            self.power = round(int(data[8]) * 100 + int(data[9]) * 10 + int(data[10]) * 1 + int(data[11]) * 0.1 + int(data[12]) * 0.01 + int(data[13]) * 0.001, 3)
-            # print(f"Power: {self.power}")
+        try:
+            if data[2] == self.pid_power:
+                self.power = round(int(data[8]) * 100 + int(data[9]) * 10 + int(data[10]) * 1 + int(data[11]) * 0.1 + int(data[12]) * 0.01 + int(data[13]) * 0.001, 3)
+                # print(f"Power: {self.power}")
+        except Exception as e:
+            print("get_response_pid_power Exception:",e)
 
     def get_response_pid_energy(self, data):
-        if data[2] == self.pid_energy:
-            # print(f"Device state: {self.application.deviceState}")
-            if self.application.deviceState == DeviceState.IDLE:
-                self.firstEnergy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
-            self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3) - self.firstEnergy
-            # print(f"Energy: {self.energy}")
+        try:
+            if data[2] == self.pid_energy:
+                # print(f"Device state: {self.application.deviceState}")
+                if self.application.deviceState == DeviceState.IDLE:
+                    self.firstEnergy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3)
+                self.energy = round(int(data[8])*1000000 + int(data[9])*100000 + int(data[10])*10000 + int(data[11])*1000 + int(data[12])*100 + int(data[13])*10 + int(data[14])*1 + int(data[15])*0.1 + int(data[16])*0.01 + int(data[17])*0.001 , 3) - self.firstEnergy
+                # print(f"Energy: {self.energy}")
+        except Exception as e:
+            print("get_response_pid_energy Exception:",e)
 
     def set_response_pid_rfid(self, data):
-        if data[2] == self.pid_rfid:
-            result = data[7]
+        try:
+            if data[2] == self.pid_rfid:
+                result = data[7]
+        except Exception as e:
+            print("set_response_pid_rfid Exception:",e)
 
     def get_response_pid_rfid(self, data):
-        if data[2] == self.pid_rfid:
-            card_id = ""
-            card_id_length = int(data[7] + data[8])
-            if card_id_length > 0:
-                for i in range(9,9+card_id_length):
-                    card_id += data[i]
-            if card_id != "":
-                print(Color.Blue.value,"Readed card id",card_id)
-            if time.time() - self.delete_time_rfid > 2:
-                self.set_command_pid_rfid()
-                self.delete_time_rfid = time.time()
-            if card_id != "":
-                if time.time() - self.set_time_rfid > 5:
-                    print(Color.Yellow.value,"Card id set edildi",card_id)
-                    self.set_time_rfid = time.time()
-                    self.application.ev.card_id = card_id
+        try:
+            if data[2] == self.pid_rfid:
+                card_id = ""
+                card_id_length = int(data[7] + data[8])
+                if card_id_length > 0:
+                    for i in range(9,9+card_id_length):
+                        card_id += data[i]
+                if card_id != "":
+                    print(Color.Blue.value,"Readed card id",card_id)
+                if time.time() - self.delete_time_rfid > 2:
+                    self.set_command_pid_rfid()
+                    self.delete_time_rfid = time.time()
+                if card_id != "":
+                    if time.time() - self.set_time_rfid > 5:
+                        print(Color.Yellow.value,"Card id set edildi",card_id)
+                        self.set_time_rfid = time.time()
+                        self.application.ev.card_id = card_id
+        except Exception as e:
+            print("get_response_pid_rfid Exception:",e)
                     
     def get_response_pid_evse_temp(self, data):
-        if data[2] == self.pid_evse_temp:
-            temp_sign = data[8]
-            temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
-            self.application.ev.temperature = temp_sign + str(temp)
+        try:
+            if data[2] == self.pid_evse_temp:
+                temp_sign = data[8]
+                temp = round(int(data[9])*100 + int(data[10])*10 + int(data[11])*1 + int(data[12])*0.1 , 1)
+                self.application.ev.temperature = temp_sign + str(temp)
+        except Exception as e:
+            print("get_response_pid_rfid Exception:",e)
 
     def get_response_pid_error_list(self, data):
-        error_list = []
-        if data[2] == self.pid_error_list:
-            if (int(data[7]) == 1):
-                error_list.append(PidErrorList.LockerInitializeError)
-            if (int(data[8]) == 1):
-                error_list.append(PidErrorList.EVCommunicationPortError)
-            if (int(data[9]) == 1):
-                error_list.append(PidErrorList.EarthDisconnectFailure)
-            if (int(data[10]) == 1):
-                error_list.append(PidErrorList.RcdInitializeError)
-            if (int(data[11]) == 1):
-                error_list.append(PidErrorList.RcdTripError)
-            if (int(data[12]) == 1):
-                error_list.append(PidErrorList.HighTemperatureFailure)
-            if (int(data[13]) == 1):
-                error_list.append(PidErrorList.OverCurrentFailure)
-            if (int(data[14]) == 1):
-                error_list.append(PidErrorList.OverVoltageFailure)
-            if (int(data[15]) == 1):
-                error_list.append(PidErrorList.InternalEnergyMeterFailure)
-            if (int(data[16]) == 1):
-                error_list.append(PidErrorList.PowerSwitchFailure)
-            if (int(data[17]) == 1):
-                error_list.append(PidErrorList.RFIDReaderFailure)
-            if (int(data[18]) == 1):
-                error_list.append(PidErrorList.UnderVoltageFailure)
-            if (int(data[19]) == 1):
-                error_list.append(PidErrorList.FrequencyFailure)
-            if (int(data[20]) == 1):
-                error_list.append(PidErrorList.PhaseSequenceFailure)
-            if (int(data[21]) == 1):
-                error_list.append(PidErrorList.OverPowerFailure)
+        try:
+            error_list = []
+            if data[2] == self.pid_error_list:
+                if (int(data[7]) == 1):
+                    error_list.append(PidErrorList.LockerInitializeError)
+                if (int(data[8]) == 1):
+                    error_list.append(PidErrorList.EVCommunicationPortError)
+                if (int(data[9]) == 1):
+                    error_list.append(PidErrorList.EarthDisconnectFailure)
+                if (int(data[10]) == 1):
+                    error_list.append(PidErrorList.RcdInitializeError)
+                if (int(data[11]) == 1):
+                    error_list.append(PidErrorList.RcdTripError)
+                if (int(data[12]) == 1):
+                    error_list.append(PidErrorList.HighTemperatureFailure)
+                if (int(data[13]) == 1):
+                    error_list.append(PidErrorList.OverCurrentFailure)
+                if (int(data[14]) == 1):
+                    error_list.append(PidErrorList.OverVoltageFailure)
+                if (int(data[15]) == 1):
+                    error_list.append(PidErrorList.InternalEnergyMeterFailure)
+                if (int(data[16]) == 1):
+                    error_list.append(PidErrorList.PowerSwitchFailure)
+                if (int(data[17]) == 1):
+                    error_list.append(PidErrorList.RFIDReaderFailure)
+                if (int(data[18]) == 1):
+                    error_list.append(PidErrorList.UnderVoltageFailure)
+                if (int(data[19]) == 1):
+                    error_list.append(PidErrorList.FrequencyFailure)
+                if (int(data[20]) == 1):
+                    error_list.append(PidErrorList.PhaseSequenceFailure)
+                if (int(data[21]) == 1):
+                    error_list.append(PidErrorList.OverPowerFailure)
 
-            if len(error_list) > 0:
-                print(Color.Red.value,error_list)
-                self.error = True
-            
-            self.error_list = error_list
+                if len(error_list) > 0:
+                    print(Color.Red.value,error_list)
+                    self.error = True
+                
+                self.error_list = error_list
+        except Exception as e:
+            print("get_response_pid_error_list Exception:",e)
 
     def read(self):
         self.connection_time = time.time()

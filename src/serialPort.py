@@ -82,7 +82,7 @@ class SerialPort():
                 self.get_command_pid_relay_control()
                 self.get_command_pid_led_control()
                 self.get_command_pid_locker_control()
-                self.get_command_pid_rfid()
+                # self.get_command_pid_rfid()
                 self.get_command_pid_evse_temp()
                 # if time.time() - self.time_20 > 20:
                 #     if self.application.deviceStateModule.led_state != LedState.RfidVerified and self.application.deviceStateModule.led_state != LedState.RfidFailed:

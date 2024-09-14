@@ -74,7 +74,7 @@ class SerialPort():
                 self.get_command_PID_control_pilot()
                 self.get_command_pid_error_list()
                 self.get_command_pid_current()
-                # self.get_command_pid_voltage()
+                self.get_command_pid_voltage()
                 # self.get_command_pid_power(PowerType.kw)
                 # self.get_command_pid_energy(EnergyType.kwh)
                 # self.get_command_pid_proximity_pilot()

@@ -56,9 +56,8 @@ class SoftwareSettings():
                 for interface in interfaces:
                     command = ["ping", "-I", interface, "-c", "1", "8.8.8.8"]
                     try:
-                        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        stdout, stderr = process.communicate()
-                        result = stdout.decode()
+                        process = subprocess.Popen(command,  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        process.wait()
                         if process.returncode == 0:
                             success_interfaces.append(interface)
                     except Exception as e:
@@ -165,7 +164,6 @@ class SoftwareSettings():
 
     def set_eth(self):
         try:
-            print("Set eth")
             ethernetEnable = self.application.settings.ethernetSettings.ethernetEnable
             dhcpcEnable = self.application.settings.ethernetSettings.dhcpcEnable
             ip = self.application.settings.ethernetSettings.ip
@@ -235,7 +233,7 @@ class SoftwareSettings():
                     add_connection_string += f"gsm.pin {pin} "
                 add_connection_string += "> /dev/null 2>&1"
                 subprocess.run(add_connection_string, shell=True, check=True)
-                time.sleep(15)
+                time.sleep(20)
                 subprocess.run(f"nmcli connection up {connection_name} ifname ttyUSB2", shell=True, check=True)
         except Exception as e:
             print("set_4G Exception:", e)

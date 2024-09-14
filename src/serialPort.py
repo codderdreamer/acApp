@@ -591,6 +591,7 @@ class SerialPort():
         self.connection_time = time.time()
         while True:
             try:
+                print("connection_time",time.time())
                 incoming = self.serial.readline()
                 incoming = incoming.decode('utf-8')
                 print("incoming",incoming)

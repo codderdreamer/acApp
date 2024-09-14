@@ -486,8 +486,13 @@ class ChargePoint16(cp):
         except Exception as e:
             print("send_status_notification Exception:",e)
 
-    def transaction_data_json(self):
+    def transaction_data_json(self,reason = None, energy = None):
         try:
+            energy_value = 0
+            if reason == Reason.power_loss:
+                energy_value = energy
+            else:
+                energy_value = self.application.ev.energy
             # Configurations
             sampled_data = []
             measurands = self.application.settings.configuration.StopTxnAlignedData.split(",")
@@ -497,7 +502,7 @@ class ChargePoint16(cp):
             # Map the measurand strings to actual data
             measurand_mapping = {
                 "Energy.Active.Import.Register": {
-                    "value": str(self.application.ev.energy),
+                    "value": str(energy_value),
                     "measurand": Measurand.energy_active_import_register,
                     "unit": UnitOfMeasure.kwh
                 },
@@ -586,12 +591,22 @@ class ChargePoint16(cp):
         transaction_data: List | None = None
         """
         print("send_stop_transaction")
-        meter_stop = int(self.application.ev.energy*1000)
+        if reason == Reason.power_loss:
+            energy = 0
+            try:
+                with open('/root/energy.txt', 'r') as f:
+                    energy = int(f.read())
+            except:
+                pass
+            meter_stop = energy*1000
+            transaction_data = self.transaction_data_json(reason,energy)
+        else:
+            meter_stop = int(self.application.ev.energy*1000)
+            transaction_data = self.transaction_data_json()
         timestamp = self.calculate_time()
         transaction_id = self.application.process.transaction_id
         reason = reason
         id_tag = self.application.process.id_tag
-        transaction_data = self.transaction_data_json()
         try :
             request = call.StopTransactionPayload(
                 meter_stop,

@@ -48,8 +48,19 @@ class EV():
         self.__led_state = None
         Thread(target=self.control_error_list,daemon=True).start()
         Thread(target=self.send_message,daemon=True).start()
+        Thread(target=self.write_energy,daemon=True).start()
 
         self.charging_again = False
+
+    def write_energy(self):
+        while True:
+            try:
+                if self.charge == True:
+                    with open('/root/energy.txt', 'a') as f:
+                        f.write(str(self.energy))
+                time.sleep(10)
+            except Exception as e:
+                pass
 
     def load_reservations(self):
         """

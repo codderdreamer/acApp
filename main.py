@@ -5,7 +5,7 @@ import time
 import signal
 
 def shutdown_handler(signum, frame):
-    with open('/path/to/your/file.txt', 'a') as f:
+    with open('/root/file.txt', 'a') as f:
         f.write('Sistem kapanıyor...\n')
 
 # SIGTERM sinyalini yakala

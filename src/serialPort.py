@@ -107,7 +107,7 @@ class SerialPort():
                     self.send_data_list.pop(0)
             except Exception as e:
                 print("write Exception:",e)
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     def calculate_checksum(self,data):
         try:

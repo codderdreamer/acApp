@@ -94,6 +94,7 @@ class LedState(Enum):
     RcdError = "?"
     LockerError = "@"
     DeviceInoperative = "C"
+    MCUNotConnected = "B"
 
 
 class LockerState(Enum):

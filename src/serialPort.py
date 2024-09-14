@@ -111,6 +111,7 @@ class SerialPort():
                 if finish_time - start_time > 3:
                     self.connection = False
                     self.send_data_list = []
+                    print(Color.Red.value,"MCU not connected!")
                 else:
                     self.connection = True
                 if len(incoming) > 1:
@@ -526,9 +527,8 @@ class SerialPort():
                     self.application.deviceStateModule.led_control = LedState.LockerError
                 elif data[7] == LedState.DeviceInoperative.value:
                     self.application.deviceStateModule.led_control = LedState.DeviceInoperative
-                else:
-                    print("data7",data[7])
-                result = data[7]
+                elif data[7] == LedState.MCUNotConnected.value:
+                    self.application.deviceStateModule.led_control = LedState.MCUNotConnected
         except Exception as e:
             print("get_response_pid_led_control Exception:",e)
 

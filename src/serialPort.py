@@ -55,9 +55,8 @@ class SerialPort():
         self.connector_id = "1"
         self.set_time_rfid = time.time()
         self.delete_time_rfid = time.time()
-        self.led_state = LedState.StandBy
 
-        connection = False
+        self.connection = False
 
     def seri_port_reset(self):
         try:
@@ -87,7 +86,6 @@ class SerialPort():
                 print("serial_port_thread Exception:",e)
             time.sleep(1)
 
-
     def write(self):
         while True:
             try:
@@ -98,6 +96,48 @@ class SerialPort():
             except Exception as e:
                 print("write Exception:",e)
             time.sleep(0.05)
+
+    def read(self):
+        while True:
+            try:
+                start_time = time.time()
+                try:
+                    incoming = self.serial.readline()
+                    print(incoming)
+                    incoming = incoming.decode('utf-8')
+                except:
+                    pass
+                finish_time = time.time()
+                if finish_time - start_time > 3:
+                    self.connection = False
+                    self.send_data_list = []
+                else:
+                    self.connection = True
+                if len(incoming) > 1:
+                    incoming = list(incoming)
+                    if incoming[1] == self.get_response:
+                        self.get_response_control_pilot(incoming)
+                        self.get_response_pid_proximity_pilot(incoming)
+                        self.get_response_pid_relay_control(incoming)
+                        self.get_response_pid_led_control(incoming)
+                        self.get_response_pid_locker_control(incoming)
+                        self.get_response_pid_current(incoming)
+                        self.get_response_pid_power(incoming)
+                        self.get_response_pid_voltage(incoming)
+                        self.get_response_pid_energy(incoming)
+                        self.get_response_pid_rfid(incoming)
+                        self.get_response_pid_evse_temp(incoming)
+                        self.get_response_pid_error_list(incoming)
+                        self.get_response_pid_cp_pwm(incoming)
+                    elif incoming[1] == self.set_response:
+                        self.set_response_pid_cp_pwm(incoming)
+                        self.set_response_pid_relay_control(incoming)
+                        self.set_response_pid_led_control(incoming)
+                        self.set_response_pid_locker_control(incoming)
+                        self.set_response_pid_rfid(incoming)
+            except Exception as e:
+                print("read Exception",e)
+            time.sleep(0.01)
 
     def calculate_checksum(self,data):
         try:
@@ -114,7 +154,7 @@ class SerialPort():
         except Exception as e:
             print("calculate_checksum Exception:",e)
     
-    #   ************************ SEND *****************************************************
+    #   ************************ SEND GET COMMAND **********************************************
 
     def get_command_PID_control_pilot(self):
         '''
@@ -158,29 +198,7 @@ class SerialPort():
             self.send_data_list.append(send_data)
         except Exception as e:
             print("get_command_pid_proximity_pilot Exception:",e)
-            
-    def set_command_pid_cp_pwm(self,max_current):
-        '''
-        Control Pilot PWM sinyalini set edebilmek(kontrol etmek) için aşağıdaki paket gönderilir
-        '''
-        try:
-            print(Color.Yellow.value,f"Pid CP PWM : {max_current} ")
-            max_current = float(max_current)
-            digit_100 = int(max_current // 100) % 10
-            digit_10 = int(max_current // 10) % 10
-            digit_1 = int(max_current) % 10
-            digit_01 = int(max_current * 10) % 10 
-            max_current = f"{digit_100}{digit_10}{digit_1}{digit_01}"
-            
-            self.parameter_data = "005"
-            self.connector_id = "1"
-            data = self.set_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-        except Exception as e:
-            print("get_command_pid_proximity_pilot Exception:",e)
-        
+      
     def get_command_pid_cp_pwm(self):
         try:
             self.parameter_data = "001"
@@ -192,21 +210,6 @@ class SerialPort():
         except Exception as e:
             print("get_command_pid_cp_pwm Exception:",e)
         
-    def set_command_pid_relay_control(self,relay:Relay):
-        '''
-        Röleyi kontrol etmek için (‘1’ veya ‘0’) paket gönderilir.
-        A durumunda gönderilmez. B yada C durumunda olmalı
-        '''
-        try:
-            print(Color.Yellow.value,"Röle:",relay)
-            self.parameter_data = "002"
-            data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-        except Exception as e:
-            print("set_command_pid_relay_control Exception:",e)
-
     def get_command_pid_relay_control(self):
         '''
         Rölenin 1 yada 0 olduğunu döner.
@@ -220,29 +223,6 @@ class SerialPort():
         except Exception as e:
             print("get_command_pid_relay_control Exception:",e)
 
-    def set_command_pid_led_control(self, led_state: LedState):
-        try:
-            self.parameter_data = "002"
-            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-            if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
-                time.sleep(2)
-            else:
-                self.led_state = led_state
-
-            if led_state == LedState.RfidVerified or led_state == LedState.RfidFailed:
-                self.parameter_data = "002"
-                data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + self.led_state.value
-                checksum = self.calculate_checksum(data)
-                send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-                self.send_data_list.append(send_data)
-                self.application.deviceStateModule.led_state = self.led_state
-        except Exception as e:
-            print("set_command_pid_led_control Exception:",e)
-        
-
     def get_command_pid_led_control(self):
         try:
             self.parameter_data = "001"
@@ -252,20 +232,6 @@ class SerialPort():
             self.send_data_list.append(send_data)
         except Exception as e:
             print("get_command_pid_led_control Exception:",e)
-
-    def set_command_pid_locker_control(self,locker_state:LockerState):
-        '''
-        Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
-        '''
-        try:
-            print(Color.Green.value,"MCU'ya gönderilen komut:",locker_state)
-            self.parameter_data = "002"
-            data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-        except Exception as e:
-            print("set_command_pid_locker_control Exception:",e)
 
     def get_command_pid_locker_control(self): 
         '''
@@ -320,19 +286,6 @@ class SerialPort():
         except Exception as e:
             print("get_command_pid_energy Exception:",e)
 
-    def set_command_pid_rfid(self):
-        '''
-        Yeni bir okuma işleminden önce Linux tarafından MCU Board’a bir kez SET komutu gönderilerek, hafızasındaki UniqID ‘nin silinmesi talep edilir
-        '''
-        try:
-            self.parameter_data = "002"
-            data = self.set_command + self.pid_rfid + self.parameter_data + self.connector_id + "R"
-            checksum = self.calculate_checksum(data)
-            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
-            self.send_data_list.append(send_data)
-        except Exception as e:
-            print("set_command_pid_rfid Exception:",e)
-
     def get_command_pid_rfid(self):
         time.sleep(10)
         while True:
@@ -366,6 +319,80 @@ class SerialPort():
         except Exception as e:
             print("get_command_pid_error_list Exception:",e)
         
+    #   ************************ SEND SET COMMAND **********************************************
+    def set_command_pid_cp_pwm(self,max_current):
+        '''
+        Control Pilot PWM sinyalini set edebilmek(kontrol etmek) için aşağıdaki paket gönderilir
+        '''
+        try:
+            print(Color.Yellow.value,f"Pid CP PWM : {max_current} ")
+            max_current = float(max_current)
+            digit_100 = int(max_current // 100) % 10
+            digit_10 = int(max_current // 10) % 10
+            digit_1 = int(max_current) % 10
+            digit_01 = int(max_current * 10) % 10 
+            max_current = f"{digit_100}{digit_10}{digit_1}{digit_01}"
+            
+            self.parameter_data = "005"
+            self.connector_id = "1"
+            data = self.set_command + self.pid_cp_pwm_control + self.parameter_data + self.connector_id + max_current
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("get_command_pid_proximity_pilot Exception:",e)
+       
+    def set_command_pid_relay_control(self,relay:Relay):
+        '''
+        Röleyi kontrol etmek için (‘1’ veya ‘0’) paket gönderilir.
+        A durumunda gönderilmez. B yada C durumunda olmalı
+        '''
+        try:
+            print(Color.Yellow.value,"Röle:",relay)
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_relay_control + self.parameter_data + self.connector_id + relay.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_relay_control Exception:",e)
+
+    def set_command_pid_led_control(self, led_state: LedState):
+        try:
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_led_control + self.parameter_data + self.connector_id + led_state.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_led_control Exception:",e)
+
+    def set_command_pid_locker_control(self,locker_state:LockerState):
+        '''
+        Soketli tip Şarj Cihazlarında soket içerisindeki kilit mekanizmasının kontrolü 
+        '''
+        try:
+            print(Color.Green.value,"MCU'ya gönderilen komut:",locker_state)
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_locker_control + self.parameter_data + self.connector_id + locker_state.value
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_locker_control Exception:",e)
+
+    def set_command_pid_rfid(self):
+        '''
+        Yeni bir okuma işleminden önce Linux tarafından MCU Board’a bir kez SET komutu gönderilerek, hafızasındaki UniqID ‘nin silinmesi talep edilir
+        '''
+        try:
+            self.parameter_data = "002"
+            data = self.set_command + self.pid_rfid + self.parameter_data + self.connector_id + "R"
+            checksum = self.calculate_checksum(data)
+            send_data = self.stx + data.encode('utf-8') + checksum.encode('utf-8') + self.lf
+            self.send_data_list.append(send_data)
+        except Exception as e:
+            print("set_command_pid_rfid Exception:",e)
 
     #   ************************ RESPONSE  *****************************************************
 
@@ -380,15 +407,42 @@ class SerialPort():
         '''
         try:
             if data[2] == self.pid_control_pilot:
-                self.application.ev.control_pilot = data[7]
+                if data[7] == ControlPlot.stateA.value:
+                    self.application.deviceStateModule.control_pilot = ControlPlot.stateA
+                elif data[7] == ControlPlot.stateB.value:
+                    self.application.deviceStateModule.control_pilot = ControlPlot.stateB
+                elif data[7] == ControlPlot.stateC.value:
+                    self.application.deviceStateModule.control_pilot = ControlPlot.stateC
+                elif data[7] == ControlPlot.stateD.value:
+                    self.application.deviceStateModule.control_pilot = ControlPlot.stateD
+                elif data[7] == ControlPlot.stateE.value:
+                    self.application.deviceStateModule.control_pilot = ControlPlot.stateE
+                elif data[7] == ControlPlot.stateF.value:
+                    self.application.deviceStateModule.control_pilot = ControlPlot.stateF
         except Exception as e:
             print("get_response_control_pilot Exception:",e)
-
 
     def get_response_pid_proximity_pilot(self, data):
         try:
             if data[2] == self.pid_proximity_pilot:
-                self.application.ev.proximity_pilot = data[7]
+                if data[7] == ProximityPilot.CableNotPlugged.value:
+                    self.application.deviceStateModule.proximity_plot = ProximityPilot.CableNotPlugged
+                    self.application.deviceStateModule.proximity_pilot_current = 0
+                elif data[7] == ProximityPilot.Error.value:
+                    self.application.deviceStateModule.proximity_plot = ProximityPilot.Error
+                    self.application.deviceStateModule.proximity_pilot_current = 0
+                elif data[7] == ProximityPilot.CablePluggedIntoCharger13Amper.value:
+                    self.application.deviceStateModule.proximity_plot = ProximityPilot.CablePluggedIntoCharger13Amper
+                    self.application.deviceStateModule.proximity_pilot_current = 13
+                elif data[7] == ProximityPilot.CablePluggedIntoCharger20Amper.value:
+                    self.application.deviceStateModule.proximity_plot = ProximityPilot.CablePluggedIntoCharger20Amper
+                    self.application.deviceStateModule.proximity_pilot_current = 20
+                elif data[7] == ProximityPilot.CablePluggedIntoCharger32Amper.value:
+                    self.application.deviceStateModule.proximity_plot = ProximityPilot.CablePluggedIntoCharger32Amper
+                    self.application.deviceStateModule.proximity_pilot_current = 32
+                elif data[7] == ProximityPilot.CablePluggedIntoCharger63Amper.value:
+                    self.application.deviceStateModule.proximity_plot = ProximityPilot.CablePluggedIntoCharger63Amper
+                    self.application.deviceStateModule.proximity_pilot_current = 63
         except Exception as e:
             print("get_response_pid_proximity_pilot Exception:",e)
             
@@ -405,7 +459,6 @@ class SerialPort():
         except Exception as e:
             print("set_response_pid_cp_pwm Exception:",e)
             
-
     def get_response_pid_cp_pwm(self, data):
         try:
             if data[2] == self.pid_cp_pwm_control:
@@ -414,8 +467,7 @@ class SerialPort():
                 digit_1 = int(data[9])
                 digit_01 = int(data[10]) / 10
                 original_number = digit_100 + digit_10 + digit_1 + digit_01
-                self.application.ev.pid_cp_pwm = original_number
-                print("self.application.ev.pid_cp_pwm",self.application.ev.pid_cp_pwm)
+                self.application.deviceStateModule.pid_cp_pwm = original_number
         except Exception as e:
             print("get_response_pid_cp_pwm Exception:",e)
 
@@ -429,11 +481,10 @@ class SerialPort():
     def get_response_pid_relay_control(self, data):
         try:
             if data[2] == self.pid_relay_control:
-                if data[7] == "1":
-                    self.application.ev.pid_relay_control = Relay.On
-                elif data[7] == "0":
-                    self.application.ev.pid_relay_control = Relay.Off
-                print(Color.Macenta.value,"*********************** get response relay",self.application.ev.pid_relay_control)
+                if data[7] == Relay.On.value:
+                    self.application.deviceStateModule.relay = Relay.On
+                elif data[7] == Relay.Off.value:
+                    self.application.deviceStateModule.relay = Relay.Off
         except Exception as e:
             print("get_response_pid_relay_control Exception:",e)
 
@@ -447,7 +498,36 @@ class SerialPort():
     def get_response_pid_led_control(self,data):
         try:
             if data[2] == self.pid_led_control:
-                self.application.ev.pid_led_control = data[7]
+                if data[7] == LedState.StandBy.value:
+                    self.application.deviceStateModule.led_control = LedState.StandBy
+                elif data[7] == LedState.Connecting.value:
+                    self.application.deviceStateModule.led_control = LedState.Connecting
+                elif data[7] == LedState.RfidVerified.value:
+                    self.application.deviceStateModule.led_control = LedState.RfidVerified
+                elif data[7] == LedState.Charging.value:
+                    self.application.deviceStateModule.led_control = LedState.Charging
+                elif data[7] == LedState.RfidFailed.value:
+                    self.application.deviceStateModule.led_control = LedState.RfidFailed
+                elif data[7] == LedState.NeedReplugging.value:
+                    self.application.deviceStateModule.led_control = LedState.NeedReplugging
+                elif data[7] == LedState.Fault.value:
+                    self.application.deviceStateModule.led_control = LedState.Fault
+                elif data[7] == LedState.ChargingStopped.value:
+                    self.application.deviceStateModule.led_control = LedState.ChargingStopped
+                elif data[7] == LedState.WaitingPluging.value:
+                    self.application.deviceStateModule.led_control = LedState.WaitingPluging
+                elif data[7] == LedState.DeviceOffline.value:
+                    self.application.deviceStateModule.led_control = LedState.DeviceOffline
+                elif data[7] == LedState.FirmwareUpdate.value:
+                    self.application.deviceStateModule.led_control = LedState.FirmwareUpdate
+                elif data[7] == LedState.RcdError.value:
+                    self.application.deviceStateModule.led_control = LedState.RcdError
+                elif data[7] == LedState.LockerError.value:
+                    self.application.deviceStateModule.led_control = LedState.LockerError
+                elif data[7] == LedState.DeviceInoperative.value:
+                    self.application.deviceStateModule.led_control = LedState.DeviceInoperative
+                else:
+                    print("data7",data[7])
                 result = data[7]
         except Exception as e:
             print("get_response_pid_led_control Exception:",e)
@@ -588,43 +668,3 @@ class SerialPort():
         except Exception as e:
             print("get_response_pid_error_list Exception:",e)
 
-    def read(self):
-        while True:
-            try:
-                start_time = time.time()
-                try:
-                    incoming = self.serial.readline()
-                    print(incoming)
-                    incoming = incoming.decode('utf-8')
-                except:
-                    pass
-                finish_time = time.time()
-                if finish_time - start_time > 3:
-                    connection = False
-                else:
-                    connection = True
-                if len(incoming) > 1:
-                    incoming = list(incoming)
-                    if incoming[1] == self.get_response:
-                        self.get_response_control_pilot(incoming)
-                        self.get_response_pid_proximity_pilot(incoming)
-                        self.get_response_pid_relay_control(incoming)
-                        self.get_response_pid_led_control(incoming)
-                        self.get_response_pid_locker_control(incoming)
-                        self.get_response_pid_current(incoming)
-                        self.get_response_pid_power(incoming)
-                        self.get_response_pid_voltage(incoming)
-                        self.get_response_pid_energy(incoming)
-                        self.get_response_pid_rfid(incoming)
-                        self.get_response_pid_evse_temp(incoming)
-                        self.get_response_pid_error_list(incoming)
-                        self.get_response_pid_cp_pwm(incoming)
-                    elif incoming[1] == self.set_response:
-                        self.set_response_pid_cp_pwm(incoming)
-                        self.set_response_pid_relay_control(incoming)
-                        self.set_response_pid_led_control(incoming)
-                        self.set_response_pid_locker_control(incoming)
-                        self.set_response_pid_rfid(incoming)
-            except Exception as e:
-                print("read Exception",e)
-            time.sleep(0.01)

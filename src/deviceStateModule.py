@@ -9,6 +9,7 @@ class DeviceStateModule():
         self.__cardType : CardType = None
         self.__led_state : LedState = None
         self.__deviceState : DeviceState = None
+        self.__ocpp_active = None
 
         self.__control_pilot : ControlPlot = None                       # MCU'dan okunan değer
         self.__proximity_plot : ProximityPilot = None                   # MCU'dan okunan değer
@@ -130,6 +131,14 @@ class DeviceStateModule():
             print(Color.Yellow.value, "MCU Readed Temperature:", value)
             self.__temperature = value
 
+    @property
+    def ocpp_active(self):
+        return self.__ocpp_active
 
+    @ocpp_active.setter
+    def ocpp_active(self, value):
+        if self.__ocpp_active != value:
+            print(Color.Yellow.value, "Ocpp Active:", value)
+            self.__ocpp_active = value
 
 

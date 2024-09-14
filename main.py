@@ -2,15 +2,6 @@ from application import Application
 import asyncio
 import time
 
-import signal
-
-def shutdown_handler(signum, frame):
-    with open('/root/file.txt', 'a') as f:
-        f.write('Sistem kapanıyor...\n')
-
-# SIGTERM sinyalini yakala
-signal.signal(signal.SIGTERM, shutdown_handler)
-
 
 
 if __name__ == "__main__":

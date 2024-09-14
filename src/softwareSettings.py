@@ -216,19 +216,14 @@ class SoftwareSettings():
             pin = self.application.settings.settings4G.pin
             enableModification = self.application.settings.settings4G.enableModification
 
-            # Mevcut GSM bağlantısını sil
             self.delete_connection_type(connection_name)
 
-            # GPIO kontrol komutlarını çalıştır
             subprocess.run("gpio-test.64 w d 20 0 > /dev/null 2>&1", shell=True, check=True)
-            time.sleep(3)
+            time.sleep(5)
 
             if enableModification == "True":
-                time.sleep(3)
                 subprocess.run("gpio-test.64 w d 20 1 > /dev/null 2>&1", shell=True, check=True)
                 time.sleep(5)
-
-                # Bağlantı ekleme komutunu oluştur
                 add_connection_string = f"nmcli connection add con-name {connection_name} ifname ttyUSB2 autoconnect yes type gsm "
                 if apn:
                     add_connection_string += f"apn {apn} "
@@ -239,13 +234,9 @@ class SoftwareSettings():
                 if pin:
                     add_connection_string += f"gsm.pin {pin} "
                 add_connection_string += "> /dev/null 2>&1"
-
-                # Bağlantı ekleme komutunu çalıştır
                 subprocess.run(add_connection_string, shell=True, check=True)
-
-                # PIN zaten bağlantı sırasında tanımlandı, bağlantıyı etkinleştir
+                time.sleep(5)
                 subprocess.run(f"nmcli connection up {connection_name} ifname ttyUSB2", shell=True, check=True)
-
         except Exception as e:
             print("set_4G Exception:", e)
    

@@ -80,7 +80,7 @@ class SerialPort():
                 self.get_command_pid_proximity_pilot()
                 self.get_command_pid_cp_pwm()
                 self.get_command_pid_relay_control()
-                # self.get_command_pid_led_control()
+                self.get_command_pid_led_control()
                 # self.get_command_pid_locker_control()
                 # self.get_command_pid_rfid()
                 # self.get_command_pid_evse_temp()

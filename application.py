@@ -26,6 +26,7 @@ from src.modbusModule import ModbusModule
 from src.flaskModule import FlaskModuleThread
 from src.utils import Utils
 from src.deviceStateModule import DeviceStateModule
+from src.processModule import ProcessModule
 
 file = open("/root/output.txt", "a")
 
@@ -53,6 +54,7 @@ class Application():
         self.serialPort = SerialPort(self)
         self.modbusModule = ModbusModule(self)
         self.deviceStateModule = DeviceStateModule(self)
+        self.processModule = ProcessModule(self)
 
         self.initilly = True  # sadece başlangıçta bir kere çalışması için var
 
@@ -277,30 +279,6 @@ class Application():
             if self.ocppActive:
                 asyncio.run_coroutine_threadsafe(self.chargePoint.send_status_notification(connector_id=1,error_code=self.error_code,status=self.chargePointStatus,info=self.info),self.loop)
     
-    def ocpp_control(self):
-        while True:
-            try:
-                time_start = None
-                if self.deviceStateModule.cardType == CardType.BillingCard:
-                    
-                    ip_address = self.settings.ocppSettings.domainName
-                        
-                    response = subprocess.run(
-                        ['ping', '-c 1', ip_address],
-                        stdout=subprocess.PIPE,  
-                        stderr=subprocess.PIPE, 
-                        universal_newlines=True
-                    )
-                    # Eğer ping başarılı ise '0' döner
-                    if response.returncode == 0:
-                        time_start = time.time()
-                    else:
-                        if time_start == None or time.time() - time_start > 10:
-                            self.ocppActive = False
-            
-            except Exception as e:
-                print("ocpp_control Exception:", e)
-            time.sleep(3)
         
     def read_charge_values_thred(self):
         while True:

@@ -128,7 +128,7 @@ class DeviceStateModule():
     @temperature.setter
     def temperature(self, value):
         if self.__temperature != value:
-            print(Color.Yellow.value, "MCU Readed Temperature:", value)
+            # print(Color.Yellow.value, "MCU Readed Temperature:", value)
             self.__temperature = value
 
     @property

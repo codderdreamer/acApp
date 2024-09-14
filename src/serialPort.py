@@ -604,6 +604,7 @@ class SerialPort():
                 start_time = time.time()
                 try:
                     incoming = self.serial.readline()
+                    print(incoming)
                     incoming = incoming.decode('utf-8')
                     print(incoming)
                 except:

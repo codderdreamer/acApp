@@ -11,7 +11,7 @@ import threading
 class SerialPort():
     def __init__(self,application) -> None:
         self.application = application
-        self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=1)
+        self.serial = serial.Serial("/dev/ttyS2", 115200, timeout=5)
         self.send_data_list = []
         self.error = False
         self.error_list = []

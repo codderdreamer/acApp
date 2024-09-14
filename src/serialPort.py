@@ -606,7 +606,6 @@ class SerialPort():
                     incoming = self.serial.readline()
                     print(incoming)
                     incoming = incoming.decode('utf-8')
-                    print(incoming)
                 except:
                     pass
                 finish_time = time.time()

@@ -233,7 +233,7 @@ class SoftwareSettings():
                     add_connection_string += f"gsm.pin {pin} "
                 add_connection_string += "> /dev/null 2>&1"
                 subprocess.run(add_connection_string, shell=True, check=True)
-                time.sleep(20)
+                time.sleep(10)
                 subprocess.run(f"nmcli connection up {connection_name} ifname ttyUSB2", shell=True, check=True)
         except Exception as e:
             print("set_4G Exception:", e)

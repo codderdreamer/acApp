@@ -120,11 +120,13 @@ class Process:
 
     def connected(self):
         if len(self.application.serialPort.error_list) > 0:
-            for value in self.application.serialPort.error_list:
-                if value == PidErrorList.LockerInitializeError:
-                    return
-                if value == PidErrorList.RcdInitializeError:
-                    return
+            print("mcu hata var!")
+            return
+            # for value in self.application.serialPort.error_list:
+            #     if value == PidErrorList.LockerInitializeError:
+            #         return
+            #     if value == PidErrorList.RcdInitializeError:
+            #         return
 
         # if self.application.chargePointStatus == ChargePointStatus.faulted:
         #     return

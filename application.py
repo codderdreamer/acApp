@@ -68,11 +68,11 @@ class Application():
         Thread(target=self.serialPort.write,daemon=True).start()
         Thread(target=self.serialPort.serial_port_thread,daemon=True).start()
         Thread(target=self.serialPort.get_command_pid_rfid,daemon=True).start()
-        Thread(target=self.set_eth, daemon=True).start()
-        Thread(target=self.set_4G, daemon=True).start()
-        Thread(target=self.set_wifi, daemon=True).start()
-        Thread(target=self.control_device_status, daemon=True).start()
-        Thread(target=self.check_internet_connection, daemon=True).start()
+        Thread(target=self.softwareSettings.set_eth, daemon=True).start()
+        Thread(target=self.softwareSettings.set_4G, daemon=True).start()
+        Thread(target=self.softwareSettings.set_wifi, daemon=True).start()
+        Thread(target=self.softwareSettings.control_device_status, daemon=True).start()
+        Thread(target=self.softwareSettings.check_internet_connection, daemon=True).start()
 
     
         # self.charge_stopped = False

@@ -1004,7 +1004,7 @@ class ChargePoint16(cp):
     def after_remote_start_transaction(self,id_tag: str, connector_id: int = None, charging_profile:dict = None):
         try :
             if self.remote_start_stop_status == RemoteStartStopStatus.accepted:
-                if self.application.settings.configuration.AuthorizeRemoteTxRequests.tolower() == "false":
+                if self.application.settings.configuration.AuthorizeRemoteTxRequests.lower() == "false":
                         print("AuthorizeRemoteTxRequests : false, Autorize olmadan direk başlayacak.")
                         self.application.ev.id_tag = id_tag
                         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.preparing)

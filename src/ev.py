@@ -467,7 +467,7 @@ class EV():
             return AuthorizationStatus.accepted
         
         # LocalAuthorizeOffline bayrağını kontrol edin
-        if self.application.settings.configuration.LocalAuthorizeOffline.tolower() == "false":
+        if self.application.settings.configuration.LocalAuthorizeOffline.lower() == "false":
             print("LocalAuthorizeOffline is False so Unauthorized")
             return AuthorizationStatus.invalid  # LocalAuthorizeOffline False ise, Red olarak geri dön.
 

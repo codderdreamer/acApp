@@ -122,6 +122,9 @@ class Process:
         if len(self.application.serialPort.error_list) > 0:
             print("mcu hata var!")
             return
+        if self.application.availability == AvailabilityType.inoperative:
+            print("Cihaz inoperative durumda!")
+            return
             # for value in self.application.serialPort.error_list:
             #     if value == PidErrorList.LockerInitializeError:
             #         return

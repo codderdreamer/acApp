@@ -429,14 +429,8 @@ class ChargePoint16(cp):
             if self.start_transaction_result != AuthorizationStatus.accepted:
                 self.application.ev.clean_charge_variables()
             if reservation_id and self.start_transaction_result == AuthorizationStatus.accepted:
-                print("Reservation accepted")
-                self.application.ev.reservation_id = None
-                self.application.ev.reservation_id_tag = None
-                self.application.ev.expiry_date = None
-                self.application.ev.parent_id = None
-                #delete reservation
-                print("delete_reservation")
-                self.application.databaseModule.delete_reservation(reservation_id)
+                print("Reservation used")
+                self.application.ev.clear_reservation()
 
             return response
         except Exception as e:
@@ -466,6 +460,8 @@ class ChargePoint16(cp):
             
             if self.application.availability == AvailabilityType.inoperative:
                 status = ChargePointStatus.unavailable
+                # clear reservation
+                self.application.ev.clear_reservation()
             
             request = call.StatusNotificationPayload(
                 connector_id,
@@ -639,16 +635,10 @@ class ChargePoint16(cp):
 
             LOGGER_CENTRAL_SYSTEM.info("Request:%s", request)
 
-            # Veritabanında rezervasyonu kontrol et ve iptal et
-            self.application.databaseModule.delete_reservation(reservation_id)
             response_status = CancelReservationStatus.accepted
 
-            # Rezervasyon başarıyla silindiyse, yerel değişkenleri temizle
-            self.application.ev.reservation_id = None
-            self.application.ev.reservation_id_tag = None
-            self.application.ev.expiry_date = None
-            self.application.ev.parent_id = None
-
+            self.application.ev.clear_reservation()
+           
             # Durumu güncelle
             if self.application.ev.control_pilot == ControlPlot.stateA.value:
                 self.application.change_status_notification(ChargePointErrorCode.no_error, ChargePointStatus.available)
@@ -690,6 +680,7 @@ class ChargePoint16(cp):
                 response = call_result.ChangeAvailabilityPayload(
                     status = AvailabilityStatus.accepted
                 )
+                self.application.ev.clear_reservation()
                 LOGGER_CHARGE_POINT.info("Response:%s", response)
             return response
         except Exception as e:

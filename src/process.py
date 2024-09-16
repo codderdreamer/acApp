@@ -349,17 +349,11 @@ class Process:
                     if self.application.ev.reservation_id != None:
                         if self.application.ev.reservation_id_tag == self.id_tag or self.application.ev.reservation_id_tag == self.application.ev.card_id:    # rezerve eden kişinin id_tagimi
                             self.id_tag = self.application.ev.reservation_id_tag
-                            date_object = datetime.strptime(self.application.ev.expiry_date, '%Y-%m-%dT%H:%M:%S.%fZ')
-                            timestamp = time.mktime(date_object.timetuple())
-                            if timestamp - time.time() > 0:
+                            if not self.application.ev.is_reservation_expired():
                                 asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
-                                self.application.ev.reservation_id = None
-                                self.application.ev.reservation_id_tag = None
-                                self.application.ev.expiry_date = None
+                                self.application.ev.clear_reservation()
                             else:
-                                self.application.ev.reservation_id = None
-                                self.application.ev.reservation_id_tag = None
-                                self.application.ev.expiry_date = None
+                                self.application.ev.clear_reservation()
                                 self.application.deviceState = DeviceState.FAULT
                                 return
                         else:

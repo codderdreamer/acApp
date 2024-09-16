@@ -126,6 +126,17 @@ class EV():
                 print(f"Error parsing expiry_date: {e}")
                 return True
 
+    def clear_reservation(self):
+        """
+        Rezervasyonu temizler.
+        """
+        self.application.databaseModule.delete_reservation(self.reservation_id)
+        self.reservation_id = None
+        self.reservation_id_tag = None
+        self.expiry_date = None
+        self.parent_id = None
+
+
     def check_and_clear_expired_reservation(self):
         """
         Mevcut rezervasyonun süresinin dolup dolmadığını kontrol eder.
@@ -133,21 +144,19 @@ class EV():
         """
         if self.reservation_id is not None:
             if self.is_reservation_expired():
-                self.application.databaseModule.delete_reservation(self.reservation_id)
-                self.reservation_id = None
-                self.reservation_id_tag = None
-                self.expiry_date = None
-                self.parent_id = None
-                # ChargePoint'i kullanılabilir hale getir
-                self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
-                # Set device state to IDLE
-                self.application.deviceState = DeviceState.IDLE
+                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation has expired and will be cleared.")
+                self.clear_reservation()
+                
+                # Eğer cihaz şarjda A konumunda ise
+                if self.control_pilot == ControlPlot.stateA.value:
+                    # ChargePoint'i kullanılabilir hale getir
+                    self.application.change_status_notification(ChargePointErrorCode.noError,ChargePointStatus.available)
+                    # Set device state to IDLE
+                    self.application.deviceState = DeviceState.IDLE
 
-                # Set LED state to StandBy
-                self.application.led_state = LedState.StandBy
-
-
-                print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation expired and has been cleared.")
+                    # Set LED state to StandBy
+                    self.application.led_state = LedState.StandBy
+                    
             else:
                 print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Reservation is still valid.")
 

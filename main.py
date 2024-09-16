@@ -127,12 +127,12 @@ class Application():
                 elif self.chargePointStatus == ChargePointStatus.faulted and self.process.locker_error:
                     self.led_state = LedState.LockerError
                     print("L9")
-                elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
-                    self.led_state = LedState.Fault
-                    print("L10")
                 elif self.deviceState == DeviceState.OFFLINE:
                     self.led_state = LedState.DeviceOffline
                     print("L11")
+                elif self.chargePointStatus == ChargePointStatus.faulted and self.ev.proximity_pilot_current == 0:
+                    self.led_state = LedState.Fault
+                    print("L10")
                 elif self.process.try_charge:
                     self.led_state = LedState.Fault
                     print("L12")

@@ -315,21 +315,21 @@ class Process:
             self.application.deviceState = DeviceState.CONNECTED
             return
         
-        if self.id_tag and self.application.cardType == CardType.BillingCard and self.application.ocppActive:
-            if self.application.ev.control_pilot == ControlPlot.stateC.value:
-                self.set_max_current()
-                self.relay_control(Relay.On)
-                self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.charging)
-                if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
-                    self.application.serialPort.get_command_pid_current()
-                    self.application.serialPort.get_command_pid_voltage()
-                    self.application.serialPort.get_command_pid_power(PowerType.kw)
-                    self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
-                self.application.meter_values_on = True
-                Thread(target=self.meter_values_thread,daemon=True).start()
-                self.application.ev.charge = True
-                self.charge_while()
-                return
+        # if self.id_tag and self.application.cardType == CardType.BillingCard and self.application.ocppActive:
+        #     if self.application.ev.control_pilot == ControlPlot.stateC.value:
+        #         self.set_max_current()
+        #         self.relay_control(Relay.On)
+        #         self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.charging)
+        #         if self.application.settings.deviceSettings.mid_meter == False and self.application.settings.deviceSettings.externalMidMeter == False:
+        #             self.application.serialPort.get_command_pid_current()
+        #             self.application.serialPort.get_command_pid_voltage()
+        #             self.application.serialPort.get_command_pid_power(PowerType.kw)
+        #             self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
+        #         self.application.meter_values_on = True
+        #         Thread(target=self.meter_values_thread,daemon=True).start()
+        #         self.application.ev.charge = True
+        #         self.charge_while()
+        #         return
 
         if self.application.ev.card_id != "" and self.application.ev.card_id != None:
             self.id_tag = self.application.ev.card_id
@@ -346,12 +346,13 @@ class Process:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
                 if self.application.ev.charge == False:
                     self.application.ev.charge = True
-                    self.application.chargePoint.start_transaction_result = None
+                    # self.application.chargePoint.start_transaction_result = None
                     if self.application.ev.reservation_id != None:
                         if self.application.ev.reservation_id_tag == self.id_tag or self.application.ev.reservation_id_tag == self.application.ev.card_id:    # rezerve eden kişinin id_tagimi
                             self.id_tag = self.application.ev.reservation_id_tag
                             if not self.application.ev.is_reservation_expired():
-                                asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
+                                future = asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
+                                result = future.result()
                                 self.application.ev.clear_reservation()
                             else:
                                 self.application.ev.clear_reservation()
@@ -360,19 +361,16 @@ class Process:
                         else:
                             self.application.deviceState = DeviceState.FAULT
                             return
-                    else:
-                        asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
-                    time_start = time.time()
-                    while True:
-                        if self.application.chargePoint.start_transaction_result != None:
-                            break
-                        if self.application.deviceState != DeviceState.CHARGING:
-                            return
-                if self.application.chargePoint.start_transaction_result == AuthorizationStatus.accepted:
-                    pass
-                else:
+                    elif self.application.chargePoint.start_transaction_result == None:
+                        future = asyncio.run_coroutine_threadsafe(self.application.chargePoint.send_start_transaction(connector_id=1,id_tag=self.id_tag,meter_start=0,reservation_id=self.application.ev.reservation_id),self.application.loop)
+                        result = future.result()
+                    
+
+                if self.application.chargePoint.start_transaction_result != AuthorizationStatus.accepted:
+                    print("start_transaction_result:",self.application.chargePoint.start_transaction_result)
                     self.application.deviceState = DeviceState.FAULT
                     return
+                
                 if self.application.ev.control_pilot == ControlPlot.stateC.value:
                     self.application.ev.charge = True
                     self.set_max_current()
@@ -388,6 +386,7 @@ class Process:
                     self.charge_while()
             else:
                 self.application.deviceState = DeviceState.WAITING_AUTH
+        
         elif self.application.cardType == CardType.StartStopCard:
             if self.application.ev.start_stop_authorize:
                 self.application.ev.start_date = datetime.now().strftime("%d-%m-%Y %H:%M")
@@ -534,6 +533,8 @@ class Process:
         self.locker_error = False
         self.application.ev.stop_pwm_off_relay()
         self.application.ev.clean_charge_variables()
+        if self.application.cardType == CardType.BillingCard and self.application.ocppActive:
+            self.application.chargePoint.start_transaction_result = None
     
         self.application.serialPort.get_command_pid_energy(EnergyType.kwh)
 

@@ -113,6 +113,7 @@ class Process:
                     print(Color.Red.value, "Locker Error")
                     self.locker_error = True
                     self.application.deviceState = DeviceState.FAULT
+                    self.application.change_status_notification(ChargePointErrorCode.connector_lock_failure,ChargePointStatus.faulted,"LockerInitializeError")
             self.application.testWebSocket.send_locker_state_lock(result)
         elif self.application.socketType == SocketType.TetheredType:
             self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
@@ -436,10 +437,10 @@ class Process:
                     self.application.change_status_notification(ChargePointErrorCode.other_error,ChargePointStatus.faulted,"OverPowerFailure")
                 elif value == PidErrorList.OverVoltageFailure:
                     self.application.change_status_notification(ChargePointErrorCode.over_voltage,ChargePointStatus.faulted,"OverVoltageFailure")
-        elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
-            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")
         elif self.locker_error:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"LockerError")
+        elif (self.application.ev.control_pilot == ControlPlot.stateB.value or self.application.ev.control_pilot == ControlPlot.stateC.value):
+            self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"NeedReplugging")
         elif self.application.ev.proximity_pilot_current == 0:
             self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.faulted,"proximity_pilot_current = 0")
         else:

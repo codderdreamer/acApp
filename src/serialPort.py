@@ -602,14 +602,6 @@ class SerialPort():
                         card_id += data[i]
                 if card_id != "":
                     print(Color.Blue.value,"Readed card id",card_id)
-                # if time.time() - self.delete_time_rfid > 2:
-                #     self.set_command_pid_rfid()
-                #     self.delete_time_rfid = time.time()
-                # if card_id != "":
-                #     if time.time() - self.set_time_rfid > 5:
-                #         print(Color.Yellow.value,"Card id set edildi",card_id)
-                #         self.set_time_rfid = time.time()
-                #         self.application.ev.card_id = card_id
         except Exception as e:
             print("get_response_pid_rfid Exception:",e)
                     

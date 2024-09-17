@@ -18,7 +18,8 @@ class DeviceStateModule():
         self.__relay : Relay = None                                     # MCU'dan okunan değer
         self.__led_control : LedState = None                            # MCU'dan okunan değer
         self.__locker_control : LedState = None                         # MCU'dan okunan değer
-        self.__temperature : str = None
+        self.__temperature : str = None                                 # MCU'dan okunan değer
+        self.__card_id = None
    
 
     @property

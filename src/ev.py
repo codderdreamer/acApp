@@ -29,6 +29,7 @@ class EV():
         self.voltage_L3 = 0
         self.power = 0
         self.energy = 0
+        self.modbus_first_energy = None # Cihaz hata durumunda şarj kesiliyor bu yüzden modbus ile bağlantı gidiyor. Bu yüzden ilk enerji burada saklanmalı
 
         self.temperature = None
 
@@ -208,6 +209,8 @@ class EV():
             self.application.process.id_tag = None
             self.application.process.initially_charge = False
             self.application.process.there_is_transaction = False
+            # modbus first energy sıfırlanıyor
+            self.application.ev.modbus_first_energy = None
             self.application.databaseModule.set_charge("False", "", "")
         except Exception as e:
             print(Color.Red.value,"clean_charge_variables Exception:",e)

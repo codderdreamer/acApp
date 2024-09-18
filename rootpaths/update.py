@@ -23,6 +23,7 @@ ACAPP_OLD_DIR = "/root/acApp_old"
 ACAPP_NEW_DIR = "/root/acApp_new"
 SERIAL_PORT_PATH = "/dev/ttyS2"
 OCPP_FIRMWARE_DIR = "/root/acAppFirmwareFiles"
+SETTINGS_SQLITE_FILE_NAME = "Settings.sqlite"
 HARDWARE_BOOT_PIN = 11
 SOFTWARE_BOOT_PIN = 13
 RESET_PIN = 10
@@ -278,7 +279,7 @@ class ServiceManager:
     def start_service(service_name="acapp.service"):
         subprocess.run(['systemctl', 'start', service_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         led_manager.stop_led_thread()
-        logger.info(f"{service_name} servisi başlatıldı. Kontroller için 25 saniye bekleniyor...")
+        logger.info(f"{service_name} servisi başlatıldı. Kontroller için 5 dakika bekleniyor...")
         if ServiceManager.is_service_active(service_name):
             # PID izleme sadece başlangıçtan sonra
             pid_not_changed = ServiceManager.monitor_service_pid(service_name)
@@ -343,7 +344,7 @@ class ServiceManager:
             return None
 
     @staticmethod
-    def monitor_service_pid(service_name="acapp.service", wait_time=60, retry_attempts=3):
+    def monitor_service_pid(service_name="acapp.service", wait_time=360, retry_attempts=3):
         """
         Servisin PID bilgisini izler. Eğer PID 1 dakika boyunca değişmezse uyarı verir.
         
@@ -364,13 +365,13 @@ class ServiceManager:
             if initial_pid:
                 break  # PID alınabildiyse döngüden çık
             attempt += 1
-            time.sleep(5)  # 5 saniye bekle ve tekrar dene
+            time.sleep(15)  # 15 saniye bekle ve tekrar dene
 
         if not initial_pid:
             logger.error(f"{service_name} servisi için PID 3 denemeden sonra alınamadı, izleme iptal edildi.")
             return False  # PID alınamadıysa False döndür
 
-        time.sleep(wait_time)  # 1 dakika bekle
+        time.sleep(wait_time)  # 5 dakika bekle
         current_pid = ServiceManager.get_service_pid(service_name)
         
         if current_pid == initial_pid:
@@ -399,7 +400,6 @@ class NetworkManager:
             if response.status_code == 200:
                 return True
         except (requests.ConnectionError, requests.Timeout):
-            logger.error("İnternet bağlantısı yok veya yanıt süresi doldu.")
             return False
         
         # Eğer yanıt kodu 200 değilse de False döner
@@ -834,13 +834,22 @@ class FileManager:
                 if filename.endswith((".sqlite", ".db")):
                     source_path = os.path.join(ROOT_DIR, filename)
                     target_path = os.path.join(self.target_dir, filename)
-
                     # Set the sync script path
                     self.database_manager.set_sync_script_path(os.path.join(self.target_dir, "sync_database.py"))
-                    # Veritabanı taşıma işlemi database_manager kullanılarak yapılır.
-                    self.database_manager.update_old_databases(source_path, target_path)
-                    logger.debug(f"{source_path} dosyası {target_path} dizinine başarıyla taşındı.")
-            
+
+                    if filename == SETTINGS_SQLITE_FILE_NAME:
+                        if self.database_manager.update_settings_database(source_path, target_path):
+                            logger.debug(f"{source_path} dosyası {target_path} dizinine başarıyla taşındı.")
+                        else:
+                            logger.error(f"{source_path} dosyası {target_path} dizinine taşınamadı.")
+                            return False
+                    else:
+                        if self.database_manager.update_old_databases(source_path, target_path):
+                            logger.debug(f"{source_path} dosyası {target_path} dizinine başarıyla taşındı.")
+                        else:
+                            logger.error(f"{source_path} dosyası {target_path} dizinine taşınamadı.")
+                            return False
+
             return True
                 
         except FileNotFoundError as fnf_error:
@@ -860,12 +869,14 @@ class FileManager:
         try:
             rootpaths_dir = os.path.join(ACAPP_NEW_DIR, "rootpaths")
             for filename in os.listdir(rootpaths_dir):
-                # update.py dosyasını hariç tut
-                if filename == "update.py":
-                    continue
-                source_path = os.path.join(rootpaths_dir, filename)
-                target_path = os.path.join(ROOT_DIR, filename)
-                shutil.copy2(source_path, target_path)
+                if filename.endswith((".sqlite", ".db")):
+                    source_path = os.path.join(rootpaths_dir, filename)
+                    target_path = os.path.join(ROOT_DIR, filename)
+                    shutil.copy2(source_path, target_path)
+                    logger.debug(f"{source_path} dosyası {target_path} dizinine başarıyla kopyalandı.")
+                else:
+                    logger.debug(f"{filename} dosyası kopyalanmadı.")
+
             return True
         except FileNotFoundError as fnf_error:
             logger.error(f"Dosya kopyalama hatası: {fnf_error}")
@@ -887,7 +898,7 @@ class DatabaseManager:
         self.new_conn = None
 
         # Python script path ve python komutu
-        self.sync_script_path = "./new_repo/rootpaths/sync_script.py"  # Çalıştırılacak Python betiğinin yolu
+        self.sync_script_path = None
         self.python_command = "python3"  # Python komutunu burada ayarlıyoruz
 
         # Diğer genel değişkenler
@@ -895,6 +906,9 @@ class DatabaseManager:
 
         self.old_db_path = None
         self.new_db_path = None
+
+        self.old_firmware_version = None
+        self.new_firmware_version = None
 
     def set_db_paths(self, old_db_path, new_db_path):
         """
@@ -963,40 +977,81 @@ class DatabaseManager:
             logger.debug(f"Eski veritabanı version: {old_version}, Yeni veritabanı version: {new_version}")
 
             if old_version == new_version:
-                # self.copy_all_tables()  # Eşleşme varsa tüm tabloları kopyala
-                self.copy_database_file_to_new_directory()  # Veritabanı dosyasını yeni dizine kopyala
+                if self.copy_database_file_to_new_directory():
+                    logger.debug("Veritabanı dosyası başarıyla kopyalandı.")
+                    return True
+                else:
+                    logger.error("Veritabanı dosyası kopyalanamadı.")
+                    return False
             else:
                 logger.warning(f"Veritabanı versiyonları uyuşmuyor! Eski: {old_version}, Yeni: {new_version}")
-                self.run_sync_script()  # Versiyonlar uyuşmadığında betiği çalıştır
-
+                if self.run_sync_script():
+                    logger.debug("Python betiği başarıyla çalıştırıldı.")
+                    return True
+                else:
+                    logger.error("Python betiği çalıştırılamadı.")
+                    return False
+                
         except sqlite3.Error as e:
             logger.error(f"Veritabanı versiyon karşılaştırma hatası: {e}")
+            return False
 
+    def get_firmware_version(self, connection):
+        """
+        Yeni veritabanındaki firmware_version tablosundaki 'value' == 'version' ise key değerini döner.
+        """
+        try:
+            new_version = connection.execute("SELECT key FROM firmware_version WHERE value == 'version'").fetchone()[0]
+            logger.debug(f"Yeni firmware version: {new_version}")
+            return new_version
+        except sqlite3.Error as e:
+            logger.error(f"Yeni firmware version alınamadı: {e}")
+            return None
+    
+    def update_new_firmware_version(self, new_version):
+        """
+        Yeni veritabanındaki firmware_version tablosundaki  'value' == 'version' ise key değerini günceller.
+        """
+        try:
+            self.new_conn.execute(f"UPDATE firmware_version SET key = '{new_version}' WHERE value == 'version'")
+            self.new_conn.commit()
+            return True
+        except sqlite3.Error as e:
+            logger.error(f"Yeni firmware version güncellenemedi: {e}")
+        
     def run_sync_script(self):
         """
         new_repo'daki rootpaths klasöründeki Python betiğini çalıştırır.
         """
         try:
             logger.info(f"Python betiği çalıştırılıyor: {self.sync_script_path}")
-            subprocess.run([self.python_command, self.sync_script_path], check=True)
+            if not os.path.exists(self.sync_script_path):
+                return False
+            else:
+                subprocess.run([self.python_command, self.sync_script_path, self.old_db_path, self.new_db_path], check=True)
+                return True
+            
         except subprocess.CalledProcessError as e:
             logger.error(f"Python betiği çalıştırılırken hata oluştu: {e}")
+            return False
 
- 
     def copy_database_file_to_new_directory(self):
         """
         Eski veritabanını yeni veritabanına kopyalar.
         """
         try:
             shutil.copy2(self.old_db_path, self.new_db_path)
-            logger.info("Veritabanı dosyası başarıyla kopyalandı.")
+            logger.debug("Veritabanı dosyası başarıyla kopyalandı.")
+            return True
         except FileNotFoundError as fnf_error:
             logger.error(f"Veritabanı dosyası kopyalanırken hata: {fnf_error}")
+            return False
         except PermissionError as perm_error:
             logger.error(f"Veritabanı dosyası kopyalanırken hata: {perm_error}")
+            return False
         except Exception as e:
             logger.error(f"Veritabanı dosyası kopyalanırken beklenmeyen bir hata oluştu: {e}")
-
+            return False
 
     def update_old_databases(self, old_db_path, new_db_path):
         """
@@ -1005,10 +1060,44 @@ class DatabaseManager:
         self.set_db_paths(old_db_path, new_db_path)
         
         if self.connect():
-            self.compare_database_versions()  # Versiyonları kıyasla
+            compare_result = self.compare_database_versions()
             self.disconnect()
+            return compare_result
         else:
             logger.error("Veritabanı bağlantısı başarısız oldu.")
+            return False
+            
+    def update_settings_database(self, old_db_path, new_db_path):
+        """
+        Settings tablosunu günceller.
+        """
+        self.set_db_paths(old_db_path, new_db_path)
+        
+        if self.connect():
+            self.old_firmware_version = self.get_firmware_version(self.old_conn)
+            self.new_firmware_version = self.get_firmware_version(self.new_conn)
+
+            if not self.new_firmware_version:
+                logger.error("Yeni firmware versiyonu alınamadı.")
+                return False
+            compare_result = self.compare_database_versions()
+            if compare_result:
+                update_firmware_version_result = self.update_new_firmware_version(self.new_firmware_version)
+                if update_firmware_version_result:
+                    logger.info("Firmware versiyonu başarıyla güncellendi.")
+                    self.disconnect()
+                    return True
+                else:
+                    logger.error("Firmware versiyonu güncellenemedi.")
+                    self.disconnect()
+                    return False
+            else:
+                logger.error("Veritabanı karşılaştırma işlemi başarısız oldu.")
+                self.disconnect()
+                return False
+        else:
+            logger.error("Veritabanı bağlantısı başarısız oldu.")
+            return False
 
 class OcppUpdateManager:
     def __init__(self, fw_file_dir):
@@ -1180,10 +1269,10 @@ class RestoreManager:
                 logging.error(f"Eski sürümde 'rootpaths' dizini bulunamadı: {old_rootpaths_dir}")
                 return False
             
-            # Kök dizin dosyalarını güncelle
+            # Database dosyalarını geri yükle
             for item in os.listdir(old_rootpaths_dir):
                 
-                if item in ["external_run.py", "sync_database.py", "update.py"]:
+                if not item.endswith((".sqlite", ".db")):
                     continue
 
                 source = os.path.join(old_rootpaths_dir, item)
@@ -1276,7 +1365,7 @@ class FinalOperationsManager:
     """def save_install_status(status, context):
     Son işlemleri yöneten sınıf. Dış betiği çalıştırır, root dizinini günceller ve repoyu taşır.
     """
-    def __init__(self, file_manager, git_manager, mcu_manager):
+    def __init__(self, file_manager, git_manager, mcu_manager, database_manager):
         """
         :param file_manager: Dosya yönetimini sağlayan sınıf.
         :param git_manager: Git işlemlerini yöneten sınıf.
@@ -1284,6 +1373,7 @@ class FinalOperationsManager:
         self.file_manager = file_manager
         self.git_manager = git_manager
         self.mcu_manager = mcu_manager
+        self.database_manager = database_manager
         self.python_command = "python3"
 
     def validate_directory(self, dir_path):
@@ -1313,7 +1403,7 @@ class FinalOperationsManager:
             InstallStatus: İşlemin sonucunu belirten enum değeri.
         """
         try:
-            result = subprocess.run([self.python_command, script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            result = subprocess.run([self.python_command, script_path, self.database_manager.old_firmware_version, self.database_manager.new_firmware_version], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             if result.returncode == 0:
                 logger.debug(f"Betik başarıyla çalıştırıldı: {script_path}")
                 return True
@@ -1391,17 +1481,14 @@ class FinalOperationsManager:
             if not validation_status:
                 return False
 
-            # Veritabanları ve update.py hariç güncelleme işlemi
+            # Veritabanları güncelleme işlemi
             for filename in os.listdir(target_dir):
-                # filename external_run.py ve sync_database.py dosyalarını taşıma işlemi dışında bırakır
-                if filename.endswith(("external_run.py", "sync_database.py", "update.py")):
-                    continue
-                    
-                if not filename.endswith((".sqlite", ".db")):
+                if filename.endswith((".sqlite", ".db")):
                     source_path = os.path.join(target_dir, filename)
                     target_path = os.path.join(ROOT_DIR, filename)
 
                     shutil.copy2(source_path, target_path)
+                    logger.debug(f"{source_path} dosyası {target_path} dizinine başarıyla taşındı.")
           
             return True
         
@@ -1476,7 +1563,7 @@ class ErrorManager:
         self.update_fail_wait_manager = update_fail_wait_manager
         self.git_manager = git_manager
         self.ocpp_update_manager = ocpp_update_manager
-        restore_retry_count = 0
+        self.restore_retry_count = 0
     
     @staticmethod
     def save_install_status(status, context):
@@ -1869,7 +1956,7 @@ if __name__ == '__main__':
     mcu_manager = MCUManager(led_manager)
     charge_manager = ChargeManager()
     ocpp_update_manager = OcppUpdateManager(OCPP_FIRMWARE_DIR)
-    final_operations_manager = FinalOperationsManager(file_manager, git_manager, mcu_manager)
+    final_operations_manager = FinalOperationsManager(file_manager, git_manager, mcu_manager, database_manager)
     restore_manager = RestoreManager(ACAPP_OLD_DIR, ACAPP_DIR, led_manager, mcu_manager)
     error_manager = ErrorManager(
                                     restore_manager=restore_manager,

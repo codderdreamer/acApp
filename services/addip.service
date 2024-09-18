@@ -7,7 +7,7 @@ After=network-online.target
 ExecStart=/root/addip.sh
 Type=simple
 Restart=always
-RestartSec=360s
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

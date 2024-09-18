@@ -1,0 +1,11 @@
+sudo apt remove ethtool -y
+sudo apt remove gsettings-desktop-schemas -y
+sudo apt remove iperf3 -y
+sudo apt remove make -y
+sudo apt remove makedev -y
+sudo apt remove minicom -y
+sudo apt remove nano -y
+sudo apt remove pulseaudio -y
+sudo apt remove pulseaudio-utils -y
+sudo apt remove fakeroot -y
+sudo apt autoremove -y

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 INTERFACE="eth1"
-STATIC_IP="192.168.52.5/24"
-ROUTE="192.168.52.0/24"
+STATIC_IP="172.16.0.104/16"
+ROUTE="172.16.0.0/16"
 
 # Script'in başladığını loglayın
 logger "Script Started"

@@ -7,7 +7,7 @@ ExecStart=/usr/bin/python3 /root/update.py
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-RestartSec=360s
+RestartSec=60s
 User=root
 
 [Install]

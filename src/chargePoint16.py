@@ -880,7 +880,8 @@ class ChargePoint16(cp):
             log_files = [
                 '/root/output.txt',
                 '/tmp/acApp/logs/central_system.log',
-                '/tmp/acApp/logs/charge_point.log'
+                '/tmp/acApp/logs/charge_point.log',
+                '/root/update_manager.log'
             ]
 
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')

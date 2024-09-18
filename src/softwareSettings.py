@@ -47,15 +47,6 @@ class SoftwareSettings():
         except Exception as e:
             print("check_ip_exists Exception:",e)
 
-    def add_ip(self):
-        try:
-            if not self.check_ip_exists():
-                process = subprocess.Popen(['ip', 'addr', 'add', '192.168.52.5/24','dev','eth1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout, stderr = process.communicate()
-                result = stdout.decode()
-        except Exception as e:
-            print("check_ip_exists Exception:",e)
-
     def check_internet_connection(self):
         interfaces = ["eth1", "wlan0", "ppp0"]
         while True:
@@ -422,7 +413,6 @@ class SoftwareSettings():
                 self.get_active_ips()
                 self.find_stateOfOcpp()
                 self.strenghtOf4G()
-                # self.add_ip()
                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_device_status())
             except Exception as e:
                 print("control_device_status Exception:",e)
@@ -430,15 +420,24 @@ class SoftwareSettings():
 
     def set_bluetooth_settings(self):
         try:
-            process = subprocess.Popen(['hostname'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
-            output = stdout.decode('utf-8')
-            name = output.split("\n")[0]
             new_bluetooth_name = self.application.settings.bluetoothSettings.bluetooth_name
 
-            if name != new_bluetooth_name:
-                os.system("hostnamectl set-hostname '" + new_bluetooth_name + "'")
-                os.system("reboot")
+            # Geçerli hostname'i kontrol ediyoruz
+            process = subprocess.run(['hostname'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            current_name = process.stdout.decode('utf-8').strip()
+
+            # Eğer mevcut hostname ile yeni Bluetooth adı aynı değilse, Bluetooth adını değiştir
+            if current_name != new_bluetooth_name:
+                # bluetoothctl ile Bluetooth adını değiştir ve gerekli ayarları yap
+                commands = f"system-alias {new_bluetooth_name}\npower on\ndiscoverable on\nquit\n"
+                subprocess.run(['bluetoothctl'], input=commands.encode('utf-8'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                # 'hciconfig' ile Bluetooth Name değerini değiştiriyoruz
+                subprocess.run(['hciconfig', 'hci0', 'name', new_bluetooth_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 
+                # Hostname'i de yeni Bluetooth adı ile değiştirme
+                os.system(f"hostnamectl set-hostname '{new_bluetooth_name}'")
+                
+                print(f"Bluetooth adı '{new_bluetooth_name}' olarak ayarlandı.")
         except Exception as e:
-            print("Exception in set_bluetooth_settings")
+            print(f"set_bluetooth_settings fonksiyonunda hata: {str(e)}")

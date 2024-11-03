@@ -824,7 +824,7 @@ class DatabaseModule():
             print("get_socket_type Exception:", e)
         return data_dict
             
-    def set_max_current(self,maxcurrent):
+    def set_max_current(self,maxcurrent : str):
         try:
             self.settings_database = sqlite3.connect('/root/Settings.sqlite')
             self.cursor = self.settings_database.cursor()

@@ -71,15 +71,20 @@ class Process:
                     break
 
     def set_max_current(self):
-        if self.application.socketType == SocketType.Type2:
-            if self.application.max_current==None or self.application.ev.proximity_pilot_current==None:
-                time.sleep(3)
-            if int(self.application.max_current) > int(self.application.ev.proximity_pilot_current):
-                self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))
-            else:
+        try:
+            if self.application.socketType == SocketType.Type2:
+                if self.application.max_current==None or self.application.ev.proximity_pilot_current==None:
+                    print(Color.Yellow.value,"self.application.max_current",self.application.max_current)
+                    print(Color.Yellow.value,"self.application.ev.proximity_pilot_current",self.application.ev.proximity_pilot_current)
+                else:
+                    if int(self.application.max_current) > int(self.application.ev.proximity_pilot_current):
+                        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.ev.proximity_pilot_current))
+                    else:
+                        self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
+            elif self.application.socketType == SocketType.TetheredType:
                 self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
-        elif self.application.socketType == SocketType.TetheredType:
-            self.application.serialPort.set_command_pid_cp_pwm(int(self.application.max_current))
+        except Exception as e:
+            print(Color.Red.value,"set_max_current process Exception:",e )
 
     def lock_control(self):
         print("Kilit kitleniyor...")

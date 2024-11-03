@@ -31,37 +31,32 @@ class FlaskModule:
         def hera():
             return render_template("index.html")
 
-        @self.app.route("/admin/dashboard")
+        @self.app.route("/dashboard")
         @self.token_required
         def dashboard():
             return render_template("index.html")
 
-        @self.app.route("/admin/quick-setup")
-        @self.token_required
-        def quick():
-            return render_template("index.html")
-
-        @self.app.route("/admin/charging")
+        @self.app.route("/charge")
         @self.token_required
         def charging():
             return render_template("index.html")
 
-        @self.app.route("/admin/hardware")
+        @self.app.route("/hardware")
         @self.token_required
         def hardware():
             return render_template("index.html")
 
-        @self.app.route("/admin/software")
+        @self.app.route("/software")
         @self.token_required
         def software():
             return render_template("index.html")
 
-        @self.app.route("/admin/status")
+        @self.app.route("/device")
         @self.token_required
         def status():
             return render_template("index.html")
         
-        @self.app.route("/admin/profile")
+        @self.app.route("/profile")
         @self.token_required
         def profile():
             return render_template("index.html")
@@ -80,22 +75,7 @@ class FlaskModule:
             else:
                 return jsonify({'message': 'Invalid username or password'}), 401
               
-        
-        # @self.app.route('/login', methods=['POST'])
-        # def login():
-        #     data = request.get_json()
-        #     UserName = data.get('UserName')
-        #     Password = data.get('Password')
-            
-        #     # Assume authentication is successful
-        #     # You should perform actual authentication here
-        #     session['authenticated'] = True
-        #     session['UserName'] = UserName
 
-        #     return jsonify({'message': 'Login successful'})
-            
-        
-        
         @self.app.route('/changeProfile', methods=['POST'])
         @self.token_required
         def changeProfile():

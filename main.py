@@ -18,7 +18,6 @@ from ocpp.v16.enums import *
 from datetime import datetime
 from src.modbusModule import ModbusModule
 from src.flaskModule import FlaskModuleThread
-from src.testServer import TestServer
 import subprocess
 import os
 from src.webSocket import *

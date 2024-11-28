@@ -23,6 +23,44 @@ class TestWebSocketModule():
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever, daemon=True).start()
 
+    def save_config(self):
+        try:
+            command = {
+            "Command": "WifiSettings",
+            "Data": {
+                "wifiEnable": "True",
+                "mod": self.wifiSettings.mod,
+                "ssid": self.wifiSettings.ssid,
+                "password": self.wifiSettings.password,
+                "encryptionType": self.wifiSettings.encryptionType,
+                "wifidhcpcEnable": bool(self.wifiSettings.wifidhcpcEnable == "True"),
+                "ip": self.wifiSettings.ip,
+                "netmask": self.wifiSettings.netmask,
+                "gateway": self.wifiSettings.gateway
+            }
+        }
+            self.application.settings.set_wifi_settings
+        except Exception as e:
+            print("save_config Exception:",e)
+
+# def set_wifi_settings(self, sjon):
+#         try:
+#             if (sjon["Command"] == "WifiSettings"):
+#                 wifiEnable = str(sjon["Data"]["wifiEnable"])
+#                 mod = sjon["Data"]["mod"]
+#                 ssid = sjon["Data"]["ssid"]
+#                 password = sjon["Data"]["password"]
+#                 encryptionType = sjon["Data"]["encryptionType"]
+#                 wifidhcpcEnable = str(sjon["Data"]["wifidhcpcEnable"])
+#                 ip = sjon["Data"]["ip"]
+#                 netmask = sjon["Data"]["netmask"]
+#                 gateway = sjon["Data"]["gateway"]
+#                 self.application.databaseModule.set_wifi_settings(wifiEnable, mod, ssid, password, encryptionType, wifidhcpcEnable, ip, netmask, gateway)
+#                 self.application.softwareSettings.set_wifi()
+#                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_wifi_settings())
+#         except Exception as e:
+#             print("set_wifi_settings Exception:",e)
+
     def NewClientws(self, client, server):
         self.client = client
         if client:
@@ -52,36 +90,39 @@ class TestWebSocketModule():
                 print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
-                if Command == "Barkod":
-                    self.save_barkod_model_cpid(client, Data)
-                elif Command == "WifiMacReq":
-                    self.wifimac_send(client)
-                elif Command == "EthMacReq":
-                    self.eth1mac_get(client)
-                elif Command == "4gImeiReq":
-                    self.imei4g_get(client)
-                elif Command == "BluetoothSet":
-                    self.application.databaseModule.set_bluetooth_settings("Enable", "", self.application.settings.ocppSettings.chargePointId)
-                    self.application.softwareSettings.set_bluetooth_settings()
-                    self.send_bluetooth(client)
-                elif Command == "WifiControl":
-                    self.send_wifi_result(client)
-                elif Command == "setLedRed":
-                    self.application.test_led = True
-                    self.set_led_red(client)
-                elif Command == "setLedBlue":
-                    self.set_led_blue(client)
-                elif Command == "setLedGreen":
-                    self.set_led_green(client)
-                elif Command == "saveMasterCard":
-                    self.save_master_card(client)
-                elif Command == "SaveSlaveCard1":
-                    self.save_slave_card_1(client)
-                elif Command == "SaveSlaveCard2":
-                    self.save_slave_card_2(client)
-                elif Command == "MaxCurrent6":
-                    self.application.databaseModule.set_max_current(6)
-                    self.application.test_charge = True
+                self.parse_message(client,Command,Data)
+                if Command == "SaveConfig":
+                    print("Cihaz bilgileri kayıt ediliyor...")
+                # if Command == "Barkod":
+                #     self.save_barkod_model_cpid(client, Data)
+                # elif Command == "WifiMacReq":
+                #     self.wifimac_send(client)
+                # elif Command == "EthMacReq":
+                #     self.eth1mac_get(client)
+                # elif Command == "4gImeiReq":
+                #     self.imei4g_get(client)
+                # elif Command == "BluetoothSet":
+                #     self.application.databaseModule.set_bluetooth_settings("Enable", "", self.application.settings.ocppSettings.chargePointId)
+                #     self.application.softwareSettings.set_bluetooth_settings()
+                #     self.send_bluetooth(client)
+                # elif Command == "WifiControl":
+                #     self.send_wifi_result(client)
+                # elif Command == "setLedRed":
+                #     self.application.test_led = True
+                #     self.set_led_red(client)
+                # elif Command == "setLedBlue":
+                #     self.set_led_blue(client)
+                # elif Command == "setLedGreen":
+                #     self.set_led_green(client)
+                # elif Command == "saveMasterCard":
+                #     self.save_master_card(client)
+                # elif Command == "SaveSlaveCard1":
+                #     self.save_slave_card_1(client)
+                # elif Command == "SaveSlaveCard2":
+                #     self.save_slave_card_2(client)
+                # elif Command == "MaxCurrent6":
+                #     self.application.databaseModule.set_max_current(6)
+                #     self.application.test_charge = True
             except (Exception, RuntimeError) as e:
                 print(f"MessageReceivedws error: {e}")
                 sys.stdout.flush()
@@ -91,6 +132,12 @@ class TestWebSocketModule():
                             c['handler'].keep_alive = False
                             c['handler'].valid_client = False
                             server.clients.remove(client)
+
+    def parse_message(client,Command,Data):
+        try:
+            pass
+        except Exception as e:
+            print("parse_message Exception:",e)
 
     def save_barkod_model_cpid(self, client, Data):
         model = Data["model"]

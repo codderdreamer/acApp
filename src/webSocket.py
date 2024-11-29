@@ -95,6 +95,7 @@ class TestWebSocketModule():
                 if "BD Address" in line:
                     match = re.search(r"BD Address: ([0-9A-F:]{17})", line)
                     if match:
+                        print("Bluetooth mac: ",match.group(1))
                         return match.group(1)
             print("Bluetooth mac address not found")
             return None
@@ -146,7 +147,7 @@ class TestWebSocketModule():
                     imei_4g = self.get_4g_imei()
                     print("imei_4g",imei_4g)
                     break
-                if time.time() - time_start > 40:
+                if time.time() - time_start > 90:
                     print("süre doldu!")
                     break
                 time.sleep(3)

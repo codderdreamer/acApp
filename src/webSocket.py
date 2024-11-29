@@ -176,6 +176,28 @@ class TestWebSocketModule():
         except Exception as e:
             print("save_config Exception:",e)
 
+    def save_master_card(self, client):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id and self.slave2 != self.application.ev.card_id:
+                    self.application.databaseModule.set_master_card(self.application.ev.card_id)
+                    message = {
+                        "Command": "MasterCardResult",
+                        "Data": self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client, json.dumps(message))
+                    self.application.ev.card_id = ""
+                    return
+                if time.time() - time_start > 60:
+                    message = {
+                        "Command": "MasterCardResult",
+                        "Data": self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client, json.dumps(message))
+            except Exception as e:
+                print(f"save_master_card Exception: {e}")
+            time.sleep(0.5)
 
     def NewClientws(self, client, server):
         self.client = client
@@ -209,7 +231,11 @@ class TestWebSocketModule():
                 # self.parse_message(client,Command,Data)
                 if Command == "SaveConfig":
                     print("Cihaz bilgileri kayıt ediliyor...")
-                    self.save_config(client,Data)
+                    Thread(target=self.save_config,args=(client,Data,),daemon=True).start()
+                    # self.save_config(client,Data)
+                elif Command == "MasterCardRequest":
+                    print("Master card bekleniyor...")
+                    Thread(target=self.save_master_card, args=(client,),daemon=True).start()
                 # if Command == "Barkod":
                 #     self.save_barkod_model_cpid(client, Data)
                 # elif Command == "WifiMacReq":
@@ -349,21 +375,7 @@ class TestWebSocketModule():
         except Exception as e:
             print(f"set_led_green Exception: {e}")
 
-    def save_master_card(self, client):
-        while True:
-            try:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id and self.slave2 != self.application.ev.card_id:
-                    self.application.databaseModule.set_master_card(self.application.ev.card_id)
-                    message = {
-                        "Command": "MasterCard",
-                        "Data": self.application.ev.card_id
-                    }
-                    self.websocket.send_message(client, json.dumps(message))
-                    self.application.ev.card_id = ""
-                    return
-            except Exception as e:
-                print(f"save_master_card Exception: {e}")
-            time.sleep(0.5)
+
 
     def save_slave_card_1(self, client):
         while True:

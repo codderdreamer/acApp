@@ -92,13 +92,21 @@ class TestWebSocketModule():
         try:
             result = subprocess.check_output('hciconfig', shell=True).decode('utf-8')
             print("result",result)
-            for line in result:
-                if "BD Address" in line:
-                    match = re.search(r"BD Address: ([0-9A-F:]{17})", line)
-                    if match:
-                        print("Bluetooth mac: ",match.group(1))
-                        return match.group(1)
-            print("Bluetooth mac address not found")
+            # for line in result:
+            #     if "BD Address" in line:
+            #         match = re.search(r"BD Address: ([0-9A-F:]{17})", line)
+            #         if match:
+            #             print("Bluetooth mac: ",match.group(1))
+            #             return match.group(1)
+                    
+            mac_regex = r"BD Address:\s*([A-Fa-f0-9:]{17})"
+            match = re.search(mac_regex, result)
+            if match:
+                mac_address = match.group(1)
+                print(f"Bluetooth MAC Adresi: {mac_address}")
+                return mac_address
+            else:
+                print("Bluetooth MAC adresi bulunamadı.")
             return None
         except Exception as e:
             print("get_bluetooth_mac Exception:",e)

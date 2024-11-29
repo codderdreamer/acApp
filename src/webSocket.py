@@ -195,6 +195,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    return
             except Exception as e:
                 print(f"save_master_card Exception: {e}")
             time.sleep(0.5)

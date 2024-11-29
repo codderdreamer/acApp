@@ -9,6 +9,7 @@ from src.enums import *
 import subprocess
 import os
 import time
+import re
 
 class TestWebSocketModule():
     def __init__(self, application, logger) -> None:
@@ -23,43 +24,146 @@ class TestWebSocketModule():
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever, daemon=True).start()
 
-    def save_config(self):
+    def get_eth_mac(self):
         try:
-            command = {
-            "Command": "WifiSettings",
-            "Data": {
-                "wifiEnable": "True",
-                "mod": self.wifiSettings.mod,
-                "ssid": self.wifiSettings.ssid,
-                "password": self.wifiSettings.password,
-                "encryptionType": self.wifiSettings.encryptionType,
-                "wifidhcpcEnable": bool(self.wifiSettings.wifidhcpcEnable == "True"),
-                "ip": self.wifiSettings.ip,
-                "netmask": self.wifiSettings.netmask,
-                "gateway": self.wifiSettings.gateway
-            }
-        }
-            self.application.settings.set_wifi_settings
+            result = subprocess.run(['ip', 'link'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+            output = result.stdout
+            for line in output.splitlines():
+                if 'eth1' in line:
+                    interface = line.split()[1].strip(':')
+                    mac_result = subprocess.run(['cat', f'/sys/class/net/{interface}/address'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    return mac_result.stdout.strip()
+        except Exception as e:
+            print("get_eth_mac Exception:",e)
+
+    def up_Wifi(self,Data):
+        try:
+            sjon = {
+                    "Command": "WifiSettings",
+                    "Data": {
+                        "wifiEnable": True,
+                        "mod": "STA",
+                        "ssid": Data["wifiSSID"],
+                        "password": Data["wifiPassword"],
+                        "encryptionType": "WPA2",
+                        "wifidhcpcEnable": True,
+                        "ip": None,
+                        "netmask": None,
+                        "gateway": None
+                        }
+                    }
+            self.application.settings.set_wifi_settings(sjon)
+        except Exception as e:
+            print("up_Wifi Exception:",e)
+
+    def up_4g(self,Data):
+        try:
+            if Data["fourg"]:
+                sjon = {
+                    "Command": "4GSettings",
+                                "Data": {
+                                    "apn": Data["fourG_apn"],
+                                    "enableModification" : True,
+                                    "password" : Data["fourG_password"],
+                                    "pin" : Data["fourG_pin"],
+                                    "user" : Data["fourG_user"]
+                                    }
+                    }
+                self.application.settings.set_Settings4G(sjon)
+        except Exception as e:
+            print("up_4g Exception:",e)
+
+    def up_bluetooth(self,Data):
+        try:
+            sjon = {
+                        "Command": "BluetoothSettings",
+                                    "Data": {
+                                        "bluetooth_enable": "Enable",
+                                        "bluetooth_name" : Data["chargePointId"],
+                                        "pin" : ""
+                                        }
+                        }
+            self.application.settings.set_bluetooth_settings(sjon)
+        except Exception as e:
+            print("up_bluetooth Exception:",e)
+
+    def get_bluetooth_mac(self):
+        try:
+            result = subprocess.run(['hciconfig'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            for line in result.stdout.split('\n'):
+                if "BD Address" in line:
+                    match = re.search(r"BD Address: ([0-9A-F:]{17})", line)
+                    if match:
+                        return match.group(1)
+            print("Bluetooth mac address not found")
+            return None
+        except Exception as e:
+            print("get_bluetooth_mac Exception:",e)
+            return None
+
+    def get_4g_imei(self,Data):
+            try:
+                if Data["fourg"]:
+                    result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
+                    modem_id = result.split("/")[5].split()[0]
+                    modem_info = subprocess.check_output(f"mmcli -m /org/freedesktop/ModemManager1/Modem/{modem_id}", shell=True).decode('utf-8')
+                    for line in modem_info.split('\n'):
+                        if 'imei' in line.lower():
+                            return line.split(':')[1].strip()
+            except Exception as e:
+                print("get_4g_imei Exception:",e)
+                return None
+
+    # wifi'yi ayağa kaldır,
+    # 4G varsa 4g'yi ayağa kaldır,
+    # bluetooth adını charge point id ile değiştir,
+    # Bluetooth mac numarasını al,
+    # ethernet mac numarasını al,
+    # 4G imei numarasını al,
+    # MCU'da hata varlığını al,
+    # connectorType değiştir,
+
+    def save_config(self,client,Data):
+        try:
+            print("4G ayarlanıyor...")
+            self.up_4g(Data)
+            print("Wifi ayarlanıyor...")
+            self.up_Wifi(Data)
+            print("Bluetooth adı değiştiririliyor...")
+            self.up_bluetooth(Data)
+            print("Bluetooth mac adres alınıyor...")
+            bluetooth_mac = self.get_bluetooth_mac()
+            print("Ethernet mac address alınıyor...")
+            eth_mac = self.get_eth_mac()
+            mcu_error = self.application.serialPort.error_list # list
+            # connector type değiştir
+            imei_4g = None
+            time_start = time.time()
+            while True: 
+                print("ppp0 ip bekleniyor...",self.application.settings.networkip.ppp0)
+                if self.application.settings.networkip.ppp0:
+                    imei_4g = self.get_4g_imei()
+                    print("imei_4g",imei_4g)
+                    break
+                if time.time() - time_start > 40:
+                    print("süre doldu!")
+                    break
+
+            message = {
+                "Command": "ConfigResult",
+                "Data": {
+                    "bluetooth_mac" : bluetooth_mac,
+                    "eth_mac" : eth_mac,
+                    "mcu_error" : mcu_error,
+                    "imei_4g" : imei_4g
+                    }
+                }
+            self.websocket.send_message(client, json.dumps(message))
+            
+
         except Exception as e:
             print("save_config Exception:",e)
 
-# def set_wifi_settings(self, sjon):
-#         try:
-#             if (sjon["Command"] == "WifiSettings"):
-#                 wifiEnable = str(sjon["Data"]["wifiEnable"])
-#                 mod = sjon["Data"]["mod"]
-#                 ssid = sjon["Data"]["ssid"]
-#                 password = sjon["Data"]["password"]
-#                 encryptionType = sjon["Data"]["encryptionType"]
-#                 wifidhcpcEnable = str(sjon["Data"]["wifidhcpcEnable"])
-#                 ip = sjon["Data"]["ip"]
-#                 netmask = sjon["Data"]["netmask"]
-#                 gateway = sjon["Data"]["gateway"]
-#                 self.application.databaseModule.set_wifi_settings(wifiEnable, mod, ssid, password, encryptionType, wifidhcpcEnable, ip, netmask, gateway)
-#                 self.application.softwareSettings.set_wifi()
-#                 self.application.webSocketServer.websocketServer.send_message_to_all(msg=self.application.settings.get_wifi_settings())
-#         except Exception as e:
-#             print("set_wifi_settings Exception:",e)
 
     def NewClientws(self, client, server):
         self.client = client
@@ -93,6 +197,7 @@ class TestWebSocketModule():
                 self.parse_message(client,Command,Data)
                 if Command == "SaveConfig":
                     print("Cihaz bilgileri kayıt ediliyor...")
+                    self.save_config(client,Data)
                 # if Command == "Barkod":
                 #     self.save_barkod_model_cpid(client, Data)
                 # elif Command == "WifiMacReq":
@@ -201,25 +306,7 @@ class TestWebSocketModule():
         }
         self.websocket.send_message(client, json.dumps(message))
 
-    def imei4g_get(self, client):
-        imei = ""
-        try:
-            if self.application.databaseModule.is_there_4G(self.application.model):
-                result = subprocess.check_output("mmcli -L", shell=True).decode('utf-8')
-                modem_id = result.split("/")[5].split()[0]
-                modem_info = subprocess.check_output(f"mmcli -m /org/freedesktop/ModemManager1/Modem/{modem_id}", shell=True).decode('utf-8')
-                for line in modem_info.split('\n'):
-                    if 'imei' in line.lower():
-                        imei = line.split(':')[1].strip()
-            else:
-                imei = "Not"
-        except Exception as e:
-            print(f"imei4g_get Exception: {e}")
-        message = {
-            "Command": "4gImeiResult",
-            "Data": imei
-        }
-        self.websocket.send_message(client, json.dumps(message))
+    
 
     def send_wifi_result(self, client):
         try:

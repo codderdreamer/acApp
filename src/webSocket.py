@@ -149,6 +149,7 @@ class TestWebSocketModule():
                 if time.time() - time_start > 40:
                     print("süre doldu!")
                     break
+                time.sleep(3)
 
             message = {
                 "Command": "ConfigResult",

@@ -273,7 +273,8 @@ class SoftwareSettings():
                     time.sleep(2)
                     result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.key-mgmt wpa-psk", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     
-                    result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.psk {password}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    # result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.psk {password}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                    result = subprocess.run(f"nmcli connection modify wifi_connection wifi-sec.psk \"{password}\"", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     if wifidhcpcEnable == "False":
                         netmask_obj = ipaddress.IPv4Network("0.0.0.0/" + netmask, strict=False)
                         netmask_prefix_length = netmask_obj.prefixlen

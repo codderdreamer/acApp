@@ -195,7 +195,7 @@ class TestWebSocketModule():
                 print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
-                self.parse_message(client,Command,Data)
+                # self.parse_message(client,Command,Data)
                 if Command == "SaveConfig":
                     print("Cihaz bilgileri kayıt ediliyor...")
                     self.save_config(client,Data)

@@ -145,7 +145,7 @@ class TestWebSocketModule():
             while True: 
                 print("ppp0 ip bekleniyor...",self.application.settings.networkip.ppp0)
                 if self.application.settings.networkip.ppp0:
-                    imei_4g = self.get_4g_imei()
+                    imei_4g = self.get_4g_imei(Data)
                     print("imei_4g",imei_4g)
                     break
                 if time.time() - time_start > 90:

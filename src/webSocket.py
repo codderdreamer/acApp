@@ -92,8 +92,7 @@ class TestWebSocketModule():
         try:
             result = subprocess.check_output('hciconfig', shell=True).decode('utf-8')
             print("result",result)
-            for line in result.stdout.split('\n'):
-                print("line:",line)
+            for line in result:
                 if "BD Address" in line:
                     match = re.search(r"BD Address: ([0-9A-F:]{17})", line)
                     if match:

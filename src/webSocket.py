@@ -91,6 +91,7 @@ class TestWebSocketModule():
     def get_bluetooth_mac(self):
         try:
             result = subprocess.check_output('hciconfig', shell=True).decode('utf-8')
+            print("result",result)
             for line in result.stdout.split('\n'):
                 print("line:",line)
                 if "BD Address" in line:

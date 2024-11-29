@@ -13,6 +13,7 @@ import re
 
 class TestWebSocketModule():
     def __init__(self, application, logger) -> None:
+        print("-------------------------------------------------------")
         self.application = application
         self.logger = logger
         self.client = None

@@ -15,6 +15,7 @@ class TestWebSocketModule():
     def __init__(self, application, logger) -> None:
         print("-------------------------------------------------------")
         self.application = application
+        self.simu_test = True
         self.logger = logger
         self.client = None
         self.slave1 = None
@@ -375,8 +376,6 @@ class TestWebSocketModule():
             self.application.test_led = False
         except Exception as e:
             print(f"set_led_green Exception: {e}")
-
-
 
     def save_slave_card_1(self, client):
         while True:

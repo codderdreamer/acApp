@@ -109,6 +109,7 @@ class SerialPort():
                     self.serial.write(self.send_data_list[0])
                     self.time_start = time.time()
                     self.send_data_list.pop(0)
+                    print("test")
             except Exception as e:
                 print("write Exception:",e)
             time.sleep(0.1)

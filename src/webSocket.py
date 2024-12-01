@@ -142,7 +142,23 @@ class TestWebSocketModule():
                 print("get_4g_imei Exception:",e)
                 return None
 
+    def set_start_stop(self):
+        try:
+            sjon = {
+                        "Command" : "FunctionsEnable",
+                        "Data" : {
+                            "card_type" : "StartStopCard",
+                            "local_startup_whether_to_go_ocpp_background" : "no",
+                            "whether_to_open_the_qr_code_process" : "no",
+                            "whether_to_transfer_private_data" : "no"
+                        }
+                    }
+            self.application.settings.set_functions_enable(sjon)
+        except Exception as e:
+            print("set_start_stop Exception:",e)
+
     def save_config(self,client,Data):
+        # start and stop ayarla
         # wifi'yi ayağa kaldır,
         # 4G varsa 4g'yi ayağa kaldır,
         # bluetooth adını charge point id ile değiştir,
@@ -152,6 +168,7 @@ class TestWebSocketModule():
         # MCU'da hata varlığını al,
         # connectorType değiştir,
         try:
+            self.set_start_stop()
             if Data["fourg"]:
                 print("4G ayarlanıyor...")
                 self.up_4g(Data)

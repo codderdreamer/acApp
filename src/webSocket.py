@@ -302,8 +302,6 @@ class TestWebSocketModule():
                 print(f"save_user_2_card Exception: {e}")
             time.sleep(0.5)
 
-
-
     def NewClientws(self, client, server):
         self.client = client
         if client:

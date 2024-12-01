@@ -25,7 +25,7 @@ class TestWebSocketModule():
         self.websocket.set_fn_client_left(self.ClientLeftws)
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever, daemon=True).start()
-        Thread(target=self.websocket.test, daemon=True).start()
+        Thread(target=self.test, daemon=True).start()
 
     def test(self):
         while True:

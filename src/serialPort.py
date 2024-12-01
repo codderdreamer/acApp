@@ -78,7 +78,7 @@ class SerialPort():
     def serial_port_thread(self):
         while True:
             if time.time() - self.time_start > 20:
-                print("Seri port connection yok!")
+                # print(Color.Red.value,"Seri port connection yok!")
                 self.connection = False
             else:
                 self.connection = True

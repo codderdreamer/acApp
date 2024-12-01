@@ -233,7 +233,7 @@ class TestWebSocketModule():
                 self.user_1_card = None
                 self.user_2_card = None
                 if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                    self.application.databaseModule.set_master_card(self.application.ev.card_id)
+                    # self.application.databaseModule.set_master_card(self.application.ev.card_id)
                     message = {
                         "Command": "MasterCardResult",
                         "Data": self.application.ev.card_id

@@ -34,6 +34,10 @@ class TestWebSocketModule():
                 x = input()
                 if x == "1":
                     self.application.ev.card_id = "123456789"
+                elif x == "2":
+                    self.application.ev.card_id = "1234567811"
+                elif x == "2":
+                    self.application.ev.card_id = "1234567813"
             except Exception as e:
                 # print("test")
                 pass

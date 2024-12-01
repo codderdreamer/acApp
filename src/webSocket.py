@@ -15,7 +15,7 @@ class TestWebSocketModule():
     def __init__(self, application, logger) -> None:
         print("-------------------------------------------------------")
         self.application = application
-        self.simu_test = True
+        self.simu_test = False
         self.logger = logger
         self.client = None
         self.master_card = None

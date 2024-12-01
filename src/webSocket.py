@@ -272,6 +272,7 @@ class TestWebSocketModule():
                     self.websocket.send_message(client, json.dumps(message))
                     self.user_2_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
+                    self.application.databaseModule.set_default_local_list([self.user_1_card, self.user_2_card])
                     return
                 if time.time() - time_start > 60:
                     message = {

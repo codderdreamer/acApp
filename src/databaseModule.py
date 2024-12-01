@@ -360,7 +360,7 @@ class DatabaseModule():
             self.settings_database.commit()
             self.settings_database.close()
             self.application.masterCard = masterCard
-            os.system("cp /root/Settings.sqlite /root/DefaultSettings.sqlite")
+            # os.system("cp /root/Settings.sqlite /root/DefaultSettings.sqlite")
         except Exception as e:
             print("set_master_card Exception:", e)
 

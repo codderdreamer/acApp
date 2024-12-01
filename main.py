@@ -88,6 +88,7 @@ class Application():
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
+        print("----------------------------------------------------")
         Thread(target=self.read_charge_values_thred, daemon=True).start()
         Thread(target=self.control_output,daemon=True).start()
         Thread(target=self.led_state_thread,daemon=True).start()
@@ -388,7 +389,6 @@ class Application():
     def read_charge_values_thred(self):
         while True:
             try:
-
                 # print("-------------CHARGE VALUES------------")
                 if (self.settings.deviceSettings.mid_meter == True or self.settings.deviceSettings.externalMidMeter == True) and self.modbusModule.connection == True:
                     # print("Veriler MID'den alınıyor...")
@@ -432,10 +432,10 @@ class Application():
                 # print("self.ev.voltage_L3",self.ev.voltage_L3)
                 # print("self.ev.energy",self.ev.energy)
                 # print("self.ev.power",self.ev.power)
-                time.sleep(1)
-                
             except Exception as e:
                 print("read_charge_values_thred",e)
+
+            time.sleep(1)
 
 
 

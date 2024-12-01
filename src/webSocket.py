@@ -211,9 +211,10 @@ class TestWebSocketModule():
             message = {
                 "Command": "SaveConfigResult",
                 "Data": {
+                    "fourg" : Data["fourg"],
                     "bluetooth_mac" : bluetooth_mac,    # string
                     "eth_mac" : eth_mac,                # string
-                    "mcu_error" : mcu_error,            # list
+                    "mcu_error" : [PidErrorList.LockerInitializeError],            # list
                     "mcu_connection" : mcu_connection,  # bool
                     "imei_4g" : imei_4g,                # string
                     "wlan0_connection" : wlan0_connection   # bool

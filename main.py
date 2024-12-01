@@ -88,7 +88,7 @@ class Application():
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.midMeterSlaveAddress)
-        print("----------------------------------------------------")
+        print("-------------------------------------------------ddddd---")
         Thread(target=self.read_charge_values_thred, daemon=True).start()
         Thread(target=self.control_output,daemon=True).start()
         Thread(target=self.led_state_thread,daemon=True).start()

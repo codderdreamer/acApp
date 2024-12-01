@@ -53,7 +53,7 @@ class DatabaseModule():
     def get_dns_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM dns_settings"
             self.cursor.execute(query)
@@ -71,7 +71,7 @@ class DatabaseModule():
     def get_ethernet_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM ethernet_settings"
             self.cursor.execute(query)
@@ -91,7 +91,7 @@ class DatabaseModule():
     def get_network_priority(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM network_priority"
             self.cursor.execute(query)
@@ -110,7 +110,7 @@ class DatabaseModule():
     def get_settings_4g(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM settings_4g"
             self.cursor.execute(query)
@@ -130,7 +130,7 @@ class DatabaseModule():
     def get_wifi_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM wifi_settings"
             self.cursor.execute(query)
@@ -154,7 +154,7 @@ class DatabaseModule():
     def get_ocpp_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM ocpp_settings"
             self.cursor.execute(query)
@@ -176,7 +176,7 @@ class DatabaseModule():
     def get_functions_enable(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM functions_enable"
             self.cursor.execute(query)
@@ -195,7 +195,7 @@ class DatabaseModule():
     def get_bluetooth_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM bluetooth_settings"
             self.cursor.execute(query)
@@ -213,7 +213,7 @@ class DatabaseModule():
     def get_timezoon_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM timezoon_settings"
             self.cursor.execute(query)
@@ -229,7 +229,7 @@ class DatabaseModule():
     def get_firmware_version(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM firmware_version"
             self.cursor.execute(query)
@@ -245,7 +245,7 @@ class DatabaseModule():
     def get_availability(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             data_dict = {}
             query = "SELECT * FROM device_settings"
@@ -267,7 +267,7 @@ class DatabaseModule():
     def get_max_current(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM device_settings"
             self.cursor.execute(query)
@@ -283,7 +283,7 @@ class DatabaseModule():
     def get_mid_settings(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM device_settings"
             self.cursor.execute(query)
@@ -302,7 +302,7 @@ class DatabaseModule():
 
     def set_external_mid_settings(self, externalMidMeter, externalMidMeterSlaveAddress):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -323,7 +323,7 @@ class DatabaseModule():
 
     def set_mid_settings(self, is_there_mid):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -339,7 +339,7 @@ class DatabaseModule():
 
     def set_serial_number(self,serialNumber):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -352,7 +352,7 @@ class DatabaseModule():
 
     def set_master_card(self,masterCard):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             value = (masterCard,"masterCard")
@@ -367,7 +367,7 @@ class DatabaseModule():
     def get_master_card(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM device_settings"
             self.cursor.execute(query)
@@ -382,7 +382,7 @@ class DatabaseModule():
     
     def set_dns_settings(self,dnsEnable,dns1,dns2):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE dns_settings SET key = ? WHERE value = ?"
             
@@ -406,7 +406,7 @@ class DatabaseModule():
 
     def set_ethernet_settings(self,ethernetEnable,dhcpcEnable,ip,netmask,gateway):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ethernet_settings SET key = ? WHERE value = ?"
             
@@ -442,7 +442,7 @@ class DatabaseModule():
 
     def set_network_priority(self, enableWorkmode, first, second, third):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE network_priority SET key = ? WHERE value = ?"
             
@@ -491,7 +491,7 @@ class DatabaseModule():
 
     def set_settings_4g(self, apn, user, password, enableModification, pin):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
@@ -527,7 +527,7 @@ class DatabaseModule():
 
     def set_wifi_settings(self, wifiEnable, mod, ssid, password, encryptionType, wifidhcpcEnable, ip, netmask, gateway):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE wifi_settings SET key = ? WHERE value = ?"
             
@@ -582,7 +582,7 @@ class DatabaseModule():
 
     def set_ocpp_settings(self, domainName, port, sslEnable, authorizationKey, path, chargePointId, certFileName):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
             
@@ -628,7 +628,7 @@ class DatabaseModule():
 
     def set_charge_point_id(self, id):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
             value = (id, "chargePointId")
@@ -643,7 +643,7 @@ class DatabaseModule():
 
     def set_functions_enable(self, card_type, whether_to_open_the_qr_code_process, local_startup_whether_to_go_ocpp_background, whether_to_transfer_private_data):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE functions_enable SET key = ? WHERE value = ?"
             
@@ -674,7 +674,7 @@ class DatabaseModule():
 
     def set_bluetooth_settings(self, bluetooth_enable, pin, bluetooth_name):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE bluetooth_settings SET key = ? WHERE value = ?"
             
@@ -700,7 +700,7 @@ class DatabaseModule():
 
     def set_timezone_settings(self,timezone):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE timezoon_settings SET key = ? WHERE value = ?"
             value = (timezone, "timezone")
@@ -713,7 +713,7 @@ class DatabaseModule():
 
     def set_firmware_version(self, version):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE firmware_version SET key = ? WHERE value = ?"
             value = (version, "version")
@@ -726,7 +726,7 @@ class DatabaseModule():
 
     def set_availability(self, availability):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -743,7 +743,7 @@ class DatabaseModule():
 
     def set_model(self, modelId):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -768,7 +768,7 @@ class DatabaseModule():
     def get_model(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM device_settings"
             self.cursor.execute(query)
@@ -791,7 +791,7 @@ class DatabaseModule():
             elif is_there_socket == False:
                 socketType = SocketType.TetheredType
                 
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -808,7 +808,7 @@ class DatabaseModule():
     def get_socket_type(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM device_settings"
             self.cursor.execute(query)
@@ -826,7 +826,7 @@ class DatabaseModule():
             
     def set_max_current(self,maxcurrent : str):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE device_settings SET key = ? WHERE value = ?"
             
@@ -842,7 +842,7 @@ class DatabaseModule():
 
     def set_default_local_list(self, local_list: list):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             self.cursor.execute('DELETE FROM default_local_list;')
             self.settings_database.commit()
@@ -857,7 +857,7 @@ class DatabaseModule():
     def get_default_local_list(self):
         id_tag_list = []
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM default_local_list"
             self.cursor.execute(query)
@@ -872,7 +872,7 @@ class DatabaseModule():
     def get_user_login(self):
         try:
             data_dict = {}
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "SELECT * FROM user_login"
             self.cursor.execute(query)
@@ -887,7 +887,7 @@ class DatabaseModule():
 
     def set_password(self, password):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE user_login SET Password = ? WHERE UserName = ?"
             
@@ -936,7 +936,7 @@ class DatabaseModule():
 
     def set_enable_4G(self, is_there_4G):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE settings_4g SET key = ? WHERE value = ?"
             
@@ -1026,7 +1026,7 @@ class DatabaseModule():
 
     def clear_certificate_name(self):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
             query = "UPDATE ocpp_settings SET key = ? WHERE value = ?"
             value = ("","certFileName")
@@ -1039,7 +1039,7 @@ class DatabaseModule():
     def get_diagnostics_status(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
 
             query = "SELECT * FROM diagnostics_status ORDER BY id DESC LIMIT 1"
@@ -1069,7 +1069,7 @@ class DatabaseModule():
 
     def set_diagnostics_status(self, status: str, last_update_time: str):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
 
             # Var olan kaydı güncelle
@@ -1089,7 +1089,7 @@ class DatabaseModule():
    
     def reset_diagnostics_status(self):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
 
             # Tüm tabloyu temizle
@@ -1109,7 +1109,7 @@ class DatabaseModule():
     def get_firmware_status(self):
         data_dict = {}
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
 
             query = "SELECT * FROM firmware_status ORDER BY id DESC LIMIT 1"
@@ -1139,7 +1139,7 @@ class DatabaseModule():
     
     def set_firmware_status(self, status: str, last_update_time: str):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
 
             # Mevcut kaydı güncelleme veya yeni kayıt ekleme
@@ -1159,7 +1159,7 @@ class DatabaseModule():
 
     def reset_firmware_status(self):
         try:
-            self.settings_database = sqlite3.connect('/root/Settings.sqlite')
+            self.settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             self.cursor = self.settings_database.cursor()
 
             # Tüm kayıtları temizle
@@ -1179,7 +1179,7 @@ class DatabaseModule():
 
     def update_auth_cache_tag(self, ocpp_tag, new_expire_date, parent_id=None):
         try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
         
             # Convert the expiry date to the correct format
@@ -1213,7 +1213,7 @@ class DatabaseModule():
 
     def get_card_status_from_auth_cache(self, ocpp_tag):
         try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
             select_query = "SELECT expire_date, parent_id FROM auth_cache_list WHERE ocpp_tag = ?"
             cursor.execute(select_query, (ocpp_tag,))
@@ -1243,7 +1243,7 @@ class DatabaseModule():
     
     def clear_auth_cache(self):
         try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
             delete_query = "DELETE FROM auth_cache_list"
             cursor.execute(delete_query)
@@ -1266,7 +1266,7 @@ class DatabaseModule():
         Eğer ocpp_tag mevcut değilse yeni bir kayıt ekler.
         """
         try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
 
             # Önce, ocpp_tag'in veritabanında mevcut olup olmadığını kontrol edin
@@ -1303,7 +1303,7 @@ class DatabaseModule():
         local_auth_list tablosundaki tüm kayıtları siler.
         """
         try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
 
             delete_query = "DELETE FROM local_auth_list"
@@ -1322,7 +1322,7 @@ class DatabaseModule():
         """
         try:
             # Veritabanına bağlan
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
             
             # local_list_version anahtarını ocpp_settings tablosundan sorgula
@@ -1347,7 +1347,7 @@ class DatabaseModule():
         """
         try:
             # Veritabanına bağlan
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
             
             # local_list_version anahtarının var olup olmadığını kontrol et
@@ -1379,7 +1379,7 @@ class DatabaseModule():
         idTagInfo yapısını döner: {'status': status, 'expiry_date': expiry_date, 'parent_id': parent_id}
         """
         try:
-            settings_database = sqlite3.connect('/root/Settings.sqlite')
+            settings_database = sqlite3.connect('/root/Settings.sqlite', check_same_thread=False)
             cursor = settings_database.cursor()
             select_query = "SELECT status, expiry_date, parent_id FROM local_auth_list WHERE ocpp_tag = ?"
             cursor.execute(select_query, (ocpp_tag,))

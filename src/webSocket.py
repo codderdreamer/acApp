@@ -77,17 +77,18 @@ class TestWebSocketModule():
 
     def up_4g(self,Data):
         try:
-            sjon = {
-                "Command": "4GSettings",
-                            "Data": {
-                                "apn": Data["fourG_apn"],
-                                "enableModification" : True,
-                                "password" : Data["fourG_password"],
-                                "pin" : Data["fourG_pin"],
-                                "user" : Data["fourG_user"]
-                                }
-                }
-            self.application.settings.set_Settings4G(sjon)
+            if Data["fourg"]:
+                sjon = {
+                    "Command": "4GSettings",
+                                "Data": {
+                                    "apn": Data["fourG_apn"],
+                                    "enableModification" : True,
+                                    "password" : Data["fourG_password"],
+                                    "pin" : Data["fourG_pin"],
+                                    "user" : Data["fourG_user"]
+                                    }
+                    }
+                self.application.settings.set_Settings4G(sjon)
         except Exception as e:
             print("up_4g Exception:",e)
 
@@ -157,6 +158,62 @@ class TestWebSocketModule():
         except Exception as e:
             print("set_start_stop Exception:",e)
 
+    def set_connector_type(self,Data):
+        try:
+            self.application.databaseModule.set_socket_type(Data["connectorType"] == "Type2_Socket")
+        except Exception as e:
+            print("set_connector_type Exception:",e)
+
+    def set_seri_no(self,Data):
+        try:
+            self.application.databaseModule.set_serial_number(Data["seriNo"])
+        except Exception as e:
+            print("set_seri_no Exception:",e)
+
+    def set_mid(self,Data):
+        try:
+            self.application.databaseModule.set_mid_settings(Data["midMeter"]=="Yes")
+        except Exception as e:
+            print("set_mid Exception:",e)
+
+    def get_mcu_error(self):
+        try:
+            error_list = []
+            for error in self.application.serialPort.error_list:
+                error_list.append(error.name)
+            return error_list
+        except Exception as e:
+            print("get_mcu_error Exception:",e)
+
+    def wait_4g(self,Data):
+        imei_4g = None
+        if Data["fourg"]:
+            time_start = time.time()
+            while True: 
+                print("ppp0 ip bekleniyor...",self.application.settings.networkip.ppp0)
+                if self.application.settings.networkip.ppp0:
+                    imei_4g = self.get_4g_imei(Data)
+                    print("imei_4g",imei_4g)
+                    break
+                if time.time() - time_start > 90:
+                    print("süre doldu!")
+                    break
+                time.sleep(3)
+        return imei_4g
+    
+    def wait_wlan0(self):
+        wlan0_connection = False
+        time_start = time.time()
+        while True:
+            if self.application.settings.networkip.wlan0:
+                wlan0_connection = True
+                break
+            if time.time() - time_start > 20:
+                print("süre doldu!")
+                break
+            time.sleep(3)
+        return wlan0_connection
+
     def save_config(self,client,Data):
         # start and stop ayarla
         # wifi'yi ayağa kaldır,
@@ -167,11 +224,12 @@ class TestWebSocketModule():
         # 4G imei numarasını al,
         # MCU'da hata varlığını al,
         # connectorType değiştir,
+        # seriNo kaydet
+        # mid meter ayarla
         try:
             self.set_start_stop()
-            if Data["fourg"]:
-                print("4G ayarlanıyor...")
-                self.up_4g(Data)
+            print("4G ayarlanıyor...")
+            self.up_4g(Data)
             print("Wifi ayarlanıyor...")
             self.up_Wifi(Data)
             print("Bluetooth adı değiştiririliyor...")
@@ -180,39 +238,17 @@ class TestWebSocketModule():
             bluetooth_mac = self.get_bluetooth_mac()
             print("Ethernet mac address alınıyor...")
             eth_mac = self.get_eth_mac()
-            mcu_error = self.application.serialPort.error_list # list
-            mcu_error = [PidErrorList.LockerInitializeError]
-            error_list = []
-            for error in mcu_error:
-                error_list.append(error.name)
-            mcu_error = error_list
+            print("Connector Type ayarlanıyor...")
+            self.set_connector_type(Data)
+            print("Seri No kaydediliyor...")
+            self.set_seri_no(Data)
+            print("MID ayarlanıyor...")
+            self.set_mid(Data)
+            print("MCU hata listesi alınıyor...")
+            mcu_error = self.get_mcu_error()
             mcu_connection = self.application.serialPort.connection
-            # connector type değiştir
-            imei_4g = None
-            if Data["fourg"]:
-                time_start = time.time()
-                while True: 
-                    print("ppp0 ip bekleniyor...",self.application.settings.networkip.ppp0)
-                    if self.application.settings.networkip.ppp0:
-                        imei_4g = self.get_4g_imei(Data)
-                        print("imei_4g",imei_4g)
-                        break
-                    if time.time() - time_start > 90:
-                        print("süre doldu!")
-                        break
-                    time.sleep(3)
-            wlan0_connection = False
-            time_start = time.time()
-            while True:
-                if self.application.settings.networkip.wlan0:
-                    wlan0_connection = True
-                    break
-                if time.time() - time_start > 20:
-                    print("süre doldu!")
-                    break
-                time.sleep(3)
-
-
+            imei_4g = self.wait_4g(Data)
+            wlan0_connection = self.wait_wlan0()
             message = {
                 "Command": "SaveConfigResult",
                 "Data": {
@@ -226,8 +262,6 @@ class TestWebSocketModule():
                     }
                 }
             self.websocket.send_message(client, json.dumps(message))
-            
-
         except Exception as e:
             print("save_config Exception:",e)
 
@@ -239,7 +273,7 @@ class TestWebSocketModule():
                 self.user_1_card = None
                 self.user_2_card = None
                 if self.application.ev.card_id != "" and self.application.ev.card_id != None:
-                    # self.application.databaseModule.set_master_card(self.application.ev.card_id)
+                    self.application.databaseModule.set_master_card(self.application.ev.card_id)
                     message = {
                         "Command": "MasterCardResult",
                         "Data": self.application.ev.card_id

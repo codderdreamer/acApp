@@ -18,8 +18,9 @@ class TestWebSocketModule():
         self.simu_test = True
         self.logger = logger
         self.client = None
-        self.slave1 = None
-        self.slave2 = None
+        self.master_card = None
+        self.user_1_card = None
+        self.user_2_card = None
         self.websocket = websocket_server.WebsocketServer('0.0.0.0', 9000)
         self.websocket.set_fn_new_client(self.NewClientws)
         self.websocket.set_fn_client_left(self.ClientLeftws)
@@ -72,18 +73,17 @@ class TestWebSocketModule():
 
     def up_4g(self,Data):
         try:
-            if Data["fourg"]:
-                sjon = {
-                    "Command": "4GSettings",
-                                "Data": {
-                                    "apn": Data["fourG_apn"],
-                                    "enableModification" : True,
-                                    "password" : Data["fourG_password"],
-                                    "pin" : Data["fourG_pin"],
-                                    "user" : Data["fourG_user"]
-                                    }
-                    }
-                self.application.settings.set_Settings4G(sjon)
+            sjon = {
+                "Command": "4GSettings",
+                            "Data": {
+                                "apn": Data["fourG_apn"],
+                                "enableModification" : True,
+                                "password" : Data["fourG_password"],
+                                "pin" : Data["fourG_pin"],
+                                "user" : Data["fourG_user"]
+                                }
+                }
+            self.application.settings.set_Settings4G(sjon)
         except Exception as e:
             print("up_4g Exception:",e)
 
@@ -138,19 +138,19 @@ class TestWebSocketModule():
                 print("get_4g_imei Exception:",e)
                 return None
 
-    # wifi'yi ayağa kaldır,
-    # 4G varsa 4g'yi ayağa kaldır,
-    # bluetooth adını charge point id ile değiştir,
-    # Bluetooth mac numarasını al,
-    # ethernet mac numarasını al,
-    # 4G imei numarasını al,
-    # MCU'da hata varlığını al,
-    # connectorType değiştir,
-
     def save_config(self,client,Data):
+        # wifi'yi ayağa kaldır,
+        # 4G varsa 4g'yi ayağa kaldır,
+        # bluetooth adını charge point id ile değiştir,
+        # Bluetooth mac numarasını al,
+        # ethernet mac numarasını al,
+        # 4G imei numarasını al,
+        # MCU'da hata varlığını al,
+        # connectorType değiştir,
         try:
-            print("4G ayarlanıyor...")
-            self.up_4g(Data)
+            if Data["fourg"]:
+                print("4G ayarlanıyor...")
+                self.up_4g(Data)
             print("Wifi ayarlanıyor...")
             self.up_Wifi(Data)
             print("Bluetooth adı değiştiririliyor...")
@@ -160,27 +160,42 @@ class TestWebSocketModule():
             print("Ethernet mac address alınıyor...")
             eth_mac = self.get_eth_mac()
             mcu_error = self.application.serialPort.error_list # list
+            mcu_connection = self.application.serialPort.connection
             # connector type değiştir
             imei_4g = None
+            if Data["fourg"]:
+                time_start = time.time()
+                while True: 
+                    print("ppp0 ip bekleniyor...",self.application.settings.networkip.ppp0)
+                    if self.application.settings.networkip.ppp0:
+                        imei_4g = self.get_4g_imei(Data)
+                        print("imei_4g",imei_4g)
+                        break
+                    if time.time() - time_start > 90:
+                        print("süre doldu!")
+                        break
+                    time.sleep(3)
+            wlan0_connection = False
             time_start = time.time()
-            while True: 
-                print("ppp0 ip bekleniyor...",self.application.settings.networkip.ppp0)
-                if self.application.settings.networkip.ppp0:
-                    imei_4g = self.get_4g_imei(Data)
-                    print("imei_4g",imei_4g)
+            while True:
+                if self.application.settings.networkip.wlan0:
+                    wlan0_connection = True
                     break
-                if time.time() - time_start > 90:
+                if time.time() - time_start > 20:
                     print("süre doldu!")
                     break
                 time.sleep(3)
 
+
             message = {
-                "Command": "ConfigResult",
+                "Command": "SaveConfigResult",
                 "Data": {
-                    "bluetooth_mac" : bluetooth_mac,
-                    "eth_mac" : eth_mac,
-                    "mcu_error" : mcu_error,
-                    "imei_4g" : imei_4g
+                    "bluetooth_mac" : bluetooth_mac,    # string
+                    "eth_mac" : eth_mac,                # string
+                    "mcu_error" : mcu_error,            # list
+                    "mcu_connection" : mcu_connection,  # bool
+                    "imei_4g" : imei_4g,                # string
+                    "wlan0_connection" : wlan0_connection   # bool
                     }
                 }
             self.websocket.send_message(client, json.dumps(message))
@@ -193,13 +208,17 @@ class TestWebSocketModule():
         time_start = time.time()
         while True:
             try:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id and self.slave2 != self.application.ev.card_id:
+                self.master_card = None
+                self.user_1_card = None
+                self.user_2_card = None
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                     self.application.databaseModule.set_master_card(self.application.ev.card_id)
                     message = {
                         "Command": "MasterCardResult",
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    self.master_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     return
                 if time.time() - time_start > 60:
@@ -212,6 +231,56 @@ class TestWebSocketModule():
             except Exception as e:
                 print(f"save_master_card Exception: {e}")
             time.sleep(0.5)
+
+    def save_user_1_card(self,client):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.master_card != self.application.ev.card_id:
+                    message = {
+                        "Command": "User1CardResult",
+                        "Data": self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client, json.dumps(message))
+                    self.user_1_card = self.application.ev.card_id
+                    self.application.ev.card_id = ""
+                    return
+                if time.time() - time_start > 60:
+                    message = {
+                        "Command": "User1CardResult",
+                        "Data": self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client, json.dumps(message))
+                    return
+            except Exception as e:
+                print(f"save_user_1_card Exception: {e}")
+            time.sleep(0.5)
+
+    def save_user_2_card(self,client):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.master_card != self.application.ev.card_id and self.user_1_card != self.application.ev.card_id:
+                    message = {
+                        "Command": "User2CardResult",
+                        "Data": self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client, json.dumps(message))
+                    self.user_2_card = self.application.ev.card_id
+                    self.application.ev.card_id = ""
+                    return
+                if time.time() - time_start > 60:
+                    message = {
+                        "Command": "User2CardResult",
+                        "Data": self.application.ev.card_id
+                    }
+                    self.websocket.send_message(client, json.dumps(message))
+                    return
+            except Exception as e:
+                print(f"save_user_2_card Exception: {e}")
+            time.sleep(0.5)
+
+
 
     def NewClientws(self, client, server):
         self.client = client
@@ -250,6 +319,14 @@ class TestWebSocketModule():
                 elif Command == "MasterCardRequest":
                     print("Master card bekleniyor...")
                     Thread(target=self.save_master_card, args=(client,),daemon=True).start()
+                elif Command == "User1CardRequest":
+                    print("User 1 Card bekleniyor...")
+                    Thread(target=self.save_user_1_card, args=(client,),daemon=True).start()
+                elif Command == "User2CardRequest":
+                    print("User 2 Card bekleniyor...")
+                    Thread(target=self.save_user_2_card, args=(client,),daemon=True).start()
+                
+                
                 # if Command == "Barkod":
                 #     self.save_barkod_model_cpid(client, Data)
                 # elif Command == "WifiMacReq":
@@ -358,8 +435,6 @@ class TestWebSocketModule():
         }
         self.websocket.send_message(client, json.dumps(message))
 
-    
-
     def send_wifi_result(self, client):
         try:
             message = {
@@ -398,7 +473,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
-                    self.slave1 = self.application.ev.card_id
+                    self.user_1_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     return
             except Exception as e:
@@ -408,14 +483,14 @@ class TestWebSocketModule():
     def save_slave_card_2(self, client):
         while True:
             try:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.slave1 != self.application.ev.card_id:
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.user_1_card != self.application.ev.card_id:
                     message = {
                         "Command": "SlaveCard2",
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
-                    self.slave2 = self.application.ev.card_id
-                    self.application.databaseModule.set_default_local_list([self.slave1, self.application.ev.card_id])
+                    self.user_2_card = self.application.ev.card_id
+                    self.application.databaseModule.set_default_local_list([self.user_1_card, self.application.ev.card_id])
                     self.application.ev.card_id = ""
                     return
             except Exception as e:

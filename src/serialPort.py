@@ -59,6 +59,7 @@ class SerialPort():
         self.led_state = LedState.StandBy
 
         self.time_start = time.time()
+        self.connection = False
         
         os.system("gpio-test.64 w e 11 0 > /dev/null 2>&1")
         time.sleep(0.5)
@@ -74,19 +75,13 @@ class SerialPort():
         Thread(target=self.serial_port_thread,daemon=True).start()
         Thread(target=self.get_command_pid_rfid,daemon=True).start()
 
-        Thread(target=self.test,daemon=True).start()
-
-    def test(self):
-        while True:
-            try:
-                if time.time() - self.time_start > 10:
-                    print(Color.Red.value,"Seri port iletişimi kesildi!!!!!!!!!!!!!!!!!!!!!!!!!")
-            except Exception as e:
-                pass
-            time.sleep(1)
-
     def serial_port_thread(self):
         while True:
+            if time.time() - self.time_start > 20:
+                print("Seri port connection yok!")
+                self.connection = False
+            else:
+                self.connection = True
             if time.time() - self.time_20 > 20:
                 if self.application.led_state != LedState.RfidVerified and self.application.led_state != LedState.RfidFailed:
                     self.time_20 = time.time()
@@ -102,14 +97,11 @@ class SerialPort():
             time.sleep(1)
 
     def write(self):
-        self.time_start = time.time()
         while True:
             try:
                 if len(self.send_data_list) > 0:
                     self.serial.write(self.send_data_list[0])
-                    self.time_start = time.time()
                     self.send_data_list.pop(0)
-                    print("test")
             except Exception as e:
                 print("write Exception:",e)
             time.sleep(0.1)
@@ -620,6 +612,7 @@ class SerialPort():
             
     def read(self):
         incoming = ""
+        self.time_start = time.time()
         while True:
             try:
                 try:
@@ -628,6 +621,7 @@ class SerialPort():
                 except:
                     print(Color.Red.value,"Seri port data bozuk geldi")
                 if len(incoming) > 0:
+                    self.time_start = time.time()
                     incoming = list(incoming)
                     if incoming[1] == self.get_response:
                         self.get_response_control_pilot(incoming)

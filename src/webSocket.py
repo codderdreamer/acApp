@@ -26,6 +26,17 @@ class TestWebSocketModule():
         self.websocket.set_fn_message_received(self.MessageReceivedws)
         Thread(target=self.websocket.run_forever, daemon=True).start()
 
+    def test(self):
+        while True:
+            try:
+                x = input()
+                if x == "1":
+                    self.application.ev.card_id = "123456789"
+            except Exception as e:
+                # print("test")
+                pass
+            time.sleep(1)
+
     def get_eth_mac(self):
         try:
             result = subprocess.run(['ip', 'link'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)

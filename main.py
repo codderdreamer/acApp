@@ -84,6 +84,7 @@ class Application():
         self.ev = EV(self)
         self.ocpp_subprotocols = OcppVersion.ocpp16
         self.serialPort = SerialPort(self,logger)
+        self.modbusModule = None
         if self.settings.deviceSettings.externalMidMeter == True:
             self.modbusModule = ModbusModule(self, port='/dev/ttyS5', slave_address=self.settings.deviceSettings.externalMidMeterSlaveAddress)
         elif self.settings.deviceSettings.mid_meter == True:

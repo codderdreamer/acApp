@@ -181,6 +181,11 @@ class TestWebSocketModule():
             print("Ethernet mac address alınıyor...")
             eth_mac = self.get_eth_mac()
             mcu_error = self.application.serialPort.error_list # list
+            mcu_error = [PidErrorList.LockerInitializeError]
+            error_list = []
+            for error in mcu_error:
+                error_list.append(error.name)
+            mcu_error = error_list
             mcu_connection = self.application.serialPort.connection
             # connector type değiştir
             imei_4g = None
@@ -214,7 +219,7 @@ class TestWebSocketModule():
                     "fourg" : Data["fourg"],
                     "bluetooth_mac" : bluetooth_mac,    # string
                     "eth_mac" : eth_mac,                # string
-                    "mcu_error" : [PidErrorList.LockerInitializeError],            # list
+                    "mcu_error" : mcu_error,            # list
                     "mcu_connection" : mcu_connection,  # bool
                     "imei_4g" : imei_4g,                # string
                     "wlan0_connection" : wlan0_connection   # bool

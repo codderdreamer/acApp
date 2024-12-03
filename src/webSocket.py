@@ -21,6 +21,8 @@ class TestWebSocketModule():
         self.master_card = None
         self.user_1_card = None
         self.user_2_card = None
+
+        self.cancel_test = False
         self.websocket = websocket_server.WebsocketServer('0.0.0.0', 9000)
         self.websocket.set_fn_new_client(self.NewClientws)
         self.websocket.set_fn_client_left(self.ClientLeftws)
@@ -342,6 +344,51 @@ class TestWebSocketModule():
                 print(f"save_user_2_card Exception: {e}")
             time.sleep(0.5)
 
+    def send_wait_user_1_card_result(self):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.ev.start_stop_authorize:
+                    message = {
+                                "Command": "WaitUser1CardResult",
+                                "Data": True
+                            }
+                    self.websocket.send_message(self.client, json.dumps(message))
+                    break
+                if time.time() - time_start > 60:
+                    message = {
+                                "Command": "WaitUser1CardResult",
+                                "Data": False
+                            }
+                    self.websocket.send_message(self.client, json.dumps(message))
+                    break
+                if self.cancel_test:
+                    break
+            except Exception as e:
+                    print(f"send_wait_user_1_card_result Exception: {e}")
+
+            time.sleep(1)
+
+    def wait_role_on(self):
+        time_start = time.time()
+        while True:
+            if self.application.ev.pid_relay_control == Relay.On:
+                message = {
+                                "Command": "WaitRelayOnResult",
+                                "Data": True
+                            }
+                self.websocket.send_message(self.client, json.dumps(message))
+                break
+            if time_start - time.time() > 60:
+                message = {
+                                "Command": "WaitRelayOnResult",
+                                "Data": False
+                            }
+                self.websocket.send_message(self.client, json.dumps(message))
+                break
+            time.sleep(1)
+
+
     def NewClientws(self, client, server):
         self.client = client
         if client:
@@ -362,7 +409,7 @@ class TestWebSocketModule():
                 print(f"Client disconnected client[id]:{client['id']} client['address']={client['address']}")
         except Exception as e:
             print(f"c['handler'] client remove problem: {e}")
-
+    
     def MessageReceivedws(self, client, server, message):
         self.client = client
         if client['id']:
@@ -371,9 +418,10 @@ class TestWebSocketModule():
                 print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
-                self.testCommand = Command
+                self.application.testCommand = Command
                 # self.parse_message(client,Command,Data)
                 if Command == "SaveConfig":
+                    self.cancel_test = False
                     print("Cihaz bilgileri kayıt ediliyor...")
                     Thread(target=self.save_config,args=(client,Data,),daemon=True).start()
                     # self.save_config(client,Data)
@@ -389,7 +437,14 @@ class TestWebSocketModule():
                 elif Command == "WaitUser1CardRequest":
                     print("Şarj için birinci kullanıcı kartı okutulması bekleniyor...")
                     self.application.databaseModule.set_max_current(6)
-                    # self.application.process.set_max_current()
+                    Thread(target=self.send_wait_user_1_card_result,daemon=True).start()
+                elif Command == "WaitRelayOn":
+                    print("Rölenin On olması bekleniyor...")
+                    Thread(target=self.wait_role_on,daemon=True).start()
+                elif Command == "CancelTest":
+                    print("test iptal edildi.")
+                    self.cancel_test = True
+                    
 
                 # if Command == "Barkod":
                 #     self.save_barkod_model_cpid(client, Data)

@@ -389,7 +389,7 @@ class TestWebSocketModule():
                 elif Command == "WaitUser1CardRequest":
                     print("Şarj için birinci kullanıcı kartı okutulması bekleniyor...")
                     self.application.databaseModule.set_max_current(6)
-                    self.application.process.set_max_current()
+                    # self.application.process.set_max_current()
 
                 # if Command == "Barkod":
                 #     self.save_barkod_model_cpid(client, Data)

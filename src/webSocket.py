@@ -371,6 +371,7 @@ class TestWebSocketModule():
                 print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
+                self.testCommand = Command
                 # self.parse_message(client,Command,Data)
                 if Command == "SaveConfig":
                     print("Cihaz bilgileri kayıt ediliyor...")
@@ -385,8 +386,11 @@ class TestWebSocketModule():
                 elif Command == "User2CardRequest":
                     print("User 2 Card bekleniyor...")
                     Thread(target=self.save_user_2_card, args=(client,),daemon=True).start()
-                
-                
+                elif Command == "WaitUser1CardRequest":
+                    print("Şarj için birinci kullanıcı kartı okutulması bekleniyor...")
+                    self.application.databaseModule.set_max_current(6)
+                    self.application.process.set_max_current()
+
                 # if Command == "Barkod":
                 #     self.save_barkod_model_cpid(client, Data)
                 # elif Command == "WifiMacReq":

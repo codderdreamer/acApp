@@ -623,6 +623,16 @@ class EV():
                 self.start_stop_authorize = False
 
         return authorization_result
+    
+    def is_device_test(self):
+        if self.application.testCommand == "MasterCardRequest":
+            return True
+        elif self.application.testCommand == "User1CardRequest":
+            return True
+        elif self.application.testCommand == "User2CardRequest":
+            return True
+        else:
+            return False
         
 
     @property
@@ -632,96 +642,97 @@ class EV():
     @card_id.setter
     def card_id(self, value):
         if (value != None) and (value != ""):
-            if self.application.masterCard == value:
-                print("Master card detected, resetting settings")
-                os.system("rm -r /root/Settings.sqlite")
-                os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
-                os.system("systemctl restart acapp.service")
-            elif self.application.availability == AvailabilityType.inoperative:
-                if self.charge:
-                    if self.application.process.id_tag == value:
-                        self.application.chargePoint.authorize = None
-                        authorization_result = self.authorize_billing_card(value)
-                        if authorization_result == AuthorizationStatus.accepted:
-                            self.application.deviceState = DeviceState.STOPPED_BY_USER
-                    else:
-                        self.application.chargePoint.handle_authorization_failed()
-                else:
-                    self.application.process.rfid_verified = False
-                    
-            elif (self.application.cardType == CardType.BillingCard):
-                print("Billing Card Detected :", value)
-                
-                if self.application.chargePoint is None:
-                    print("Error: chargePoint is None. Cannot proceed with authorization.")
-                    return  # Or handle the error as appropriate for your application
-
-                if self.charge:
-                    print("şarj aktif, transaction stopped")
-                    if self.application.process.id_tag == value:
-                        print("self.application.process.id_tag == value")
-                        self.application.chargePoint.authorize = None
-                        authorization_result = self.authorize_billing_card(value)
-                        if authorization_result == AuthorizationStatus.accepted:
-                            self.application.process.there_is_transaction = False
-                            self.application.deviceState = DeviceState.STOPPED_BY_USER
-                    else:
-                        print("self.application.process.id_tag != value")
-                        self.application.chargePoint.handle_authorization_failed()
-                elif self.application.process.there_is_transaction:
-                    print("transaction stopped")
-                    if self.application.process.id_tag == value:
-                        print("self.application.process.id_tag == value")
-                        self.application.chargePoint.authorize = None
-                        authorization_result = self.authorize_billing_card(value)
-                        if authorization_result == AuthorizationStatus.accepted:
-                            self.application.process.there_is_transaction = False
-                            if self.control_pilot == ControlPlot.stateA.value:
-                                self.application.deviceState = DeviceState.IDLE
-                            else:
+            if not self.is_device_test():
+                if self.application.masterCard == value:
+                    print("Master card detected, resetting settings")
+                    os.system("rm -r /root/Settings.sqlite")
+                    os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
+                    os.system("systemctl restart acapp.service")
+                elif self.application.availability == AvailabilityType.inoperative:
+                    if self.charge:
+                        if self.application.process.id_tag == value:
+                            self.application.chargePoint.authorize = None
+                            authorization_result = self.authorize_billing_card(value)
+                            if authorization_result == AuthorizationStatus.accepted:
                                 self.application.deviceState = DeviceState.STOPPED_BY_USER
+                        else:
+                            self.application.chargePoint.handle_authorization_failed()
                     else:
-                        print("self.application.process.id_tag != value")
-                        self.application.chargePoint.handle_authorization_failed()
-                else:
-                    print("transaction started")
-                    self.application.chargePoint.authorize = None
-                    authorization_result = self.authorize_billing_card(value)
-                    if authorization_result == AuthorizationStatus.accepted:
-                        self.application.process.there_is_transaction = True
-                        self.application.process.id_tag = value
-                        self.application.chargePoint.authorize = AuthorizationStatus.accepted
-                        if self.control_pilot == ControlPlot.stateA.value:
-                            Thread(target=self.remote_start_thread,daemon=True).start()
-                    else :
-                        self.application.chargePoint.authorize = None
-                        print(Color.Red.value,"Autorize başarısız!")
+                        self.application.process.rfid_verified = False
                         
-            elif self.application.cardType == CardType.StartStopCard:
-                print("Start Stop Card Detected :", value)
-                finded = False
-                card_id_list = self.application.databaseModule.get_default_local_list()
-                for id in card_id_list:
-                    if value == id:
-                        if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
-                            self.start_stop_authorize = False
-                        else:
-                            self.start_stop_authorize = True
-                        finded = True
+                elif (self.application.cardType == CardType.BillingCard):
+                    print("Billing Card Detected :", value)
+                    
+                    if self.application.chargePoint is None:
+                        print("Error: chargePoint is None. Cannot proceed with authorization.")
+                        return  # Or handle the error as appropriate for your application
 
-                        if self.charge and (self.application.process.id_tag == value):
-                            self.application.deviceState = DeviceState.STOPPED_BY_USER
-                            self.application.process.rfid_verified = True
-                        elif self.charge == False:
-                            self.application.process.rfid_verified = True
-                            self.start_stop_authorize = True
+                    if self.charge:
+                        print("şarj aktif, transaction stopped")
+                        if self.application.process.id_tag == value:
+                            print("self.application.process.id_tag == value")
+                            self.application.chargePoint.authorize = None
+                            authorization_result = self.authorize_billing_card(value)
+                            if authorization_result == AuthorizationStatus.accepted:
+                                self.application.process.there_is_transaction = False
+                                self.application.deviceState = DeviceState.STOPPED_BY_USER
                         else:
-                            self.application.process.rfid_verified = False
-                            self.start_stop_authorize = False
-                        break
-                if finded == False:
-                    self.start_stop_authorize = False
-                    self.application.process.rfid_verified = False
+                            print("self.application.process.id_tag != value")
+                            self.application.chargePoint.handle_authorization_failed()
+                    elif self.application.process.there_is_transaction:
+                        print("transaction stopped")
+                        if self.application.process.id_tag == value:
+                            print("self.application.process.id_tag == value")
+                            self.application.chargePoint.authorize = None
+                            authorization_result = self.authorize_billing_card(value)
+                            if authorization_result == AuthorizationStatus.accepted:
+                                self.application.process.there_is_transaction = False
+                                if self.control_pilot == ControlPlot.stateA.value:
+                                    self.application.deviceState = DeviceState.IDLE
+                                else:
+                                    self.application.deviceState = DeviceState.STOPPED_BY_USER
+                        else:
+                            print("self.application.process.id_tag != value")
+                            self.application.chargePoint.handle_authorization_failed()
+                    else:
+                        print("transaction started")
+                        self.application.chargePoint.authorize = None
+                        authorization_result = self.authorize_billing_card(value)
+                        if authorization_result == AuthorizationStatus.accepted:
+                            self.application.process.there_is_transaction = True
+                            self.application.process.id_tag = value
+                            self.application.chargePoint.authorize = AuthorizationStatus.accepted
+                            if self.control_pilot == ControlPlot.stateA.value:
+                                Thread(target=self.remote_start_thread,daemon=True).start()
+                        else :
+                            self.application.chargePoint.authorize = None
+                            print(Color.Red.value,"Autorize başarısız!")
+                            
+                elif self.application.cardType == CardType.StartStopCard:
+                    print("Start Stop Card Detected :", value)
+                    finded = False
+                    card_id_list = self.application.databaseModule.get_default_local_list()
+                    for id in card_id_list:
+                        if value == id:
+                            if self.application.deviceState == DeviceState.STOPPED_BY_EVSE or self.application.deviceState == DeviceState.STOPPED_BY_USER or self.application.deviceState == DeviceState.FAULT:
+                                self.start_stop_authorize = False
+                            else:
+                                self.start_stop_authorize = True
+                            finded = True
+
+                            if self.charge and (self.application.process.id_tag == value):
+                                self.application.deviceState = DeviceState.STOPPED_BY_USER
+                                self.application.process.rfid_verified = True
+                            elif self.charge == False:
+                                self.application.process.rfid_verified = True
+                                self.start_stop_authorize = True
+                            else:
+                                self.application.process.rfid_verified = False
+                                self.start_stop_authorize = False
+                            break
+                    if finded == False:
+                        self.start_stop_authorize = False
+                        self.application.process.rfid_verified = False
         
         self.__card_id = value
 

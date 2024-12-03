@@ -45,6 +45,7 @@ class Application():
         # os.system("chmod +x /root/acApp/bash/bluetooth_set.sh")
         os.system("/root/acApp/bash/bluetooth_set.sh")
         time.sleep(5)
+        self.testCommand = None
         self.initially_mcu = True
         self.initilly = True
         self.test_led = False

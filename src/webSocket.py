@@ -438,7 +438,7 @@ class TestWebSocketModule():
                     print("Şarj için birinci kullanıcı kartı okutulması bekleniyor...")
                     self.application.databaseModule.set_max_current(6)
                     Thread(target=self.send_wait_user_1_card_result,daemon=True).start()
-                elif Command == "WaitRelayOn":
+                elif Command == "WaitRelayOnRequest":
                     print("Rölenin On olması bekleniyor...")
                     Thread(target=self.wait_role_on,daemon=True).start()
                 elif Command == "CancelTest":

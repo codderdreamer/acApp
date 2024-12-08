@@ -372,6 +372,8 @@ class TestWebSocketModule():
     def wait_role_on(self):
         time_start = time.time()
         while True:
+            if self.cancel_test:
+                break
             if self.application.ev.pid_relay_control == Relay.On:
                 message = {
                                 "Command": "WaitRelayOnResult",
@@ -387,6 +389,75 @@ class TestWebSocketModule():
                 self.websocket.send_message(self.client, json.dumps(message))
                 break
             time.sleep(1)
+
+    def control_all_values_30_sn(self):
+        time_start = time.time()
+        while True:
+            if self.cancel_test:
+                break
+            if time_start - time.time() > 30:
+                break
+            message = {
+                        "Command": "ControlAllValues30snResult",
+                        "Data": {
+                            "current_L1" : self.application.ev.current_L1,
+                            "current_L2" : self.application.ev.current_L2,
+                            "current_L3" : self.application.ev.current_L3,
+                            "voltage_L1" : self.application.ev.voltage_L1,
+                            "voltage_L2" : self.application.ev.voltage_L2,
+                            "voltage_L3" : self.application.ev.voltage_L3
+                        }
+                    }
+            self.websocket.send_message(self.client, json.dumps(message))
+
+            time.sleep(1)
+
+    def over_current_test(self):
+        time_start = time.time()
+        while True:
+            if self.cancel_test:
+                break
+            if len(self.application.serialPort.error_list) > 0:
+                error_list = []
+                for error in self.application.serialPort.error_list:
+                    error_list.append(error.name)
+                message = {
+                        "Command": "OverCurrentTestResult",
+                        "Data": error_list
+                    }
+                self.websocket.send_message(self.client, json.dumps(message))
+                break
+            if time.time() - time_start > 2:
+                message = {
+                        "Command": "OverCurrentTestResult",
+                        "Data": []
+                    }
+                self.websocket.send_message(self.client, json.dumps(message))
+                break
+
+    def rcd_leakage_current_test(self):
+        time_start = time.time()
+        while True:
+            if self.cancel_test:
+                break
+            if len(self.application.serialPort.error_list) > 0:
+                error_list = []
+                for error in self.application.serialPort.error_list:
+                    error_list.append(error.name)
+                message = {
+                        "Command": "RCDLeakageCurrentTestResult",
+                        "Data": error_list
+                    }
+                self.websocket.send_message(self.client, json.dumps(message))
+                break
+            if time.time() - time_start > 2:
+                message = {
+                        "Command": "RCDLeakageCurrentTestResult",
+                        "Data": []
+                    }
+                self.websocket.send_message(self.client, json.dumps(message))
+                break
+
 
 
     def NewClientws(self, client, server):
@@ -441,6 +512,12 @@ class TestWebSocketModule():
                 elif Command == "WaitRelayOnRequest":
                     print("Rölenin On olması bekleniyor...")
                     Thread(target=self.wait_role_on,daemon=True).start()
+                elif Command == "ControlAllValues30sn":
+                    Thread(target=self.control_all_values_30_sn,daemon=True).start()
+                elif Command == "OverCurrentTest":
+                    Thread(target=self.over_current_test,daemon=True).start()
+                elif Command == "RCDLeakageCurrentTest":
+                    Thread(target=self.rcd_leakage_current_test,daemon=True).start()
                 elif Command == "CancelTest":
                     print("test iptal edildi.")
                     self.cancel_test = True

@@ -240,6 +240,7 @@ class TestWebSocketModule():
             Thread(target=self.set_connector_type,args=(Data,),daemon=True).start()
             Thread(target=self.set_seri_no,args=(Data,),daemon=True).start()
             Thread(target=self.set_mid,args=(Data,),daemon=True).start()
+            time.sleep(5)
             bluetooth_mac = self.get_bluetooth_mac()
             eth_mac = self.get_eth_mac()
             mcu_error = self.get_mcu_error()

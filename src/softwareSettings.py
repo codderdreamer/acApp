@@ -209,6 +209,7 @@ class SoftwareSettings():
 
     def set_4G(self):
         try:
+            print(Color.Yellow.value,"4G set ediliyor...")
             connection_name = "ppp0"
             apn = self.application.settings.settings4G.apn
             user = self.application.settings.settings4G.user
@@ -251,6 +252,7 @@ class SoftwareSettings():
    
     def set_wifi(self):
         try:
+            print(Color.Yellow.value,"Wifi set ediliyor...")
             wifiEnable = self.application.settings.wifiSettings.wifiEnable
             mod = self.application.settings.wifiSettings.mod
             ssid = self.application.settings.wifiSettings.ssid

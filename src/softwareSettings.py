@@ -158,6 +158,7 @@ class SoftwareSettings():
             connections = self.get_connections()
             for connection in connections:
                 if con_type in connection:
+                    subprocess.run(["nmcli", "connection", "down", connection[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     subprocess.run(["nmcli", "con", "delete", connection[0]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
             print("delete_connection_type Exception:",e)

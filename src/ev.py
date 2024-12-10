@@ -278,6 +278,7 @@ class EV():
                     self.ocpp_online()
                 elif (self.control_pilot == ControlPlot.stateA.value) and (self.application.cardType == CardType.LocalPnC or self.application.cardType == CardType.StartStopCard):
                     self.application.change_status_notification(ChargePointErrorCode.no_error,ChargePointStatus.available)
+                    self.application.deviceState = DeviceState.IDLE
                 if self.application.ocppActive:
                     if self.application.settings.configuration.MinimumStatusDuration:
                         if time.time() - time_start > int(self.application.settings.configuration.MinimumStatusDuration):

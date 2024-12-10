@@ -529,6 +529,7 @@ class TestWebSocketModule():
                 Command = sjon["Command"]
                 Data = sjon["Data"]
                 self.application.testCommand = Command
+                print("Incoming:",sjon)
                 # self.parse_message(client,Command,Data)
                 if Command == "SaveConfig":
                     self.cancel_test = False

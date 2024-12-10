@@ -459,18 +459,23 @@ class Process:
         while True:
             self.wait_fault = True
             if self.application.ev.control_pilot != ControlPlot.stateA.value:
-                time.sleep(1)
+                print(Color.Yellow.value,"self.application.ev.control_pilot != ControlPlot.stateA.value")
+                pass
             elif len(self.application.serialPort.error_list) > 0:
-                time.sleep(1)
+                print(Color.Yellow.value,"self.application.serialPort.error_list > 0")
+                pass
             elif self.application.ev.control_pilot == ControlPlot.stateA.value:
                 self.wait_fault = False
                 self.application.deviceState = DeviceState.IDLE
+                print(Color.Yellow.value,"idle 1")
                 break
             else:
                 if self.application.availability == AvailabilityType.operative:
                     self.wait_fault = False
                     self.application.deviceState = DeviceState.IDLE
+                    print(Color.Yellow.value,"idle 2")
                     break
+            time.sleep(1)
             
     def suspended_evse(self):
         print("Suspended evse function")

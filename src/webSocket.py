@@ -402,21 +402,22 @@ class TestWebSocketModule():
         time_start = time.time()
         while True:
             if self.cancel_test:
-                break
+                return
             if time_start - time.time() > 30:
-                break
-            message = {
-                        "Command": "ControlAllValues30snResult",
-                        "Data": {
-                            "current_L1" : self.application.ev.current_L1,
-                            "current_L2" : self.application.ev.current_L2,
-                            "current_L3" : self.application.ev.current_L3,
-                            "voltage_L1" : self.application.ev.voltage_L1,
-                            "voltage_L2" : self.application.ev.voltage_L2,
-                            "voltage_L3" : self.application.ev.voltage_L3
+                message = {
+                            "Command": "ControlAllValues30snResult",
+                            "Data": {
+                                "current_L1" : self.application.ev.current_L1,
+                                "current_L2" : self.application.ev.current_L2,
+                                "current_L3" : self.application.ev.current_L3,
+                                "voltage_L1" : self.application.ev.voltage_L1,
+                                "voltage_L2" : self.application.ev.voltage_L2,
+                                "voltage_L3" : self.application.ev.voltage_L3
+                            }
                         }
-                    }
-            self.websocket.send_message(self.client, json.dumps(message))
+                self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
+                return
 
             time.sleep(1)
 

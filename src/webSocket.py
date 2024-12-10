@@ -375,6 +375,33 @@ class TestWebSocketModule():
 
             time.sleep(1)
 
+    def send_wait_user_2_card_result(self):
+        time_start = time.time()
+        while True:
+            try:
+                if self.application.ev.start_stop_authorize:
+                    message = {
+                                "Command": "WaitUser2CardResult",
+                                "Data": True
+                            }
+                    self.websocket.send_message(self.client, json.dumps(message))
+                    print("sended:",message)
+                    return
+                if time.time() - time_start > 60:
+                    message = {
+                                "Command": "WaitUser2CardResult",
+                                "Data": False
+                            }
+                    self.websocket.send_message(self.client, json.dumps(message))
+                    print("sended:",message)
+                    return
+                if self.cancel_test:
+                    return
+            except Exception as e:
+                    print(f"send_wait_user_2_card_result Exception: {e}")
+
+            time.sleep(1)
+
     def wait_role_on(self):
         time_start = time.time()
         while True:
@@ -520,6 +547,10 @@ class TestWebSocketModule():
                     print("Şarj için birinci kullanıcı kartı okutulması bekleniyor...")
                     self.application.databaseModule.set_max_current(6)
                     Thread(target=self.send_wait_user_1_card_result,daemon=True).start()
+                elif Command == "WaitUser2CardRequest":
+                    print("Şarj için ikinci kullanıcı kartı okutulması bekleniyor...")
+                    self.application.databaseModule.set_max_current(6)
+                    Thread(target=self.send_wait_user_2_card_result,daemon=True).start()
                 elif Command == "WaitRelayOnRequest":
                     print("Rölenin On olması bekleniyor...")
                     Thread(target=self.wait_role_on,daemon=True).start()

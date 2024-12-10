@@ -436,7 +436,7 @@ class TestWebSocketModule():
                 self.websocket.send_message(self.client, json.dumps(message))
                 print("sended:",message)
                 return
-            if time.time() - time_start > 2:
+            if time.time() - time_start > 4:
                 message = {
                         "Command": "OverCurrentTestResult",
                         "Data": []
@@ -461,7 +461,7 @@ class TestWebSocketModule():
                 self.websocket.send_message(self.client, json.dumps(message))
                 print("sended:",message)
                 return
-            if time.time() - time_start > 2:
+            if time.time() - time_start > 4:
                 message = {
                         "Command": "RCDLeakageCurrentTestResult",
                         "Data": []

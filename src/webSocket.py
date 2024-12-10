@@ -525,7 +525,6 @@ class TestWebSocketModule():
         if client['id']:
             try:
                 sjon = json.loads(message)
-                print(f"Incoming: {sjon}")
                 Command = sjon["Command"]
                 Data = sjon["Data"]
                 self.application.testCommand = Command

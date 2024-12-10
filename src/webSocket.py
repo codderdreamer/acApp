@@ -199,8 +199,8 @@ class TestWebSocketModule():
                 if self.application.settings.networkip.ppp0:
                     imei_4g = self.get_4g_imei(Data)
                     print("imei_4g",imei_4g)
-                    break
-                if time.time() - time_start > 90:
+                    return imei_4g
+                if time.time() - time_start > 120:
                     print("süre doldu!")
                     break
                 time.sleep(3)
@@ -212,8 +212,8 @@ class TestWebSocketModule():
         while True:
             if self.application.settings.networkip.wlan0:
                 wlan0_connection = True
-                break
-            if time.time() - time_start > 20:
+                return wlan0_connection
+            if time.time() - time_start > 30:
                 print("süre doldu!")
                 break
             time.sleep(3)
@@ -232,7 +232,6 @@ class TestWebSocketModule():
         # seriNo kaydet
         # mid meter ayarla
         try:
-            time_start = time.time()
             Thread(target=self.set_start_stop,daemon=True).start()
             Thread(target=self.up_4g,args=(Data,),daemon=True).start()
             Thread(target=self.up_Wifi,args=(Data,),daemon=True).start()
@@ -241,6 +240,7 @@ class TestWebSocketModule():
             Thread(target=self.set_seri_no,args=(Data,),daemon=True).start()
             Thread(target=self.set_mid,args=(Data,),daemon=True).start()
             time.sleep(10)
+            time_start = time.time()
             bluetooth_mac = self.get_bluetooth_mac()
             eth_mac = self.get_eth_mac()
             mcu_error = self.get_mcu_error()

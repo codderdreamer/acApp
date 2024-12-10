@@ -464,6 +464,7 @@ class Process:
                 time.sleep(1)
             elif self.application.ev.control_pilot == ControlPlot.stateA.value:
                 self.wait_fault = False
+                self.application.deviceState = DeviceState.IDLE
                 break
             else:
                 if self.application.availability == AvailabilityType.operative:

@@ -80,6 +80,7 @@ class TestWebSocketModule():
     def up_4g(self,Data):
         try:
             if Data["fourg"]:
+                print("4G up yapılıyor...")
                 sjon = {
                     "Command": "4GSettings",
                                 "Data": {
@@ -96,6 +97,7 @@ class TestWebSocketModule():
 
     def up_bluetooth(self,Data):
         try:
+            print("Bluetooth up yapılıyor...")
             sjon = {
                         "Command": "BluetoothSettings",
                                     "Data": {
@@ -147,6 +149,7 @@ class TestWebSocketModule():
 
     def set_start_stop(self):
         try:
+            print("Start and stop olarak ayarlanıyor...")
             sjon = {
                         "Command" : "FunctionsEnable",
                         "Data" : {
@@ -229,24 +232,16 @@ class TestWebSocketModule():
         # seriNo kaydet
         # mid meter ayarla
         try:
-            self.set_start_stop()
-            print("4G ayarlanıyor...")
-            self.up_4g(Data)
-            print("Wifi ayarlanıyor...")
-            self.up_Wifi(Data)
-            print("Bluetooth adı değiştiririliyor...")
-            self.up_bluetooth(Data)
-            print("Bluetooth mac adres alınıyor...")
+            Thread(target=self.set_start_stop,daemon=True).start()
+            Thread(target=self.up_4g,args=(Data,),daemon=True).start()
+            Thread(target=self.up_Wifi,args=(Data,),daemon=True).start()
+            Thread(target=self.up_bluetooth,args=(Data,),daemon=True).start()
+            Thread(target=self.set_connector_type,args=(Data,),daemon=True).start()
+            Thread(target=self.set_seri_no,args=(Data,),daemon=True).start()
+            Thread(target=self.set_mid,args=(Data,),daemon=True).start()
+            # time.sleep(5)
             bluetooth_mac = self.get_bluetooth_mac()
-            print("Ethernet mac address alınıyor...")
             eth_mac = self.get_eth_mac()
-            print("Connector Type ayarlanıyor...")
-            self.set_connector_type(Data)
-            print("Seri No kaydediliyor...")
-            self.set_seri_no(Data)
-            print("MID ayarlanıyor...")
-            self.set_mid(Data)
-            print("MCU hata listesi alınıyor...")
             mcu_error = self.get_mcu_error()
             mcu_connection = self.application.serialPort.connection
             imei_4g = self.wait_4g(Data)
@@ -495,7 +490,6 @@ class TestWebSocketModule():
                     self.cancel_test = False
                     print("Cihaz bilgileri kayıt ediliyor...")
                     Thread(target=self.save_config,args=(client,Data,),daemon=True).start()
-                    # self.save_config(client,Data)
                 elif Command == "MasterCardRequest":
                     print("Master card bekleniyor...")
                     Thread(target=self.save_master_card, args=(client,),daemon=True).start()

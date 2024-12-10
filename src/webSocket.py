@@ -260,6 +260,7 @@ class TestWebSocketModule():
                     }
                 }
             self.websocket.send_message(client, json.dumps(message))
+            print("sended:",message)
             print("Total***********************",time.time()-time_start)
         except Exception as e:
             print("save_config Exception:",e)
@@ -278,6 +279,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     self.master_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     return
@@ -287,6 +289,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     return
             except Exception as e:
                 print(f"save_master_card Exception: {e}")
@@ -302,6 +305,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     self.user_1_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     return
@@ -311,6 +315,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     return
             except Exception as e:
                 print(f"save_user_1_card Exception: {e}")
@@ -326,6 +331,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     self.user_2_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     self.application.databaseModule.set_default_local_list([self.user_1_card, self.user_2_card])
@@ -336,6 +342,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     return
             except Exception as e:
                 print(f"save_user_2_card Exception: {e}")
@@ -351,16 +358,18 @@ class TestWebSocketModule():
                                 "Data": True
                             }
                     self.websocket.send_message(self.client, json.dumps(message))
-                    break
+                    print("sended:",message)
+                    return
                 if time.time() - time_start > 60:
                     message = {
                                 "Command": "WaitUser1CardResult",
                                 "Data": False
                             }
                     self.websocket.send_message(self.client, json.dumps(message))
-                    break
+                    print("sended:",message)
+                    return
                 if self.cancel_test:
-                    break
+                    return
             except Exception as e:
                     print(f"send_wait_user_1_card_result Exception: {e}")
 
@@ -370,21 +379,23 @@ class TestWebSocketModule():
         time_start = time.time()
         while True:
             if self.cancel_test:
-                break
+                return
             if self.application.ev.pid_relay_control == Relay.On:
                 message = {
                                 "Command": "WaitRelayOnResult",
                                 "Data": True
                             }
                 self.websocket.send_message(self.client, json.dumps(message))
-                break
+                print("sended:",message)
+                return
             if time_start - time.time() > 60:
                 message = {
                                 "Command": "WaitRelayOnResult",
                                 "Data": False
                             }
                 self.websocket.send_message(self.client, json.dumps(message))
-                break
+                print("sended:",message)
+                return
             time.sleep(1)
 
     def control_all_values_30_sn(self):
@@ -413,7 +424,7 @@ class TestWebSocketModule():
         time_start = time.time()
         while True:
             if self.cancel_test:
-                break
+                return
             if len(self.application.serialPort.error_list) > 0:
                 error_list = []
                 for error in self.application.serialPort.error_list:
@@ -423,20 +434,22 @@ class TestWebSocketModule():
                         "Data": error_list
                     }
                 self.websocket.send_message(self.client, json.dumps(message))
-                break
+                print("sended:",message)
+                return
             if time.time() - time_start > 2:
                 message = {
                         "Command": "OverCurrentTestResult",
                         "Data": []
                     }
                 self.websocket.send_message(self.client, json.dumps(message))
-                break
+                print("sended:",message)
+                return
 
     def rcd_leakage_current_test(self):
         time_start = time.time()
         while True:
             if self.cancel_test:
-                break
+                return
             if len(self.application.serialPort.error_list) > 0:
                 error_list = []
                 for error in self.application.serialPort.error_list:
@@ -446,14 +459,16 @@ class TestWebSocketModule():
                         "Data": error_list
                     }
                 self.websocket.send_message(self.client, json.dumps(message))
-                break
+                print("sended:",message)
+                return
             if time.time() - time_start > 2:
                 message = {
                         "Command": "RCDLeakageCurrentTestResult",
                         "Data": []
                     }
                 self.websocket.send_message(self.client, json.dumps(message))
-                break
+                print("sended:",message)
+                return
 
 
 
@@ -579,6 +594,7 @@ class TestWebSocketModule():
             "Data": modelFind
         }
         self.websocket.send_message(client, json.dumps(message))
+        print("sended:",message)
         if modelFind:
             modelReturn = self.application.databaseModule.set_model(model)
             chargePointIdReturn = self.application.databaseModule.set_charge_point_id(chargePointId)
@@ -590,6 +606,7 @@ class TestWebSocketModule():
                     "Data": True
                 }
                 self.websocket.send_message(client, json.dumps(message))
+                print("sended:",message)
 
     def wifimac_send(self, client):
         mac_address = ""
@@ -608,6 +625,7 @@ class TestWebSocketModule():
             "Data": mac_address
         }
         self.websocket.send_message(client, json.dumps(message))
+        print("sended:",message)
 
     def eth1mac_get(self, client):
         mac_address = ""
@@ -626,6 +644,7 @@ class TestWebSocketModule():
             "Data": mac_address
         }
         self.websocket.send_message(client, json.dumps(message))
+        print("sended:",message)
 
     def send_wifi_result(self, client):
         try:
@@ -634,6 +653,7 @@ class TestWebSocketModule():
                 "Data": self.application.settings.networkip.wlan0
             }
             self.websocket.send_message(client, json.dumps(message))
+            print("sended:",message)
         except Exception as e:
             print(f"send_wifi_result Exception: {e}")
 
@@ -665,6 +685,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     self.user_1_card = self.application.ev.card_id
                     self.application.ev.card_id = ""
                     return
@@ -681,6 +702,7 @@ class TestWebSocketModule():
                         "Data": self.application.ev.card_id
                     }
                     self.websocket.send_message(client, json.dumps(message))
+                    print("sended:",message)
                     self.user_2_card = self.application.ev.card_id
                     self.application.databaseModule.set_default_local_list([self.user_1_card, self.application.ev.card_id])
                     self.application.ev.card_id = ""
@@ -704,6 +726,7 @@ class TestWebSocketModule():
                 }
             }
             self.websocket.send_message(client, json.dumps(message))
+            print("sended:",message)
         except Exception as e:
             print(f"send_bluetooth Exception: {e}")
 
@@ -715,6 +738,7 @@ class TestWebSocketModule():
                     "Data": ""
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_socket_connected Exception: {e}")
 
@@ -726,6 +750,7 @@ class TestWebSocketModule():
                     "Data": socketType
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_socket_type Exception: {e}")
 
@@ -737,6 +762,7 @@ class TestWebSocketModule():
                     "Data": locker_state
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_locker_state_lock Exception: {e}")
 
@@ -748,6 +774,7 @@ class TestWebSocketModule():
                     "Data": relay
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_relay_control_on Exception: {e}")
 
@@ -759,6 +786,7 @@ class TestWebSocketModule():
                     "Data": mid
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_there_is_mid_meter Exception: {e}")
 
@@ -770,6 +798,7 @@ class TestWebSocketModule():
                     "Data": state
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_mid_meter_state Exception: {e}")
 
@@ -781,5 +810,6 @@ class TestWebSocketModule():
                     "Data": error
                 }
                 self.websocket.send_message(self.client, json.dumps(message))
+                print("sended:",message)
         except Exception as e:
             print(f"send_error Exception: {e}")

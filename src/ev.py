@@ -644,10 +644,11 @@ class EV():
         if (value != None) and (value != ""):
             if not self.is_device_test():
                 if self.application.masterCard == value:
-                    print("Master card detected, resetting settings")
-                    os.system("rm -r /root/Settings.sqlite")
-                    os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
-                    os.system("systemctl restart acapp.service")
+                    pass
+                    # print("Master card detected, resetting settings")
+                    # os.system("rm -r /root/Settings.sqlite")
+                    # os.system("cp /root/DefaultSettings.sqlite /root/Settings.sqlite")
+                    # os.system("systemctl restart acapp.service")
                 elif self.application.availability == AvailabilityType.inoperative:
                     if self.charge:
                         if self.application.process.id_tag == value:

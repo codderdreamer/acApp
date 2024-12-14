@@ -20,7 +20,7 @@ from src.modbusModule import ModbusModule
 from src.flaskModule import FlaskModuleThread
 import subprocess
 import os
-from src.webSocket import *
+from src.testWebSocketModule import *
 import builtins
 from src.logger import ac_app_logger as logger
 import ssl

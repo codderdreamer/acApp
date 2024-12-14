@@ -273,6 +273,7 @@ class TestWebSocketModule():
                 self.user_1_card = None
                 self.user_2_card = None
                 if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                    self.application.process.rfid_verified = True
                     self.application.databaseModule.set_master_card(self.application.ev.card_id)
                     message = {
                         "Command": "MasterCardResult",
@@ -299,16 +300,28 @@ class TestWebSocketModule():
         time_start = time.time()
         while True:
             try:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.master_card != self.application.ev.card_id:
-                    message = {
-                        "Command": "User1CardResult",
-                        "Data": self.application.ev.card_id
-                    }
-                    self.websocket.send_message(client, json.dumps(message))
-                    print("sended:",message)
-                    self.user_1_card = self.application.ev.card_id
-                    self.application.ev.card_id = ""
-                    return
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                    if self.application.ev.card_id == self.master_card:
+                        self.application.process.rfid_verified = False
+                        message = {
+                            "Command": "User1CardResult",
+                            "Data": "Same"
+                        }
+                        self.websocket.send_message(client, json.dumps(message))
+                        self.application.ev.card_id = ""
+                
+                    else:
+                        self.application.process.rfid_verified = True
+                        message = {
+                            "Command": "User1CardResult",
+                            "Data": self.application.ev.card_id
+                        }
+                        self.websocket.send_message(client, json.dumps(message))
+                        print("sended:",message)
+                        self.user_1_card = self.application.ev.card_id
+                        self.application.ev.card_id = ""
+                        return
+                
                 if time.time() - time_start > 60:
                     message = {
                         "Command": "User1CardResult",

@@ -345,6 +345,7 @@ class TestWebSocketModule():
                             "Command": "User1CardResult",
                             "Data": "Same"
                         }
+                        print("sended:",message)
                         self.websocket.send_message(client, json.dumps(message))
                         self.application.ev.card_id = ""
                         return
@@ -353,8 +354,8 @@ class TestWebSocketModule():
                             "Command": "User2CardResult",
                             "Data": self.application.ev.card_id
                         }
-                        self.websocket.send_message(client, json.dumps(message))
                         print("sended:",message)
+                        self.websocket.send_message(client, json.dumps(message))
                         self.user_2_card = self.application.ev.card_id
                         self.application.ev.card_id = ""
                         self.application.databaseModule.set_default_local_list([self.user_1_card, self.user_2_card])
@@ -364,8 +365,8 @@ class TestWebSocketModule():
                         "Command": "User2CardResult",
                         "Data": self.application.ev.card_id
                     }
-                    self.websocket.send_message(client, json.dumps(message))
                     print("sended:",message)
+                    self.websocket.send_message(client, json.dumps(message))
                     return
             except Exception as e:
                 print(f"save_user_2_card Exception: {e}")

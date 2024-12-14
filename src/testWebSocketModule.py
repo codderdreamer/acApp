@@ -342,7 +342,7 @@ class TestWebSocketModule():
                     if self.application.ev.card_id == self.master_card or self.application.ev.card_id == self.user_1_card:
                         self.application.process.rfid_verified = False
                         message = {
-                            "Command": "User1CardResult",
+                            "Command": "User2CardResult",
                             "Data": "Same"
                         }
                         print("sended:",message)

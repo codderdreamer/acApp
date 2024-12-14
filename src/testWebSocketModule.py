@@ -338,17 +338,26 @@ class TestWebSocketModule():
         time_start = time.time()
         while True:
             try:
-                if self.application.ev.card_id != "" and self.application.ev.card_id != None and self.master_card != self.application.ev.card_id and self.user_1_card != self.application.ev.card_id:
-                    message = {
-                        "Command": "User2CardResult",
-                        "Data": self.application.ev.card_id
-                    }
-                    self.websocket.send_message(client, json.dumps(message))
-                    print("sended:",message)
-                    self.user_2_card = self.application.ev.card_id
-                    self.application.ev.card_id = ""
-                    self.application.databaseModule.set_default_local_list([self.user_1_card, self.user_2_card])
-                    return
+                if self.application.ev.card_id != "" and self.application.ev.card_id != None:
+                    if self.application.ev.card_id == self.master_card or self.application.ev.card_id == self.user_1_card:
+                        self.application.process.rfid_verified = False
+                        message = {
+                            "Command": "User1CardResult",
+                            "Data": "Same"
+                        }
+                        self.websocket.send_message(client, json.dumps(message))
+                        self.application.ev.card_id = ""
+                    else:
+                        message = {
+                            "Command": "User2CardResult",
+                            "Data": self.application.ev.card_id
+                        }
+                        self.websocket.send_message(client, json.dumps(message))
+                        print("sended:",message)
+                        self.user_2_card = self.application.ev.card_id
+                        self.application.ev.card_id = ""
+                        self.application.databaseModule.set_default_local_list([self.user_1_card, self.user_2_card])
+                        return
                 if time.time() - time_start > 60:
                     message = {
                         "Command": "User2CardResult",

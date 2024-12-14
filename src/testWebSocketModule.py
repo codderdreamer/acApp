@@ -309,7 +309,7 @@ class TestWebSocketModule():
                         }
                         self.websocket.send_message(client, json.dumps(message))
                         self.application.ev.card_id = ""
-                
+                        return
                     else:
                         self.application.process.rfid_verified = True
                         message = {
@@ -347,6 +347,7 @@ class TestWebSocketModule():
                         }
                         self.websocket.send_message(client, json.dumps(message))
                         self.application.ev.card_id = ""
+                        return
                     else:
                         message = {
                             "Command": "User2CardResult",

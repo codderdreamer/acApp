@@ -379,16 +379,16 @@ class TestWebSocketModule():
                                 "Command": "WaitUser1CardResult",
                                 "Data": True
                             }
-                    self.websocket.send_message(self.client, json.dumps(message))
                     print("sended:",message)
+                    self.websocket.send_message(self.client, json.dumps(message))
                     return
                 if time.time() - time_start > 60:
                     message = {
                                 "Command": "WaitUser1CardResult",
                                 "Data": False
                             }
-                    self.websocket.send_message(self.client, json.dumps(message))
                     print("sended:",message)
+                    self.websocket.send_message(self.client, json.dumps(message))
                     return
                 if self.cancel_test:
                     return
@@ -406,16 +406,16 @@ class TestWebSocketModule():
                                 "Command": "WaitUser2CardResult",
                                 "Data": True
                             }
-                    self.websocket.send_message(self.client, json.dumps(message))
                     print("sended:",message)
+                    self.websocket.send_message(self.client, json.dumps(message))
                     return
                 if time.time() - time_start > 60:
                     message = {
                                 "Command": "WaitUser2CardResult",
                                 "Data": False
                             }
-                    self.websocket.send_message(self.client, json.dumps(message))
                     print("sended:",message)
+                    self.websocket.send_message(self.client, json.dumps(message))
                     return
                 if self.cancel_test:
                     return

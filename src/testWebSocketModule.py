@@ -558,7 +558,7 @@ class TestWebSocketModule():
                 if Command == "SaveConfig":
                     self.cancel_test = False
                     print("Cihaz bilgileri kayıt ediliyor...")
-                    # Thread(target=self.save_config,args=(client,Data,),daemon=True).start()
+                    Thread(target=self.save_config,args=(client,Data,),daemon=True).start()
                 elif Command == "MasterCardRequest":
                     print("Master card bekleniyor...")
                     Thread(target=self.save_master_card, args=(client,),daemon=True).start()

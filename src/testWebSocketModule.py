@@ -272,6 +272,7 @@ class TestWebSocketModule():
                 self.master_card = None
                 self.user_1_card = None
                 self.user_2_card = None
+                print("master card bekleniyor...",self.application.ev.card_id)
                 if self.application.ev.card_id != "" and self.application.ev.card_id != None:
                     self.application.process.rfid_verified = True
                     self.application.databaseModule.set_master_card(self.application.ev.card_id)

@@ -643,6 +643,7 @@ class EV():
     @card_id.setter
     def card_id(self, value):
         if (value != None) and (value != ""):
+            print("self.application.testCommand",self.application.testCommand)
             if not self.is_device_test():
                 if self.application.masterCard == value:
                     pass
